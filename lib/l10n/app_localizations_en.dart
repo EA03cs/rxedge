@@ -82,6 +82,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navProfile => 'Profile';
 
   @override
+  String get tabHome => 'Home';
+
+  @override
+  String get tabLearn => 'Learn';
+
+  @override
+  String get tabLibrary => 'Library';
+
+  @override
+  String get tabChallenges => 'Challenges';
+
+  @override
+  String get tabFeedback => 'Feedback';
+
+  @override
   String get statusCompleted => 'Approved';
 
   @override
@@ -161,4 +176,107 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inputError => 'Physician name is required';
+
+  @override
+  String get onboardingTitle1 => 'Learn every product';
+
+  @override
+  String get onboardingDesc1 =>
+      'Access concise clinical monographs, dosing guides, and efficacy trials between doctor visits.';
+
+  @override
+  String get onboardingTitle2 => 'Find any material in seconds';
+
+  @override
+  String get onboardingDesc2 =>
+      'Pull up approved detailing decks and study summaries without searching through email threads.';
+
+  @override
+  String get onboardingTitle3 => 'Tell marketing what you see in the field';
+
+  @override
+  String get onboardingDesc3 =>
+      'Share doctor feedback and physician objections directly to shape upcoming launch campaigns.';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get getStarted => 'Get started';
+
+  @override
+  String get loginTitle => 'Sign in to RxEdge';
+
+  @override
+  String get loginSubtitle => 'Access your approved clinical detailing tools';
+
+  @override
+  String get usernameLabel => 'Work Email or Employee ID';
+
+  @override
+  String get usernameHint => 'rep@pharma.com or MR-1049';
+
+  @override
+  String get passwordLabel => 'Password';
+
+  @override
+  String get passwordHint => 'Enter corporate password';
+
+  @override
+  String get signIn => 'Sign in';
+
+  @override
+  String get companyAccountNote => 'Accounts are provided by your company';
+
+  @override
+  String get forgotPassword => 'Forgot password?';
+
+  @override
+  String get usernameRequired => 'Work Email or Employee ID is required';
+
+  @override
+  String get passwordRequired => 'Password is required';
+
+  @override
+  String get invalidCredentials =>
+      'Invalid username or password. Please verify and try again.';
+
+  @override
+  String get keepMeSignedIn => 'Keep me signed in';
+
+  @override
+  String get biometricPromptTitle => 'Enable Biometric Unlock?';
+
+  @override
+  String get biometricPromptDesc =>
+      'Unlock RxEdge instantly between clinic visits using your fingerprint or Face ID.';
+
+  @override
+  String get enableBiometrics => 'Enable Biometrics';
+
+  @override
+  String get maybeLater => 'Maybe later';
+
+  @override
+  String get forgotPasswordTitle => 'Need Password Assistance?';
+
+  @override
+  String get forgotPasswordInstructions =>
+      'RxEdge accounts are managed centrally by your enterprise identity provider. To reset your credentials, please reach out to your Field Marketing or Commercial IT administrator.';
+
+  @override
+  String get contactMarketing => 'Contact Marketing & IT Support';
+
+  @override
+  String get supportEmail => 'support@rxedge.internal';
+
+  @override
+  String get backToLogin => 'Back to Sign In';
+
+  @override
+  String get sessionExpiredNotice =>
+      'Your session has expired. Please sign in again to continue.';
 }

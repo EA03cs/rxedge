@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/auth/presentation/controllers/auth_controller.dart';
 import '../config/app_constants.dart';
 import '../config/env_config.dart';
 import '../storage/secure_storage_service.dart';
@@ -24,7 +25,12 @@ final dioClientProvider = Provider<Dio>((ref) {
   final dio = Dio(options);
 
   dio.interceptors.addAll([
-    AuthInterceptor(secureStorage),
+    AuthInterceptor(
+      secureStorage,
+      onSessionExpired: () {
+        ref.read(authControllerProvider.notifier).handleSessionExpired();
+      },
+    ),
     LoggingInterceptor(),
     ErrorInterceptor(),
   ]);

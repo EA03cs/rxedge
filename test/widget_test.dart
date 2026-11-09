@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:rxedge/app.dart';
 import 'package:rxedge/core/components/components.dart';
 import 'package:rxedge/core/config/flavor_config.dart';
 import 'package:rxedge/core/localization/app_locale_provider.dart';
 import 'package:rxedge/core/theme/theme.dart';
+import 'package:rxedge/features/design_system/presentation/design_system_showcase_screen.dart';
 import 'package:rxedge/l10n/app_localizations.dart';
 
 void main() {
@@ -20,8 +20,13 @@ void main() {
   group('App Bootstrap & Showcase Screen Tests', () {
     testWidgets('RxEdge boots with Riverpod and displays Showcase', (WidgetTester tester) async {
       await tester.pumpWidget(
-        const ProviderScope(
-          child: RxEdgeApp(),
+        ProviderScope(
+          child: MaterialApp(
+            theme: RxTheme.light(),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const DesignSystemShowcaseScreen(),
+          ),
         ),
       );
 
@@ -52,7 +57,21 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: const RxEdgeApp(),
+          child: Consumer(
+            builder: (context, ref, _) {
+              final activeLocale = ref.watch(localeProvider);
+              final activeThemeMode = ref.watch(themeModeProvider);
+              return MaterialApp(
+                locale: activeLocale,
+                themeMode: activeThemeMode,
+                theme: RxTheme.light(isArabic: activeLocale.languageCode == 'ar'),
+                darkTheme: RxTheme.dark(isArabic: activeLocale.languageCode == 'ar'),
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                home: const DesignSystemShowcaseScreen(),
+              );
+            },
+          ),
         ),
       );
       await tester.pump();

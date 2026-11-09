@@ -4,31 +4,122 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../core/widgets/widgets.dart';
 import '../../features/app_info/presentation/screens/app_info_screen.dart';
+import '../../features/auth/presentation/controllers/auth_controller.dart';
+import '../../features/auth/presentation/screens/forgot_password_screen.dart';
+import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/onboarding_screen.dart';
+import '../../features/auth/presentation/screens/splash_screen.dart';
+import '../../features/challenges/presentation/screens/challenges_screen.dart';
 import '../../features/design_system/presentation/design_system_showcase_screen.dart';
+import '../../features/feedback/presentation/screens/feedback_screen.dart';
+import '../../features/home/presentation/screens/home_screen.dart';
+import '../../features/learn/presentation/screens/learn_screen.dart';
+import '../../features/library/presentation/screens/library_screen.dart';
 import '../l10n/l10n.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 /// App Route Paths
 abstract final class AppRoutes {
-  static const String home = '/';
-  static const String detailing = '/detailing';
-  static const String products = '/products';
-  static const String modules = '/modules';
-  static const String schedule = '/schedule';
-  static const String profile = '/profile';
+  static const String splash = '/splash';
+  static const String onboarding = '/onboarding';
+  static const String login = '/login';
+  static const String forgotPassword = '/forgot-password';
+
+  // 5 Main Tabs
+  static const String home = '/home';
+  static const String learn = '/learn';
+  static const String library = '/library';
+  static const String challenges = '/challenges';
+  static const String feedback = '/feedback';
+
+  // System & Design System
   static const String showcase = '/showcase';
   static const String appInfo = '/app-info';
 }
 
-/// Router Provider supporting deep linking and auth redirect guard
+/// Listenable that notifies GoRouter when AuthState changes
+class AuthStateListenable extends ChangeNotifier {
+  AuthStateListenable(Ref ref) {
+    ref.listen<AuthState>(authControllerProvider, (previous, next) {
+      notifyListeners();
+    });
+  }
+}
+
+/// Router Provider supporting deep linking, auth redirect guard, and tab state preservation
 final routerProvider = Provider<GoRouter>((ref) {
+  final authListenable = AuthStateListenable(ref);
+
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: AppRoutes.showcase,
+    initialLocation: AppRoutes.splash,
+    refreshListenable: authListenable,
     debugLogDiagnostics: false,
+    redirect: (context, state) {
+      final authState = ref.read(authControllerProvider);
+      final location = state.matchedLocation;
+
+      // Allow direct access to Design System Showcase and Diagnostics in dev
+      if (location == AppRoutes.showcase || location == AppRoutes.appInfo) {
+        return null;
+      }
+
+      switch (authState) {
+        case AuthInitial():
+          return location == AppRoutes.splash ? null : AppRoutes.splash;
+
+        case AuthNeedsOnboarding():
+          return location == AppRoutes.onboarding ? null : AppRoutes.onboarding;
+
+        case AuthUnauthenticated():
+          if (location == AppRoutes.login || location == AppRoutes.forgotPassword) {
+            return null;
+          }
+          return AppRoutes.login;
+
+        case AuthAuthenticating():
+          return null;
+
+        case AuthAuthenticated():
+          if (location == AppRoutes.login ||
+              location == AppRoutes.splash ||
+              location == AppRoutes.onboarding) {
+            return AppRoutes.home;
+          }
+          return null;
+      }
+    },
     routes: [
-      // Standalone full-screen routes
+      // 1. Splash Screen
+      GoRoute(
+        path: AppRoutes.splash,
+        name: 'splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
+
+      // 2. Onboarding Screen
+      GoRoute(
+        path: AppRoutes.onboarding,
+        name: 'onboarding',
+        builder: (context, state) => const OnboardingScreen(),
+      ),
+
+      // 3. Login Screen
+      GoRoute(
+        path: AppRoutes.login,
+        name: 'login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+
+      // 4. Forgot Password Screen
+      GoRoute(
+        path: AppRoutes.forgotPassword,
+        name: 'forgot_password',
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+
+      // 5. System Showcase & Diagnostics
       GoRoute(
         path: AppRoutes.showcase,
         name: 'design_showcase',
@@ -40,7 +131,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const AppInfoScreen(),
       ),
 
-      // 5-Tab StatefulShellRoute for Field Representatives
+      // 6. 5-Tab StatefulShellRoute (Home, Learn, Library, Challenges, Feedback)
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           final l10n = context.l10n;
@@ -53,58 +144,63 @@ final routerProvider = Provider<GoRouter>((ref) {
                 initialLocation: index == navigationShell.currentIndex,
               ),
               items: [
-                NavItemData(icon: LucideIcons.fileText, label: l10n.navHome),
-                NavItemData(icon: LucideIcons.pill, label: l10n.navProducts),
-                NavItemData(icon: LucideIcons.graduationCap, label: l10n.navLearning, badge: '2'),
-                NavItemData(icon: LucideIcons.calendar, label: l10n.navSchedule),
-                NavItemData(icon: LucideIcons.user, label: l10n.navProfile),
+                NavItemData(icon: LucideIcons.home, label: l10n.tabHome),
+                NavItemData(icon: LucideIcons.graduationCap, label: l10n.tabLearn),
+                NavItemData(icon: LucideIcons.bookOpen, label: l10n.tabLibrary),
+                NavItemData(icon: LucideIcons.award, label: l10n.tabChallenges, badge: '🔥'),
+                NavItemData(icon: LucideIcons.messageSquare, label: l10n.tabFeedback),
               ],
             ),
           );
         },
         branches: [
-          // 1. Detailing Tab
+          // Tab 0: Home
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppRoutes.detailing,
-                builder: (context, state) => const DesignSystemShowcaseScreen(),
+                path: AppRoutes.home,
+                name: 'home',
+                builder: (context, state) => const HomeScreen(),
               ),
             ],
           ),
-          // 2. Products Tab
+          // Tab 1: Learn
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppRoutes.products,
-                builder: (context, state) => const _TabPlaceholderScreen(title: 'Products'),
+                path: AppRoutes.learn,
+                name: 'learn',
+                builder: (context, state) => const LearnScreen(),
               ),
             ],
           ),
-          // 3. Modules Tab
+          // Tab 2: Library
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppRoutes.modules,
-                builder: (context, state) => const _TabPlaceholderScreen(title: 'Learning Modules'),
+                path: AppRoutes.library,
+                name: 'library',
+                builder: (context, state) => const LibraryScreen(),
               ),
             ],
           ),
-          // 4. Schedule Tab
+          // Tab 3: Challenges
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppRoutes.schedule,
-                builder: (context, state) => const _TabPlaceholderScreen(title: 'Doctor Visits Schedule'),
+                path: AppRoutes.challenges,
+                name: 'challenges',
+                builder: (context, state) => const ChallengesScreen(),
               ),
             ],
           ),
-          // 5. Profile Tab
+          // Tab 4: Feedback
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppRoutes.profile,
-                builder: (context, state) => const AppInfoScreen(),
+                path: AppRoutes.feedback,
+                name: 'feedback',
+                builder: (context, state) => const FeedbackScreen(),
               ),
             ],
           ),
@@ -113,18 +209,3 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
-
-class _TabPlaceholderScreen extends StatelessWidget {
-  final String title;
-  const _TabPlaceholderScreen({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleMedium,
-      ),
-    );
-  }
-}

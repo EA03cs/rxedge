@@ -81,6 +81,21 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navProfile => 'الحساب';
 
   @override
+  String get tabHome => 'الرئيسية';
+
+  @override
+  String get tabLearn => 'التعلم';
+
+  @override
+  String get tabLibrary => 'المكتبة';
+
+  @override
+  String get tabChallenges => 'التحديات';
+
+  @override
+  String get tabFeedback => 'الملاحظات';
+
+  @override
   String get statusCompleted => 'معتمد';
 
   @override
@@ -160,4 +175,108 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get inputError => 'اسم الطبيب مطلوب';
+
+  @override
+  String get onboardingTitle1 => 'تعرف على كافة المنتجات الطبية';
+
+  @override
+  String get onboardingDesc1 =>
+      'ملخصات إكلينيكية موجزة وإرشادات الجرعات والدراسات السريرية بين الزيارات.';
+
+  @override
+  String get onboardingTitle2 => 'اعثر على أي مادة علمية في ثوانٍ';
+
+  @override
+  String get onboardingDesc2 =>
+      'استحضر عروض التفصيل المعتمدة وملخصات الدراسات فوراً دون البحث في البريد الإلكتروني.';
+
+  @override
+  String get onboardingTitle3 => 'انقل لفريق التسويق نبض الميدان';
+
+  @override
+  String get onboardingDesc3 =>
+      'شارك آراء الأطباء وملاحظاتهم مباشرة للمساهمة في صياغة حملات الإطلاق القادمة.';
+
+  @override
+  String get skip => 'تخطي';
+
+  @override
+  String get next => 'التالي';
+
+  @override
+  String get getStarted => 'ابدأ الآن';
+
+  @override
+  String get loginTitle => 'تسجيل الدخول إلى RxEdge';
+
+  @override
+  String get loginSubtitle => 'الوصول إلى أدوات العرض العلمي والمراجع المعتمدة';
+
+  @override
+  String get usernameLabel => 'البريد الإلكتروني للعمل أو الرقم الوظيفي';
+
+  @override
+  String get usernameHint => 'rep@pharma.com أو MR-1049';
+
+  @override
+  String get passwordLabel => 'كلمة المرور';
+
+  @override
+  String get passwordHint => 'أدخل كلمة المرور المؤسسية';
+
+  @override
+  String get signIn => 'تسجيل الدخول';
+
+  @override
+  String get companyAccountNote => 'يتم توفير الحسابات من خلال الشركة';
+
+  @override
+  String get forgotPassword => 'نسيت كلمة المرور؟';
+
+  @override
+  String get usernameRequired =>
+      'البريد الإلكتروني للعمل أو الرقم الوظيفي مطلوب';
+
+  @override
+  String get passwordRequired => 'كلمة المرور مطلوبة';
+
+  @override
+  String get invalidCredentials =>
+      'اسم المستخدم أو كلمة المرور غير صحيحة. يرجى التحقق والمحاولة مجدداً.';
+
+  @override
+  String get keepMeSignedIn => 'البقاء قيد تسجيل الدخول';
+
+  @override
+  String get biometricPromptTitle => 'تفعيل القفل الحيوي السريع؟';
+
+  @override
+  String get biometricPromptDesc =>
+      'فتح تطبيق RxEdge فوراً بين زيارات العيادات باستخدام البصمة أو التعرف على الوجه.';
+
+  @override
+  String get enableBiometrics => 'تفعيل البصمة';
+
+  @override
+  String get maybeLater => 'ربما لاحقاً';
+
+  @override
+  String get forgotPasswordTitle => 'هل تحتاج مساعدة في كلمة المرور؟';
+
+  @override
+  String get forgotPasswordInstructions =>
+      'تتم إدارة حسابات RxEdge مركزياً عبر مزود الهوية المؤسسي. لإعادة تعيين بيانات الاعتماد، يرجى التواصل مع مدير التسويق الميداني أو دعم تكنولوجيا المعلومات.';
+
+  @override
+  String get contactMarketing => 'التواصل مع الدعم الفني والتسويق';
+
+  @override
+  String get supportEmail => 'support@rxedge.internal';
+
+  @override
+  String get backToLogin => 'العودة لتسجيل الدخول';
+
+  @override
+  String get sessionExpiredNotice =>
+      'انتهت صلاحية جلستك. يرجى تسجيل الدخول مجدداً للمتابعة.';
 }

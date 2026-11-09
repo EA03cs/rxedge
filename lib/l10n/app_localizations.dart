@@ -236,6 +236,36 @@ abstract class AppLocalizations {
   /// **'Profile'**
   String get navProfile;
 
+  /// No description provided for @tabHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get tabHome;
+
+  /// No description provided for @tabLearn.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn'**
+  String get tabLearn;
+
+  /// No description provided for @tabLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Library'**
+  String get tabLibrary;
+
+  /// No description provided for @tabChallenges.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenges'**
+  String get tabChallenges;
+
+  /// No description provided for @tabFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback'**
+  String get tabFeedback;
+
   /// No description provided for @statusCompleted.
   ///
   /// In en, this message translates to:
@@ -397,6 +427,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Physician name is required'**
   String get inputError;
+
+  /// No description provided for @onboardingTitle1.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn every product'**
+  String get onboardingTitle1;
+
+  /// No description provided for @onboardingDesc1.
+  ///
+  /// In en, this message translates to:
+  /// **'Access concise clinical monographs, dosing guides, and efficacy trials between doctor visits.'**
+  String get onboardingDesc1;
+
+  /// No description provided for @onboardingTitle2.
+  ///
+  /// In en, this message translates to:
+  /// **'Find any material in seconds'**
+  String get onboardingTitle2;
+
+  /// No description provided for @onboardingDesc2.
+  ///
+  /// In en, this message translates to:
+  /// **'Pull up approved detailing decks and study summaries without searching through email threads.'**
+  String get onboardingDesc2;
+
+  /// No description provided for @onboardingTitle3.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell marketing what you see in the field'**
+  String get onboardingTitle3;
+
+  /// No description provided for @onboardingDesc3.
+  ///
+  /// In en, this message translates to:
+  /// **'Share doctor feedback and physician objections directly to shape upcoming launch campaigns.'**
+  String get onboardingDesc3;
+
+  /// No description provided for @skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @getStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get started'**
+  String get getStarted;
+
+  /// No description provided for @loginTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to RxEdge'**
+  String get loginTitle;
+
+  /// No description provided for @loginSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Access your approved clinical detailing tools'**
+  String get loginSubtitle;
+
+  /// No description provided for @usernameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Work Email or Employee ID'**
+  String get usernameLabel;
+
+  /// No description provided for @usernameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'rep@pharma.com or MR-1049'**
+  String get usernameHint;
+
+  /// No description provided for @passwordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get passwordLabel;
+
+  /// No description provided for @passwordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter corporate password'**
+  String get passwordHint;
+
+  /// No description provided for @signIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get signIn;
+
+  /// No description provided for @companyAccountNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Accounts are provided by your company'**
+  String get companyAccountNote;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get forgotPassword;
+
+  /// No description provided for @usernameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Work Email or Employee ID is required'**
+  String get usernameRequired;
+
+  /// No description provided for @passwordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get passwordRequired;
+
+  /// No description provided for @invalidCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid username or password. Please verify and try again.'**
+  String get invalidCredentials;
+
+  /// No description provided for @keepMeSignedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep me signed in'**
+  String get keepMeSignedIn;
+
+  /// No description provided for @biometricPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Biometric Unlock?'**
+  String get biometricPromptTitle;
+
+  /// No description provided for @biometricPromptDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock RxEdge instantly between clinic visits using your fingerprint or Face ID.'**
+  String get biometricPromptDesc;
+
+  /// No description provided for @enableBiometrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Biometrics'**
+  String get enableBiometrics;
+
+  /// No description provided for @maybeLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe later'**
+  String get maybeLater;
+
+  /// No description provided for @forgotPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Need Password Assistance?'**
+  String get forgotPasswordTitle;
+
+  /// No description provided for @forgotPasswordInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'RxEdge accounts are managed centrally by your enterprise identity provider. To reset your credentials, please reach out to your Field Marketing or Commercial IT administrator.'**
+  String get forgotPasswordInstructions;
+
+  /// No description provided for @contactMarketing.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Marketing & IT Support'**
+  String get contactMarketing;
+
+  /// No description provided for @supportEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'support@rxedge.internal'**
+  String get supportEmail;
+
+  /// No description provided for @backToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Sign In'**
+  String get backToLogin;
+
+  /// No description provided for @sessionExpiredNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Please sign in again to continue.'**
+  String get sessionExpiredNotice;
 }
 
 class _AppLocalizationsDelegate
