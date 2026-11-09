@@ -599,4 +599,115 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inProgressTag => 'In Progress';
+
+  @override
+  String get challengesTitle => 'Field Challenges';
+
+  @override
+  String get tabMonthlyChallenge => 'Monthly Challenge';
+
+  @override
+  String get tabQuickQuizzes => 'Quick Quizzes';
+
+  @override
+  String get tabObjection => 'Objection of Month';
+
+  @override
+  String get btnHistory => 'History';
+
+  @override
+  String get historyTitle => 'Challenges & Quiz History';
+
+  @override
+  String get pastChallenges => 'Past Challenges';
+
+  @override
+  String get quizResultsHistory => 'Quiz Results';
+
+  @override
+  String get leaderboardTitle => 'Territory Leaderboard';
+
+  @override
+  String get pinnedMyRank => 'My Rank';
+
+  @override
+  String get rulesTitle => 'Challenge Rules';
+
+  @override
+  String get rewardsTitle => 'Achievement Rewards';
+
+  @override
+  String get myProgressTitle => 'My Challenge Progress';
+
+  @override
+  String get btnStartQuiz => 'Start Quiz';
+
+  @override
+  String get btnNextQuestion => 'Next Question';
+
+  @override
+  String get btnFinishQuiz => 'Finish Quiz';
+
+  @override
+  String quizQuestionProgress(int current, int total) {
+    return 'Question $current of $total';
+  }
+
+  @override
+  String get quizScoreTitle => 'Quiz Completed';
+
+  @override
+  String get btnReviewMistakes => 'Review Mistakes';
+
+  @override
+  String get btnRetryQuiz => 'Retry';
+
+  @override
+  String get btnBackToLearning => 'Back to Challenges';
+
+  @override
+  String get highScoreBadge => 'Clinical Mastery Achieved';
+
+  @override
+  String get thinkFirstTitle => 'Think First';
+
+  @override
+  String get thinkFirstPrompt =>
+      'How would you address this objection in the clinic before revealing the clinical recommendation?';
+
+  @override
+  String get btnRevealResponse => 'Reveal Recommended Response';
+
+  @override
+  String get wasThisHelpful => 'Was this response helpful?';
+
+  @override
+  String get btnHelpfulYes => 'Helpful';
+
+  @override
+  String get btnHelpfulNo => 'Needs Work';
+
+  @override
+  String get btnShareOwnResponse => 'Share Your Response';
+
+  @override
+  String get shareResponseTitle => 'Submit Field Objection Response';
+
+  @override
+  String get shareResponseHint =>
+      'Write the exact phrasing that resonated with doctors in your territory...';
+
+  @override
+  String get btnSubmitResponse => 'Submit Response';
+
+  @override
+  String get responseSubmitted =>
+      'Your response has been shared with medical affairs';
+
+  @override
+  String get emptyHistoryTitle => 'No History Recorded';
+
+  @override
+  String get emptyHistoryDesc =>
+      'Completed challenges and quizzes will appear here.';
 }

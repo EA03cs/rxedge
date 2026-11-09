@@ -601,4 +601,114 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get inProgressTag => 'قيد التقدم';
+
+  @override
+  String get challengesTitle => 'تحديات الميدان';
+
+  @override
+  String get tabMonthlyChallenge => 'تحدي الشهر';
+
+  @override
+  String get tabQuickQuizzes => 'اختبارات سريعة';
+
+  @override
+  String get tabObjection => 'اعتراض الشهر';
+
+  @override
+  String get btnHistory => 'السجل';
+
+  @override
+  String get historyTitle => 'سجل التحديات والاختبارات';
+
+  @override
+  String get pastChallenges => 'التحديات السابقة';
+
+  @override
+  String get quizResultsHistory => 'نتائج الاختبارات';
+
+  @override
+  String get leaderboardTitle => 'لوحة صدارة المنطقة';
+
+  @override
+  String get pinnedMyRank => 'ترتيبي الحالي';
+
+  @override
+  String get rulesTitle => 'قواعد وشروط التحدي';
+
+  @override
+  String get rewardsTitle => 'مكافآت الإنجاز';
+
+  @override
+  String get myProgressTitle => 'تقدمي في التحدي';
+
+  @override
+  String get btnStartQuiz => 'ابدأ الاختبار';
+
+  @override
+  String get btnNextQuestion => 'السؤال التالي';
+
+  @override
+  String get btnFinishQuiz => 'إنهاء الاختبار';
+
+  @override
+  String quizQuestionProgress(int current, int total) {
+    return 'السؤال $current من $total';
+  }
+
+  @override
+  String get quizScoreTitle => 'اكتمل الاختبار';
+
+  @override
+  String get btnReviewMistakes => 'مراجعة الأخطاء';
+
+  @override
+  String get btnRetryQuiz => 'إعادة المحاولة';
+
+  @override
+  String get btnBackToLearning => 'العودة للتحديات';
+
+  @override
+  String get highScoreBadge => 'إتقان سريري متميز';
+
+  @override
+  String get thinkFirstTitle => 'فكر أولاً';
+
+  @override
+  String get thinkFirstPrompt =>
+      'كيف سترد على هذا الاعتراض في عيادة الطبيب قبل الاطلاع على التوصية السريرية؟';
+
+  @override
+  String get btnRevealResponse => 'إظهار الرد الموصى به';
+
+  @override
+  String get wasThisHelpful => 'هل كان هذا الرد مفيداً؟';
+
+  @override
+  String get btnHelpfulYes => 'مفيد';
+
+  @override
+  String get btnHelpfulNo => 'يحتاج تحسين';
+
+  @override
+  String get btnShareOwnResponse => 'شارك ردك الميداني';
+
+  @override
+  String get shareResponseTitle => 'إرسال رد ميداني على الاعتراض';
+
+  @override
+  String get shareResponseHint =>
+      'اكتب الصياغة الدقيقة التي أقنعت الأطباء في منطقتك...';
+
+  @override
+  String get btnSubmitResponse => 'إرسال الرد';
+
+  @override
+  String get responseSubmitted => 'تم إرسال ردك إلى الفريق العلمي والمكتبي';
+
+  @override
+  String get emptyHistoryTitle => 'لا يوجد سجل حتى الآن';
+
+  @override
+  String get emptyHistoryDesc =>
+      'ستظهر هنا التحديات والاختبارات التي تم إكمالها.';
 }

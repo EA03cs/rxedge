@@ -1177,6 +1177,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'In Progress'**
   String get inProgressTag;
+
+  /// No description provided for @challengesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Field Challenges'**
+  String get challengesTitle;
+
+  /// No description provided for @tabMonthlyChallenge.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Challenge'**
+  String get tabMonthlyChallenge;
+
+  /// No description provided for @tabQuickQuizzes.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Quizzes'**
+  String get tabQuickQuizzes;
+
+  /// No description provided for @tabObjection.
+  ///
+  /// In en, this message translates to:
+  /// **'Objection of Month'**
+  String get tabObjection;
+
+  /// No description provided for @btnHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get btnHistory;
+
+  /// No description provided for @historyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenges & Quiz History'**
+  String get historyTitle;
+
+  /// No description provided for @pastChallenges.
+  ///
+  /// In en, this message translates to:
+  /// **'Past Challenges'**
+  String get pastChallenges;
+
+  /// No description provided for @quizResultsHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiz Results'**
+  String get quizResultsHistory;
+
+  /// No description provided for @leaderboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Territory Leaderboard'**
+  String get leaderboardTitle;
+
+  /// No description provided for @pinnedMyRank.
+  ///
+  /// In en, this message translates to:
+  /// **'My Rank'**
+  String get pinnedMyRank;
+
+  /// No description provided for @rulesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenge Rules'**
+  String get rulesTitle;
+
+  /// No description provided for @rewardsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Achievement Rewards'**
+  String get rewardsTitle;
+
+  /// No description provided for @myProgressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Challenge Progress'**
+  String get myProgressTitle;
+
+  /// No description provided for @btnStartQuiz.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Quiz'**
+  String get btnStartQuiz;
+
+  /// No description provided for @btnNextQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Question'**
+  String get btnNextQuestion;
+
+  /// No description provided for @btnFinishQuiz.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish Quiz'**
+  String get btnFinishQuiz;
+
+  /// No description provided for @quizQuestionProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Question {current} of {total}'**
+  String quizQuestionProgress(int current, int total);
+
+  /// No description provided for @quizScoreTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiz Completed'**
+  String get quizScoreTitle;
+
+  /// No description provided for @btnReviewMistakes.
+  ///
+  /// In en, this message translates to:
+  /// **'Review Mistakes'**
+  String get btnReviewMistakes;
+
+  /// No description provided for @btnRetryQuiz.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get btnRetryQuiz;
+
+  /// No description provided for @btnBackToLearning.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Challenges'**
+  String get btnBackToLearning;
+
+  /// No description provided for @highScoreBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical Mastery Achieved'**
+  String get highScoreBadge;
+
+  /// No description provided for @thinkFirstTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Think First'**
+  String get thinkFirstTitle;
+
+  /// No description provided for @thinkFirstPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'How would you address this objection in the clinic before revealing the clinical recommendation?'**
+  String get thinkFirstPrompt;
+
+  /// No description provided for @btnRevealResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Reveal Recommended Response'**
+  String get btnRevealResponse;
+
+  /// No description provided for @wasThisHelpful.
+  ///
+  /// In en, this message translates to:
+  /// **'Was this response helpful?'**
+  String get wasThisHelpful;
+
+  /// No description provided for @btnHelpfulYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Helpful'**
+  String get btnHelpfulYes;
+
+  /// No description provided for @btnHelpfulNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs Work'**
+  String get btnHelpfulNo;
+
+  /// No description provided for @btnShareOwnResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Your Response'**
+  String get btnShareOwnResponse;
+
+  /// No description provided for @shareResponseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Field Objection Response'**
+  String get shareResponseTitle;
+
+  /// No description provided for @shareResponseHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write the exact phrasing that resonated with doctors in your territory...'**
+  String get shareResponseHint;
+
+  /// No description provided for @btnSubmitResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Response'**
+  String get btnSubmitResponse;
+
+  /// No description provided for @responseSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your response has been shared with medical affairs'**
+  String get responseSubmitted;
+
+  /// No description provided for @emptyHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No History Recorded'**
+  String get emptyHistoryTitle;
+
+  /// No description provided for @emptyHistoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed challenges and quizzes will appear here.'**
+  String get emptyHistoryDesc;
 }
 
 class _AppLocalizationsDelegate
