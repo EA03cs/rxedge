@@ -1525,6 +1525,324 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Marketing has received your submission and is reviewing it.'**
   String get noReplyYet;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile & Settings'**
+  String get profileTitle;
+
+  /// No description provided for @repDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Representative Details'**
+  String get repDetails;
+
+  /// No description provided for @territoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Territory'**
+  String get territoryLabel;
+
+  /// No description provided for @employeeIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee ID'**
+  String get employeeIdLabel;
+
+  /// No description provided for @pointsAndBadges.
+  ///
+  /// In en, this message translates to:
+  /// **'Points & Achievements'**
+  String get pointsAndBadges;
+
+  /// No description provided for @streakDaysLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} Days Streak'**
+  String streakDaysLabel(int days);
+
+  /// No description provided for @settingsGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General Settings'**
+  String get settingsGeneral;
+
+  /// No description provided for @languagePreference.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get languagePreference;
+
+  /// No description provided for @themePreference.
+  ///
+  /// In en, this message translates to:
+  /// **'App Theme'**
+  String get themePreference;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System Default'**
+  String get themeSystem;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light Theme'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Theme'**
+  String get themeDark;
+
+  /// No description provided for @notificationPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Preferences'**
+  String get notificationPreferences;
+
+  /// No description provided for @prefNewMaterials.
+  ///
+  /// In en, this message translates to:
+  /// **'New Marketing Materials'**
+  String get prefNewMaterials;
+
+  /// No description provided for @prefChallenges.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Challenges'**
+  String get prefChallenges;
+
+  /// No description provided for @prefFeedbackReplies.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketing Responses'**
+  String get prefFeedbackReplies;
+
+  /// No description provided for @prefQuizReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiz Deadlines'**
+  String get prefQuizReminders;
+
+  /// No description provided for @storageAndDownloads.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage & Downloads'**
+  String get storageAndDownloads;
+
+  /// No description provided for @offlineStorageUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} Cached Offline'**
+  String offlineStorageUsed(String size);
+
+  /// No description provided for @btnClearDownloads.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Cached Downloads'**
+  String get btnClearDownloads;
+
+  /// No description provided for @clearDownloadsConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove all offline downloaded materials? You can re-download them anytime.'**
+  String get clearDownloadsConfirm;
+
+  /// No description provided for @downloadsClearedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline downloads cleared'**
+  String get downloadsClearedToast;
+
+  /// No description provided for @changePasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Company Credentials'**
+  String get changePasswordTitle;
+
+  /// No description provided for @changePasswordDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Your employee account credentials are authenticated and managed by corporate IT & Commercial Operations. To change or reset your password, contact marketing support.'**
+  String get changePasswordDesc;
+
+  /// No description provided for @contactMarketingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Marketing Support'**
+  String get contactMarketingTitle;
+
+  /// No description provided for @contactMarketingEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'marketing@rxedgepharma.com'**
+  String get contactMarketingEmail;
+
+  /// No description provided for @contactMarketingPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'+20 2 2795 4000'**
+  String get contactMarketingPhone;
+
+  /// No description provided for @logoutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get logoutTitle;
+
+  /// No description provided for @logoutConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to sign out? You will need your employee credentials to sign back in.'**
+  String get logoutConfirm;
+
+  /// No description provided for @appVersionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'RxEdge v1.0.0 (Build 24) • Clean Architecture'**
+  String get appVersionLabel;
+
+  /// No description provided for @notificationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationsTitle;
+
+  /// No description provided for @btnMarkAllRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as read'**
+  String get btnMarkAllRead;
+
+  /// No description provided for @emptyNotificationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All Caught Up'**
+  String get emptyNotificationsTitle;
+
+  /// No description provided for @emptyNotificationsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You have reviewed all clinical updates, quiz deadlines, and marketing messages.'**
+  String get emptyNotificationsDesc;
+
+  /// No description provided for @globalSearchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Everything'**
+  String get globalSearchTitle;
+
+  /// No description provided for @globalSearchPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search lessons, library materials, doctor objections...'**
+  String get globalSearchPlaceholder;
+
+  /// No description provided for @recentSearchesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Searches'**
+  String get recentSearchesTitle;
+
+  /// No description provided for @btnClearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get btnClearAll;
+
+  /// No description provided for @groupLessons.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical Lessons & Monographs'**
+  String get groupLessons;
+
+  /// No description provided for @groupLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Library Files & Visual Aids'**
+  String get groupLibrary;
+
+  /// No description provided for @groupObjections.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor Objections & Talking Points'**
+  String get groupObjections;
+
+  /// No description provided for @searchNoResultsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No results for \"{query}\"'**
+  String searchNoResultsTitle(String query);
+
+  /// No description provided for @searchNoResultsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Try fewer words, check product spelling, or search by therapeutic area (e.g. Cardura XL, AtorvaCare).'**
+  String get searchNoResultsDesc;
+
+  /// No description provided for @offlineBannerConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Back online — synced with marketing'**
+  String get offlineBannerConnected;
+
+  /// No description provided for @coachMarkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to RxEdge'**
+  String get coachMarkTitle;
+
+  /// No description provided for @coachMarkSlide1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Instant Detailing Review'**
+  String get coachMarkSlide1Title;
+
+  /// No description provided for @coachMarkSlide1Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Review approved clinical monographs, dosing schedules, and talking points in 30 seconds before your visit.'**
+  String get coachMarkSlide1Desc;
+
+  /// No description provided for @coachMarkSlide2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Reliable Offline Library'**
+  String get coachMarkSlide2Title;
+
+  /// No description provided for @coachMarkSlide2Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Download brochures and e-detail slides to present seamlessly in hospital clinics with zero mobile signal.'**
+  String get coachMarkSlide2Desc;
+
+  /// No description provided for @coachMarkSlide3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct Voice to Marketing'**
+  String get coachMarkSlide3Title;
+
+  /// No description provided for @coachMarkSlide3Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Log physician pushback and competitor claims from the field directly to medical affairs directors.'**
+  String get coachMarkSlide3Desc;
+
+  /// No description provided for @btnGotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got It'**
+  String get btnGotIt;
+
+  /// No description provided for @btnSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get btnSkip;
 }
 
 class _AppLocalizationsDelegate

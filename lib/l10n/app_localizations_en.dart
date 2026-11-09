@@ -785,4 +785,178 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get noReplyYet =>
       'Marketing has received your submission and is reviewing it.';
+
+  @override
+  String get profileTitle => 'Profile & Settings';
+
+  @override
+  String get repDetails => 'Representative Details';
+
+  @override
+  String get territoryLabel => 'Territory';
+
+  @override
+  String get employeeIdLabel => 'Employee ID';
+
+  @override
+  String get pointsAndBadges => 'Points & Achievements';
+
+  @override
+  String streakDaysLabel(int days) {
+    return '$days Days Streak';
+  }
+
+  @override
+  String get settingsGeneral => 'General Settings';
+
+  @override
+  String get languagePreference => 'Language';
+
+  @override
+  String get themePreference => 'App Theme';
+
+  @override
+  String get themeSystem => 'System Default';
+
+  @override
+  String get themeLight => 'Light Theme';
+
+  @override
+  String get themeDark => 'Dark Theme';
+
+  @override
+  String get notificationPreferences => 'Notification Preferences';
+
+  @override
+  String get prefNewMaterials => 'New Marketing Materials';
+
+  @override
+  String get prefChallenges => 'Monthly Challenges';
+
+  @override
+  String get prefFeedbackReplies => 'Marketing Responses';
+
+  @override
+  String get prefQuizReminders => 'Quiz Deadlines';
+
+  @override
+  String get storageAndDownloads => 'Storage & Downloads';
+
+  @override
+  String offlineStorageUsed(String size) {
+    return '$size Cached Offline';
+  }
+
+  @override
+  String get btnClearDownloads => 'Clear Cached Downloads';
+
+  @override
+  String get clearDownloadsConfirm =>
+      'Are you sure you want to remove all offline downloaded materials? You can re-download them anytime.';
+
+  @override
+  String get downloadsClearedToast => 'Offline downloads cleared';
+
+  @override
+  String get changePasswordTitle => 'Company Credentials';
+
+  @override
+  String get changePasswordDesc =>
+      'Your employee account credentials are authenticated and managed by corporate IT & Commercial Operations. To change or reset your password, contact marketing support.';
+
+  @override
+  String get contactMarketingTitle => 'Contact Marketing Support';
+
+  @override
+  String get contactMarketingEmail => 'marketing@rxedgepharma.com';
+
+  @override
+  String get contactMarketingPhone => '+20 2 2795 4000';
+
+  @override
+  String get logoutTitle => 'Sign Out';
+
+  @override
+  String get logoutConfirm =>
+      'Are you sure you want to sign out? You will need your employee credentials to sign back in.';
+
+  @override
+  String get appVersionLabel => 'RxEdge v1.0.0 (Build 24) • Clean Architecture';
+
+  @override
+  String get notificationsTitle => 'Notifications';
+
+  @override
+  String get btnMarkAllRead => 'Mark all as read';
+
+  @override
+  String get emptyNotificationsTitle => 'All Caught Up';
+
+  @override
+  String get emptyNotificationsDesc =>
+      'You have reviewed all clinical updates, quiz deadlines, and marketing messages.';
+
+  @override
+  String get globalSearchTitle => 'Search Everything';
+
+  @override
+  String get globalSearchPlaceholder =>
+      'Search lessons, library materials, doctor objections...';
+
+  @override
+  String get recentSearchesTitle => 'Recent Searches';
+
+  @override
+  String get btnClearAll => 'Clear all';
+
+  @override
+  String get groupLessons => 'Clinical Lessons & Monographs';
+
+  @override
+  String get groupLibrary => 'Library Files & Visual Aids';
+
+  @override
+  String get groupObjections => 'Doctor Objections & Talking Points';
+
+  @override
+  String searchNoResultsTitle(String query) {
+    return 'No results for \"$query\"';
+  }
+
+  @override
+  String get searchNoResultsDesc =>
+      'Try fewer words, check product spelling, or search by therapeutic area (e.g. Cardura XL, AtorvaCare).';
+
+  @override
+  String get offlineBannerConnected => 'Back online — synced with marketing';
+
+  @override
+  String get coachMarkTitle => 'Welcome to RxEdge';
+
+  @override
+  String get coachMarkSlide1Title => 'Instant Detailing Review';
+
+  @override
+  String get coachMarkSlide1Desc =>
+      'Review approved clinical monographs, dosing schedules, and talking points in 30 seconds before your visit.';
+
+  @override
+  String get coachMarkSlide2Title => 'Reliable Offline Library';
+
+  @override
+  String get coachMarkSlide2Desc =>
+      'Download brochures and e-detail slides to present seamlessly in hospital clinics with zero mobile signal.';
+
+  @override
+  String get coachMarkSlide3Title => 'Direct Voice to Marketing';
+
+  @override
+  String get coachMarkSlide3Desc =>
+      'Log physician pushback and competitor claims from the field directly to medical affairs directors.';
+
+  @override
+  String get btnGotIt => 'Got It';
+
+  @override
+  String get btnSkip => 'Skip';
 }

@@ -323,5 +323,73 @@
   "statusSeen": "Seen by Marketing",
   "statusAnswered": "Answered",
   "marketingReply": "Marketing & Medical Reply",
-  "noReplyYet": "Marketing has received your submission and is reviewing it."
+  "noReplyYet": "Marketing has received your submission and is reviewing it.",
+  "profileTitle": "Profile & Settings",
+  "repDetails": "Representative Details",
+  "territoryLabel": "Territory",
+  "employeeIdLabel": "Employee ID",
+  "pointsAndBadges": "Points & Achievements",
+  "streakDaysLabel": "{days} Days Streak",
+  "@streakDaysLabel": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "settingsGeneral": "General Settings",
+  "languagePreference": "Language",
+  "themePreference": "App Theme",
+  "themeSystem": "System Default",
+  "themeLight": "Light Theme",
+  "themeDark": "Dark Theme",
+  "notificationPreferences": "Notification Preferences",
+  "prefNewMaterials": "New Marketing Materials",
+  "prefChallenges": "Monthly Challenges",
+  "prefFeedbackReplies": "Marketing Responses",
+  "prefQuizReminders": "Quiz Deadlines",
+  "storageAndDownloads": "Storage & Downloads",
+  "offlineStorageUsed": "{size} Cached Offline",
+  "@offlineStorageUsed": {
+    "placeholders": {
+      "size": { "type": "String" }
+    }
+  },
+  "btnClearDownloads": "Clear Cached Downloads",
+  "clearDownloadsConfirm": "Are you sure you want to remove all offline downloaded materials? You can re-download them anytime.",
+  "downloadsClearedToast": "Offline downloads cleared",
+  "changePasswordTitle": "Company Credentials",
+  "changePasswordDesc": "Your employee account credentials are authenticated and managed by corporate IT & Commercial Operations. To change or reset your password, contact marketing support.",
+  "contactMarketingTitle": "Contact Marketing Support",
+  "contactMarketingEmail": "marketing@rxedgepharma.com",
+  "contactMarketingPhone": "+20 2 2795 4000",
+  "logoutTitle": "Sign Out",
+  "logoutConfirm": "Are you sure you want to sign out? You will need your employee credentials to sign back in.",
+  "appVersionLabel": "RxEdge v1.0.0 (Build 24) • Clean Architecture",
+  "notificationsTitle": "Notifications",
+  "btnMarkAllRead": "Mark all as read",
+  "emptyNotificationsTitle": "All Caught Up",
+  "emptyNotificationsDesc": "You have reviewed all clinical updates, quiz deadlines, and marketing messages.",
+  "globalSearchTitle": "Search Everything",
+  "globalSearchPlaceholder": "Search lessons, library materials, doctor objections...",
+  "recentSearchesTitle": "Recent Searches",
+  "btnClearAll": "Clear all",
+  "groupLessons": "Clinical Lessons & Monographs",
+  "groupLibrary": "Library Files & Visual Aids",
+  "groupObjections": "Doctor Objections & Talking Points",
+  "searchNoResultsTitle": "No results for \"{query}\"",
+  "@searchNoResultsTitle": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "searchNoResultsDesc": "Try fewer words, check product spelling, or search by therapeutic area (e.g. Cardura XL, AtorvaCare).",
+  "offlineBannerConnected": "Back online — synced with marketing",
+  "coachMarkTitle": "Welcome to RxEdge",
+  "coachMarkSlide1Title": "Instant Detailing Review",
+  "coachMarkSlide1Desc": "Review approved clinical monographs, dosing schedules, and talking points in 30 seconds before your visit.",
+  "coachMarkSlide2Title": "Reliable Offline Library",
+  "coachMarkSlide2Desc": "Download brochures and e-detail slides to present seamlessly in hospital clinics with zero mobile signal.",
+  "coachMarkSlide3Title": "Direct Voice to Marketing",
+  "coachMarkSlide3Desc": "Log physician pushback and competitor claims from the field directly to medical affairs directors.",
+  "btnGotIt": "Got It",
+  "btnSkip": "Skip"
 }

@@ -15,6 +15,9 @@ import '../../features/feedback/presentation/screens/feedback_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/learn/presentation/screens/learn_screen.dart';
 import '../../features/library/presentation/screens/library_screen.dart';
+import '../../features/notifications/presentation/screens/notifications_screen.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/search/presentation/screens/search_screen.dart';
 import '../l10n/l10n.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -32,6 +35,11 @@ abstract final class AppRoutes {
   static const String library = '/library';
   static const String challenges = '/challenges';
   static const String feedback = '/feedback';
+
+  // Overlays & Secondary Screens
+  static const String profile = '/profile';
+  static const String notifications = '/notifications';
+  static const String search = '/search';
 
   // System & Design System
   static const String showcase = '/showcase';
@@ -131,12 +139,29 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const AppInfoScreen(),
       ),
 
+      // Secondary Feature Screens
+      GoRoute(
+        path: AppRoutes.profile,
+        name: 'profile',
+        builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.notifications,
+        name: 'notifications',
+        builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.search,
+        name: 'search',
+        builder: (context, state) => const SearchScreen(),
+      ),
+
       // 6. 5-Tab StatefulShellRoute (Home, Learn, Library, Challenges, Feedback)
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           final l10n = context.l10n;
           return AppScaffold(
-            body: navigationShell,
+            body: ConnectivityBanner(child: navigationShell),
             bottomNavigationBar: AppBottomNav(
               currentIndex: navigationShell.currentIndex,
               onTap: (index) => navigationShell.goBranch(

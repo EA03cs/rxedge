@@ -42,6 +42,10 @@ class HomeScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final dashboardAsync = ref.watch(homeControllerProvider);
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      CoachMarksSheet.showIfFirstUse(context, ref);
+    });
+
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(

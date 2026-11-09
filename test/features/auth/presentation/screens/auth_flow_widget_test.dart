@@ -106,8 +106,8 @@ void main() {
 
     testWidgets('HomeScreen renders MR dashboard', (WidgetTester tester) async {
       await tester.pumpWidget(buildTestableWidget(const HomeScreen()));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.byType(HomeScreen), findsOneWidget);
       expect(find.text('Search drug monographs, guidelines...'), findsOneWidget);

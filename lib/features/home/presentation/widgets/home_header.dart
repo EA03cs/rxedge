@@ -6,6 +6,7 @@ import '../../../../app/l10n/l10n.dart';
 import '../../../../app/router/app_router.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
+import '../../../notifications/presentation/controllers/notifications_controller.dart';
 
 /// Top Header of the Home Screen
 ///
@@ -63,7 +64,7 @@ class HomeHeader extends ConsumerWidget {
             button: true,
             label: 'Profile for $displayName',
             child: InkWell(
-              onTap: () => context.push(AppRoutes.appInfo),
+              onTap: () => context.push(AppRoutes.profile),
               borderRadius: BorderRadius.circular(RxSpacing.s20),
               child: Container(
                 width: 40.0,
@@ -121,50 +122,45 @@ class HomeHeader extends ConsumerWidget {
           ),
 
           // 3. Notification Bell with unread dot
-          Semantics(
-            button: true,
-            label: 'Notifications',
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                IconButton(
-                  icon: Icon(
-                    LucideIcons.bell,
-                    size: 20.0,
-                    color: colors.textPrimary,
-                  ),
-                  tooltip: 'Notifications',
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'No new urgent regulatory updates.',
-                          style: TextStyle(color: colors.surface),
-                        ),
-                        duration: const Duration(seconds: 2),
-                        backgroundColor: colors.textPrimary,
+          Consumer(
+            builder: (context, ref, _) {
+              final unreadCount = ref.watch(unreadNotificationsCountProvider);
+              return Semantics(
+                button: true,
+                label: 'Notifications',
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        LucideIcons.bell,
+                        size: 20.0,
+                        color: colors.textPrimary,
                       ),
-                    );
-                  },
-                ),
-                PositionedDirectional(
-                  top: 10.0,
-                  end: 10.0,
-                  child: Container(
-                    width: 7.0,
-                    height: 7.0,
-                    decoration: BoxDecoration(
-                      color: colors.primary,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: colors.surface,
-                        width: 1.5,
-                      ),
+                      tooltip: 'Notifications',
+                      onPressed: () => context.push(AppRoutes.notifications),
                     ),
-                  ),
+                    if (unreadCount > 0)
+                      PositionedDirectional(
+                        top: 10.0,
+                        end: 10.0,
+                        child: Container(
+                          width: 7.0,
+                          height: 7.0,
+                          decoration: BoxDecoration(
+                            color: colors.primary,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: colors.surface,
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            },
           ),
         ],
       ),

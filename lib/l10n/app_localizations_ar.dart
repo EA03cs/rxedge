@@ -786,4 +786,178 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noReplyYet => 'استلم فريق التسويق ملاحظتك وجاري مراجعتها.';
+
+  @override
+  String get profileTitle => 'الملف الشخصي والإعدادات';
+
+  @override
+  String get repDetails => 'بيانات المندوب';
+
+  @override
+  String get territoryLabel => 'المنطقة الترويجية';
+
+  @override
+  String get employeeIdLabel => 'الرقم الوظيفي';
+
+  @override
+  String get pointsAndBadges => 'النقاط والإنجازات';
+
+  @override
+  String streakDaysLabel(int days) {
+    return '$days أيام متتالية';
+  }
+
+  @override
+  String get settingsGeneral => 'الإعدادات العامة';
+
+  @override
+  String get languagePreference => 'لغة التطبيق';
+
+  @override
+  String get themePreference => 'مظهر التطبيق';
+
+  @override
+  String get themeSystem => 'حسب النظام';
+
+  @override
+  String get themeLight => 'الوضع الفاتح';
+
+  @override
+  String get themeDark => 'الوضع الداكن';
+
+  @override
+  String get notificationPreferences => 'تفضيلات الإشعارات';
+
+  @override
+  String get prefNewMaterials => 'المواد التسويقية الجديدة';
+
+  @override
+  String get prefChallenges => 'التحديات الشهرية';
+
+  @override
+  String get prefFeedbackReplies => 'ردود الفريق العلمي';
+
+  @override
+  String get prefQuizReminders => 'مواعيد الاختبارات السريعة';
+
+  @override
+  String get storageAndDownloads => 'المساحة التخزينية والتحميلات';
+
+  @override
+  String offlineStorageUsed(String size) {
+    return '$size محمل للاستخدام بدون إنترنت';
+  }
+
+  @override
+  String get btnClearDownloads => 'مسح المواد المحملة';
+
+  @override
+  String get clearDownloadsConfirm =>
+      'هل أنت متأكد من رغبتك في مسح كافة المواد المحملة محلياً؟ يمكنك إعادة تحميلها في أي وقت.';
+
+  @override
+  String get downloadsClearedToast => 'تم مسح الملفات المحملة بنجاح';
+
+  @override
+  String get changePasswordTitle => 'بيانات الدخول للشركة';
+
+  @override
+  String get changePasswordDesc =>
+      'حسابك الوظيفي مدار وموثق من قبل إدارة تقنية المعلومات والعمليات التجارية. لتغيير كلمة المرور، يرجى التواصل مع الدعم الفني.';
+
+  @override
+  String get contactMarketingTitle => 'التواصل مع إدارة التسويق';
+
+  @override
+  String get contactMarketingEmail => 'marketing@rxedgepharma.com';
+
+  @override
+  String get contactMarketingPhone => '+20 2 2795 4000';
+
+  @override
+  String get logoutTitle => 'تسجيل الخروج';
+
+  @override
+  String get logoutConfirm =>
+      'هل أنت متأكد من تسجيل الخروج؟ ستحتاج لبياناتك الوظيفية لتسجيل الدخول مجدداً.';
+
+  @override
+  String get appVersionLabel => 'RxEdge v1.0.0 (Build 24) • Clean Architecture';
+
+  @override
+  String get notificationsTitle => 'الإشعارات والتنبيهات';
+
+  @override
+  String get btnMarkAllRead => 'تحديد الكل كمقروء';
+
+  @override
+  String get emptyNotificationsTitle => 'لا توجد إشعارات جديدة';
+
+  @override
+  String get emptyNotificationsDesc =>
+      'أنت مطلع على كافة التحديثات السريرية، مواعيد الاختبارات، والردود التسويقية.';
+
+  @override
+  String get globalSearchTitle => 'البحث الشامل';
+
+  @override
+  String get globalSearchPlaceholder =>
+      'ابحث في الدروس، مكتبة المواد، واعتراضات الأطباء...';
+
+  @override
+  String get recentSearchesTitle => 'عمليات البحث الأخيرة';
+
+  @override
+  String get btnClearAll => 'مسح الكل';
+
+  @override
+  String get groupLessons => 'الدروس السريرية والجرعات';
+
+  @override
+  String get groupLibrary => 'ملفات المكتبة والعروض المرئية';
+
+  @override
+  String get groupObjections => 'اعتراضات الأطباء ونقاط الحوار';
+
+  @override
+  String searchNoResultsTitle(String query) {
+    return 'لا توجد نتائج لـ \"$query\"';
+  }
+
+  @override
+  String get searchNoResultsDesc =>
+      'جرب كلمات أقل، أو تأكد من اسم المنتج، أو ابحث بالمجال العلاجي (مثل Cardura XL أو AtorvaCare).';
+
+  @override
+  String get offlineBannerConnected => 'تم الاتصال — تمت المزامنة مع التسويق';
+
+  @override
+  String get coachMarkTitle => 'مرحباً بك في RxEdge';
+
+  @override
+  String get coachMarkSlide1Title => 'مراجعة علمية سريعة';
+
+  @override
+  String get coachMarkSlide1Desc =>
+      'راجع الدليل السريري المعتمد ونقاط الإقناع والجرعات في 30 ثانية قبل دخول العيادة.';
+
+  @override
+  String get coachMarkSlide2Title => 'مكتبة مضمونة دون إنترنت';
+
+  @override
+  String get coachMarkSlide2Desc =>
+      'حمّل البروشورات والعروض الترويجية واستعرضها بثقة حتى في أقسام المستشفيات السفلية.';
+
+  @override
+  String get coachMarkSlide3Title => 'صوتك المباشر للتسويق';
+
+  @override
+  String get coachMarkSlide3Desc =>
+      'سجّل اعتراضات الأطباء وادعاءات المنافسين من الميدان لتصل فوراً لمديري التسويق الطبي.';
+
+  @override
+  String get btnGotIt => 'فهمت ذلك';
+
+  @override
+  String get btnSkip => 'تخطي';
 }

@@ -31,7 +31,7 @@ class HomeSearchBar extends StatelessWidget {
           borderRadius: RxRadii.borderInput,
           child: InkWell(
             borderRadius: RxRadii.borderInput,
-            onTap: () => context.go(AppRoutes.library),
+            onTap: () => context.push(AppRoutes.search),
             child: Container(
               height: RxSpacing.s48,
               padding: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),

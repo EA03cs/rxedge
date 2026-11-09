@@ -1,0 +1,10 @@
+import '../../../../core/utils/result.dart';
+import '../entities/profile_entities.dart';
+
+/// Profile Repository Contract
+abstract class ProfileRepository {
+  Future<Result<UserProfileEntity>> getProfile();
+  Future<Result<void>> updateNotificationPreferences(NotificationPreferencesEntity preferences);
+  Future<Result<void>> clearCachedDownloads();
+  Future<Result<int>> getStorageUsage();
+}
