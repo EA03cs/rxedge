@@ -4,11 +4,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:rxedge/app.dart';
 import 'package:rxedge/core/components/components.dart';
+import 'package:rxedge/core/config/flavor_config.dart';
 import 'package:rxedge/core/localization/app_locale_provider.dart';
 import 'package:rxedge/core/theme/theme.dart';
 import 'package:rxedge/l10n/app_localizations.dart';
 
 void main() {
+  setUpAll(() {
+    FlavorConfig.initialize(
+      flavor: AppFlavor.dev,
+      appName: 'RxEdge (Test)',
+      apiBaseUrl: 'https://api-dev.rxedge.internal/v1',
+    );
+  });
   group('App Bootstrap & Showcase Screen Tests', () {
     testWidgets('RxEdge boots with Riverpod and displays Showcase', (WidgetTester tester) async {
       await tester.pumpWidget(

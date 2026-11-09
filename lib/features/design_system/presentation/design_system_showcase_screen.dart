@@ -208,7 +208,7 @@ class _DesignSystemShowcaseScreenState extends ConsumerState<DesignSystemShowcas
             const SizedBox(height: RxSpacing.s32),
 
             // 9. Skeletons
-            SectionHeader(
+            const SectionHeader(
               title: 'Loading Skeletons',
               subtitle: 'Subtle calm opacity pulse for zero layout shifts during offline cache fetch',
             ),
@@ -443,7 +443,7 @@ class _DesignSystemShowcaseScreenState extends ConsumerState<DesignSystemShowcas
               onPressed: () {},
             ),
             const SizedBox(width: RxSpacing.s8),
-            AppButton(
+            const AppButton(
               text: 'Disabled',
               size: AppButtonSize.small,
               isFullWidth: false,
@@ -500,7 +500,7 @@ class _DesignSystemShowcaseScreenState extends ConsumerState<DesignSystemShowcas
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   StatusBadge(
@@ -508,7 +508,7 @@ class _DesignSystemShowcaseScreenState extends ConsumerState<DesignSystemShowcas
                     variant: StatusBadgeVariant.info,
                     icon: LucideIcons.clock,
                   ),
-                  const StatusBadge(
+                  StatusBadge(
                     label: 'Cardiology',
                     variant: StatusBadgeVariant.neutral,
                   ),

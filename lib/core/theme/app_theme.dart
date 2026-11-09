@@ -73,9 +73,9 @@ abstract final class RxTheme {
         color: colors.surface,
         elevation: 0,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: RxRadii.borderCard,
-          side: const BorderSide(
+          side: BorderSide(
             color: Color(0xFFE7E9EE),
             width: 1.0,
           ),
@@ -101,9 +101,9 @@ abstract final class RxTheme {
         labelStyle: textTheme.bodyMedium?.copyWith(
           color: colors.textSecondary,
         ),
-        enabledBorder: OutlineInputBorder(
+        enabledBorder: const OutlineInputBorder(
           borderRadius: RxRadii.borderInput,
-          borderSide: const BorderSide(color: Color(0xFFE7E9EE), width: 1.0),
+          borderSide: BorderSide(color: Color(0xFFE7E9EE), width: 1.0),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: RxRadii.borderInput,
@@ -195,9 +195,9 @@ abstract final class RxTheme {
         color: colors.surface,
         elevation: 0,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: RxRadii.borderCard,
-          side: const BorderSide(
+          side: BorderSide(
             color: Color(0xFF243040),
             width: 1.0,
           ),
@@ -223,9 +223,9 @@ abstract final class RxTheme {
         labelStyle: textTheme.bodyMedium?.copyWith(
           color: colors.textSecondary,
         ),
-        enabledBorder: OutlineInputBorder(
+        enabledBorder: const OutlineInputBorder(
           borderRadius: RxRadii.borderInput,
-          borderSide: const BorderSide(color: Color(0xFF243040), width: 1.0),
+          borderSide: BorderSide(color: Color(0xFF243040), width: 1.0),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: RxRadii.borderInput,

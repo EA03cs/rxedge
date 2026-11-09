@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'app.dart';
+import 'app/app.dart';
+import 'core/config/flavor_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Set system navigation and status bar style
+  // Default to dev flavor when running `flutter run` directly
+  FlavorConfig.initialize(
+    flavor: AppFlavor.dev,
+    appName: 'RxEdge (Dev)',
+    apiBaseUrl: 'https://api-dev.rxedge.internal/v1',
+    enableLogging: true,
+  );
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
