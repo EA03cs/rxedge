@@ -275,7 +275,7 @@ abstract class AppLocalizations {
   /// No description provided for @statusPending.
   ///
   /// In en, this message translates to:
-  /// **'In Review'**
+  /// **'Pending'**
   String get statusPending;
 
   /// No description provided for @statusDraft.
@@ -1387,6 +1387,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Completed challenges and quizzes will appear here.'**
   String get emptyHistoryDesc;
+
+  /// No description provided for @feedbackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketing Feedback'**
+  String get feedbackTitle;
+
+  /// No description provided for @feedbackSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share real clinic insights directly with medical affairs'**
+  String get feedbackSubtitle;
+
+  /// No description provided for @typeDoctorObjection.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor Objection'**
+  String get typeDoctorObjection;
+
+  /// No description provided for @descDoctorObjection.
+  ///
+  /// In en, this message translates to:
+  /// **'Real questions, skepticism, or pushback heard in clinic visits.'**
+  String get descDoctorObjection;
+
+  /// No description provided for @typeCompetitorClaim.
+  ///
+  /// In en, this message translates to:
+  /// **'Competitor Claim'**
+  String get typeCompetitorClaim;
+
+  /// No description provided for @descCompetitorClaim.
+  ///
+  /// In en, this message translates to:
+  /// **'Aggressive promotion or unverified clinical claims heard in territory.'**
+  String get descCompetitorClaim;
+
+  /// No description provided for @typeFieldFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Field Feedback'**
+  String get typeFieldFeedback;
+
+  /// No description provided for @descFieldFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Material requests, sample shortages, or commercial campaign ideas.'**
+  String get descFieldFeedback;
+
+  /// No description provided for @mySubmissions.
+  ///
+  /// In en, this message translates to:
+  /// **'My Submissions'**
+  String get mySubmissions;
+
+  /// No description provided for @emptySubmissionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Feedback Submitted Yet'**
+  String get emptySubmissionsTitle;
+
+  /// No description provided for @emptySubmissionsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Submissions shape upcoming detailing materials and clinical rebuttal decks.'**
+  String get emptySubmissionsDesc;
+
+  /// No description provided for @btnSendFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Feedback'**
+  String get btnSendFeedback;
+
+  /// No description provided for @draftRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft restored'**
+  String get draftRestored;
+
+  /// No description provided for @fieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get fieldRequired;
+
+  /// No description provided for @feedbackSentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent. Your marketing team will see this.'**
+  String get feedbackSentTitle;
+
+  /// No description provided for @feedbackQueuedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Will send when you\'re back online'**
+  String get feedbackQueuedTitle;
+
+  /// No description provided for @btnSendAnother.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Another Feedback'**
+  String get btnSendAnother;
+
+  /// No description provided for @btnBackHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Feedback'**
+  String get btnBackHome;
+
+  /// No description provided for @statusSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get statusSent;
+
+  /// No description provided for @statusSeen.
+  ///
+  /// In en, this message translates to:
+  /// **'Seen by Marketing'**
+  String get statusSeen;
+
+  /// No description provided for @statusAnswered.
+  ///
+  /// In en, this message translates to:
+  /// **'Answered'**
+  String get statusAnswered;
+
+  /// No description provided for @marketingReply.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketing & Medical Reply'**
+  String get marketingReply;
+
+  /// No description provided for @noReplyYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketing has received your submission and is reviewing it.'**
+  String get noReplyYet;
 }
 
 class _AppLocalizationsDelegate

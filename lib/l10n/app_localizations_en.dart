@@ -100,7 +100,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusCompleted => 'Approved';
 
   @override
-  String get statusPending => 'In Review';
+  String get statusPending => 'Pending';
 
   @override
   String get statusDraft => 'Draft';
@@ -710,4 +710,79 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get emptyHistoryDesc =>
       'Completed challenges and quizzes will appear here.';
+
+  @override
+  String get feedbackTitle => 'Marketing Feedback';
+
+  @override
+  String get feedbackSubtitle =>
+      'Share real clinic insights directly with medical affairs';
+
+  @override
+  String get typeDoctorObjection => 'Doctor Objection';
+
+  @override
+  String get descDoctorObjection =>
+      'Real questions, skepticism, or pushback heard in clinic visits.';
+
+  @override
+  String get typeCompetitorClaim => 'Competitor Claim';
+
+  @override
+  String get descCompetitorClaim =>
+      'Aggressive promotion or unverified clinical claims heard in territory.';
+
+  @override
+  String get typeFieldFeedback => 'Field Feedback';
+
+  @override
+  String get descFieldFeedback =>
+      'Material requests, sample shortages, or commercial campaign ideas.';
+
+  @override
+  String get mySubmissions => 'My Submissions';
+
+  @override
+  String get emptySubmissionsTitle => 'No Feedback Submitted Yet';
+
+  @override
+  String get emptySubmissionsDesc =>
+      'Submissions shape upcoming detailing materials and clinical rebuttal decks.';
+
+  @override
+  String get btnSendFeedback => 'Send Feedback';
+
+  @override
+  String get draftRestored => 'Draft restored';
+
+  @override
+  String get fieldRequired => 'This field is required';
+
+  @override
+  String get feedbackSentTitle => 'Sent. Your marketing team will see this.';
+
+  @override
+  String get feedbackQueuedTitle => 'Will send when you\'re back online';
+
+  @override
+  String get btnSendAnother => 'Send Another Feedback';
+
+  @override
+  String get btnBackHome => 'Back to Feedback';
+
+  @override
+  String get statusSent => 'Sent';
+
+  @override
+  String get statusSeen => 'Seen by Marketing';
+
+  @override
+  String get statusAnswered => 'Answered';
+
+  @override
+  String get marketingReply => 'Marketing & Medical Reply';
+
+  @override
+  String get noReplyYet =>
+      'Marketing has received your submission and is reviewing it.';
 }

@@ -99,7 +99,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get statusCompleted => 'معتمد';
 
   @override
-  String get statusPending => 'قيد المراجعة';
+  String get statusPending => 'قيد الانتظار';
 
   @override
   String get statusDraft => 'مسودة';
@@ -711,4 +711,79 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get emptyHistoryDesc =>
       'ستظهر هنا التحديات والاختبارات التي تم إكمالها.';
+
+  @override
+  String get feedbackTitle => 'ملاحظات التسويق الميداني';
+
+  @override
+  String get feedbackSubtitle =>
+      'شارك ملاحظات العيادات الميدانية مباشرة مع الفريق العلمي والتسويقي';
+
+  @override
+  String get typeDoctorObjection => 'اعتراض الطبيب';
+
+  @override
+  String get descDoctorObjection =>
+      'أسئلة وتشكيكات واعتراضات حقيقية من الأطباء أثناء الزيارات.';
+
+  @override
+  String get typeCompetitorClaim => 'ادعاء المنافسين';
+
+  @override
+  String get descCompetitorClaim =>
+      'ترويج هجومي أو ادعاءات سريرية غير موثقة سمعتها في منطقتك.';
+
+  @override
+  String get typeFieldFeedback => 'ملاحظات الميدان';
+
+  @override
+  String get descFieldFeedback =>
+      'طلبات بروشورات، نقص عينات، أو أفكار لتطوير الحملات.';
+
+  @override
+  String get mySubmissions => 'مشاركاتي السابقة';
+
+  @override
+  String get emptySubmissionsTitle => 'لم ترسل أية ملاحظات بعد';
+
+  @override
+  String get emptySubmissionsDesc =>
+      'تساعد ملاحظاتك الميدانية في تطوير العروض الترويجية والردود السريرية.';
+
+  @override
+  String get btnSendFeedback => 'إرسال الملاحظات';
+
+  @override
+  String get draftRestored => 'تم استرجاع المسودة';
+
+  @override
+  String get fieldRequired => 'هذا الحقل مطلوب';
+
+  @override
+  String get feedbackSentTitle => 'تم الإرسال. سيطلع فريق التسويق على ملاحظتك.';
+
+  @override
+  String get feedbackQueuedTitle =>
+      'سيتم الإرسال فور استعادة الاتصال بالإنترنت';
+
+  @override
+  String get btnSendAnother => 'إرسال ملاحظة أخرى';
+
+  @override
+  String get btnBackHome => 'العودة لقائمة الملاحظات';
+
+  @override
+  String get statusSent => 'تم الإرسال';
+
+  @override
+  String get statusSeen => 'تم الاطلاع';
+
+  @override
+  String get statusAnswered => 'تم الرد';
+
+  @override
+  String get marketingReply => 'رد الفريق العلمي والتسويقي';
+
+  @override
+  String get noReplyYet => 'استلم فريق التسويق ملاحظتك وجاري مراجعتها.';
 }
