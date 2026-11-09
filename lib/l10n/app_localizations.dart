@@ -781,6 +781,246 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Completed'**
   String get statQuizzesLabel;
+
+  /// No description provided for @libraryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource Library'**
+  String get libraryTitle;
+
+  /// No description provided for @librarySearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search materials, monographs, trials...'**
+  String get librarySearchHint;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @filterBrochures.
+  ///
+  /// In en, this message translates to:
+  /// **'Brochures'**
+  String get filterBrochures;
+
+  /// No description provided for @filterVisualAids.
+  ///
+  /// In en, this message translates to:
+  /// **'Visual Aids'**
+  String get filterVisualAids;
+
+  /// No description provided for @filterEDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'E-Detail'**
+  String get filterEDetail;
+
+  /// No description provided for @filterMarketing.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketing Materials'**
+  String get filterMarketing;
+
+  /// No description provided for @filterAllProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'All Products'**
+  String get filterAllProducts;
+
+  /// No description provided for @sortNewest.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest'**
+  String get sortNewest;
+
+  /// No description provided for @sortMostUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Most used'**
+  String get sortMostUsed;
+
+  /// No description provided for @sortAlphabetical.
+  ///
+  /// In en, this message translates to:
+  /// **'A to Z'**
+  String get sortAlphabetical;
+
+  /// No description provided for @shortcutFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get shortcutFavorites;
+
+  /// No description provided for @shortcutDownloaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded'**
+  String get shortcutDownloaded;
+
+  /// No description provided for @viewGrid.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid view'**
+  String get viewGrid;
+
+  /// No description provided for @viewList.
+  ///
+  /// In en, this message translates to:
+  /// **'List view'**
+  String get viewList;
+
+  /// No description provided for @actionFavorite.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite'**
+  String get actionFavorite;
+
+  /// No description provided for @actionUnfavorite.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from favorites'**
+  String get actionUnfavorite;
+
+  /// No description provided for @actionDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get actionDownload;
+
+  /// No description provided for @actionDownloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading {progress}%'**
+  String actionDownloading(int progress);
+
+  /// No description provided for @actionCancelDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel download'**
+  String get actionCancelDownload;
+
+  /// No description provided for @actionRemoveDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove download'**
+  String get actionRemoveDownload;
+
+  /// No description provided for @actionShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get actionShare;
+
+  /// No description provided for @actionOpenFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Open file'**
+  String get actionOpenFile;
+
+  /// No description provided for @offlineAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline available'**
+  String get offlineAvailable;
+
+  /// No description provided for @requiresDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires download to view offline'**
+  String get requiresDownload;
+
+  /// No description provided for @emptySearchResultsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No results for \"{query}\"'**
+  String emptySearchResultsTitle(String query);
+
+  /// No description provided for @emptySearchResultsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Try fewer words or clear active filters.'**
+  String get emptySearchResultsDesc;
+
+  /// No description provided for @emptyFavoritesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No favorites saved yet'**
+  String get emptyFavoritesTitle;
+
+  /// No description provided for @emptyFavoritesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the bookmark icon on any clinical material to access it instantly here.'**
+  String get emptyFavoritesDesc;
+
+  /// No description provided for @emptyDownloadsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No materials downloaded'**
+  String get emptyDownloadsTitle;
+
+  /// No description provided for @emptyDownloadsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Download clinical decks and monographs to present to physicians without cell coverage.'**
+  String get emptyDownloadsDesc;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all filters'**
+  String get clearFilters;
+
+  /// No description provided for @pageIndicator.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {current} of {total}'**
+  String pageIndicator(int current, int total);
+
+  /// No description provided for @slideIndicator.
+  ///
+  /// In en, this message translates to:
+  /// **'Slide {current} of {total}'**
+  String slideIndicator(int current, int total);
+
+  /// No description provided for @zoomIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom in'**
+  String get zoomIn;
+
+  /// No description provided for @zoomOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom out'**
+  String get zoomOut;
+
+  /// No description provided for @resetZoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset zoom'**
+  String get resetZoom;
+
+  /// No description provided for @detailingKeyPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor Detailing Key Points'**
+  String get detailingKeyPoints;
+
+  /// No description provided for @hideChromeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap screen to toggle controls'**
+  String get hideChromeHint;
+
+  /// No description provided for @materialsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 approved material} other{{count} approved materials}}'**
+  String materialsCount(int count);
 }
 
 class _AppLocalizationsDelegate

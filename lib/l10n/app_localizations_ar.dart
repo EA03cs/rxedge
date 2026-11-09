@@ -378,4 +378,146 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get statQuizzesLabel => 'المكتمل';
+
+  @override
+  String get libraryTitle => 'مكتبة المواد العلمية';
+
+  @override
+  String get librarySearchHint => 'ابحث في الدراسات والكتيبات والملفات...';
+
+  @override
+  String get filterAll => 'الكل';
+
+  @override
+  String get filterBrochures => 'كتيبات';
+
+  @override
+  String get filterVisualAids => 'وسائل بصرية';
+
+  @override
+  String get filterEDetail => 'عروض إلكترونية';
+
+  @override
+  String get filterMarketing => 'مواد تسويقية';
+
+  @override
+  String get filterAllProducts => 'جميع المنتجات';
+
+  @override
+  String get sortNewest => 'الأحدث';
+
+  @override
+  String get sortMostUsed => 'الأكثر استخداماً';
+
+  @override
+  String get sortAlphabetical => 'أبجدياً';
+
+  @override
+  String get shortcutFavorites => 'المفضلة';
+
+  @override
+  String get shortcutDownloaded => 'المحملة';
+
+  @override
+  String get viewGrid => 'عرض شبكي';
+
+  @override
+  String get viewList => 'عرض قائمة';
+
+  @override
+  String get actionFavorite => 'إضافة للمفضلة';
+
+  @override
+  String get actionUnfavorite => 'إزالة من المفضلة';
+
+  @override
+  String get actionDownload => 'تحميل';
+
+  @override
+  String actionDownloading(int progress) {
+    return 'جارِ التحميل $progress%';
+  }
+
+  @override
+  String get actionCancelDownload => 'إلغاء التحميل';
+
+  @override
+  String get actionRemoveDownload => 'حذف الملف المحمل';
+
+  @override
+  String get actionShare => 'مشاركة';
+
+  @override
+  String get actionOpenFile => 'فتح الملف';
+
+  @override
+  String get offlineAvailable => 'متاح بدون اتصال';
+
+  @override
+  String get requiresDownload => 'يتطلب التحميل للفتح دون اتصال';
+
+  @override
+  String emptySearchResultsTitle(String query) {
+    return 'لا توجد نتائج لـ \"$query\"';
+  }
+
+  @override
+  String get emptySearchResultsDesc =>
+      'جرّب كلمات أقل أو أزل عوامل التصفية النشطة.';
+
+  @override
+  String get emptyFavoritesTitle => 'لا توجد عناصر مفضلة بعد';
+
+  @override
+  String get emptyFavoritesDesc =>
+      'اضغط على أيقونة الحفظ لأي مادة علمية للوصول إليها بسرعة هنا.';
+
+  @override
+  String get emptyDownloadsTitle => 'لم يتم تحميل أي مواد';
+
+  @override
+  String get emptyDownloadsDesc =>
+      'قم بتحميل العروض والكتيبات لعرضها على الأطباء حتى بدون تغطية خلوية.';
+
+  @override
+  String get clearFilters => 'مسح جميع الفلاتر';
+
+  @override
+  String pageIndicator(int current, int total) {
+    return 'صفحة $current من $total';
+  }
+
+  @override
+  String slideIndicator(int current, int total) {
+    return 'شريحة $current من $total';
+  }
+
+  @override
+  String get zoomIn => 'تكبير';
+
+  @override
+  String get zoomOut => 'تصغير';
+
+  @override
+  String get resetZoom => 'إعادة ضبط التكبير';
+
+  @override
+  String get detailingKeyPoints => 'نقاط الحوار الإكلينيكي الأساسية';
+
+  @override
+  String get hideChromeHint => 'المس الشاشة لإخفاء أو إظهار عناصر التحكم';
+
+  @override
+  String materialsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count مادة معتمدة',
+      many: '$count مادة معتمدة',
+      few: '$count مواد معتمدة',
+      two: 'مادتان معتمدتان',
+      one: 'مادة علمية واحدة',
+    );
+    return '$_temp0';
+  }
 }

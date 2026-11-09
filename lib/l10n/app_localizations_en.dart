@@ -378,4 +378,143 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statQuizzesLabel => 'Completed';
+
+  @override
+  String get libraryTitle => 'Resource Library';
+
+  @override
+  String get librarySearchHint => 'Search materials, monographs, trials...';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get filterBrochures => 'Brochures';
+
+  @override
+  String get filterVisualAids => 'Visual Aids';
+
+  @override
+  String get filterEDetail => 'E-Detail';
+
+  @override
+  String get filterMarketing => 'Marketing Materials';
+
+  @override
+  String get filterAllProducts => 'All Products';
+
+  @override
+  String get sortNewest => 'Newest';
+
+  @override
+  String get sortMostUsed => 'Most used';
+
+  @override
+  String get sortAlphabetical => 'A to Z';
+
+  @override
+  String get shortcutFavorites => 'Favorites';
+
+  @override
+  String get shortcutDownloaded => 'Downloaded';
+
+  @override
+  String get viewGrid => 'Grid view';
+
+  @override
+  String get viewList => 'List view';
+
+  @override
+  String get actionFavorite => 'Favorite';
+
+  @override
+  String get actionUnfavorite => 'Remove from favorites';
+
+  @override
+  String get actionDownload => 'Download';
+
+  @override
+  String actionDownloading(int progress) {
+    return 'Downloading $progress%';
+  }
+
+  @override
+  String get actionCancelDownload => 'Cancel download';
+
+  @override
+  String get actionRemoveDownload => 'Remove download';
+
+  @override
+  String get actionShare => 'Share';
+
+  @override
+  String get actionOpenFile => 'Open file';
+
+  @override
+  String get offlineAvailable => 'Offline available';
+
+  @override
+  String get requiresDownload => 'Requires download to view offline';
+
+  @override
+  String emptySearchResultsTitle(String query) {
+    return 'No results for \"$query\"';
+  }
+
+  @override
+  String get emptySearchResultsDesc =>
+      'Try fewer words or clear active filters.';
+
+  @override
+  String get emptyFavoritesTitle => 'No favorites saved yet';
+
+  @override
+  String get emptyFavoritesDesc =>
+      'Tap the bookmark icon on any clinical material to access it instantly here.';
+
+  @override
+  String get emptyDownloadsTitle => 'No materials downloaded';
+
+  @override
+  String get emptyDownloadsDesc =>
+      'Download clinical decks and monographs to present to physicians without cell coverage.';
+
+  @override
+  String get clearFilters => 'Clear all filters';
+
+  @override
+  String pageIndicator(int current, int total) {
+    return 'Page $current of $total';
+  }
+
+  @override
+  String slideIndicator(int current, int total) {
+    return 'Slide $current of $total';
+  }
+
+  @override
+  String get zoomIn => 'Zoom in';
+
+  @override
+  String get zoomOut => 'Zoom out';
+
+  @override
+  String get resetZoom => 'Reset zoom';
+
+  @override
+  String get detailingKeyPoints => 'Doctor Detailing Key Points';
+
+  @override
+  String get hideChromeHint => 'Tap screen to toggle controls';
+
+  @override
+  String materialsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count approved materials',
+      one: '1 approved material',
+    );
+    return '$_temp0';
+  }
 }

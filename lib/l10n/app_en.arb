@@ -159,5 +159,72 @@
   },
   "statPointsLabel": "Points",
   "statStreakLabel": "Streak",
-  "statQuizzesLabel": "Completed"
+  "statQuizzesLabel": "Completed",
+  "libraryTitle": "Resource Library",
+  "librarySearchHint": "Search materials, monographs, trials...",
+  "filterAll": "All",
+  "filterBrochures": "Brochures",
+  "filterVisualAids": "Visual Aids",
+  "filterEDetail": "E-Detail",
+  "filterMarketing": "Marketing Materials",
+  "filterAllProducts": "All Products",
+  "sortNewest": "Newest",
+  "sortMostUsed": "Most used",
+  "sortAlphabetical": "A to Z",
+  "shortcutFavorites": "Favorites",
+  "shortcutDownloaded": "Downloaded",
+  "viewGrid": "Grid view",
+  "viewList": "List view",
+  "actionFavorite": "Favorite",
+  "actionUnfavorite": "Remove from favorites",
+  "actionDownload": "Download",
+  "actionDownloading": "Downloading {progress}%",
+  "@actionDownloading": {
+    "placeholders": {
+      "progress": { "type": "int" }
+    }
+  },
+  "actionCancelDownload": "Cancel download",
+  "actionRemoveDownload": "Remove download",
+  "actionShare": "Share",
+  "actionOpenFile": "Open file",
+  "offlineAvailable": "Offline available",
+  "requiresDownload": "Requires download to view offline",
+  "emptySearchResultsTitle": "No results for \"{query}\"",
+  "@emptySearchResultsTitle": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "emptySearchResultsDesc": "Try fewer words or clear active filters.",
+  "emptyFavoritesTitle": "No favorites saved yet",
+  "emptyFavoritesDesc": "Tap the bookmark icon on any clinical material to access it instantly here.",
+  "emptyDownloadsTitle": "No materials downloaded",
+  "emptyDownloadsDesc": "Download clinical decks and monographs to present to physicians without cell coverage.",
+  "clearFilters": "Clear all filters",
+  "pageIndicator": "Page {current} of {total}",
+  "@pageIndicator": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "slideIndicator": "Slide {current} of {total}",
+  "@slideIndicator": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "zoomIn": "Zoom in",
+  "zoomOut": "Zoom out",
+  "resetZoom": "Reset zoom",
+  "detailingKeyPoints": "Doctor Detailing Key Points",
+  "hideChromeHint": "Tap screen to toggle controls",
+  "materialsCount": "{count, plural, =1{1 approved material} other{{count} approved materials}}",
+  "@materialsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }
