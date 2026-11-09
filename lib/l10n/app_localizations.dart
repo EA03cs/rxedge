@@ -619,6 +619,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your session has expired. Please sign in again to continue.'**
   String get sessionExpiredNotice;
+
+  /// No description provided for @greetingMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning, {name}'**
+  String greetingMorning(String name);
+
+  /// No description provided for @greetingAfternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Good afternoon, {name}'**
+  String greetingAfternoon(String name);
+
+  /// No description provided for @greetingEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Good evening, {name}'**
+  String greetingEvening(String name);
+
+  /// No description provided for @searchHintHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Search drug monographs, guidelines...'**
+  String get searchHintHome;
+
+  /// No description provided for @continueLearningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue Learning'**
+  String get continueLearningTitle;
+
+  /// No description provided for @btnContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get btnContinue;
+
+  /// No description provided for @btnStartLesson.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Lesson'**
+  String get btnStartLesson;
+
+  /// No description provided for @noLessonStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with {productName}'**
+  String noLessonStarted(String productName);
+
+  /// No description provided for @recommendedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended for your territory'**
+  String get recommendedLabel;
+
+  /// No description provided for @monthlyChallengeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This Month\'s Challenge'**
+  String get monthlyChallengeTitle;
+
+  /// No description provided for @daysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days left'**
+  String daysLeft(int days);
+
+  /// No description provided for @rankInDistrict.
+  ///
+  /// In en, this message translates to:
+  /// **'Rank #{rank} of {total} in District'**
+  String rankInDistrict(int rank, int total);
+
+  /// No description provided for @objectionOfTheMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Objection of the Month'**
+  String get objectionOfTheMonth;
+
+  /// No description provided for @seeHowToRespond.
+  ///
+  /// In en, this message translates to:
+  /// **'See how to respond'**
+  String get seeHowToRespond;
+
+  /// No description provided for @quickActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Actions'**
+  String get quickActions;
+
+  /// No description provided for @quickActionQuiz.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick quiz'**
+  String get quickActionQuiz;
+
+  /// No description provided for @quickActionFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Send feedback'**
+  String get quickActionFeedback;
+
+  /// No description provided for @quickActionLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Search library'**
+  String get quickActionLibrary;
+
+  /// No description provided for @whatsNew.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s New'**
+  String get whatsNew;
+
+  /// No description provided for @badgeNew.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW'**
+  String get badgeNew;
+
+  /// No description provided for @badgeUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'UPDATED'**
+  String get badgeUpdated;
+
+  /// No description provided for @statPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'{points} Pts'**
+  String statPoints(int points);
+
+  /// No description provided for @statStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}-Day Streak'**
+  String statStreak(int days);
+
+  /// No description provided for @statQuizzes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Quizzes'**
+  String statQuizzes(int count);
+
+  /// No description provided for @statPointsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Points'**
+  String get statPointsLabel;
+
+  /// No description provided for @statStreakLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak'**
+  String get statStreakLabel;
+
+  /// No description provided for @statQuizzesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get statQuizzesLabel;
 }
 
 class _AppLocalizationsDelegate

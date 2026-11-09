@@ -86,5 +86,78 @@
   "contactMarketing": "التواصل مع الدعم الفني والتسويق",
   "supportEmail": "support@rxedge.internal",
   "backToLogin": "العودة لتسجيل الدخول",
-  "sessionExpiredNotice": "انتهت صلاحية جلستك. يرجى تسجيل الدخول مجدداً للمتابعة."
+  "sessionExpiredNotice": "انتهت صلاحية جلستك. يرجى تسجيل الدخول مجدداً للمتابعة.",
+  "greetingMorning": "صباح الخير، {name}",
+  "@greetingMorning": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "greetingAfternoon": "مساء الخير، {name}",
+  "@greetingAfternoon": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "greetingEvening": "مساء الخير، {name}",
+  "@greetingEvening": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "searchHintHome": "ابحث في الدراسات والكتيبات الطبية...",
+  "continueLearningTitle": "متابعة التدريب",
+  "btnContinue": "متابعة",
+  "btnStartLesson": "بدء الوحدة",
+  "noLessonStarted": "ابدأ مع {productName}",
+  "@noLessonStarted": {
+    "placeholders": {
+      "productName": { "type": "String" }
+    }
+  },
+  "recommendedLabel": "موصى به لمنطقتك الميدانية",
+  "monthlyChallengeTitle": "تحدي هذا الشهر",
+  "daysLeft": "متبقي {days} أيام",
+  "@daysLeft": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "rankInDistrict": "الترتيب #{rank} من أصل {total} بالمنطقة",
+  "@rankInDistrict": {
+    "placeholders": {
+      "rank": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "objectionOfTheMonth": "اعتراض الطبيب الشهري",
+  "seeHowToRespond": "شاهد أسلوب الإقناع والرد",
+  "quickActions": "إجراءات سريعة",
+  "quickActionQuiz": "اختبار سريع",
+  "quickActionFeedback": "إرسال ملاحظات",
+  "quickActionLibrary": "استعراض المكتبة",
+  "whatsNew": "جديد المواد العلمية",
+  "badgeNew": "جديد",
+  "badgeUpdated": "محدّث",
+  "statPoints": "{points} نقطة",
+  "@statPoints": {
+    "placeholders": {
+      "points": { "type": "int" }
+    }
+  },
+  "statStreak": "{days} أيام متتالية",
+  "@statStreak": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "statQuizzes": "{count} اختبارات",
+  "@statQuizzes": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "statPointsLabel": "النقاط",
+  "statStreakLabel": "التتابع",
+  "statQuizzesLabel": "المكتمل"
 }

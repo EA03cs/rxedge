@@ -1,95 +1,113 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
-import '../../../auth/presentation/controllers/auth_controller.dart';
+import '../controllers/home_controller.dart';
+import '../widgets/continue_learning_card.dart';
+import '../widgets/home_header.dart';
+import '../widgets/home_search_bar.dart';
+import '../widgets/home_skeleton_loader.dart';
+import '../widgets/monthly_challenge_card.dart';
+import '../widgets/objection_quote_card.dart';
+import '../widgets/quick_actions_row.dart';
+import '../widgets/slim_stats_strip.dart';
+import '../widgets/whats_new_section.dart';
 
+/// Home Tab Screen
+///
+/// Goal: In 3 seconds the MR knows what to do today.
+///
+/// Layout (Top to bottom, white background, generous spacing):
+/// 1. Header: greeting + first name, avatar (opens Profile), notification bell with unread dot.
+/// 2. Search bar (opens global search).
+/// 3. "Continue learning" card: last lesson, product name, progress bar, single primary button. If nothing started: "Start with [recommended product]".
+/// 4. "This month's challenge": title, days left, my progress, rank. Tap opens Challenges.
+/// 5. "Objection of the Month": quote-style card with doctor objection and "See how to respond" action.
+/// 6. Quick actions row (3 items): Quick quiz, Send feedback, Search library.
+/// 7. "What's new": list of recently added/updated materials with New/Updated badges.
+/// 8. Slim stats strip: points, streak, quizzes completed (ACCENT AMBER ONLY HERE).
+///
+/// Strict Rules:
+/// - No more than ONE filled primary button visible at a time (on Continue learning card).
+/// - Skeleton loading for each section independently.
+/// - Empty states for new users.
+/// - Pull to refresh.
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.rxColors;
-    final textTheme = Theme.of(context).textTheme;
-    final authState = ref.watch(authControllerProvider);
-    final user = authState is AuthAuthenticated ? authState.user : null;
+    final l10n = context.l10n;
+    final dashboardAsync = ref.watch(homeControllerProvider);
 
-    return AppScaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              user?.displayName ?? 'Field Representative',
-              style: textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: colors.textPrimary,
+    return Scaffold(
+      backgroundColor: colors.background,
+      body: SafeArea(
+        bottom: false,
+        child: dashboardAsync.when(
+          loading: () => const HomeSkeletonLoader(),
+          error: (error, _) => Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsetsDirectional.all(RxSpacing.s24),
+              child: ErrorState(
+                title: l10n.errorStateTitle,
+                description: l10n.errorStateDescription,
+                retryText: l10n.retry,
+                onRetry: () => ref.read(homeControllerProvider.notifier).refresh(),
               ),
             ),
-            Text(
-              user?.territory ?? 'Daily Detailing Itinerary',
-              style: textTheme.bodySmall?.copyWith(
-                color: colors.textSecondary,
-                fontSize: 11.5,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(LucideIcons.logOut, size: 20.0, color: colors.textSecondary),
-            tooltip: 'Sign out',
-            onPressed: () => ref.read(authControllerProvider.notifier).logout(),
           ),
-          const SizedBox(width: RxSpacing.s8),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsetsDirectional.all(RxSpacing.s16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SectionHeader(
-              title: "Today's Territory Priority",
-              subtitle: 'Scheduled hospital rounds & physician appointments',
-            ),
-            const SizedBox(height: RxSpacing.s8),
-            AppCard(
-              child: Row(
-                children: [
-                  const ProgressRing(
-                    value: 0.70,
-                    size: 52.0,
-                    strokeWidth: 4.5,
-                  ),
-                  const SizedBox(width: RxSpacing.s16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '7 of 10 Visits Complete',
-                          style: textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: colors.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: RxSpacing.s2),
-                        Text(
-                          'Next visit: Dr. Robert Vance (14:30)',
-                          style: textTheme.bodySmall?.copyWith(
-                            color: colors.textSecondary,
-                          ),
-                        ),
-                      ],
+          data: (dashboard) {
+            return RefreshIndicator(
+              color: colors.primary,
+              backgroundColor: colors.surface,
+              onRefresh: () => ref.read(homeControllerProvider.notifier).refresh(),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsetsDirectional.only(bottom: RxSpacing.s24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 1. Header
+                    const HomeHeader(),
+                    const SizedBox(height: RxSpacing.s4),
+
+                    // 2. Search bar
+                    const HomeSearchBar(),
+                    const SizedBox(height: RxSpacing.s16),
+
+                    // 3. Continue learning card (Single filled primary button on screen)
+                    ContinueLearningCard(
+                      lesson: dashboard.continueLesson,
+                      recommendedProduct: dashboard.recommendedProduct,
                     ),
-                  ),
-                ],
+                    const SizedBox(height: RxSpacing.s16),
+
+                    // 4. This month's challenge
+                    MonthlyChallengeCard(challenge: dashboard.challenge),
+                    const SizedBox(height: RxSpacing.s16),
+
+                    // 5. Objection of the month (Secondary outline button)
+                    ObjectionQuoteCard(objection: dashboard.objection),
+                    const SizedBox(height: RxSpacing.s20),
+
+                    // 6. Quick actions row (3 items)
+                    const QuickActionsRow(),
+                    const SizedBox(height: RxSpacing.s20),
+
+                    // 7. What's new list
+                    WhatsNewSection(materials: dashboard.recentMaterials),
+                    const SizedBox(height: RxSpacing.s20),
+
+                    // 8. Slim stats strip (Accent amber ONLY here)
+                    SlimStatsStrip(stats: dashboard.stats),
+                  ],
+                ),
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

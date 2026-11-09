@@ -279,4 +279,103 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get sessionExpiredNotice =>
       'انتهت صلاحية جلستك. يرجى تسجيل الدخول مجدداً للمتابعة.';
+
+  @override
+  String greetingMorning(String name) {
+    return 'صباح الخير، $name';
+  }
+
+  @override
+  String greetingAfternoon(String name) {
+    return 'مساء الخير، $name';
+  }
+
+  @override
+  String greetingEvening(String name) {
+    return 'مساء الخير، $name';
+  }
+
+  @override
+  String get searchHintHome => 'ابحث في الدراسات والكتيبات الطبية...';
+
+  @override
+  String get continueLearningTitle => 'متابعة التدريب';
+
+  @override
+  String get btnContinue => 'متابعة';
+
+  @override
+  String get btnStartLesson => 'بدء الوحدة';
+
+  @override
+  String noLessonStarted(String productName) {
+    return 'ابدأ مع $productName';
+  }
+
+  @override
+  String get recommendedLabel => 'موصى به لمنطقتك الميدانية';
+
+  @override
+  String get monthlyChallengeTitle => 'تحدي هذا الشهر';
+
+  @override
+  String daysLeft(int days) {
+    return 'متبقي $days أيام';
+  }
+
+  @override
+  String rankInDistrict(int rank, int total) {
+    return 'الترتيب #$rank من أصل $total بالمنطقة';
+  }
+
+  @override
+  String get objectionOfTheMonth => 'اعتراض الطبيب الشهري';
+
+  @override
+  String get seeHowToRespond => 'شاهد أسلوب الإقناع والرد';
+
+  @override
+  String get quickActions => 'إجراءات سريعة';
+
+  @override
+  String get quickActionQuiz => 'اختبار سريع';
+
+  @override
+  String get quickActionFeedback => 'إرسال ملاحظات';
+
+  @override
+  String get quickActionLibrary => 'استعراض المكتبة';
+
+  @override
+  String get whatsNew => 'جديد المواد العلمية';
+
+  @override
+  String get badgeNew => 'جديد';
+
+  @override
+  String get badgeUpdated => 'محدّث';
+
+  @override
+  String statPoints(int points) {
+    return '$points نقطة';
+  }
+
+  @override
+  String statStreak(int days) {
+    return '$days أيام متتالية';
+  }
+
+  @override
+  String statQuizzes(int count) {
+    return '$count اختبارات';
+  }
+
+  @override
+  String get statPointsLabel => 'النقاط';
+
+  @override
+  String get statStreakLabel => 'التتابع';
+
+  @override
+  String get statQuizzesLabel => 'المكتمل';
 }

@@ -279,4 +279,103 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get sessionExpiredNotice =>
       'Your session has expired. Please sign in again to continue.';
+
+  @override
+  String greetingMorning(String name) {
+    return 'Good morning, $name';
+  }
+
+  @override
+  String greetingAfternoon(String name) {
+    return 'Good afternoon, $name';
+  }
+
+  @override
+  String greetingEvening(String name) {
+    return 'Good evening, $name';
+  }
+
+  @override
+  String get searchHintHome => 'Search drug monographs, guidelines...';
+
+  @override
+  String get continueLearningTitle => 'Continue Learning';
+
+  @override
+  String get btnContinue => 'Continue';
+
+  @override
+  String get btnStartLesson => 'Start Lesson';
+
+  @override
+  String noLessonStarted(String productName) {
+    return 'Start with $productName';
+  }
+
+  @override
+  String get recommendedLabel => 'Recommended for your territory';
+
+  @override
+  String get monthlyChallengeTitle => 'This Month\'s Challenge';
+
+  @override
+  String daysLeft(int days) {
+    return '$days days left';
+  }
+
+  @override
+  String rankInDistrict(int rank, int total) {
+    return 'Rank #$rank of $total in District';
+  }
+
+  @override
+  String get objectionOfTheMonth => 'Objection of the Month';
+
+  @override
+  String get seeHowToRespond => 'See how to respond';
+
+  @override
+  String get quickActions => 'Quick Actions';
+
+  @override
+  String get quickActionQuiz => 'Quick quiz';
+
+  @override
+  String get quickActionFeedback => 'Send feedback';
+
+  @override
+  String get quickActionLibrary => 'Search library';
+
+  @override
+  String get whatsNew => 'What\'s New';
+
+  @override
+  String get badgeNew => 'NEW';
+
+  @override
+  String get badgeUpdated => 'UPDATED';
+
+  @override
+  String statPoints(int points) {
+    return '$points Pts';
+  }
+
+  @override
+  String statStreak(int days) {
+    return '$days-Day Streak';
+  }
+
+  @override
+  String statQuizzes(int count) {
+    return '$count Quizzes';
+  }
+
+  @override
+  String get statPointsLabel => 'Points';
+
+  @override
+  String get statStreakLabel => 'Streak';
+
+  @override
+  String get statQuizzesLabel => 'Completed';
 }

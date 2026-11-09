@@ -86,5 +86,78 @@
   "contactMarketing": "Contact Marketing & IT Support",
   "supportEmail": "support@rxedge.internal",
   "backToLogin": "Back to Sign In",
-  "sessionExpiredNotice": "Your session has expired. Please sign in again to continue."
+  "sessionExpiredNotice": "Your session has expired. Please sign in again to continue.",
+  "greetingMorning": "Good morning, {name}",
+  "@greetingMorning": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "greetingAfternoon": "Good afternoon, {name}",
+  "@greetingAfternoon": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "greetingEvening": "Good evening, {name}",
+  "@greetingEvening": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "searchHintHome": "Search drug monographs, guidelines...",
+  "continueLearningTitle": "Continue Learning",
+  "btnContinue": "Continue",
+  "btnStartLesson": "Start Lesson",
+  "noLessonStarted": "Start with {productName}",
+  "@noLessonStarted": {
+    "placeholders": {
+      "productName": { "type": "String" }
+    }
+  },
+  "recommendedLabel": "Recommended for your territory",
+  "monthlyChallengeTitle": "This Month's Challenge",
+  "daysLeft": "{days} days left",
+  "@daysLeft": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "rankInDistrict": "Rank #{rank} of {total} in District",
+  "@rankInDistrict": {
+    "placeholders": {
+      "rank": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "objectionOfTheMonth": "Objection of the Month",
+  "seeHowToRespond": "See how to respond",
+  "quickActions": "Quick Actions",
+  "quickActionQuiz": "Quick quiz",
+  "quickActionFeedback": "Send feedback",
+  "quickActionLibrary": "Search library",
+  "whatsNew": "What's New",
+  "badgeNew": "NEW",
+  "badgeUpdated": "UPDATED",
+  "statPoints": "{points} Pts",
+  "@statPoints": {
+    "placeholders": {
+      "points": { "type": "int" }
+    }
+  },
+  "statStreak": "{days}-Day Streak",
+  "@statStreak": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "statQuizzes": "{count} Quizzes",
+  "@statQuizzes": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "statPointsLabel": "Points",
+  "statStreakLabel": "Streak",
+  "statQuizzesLabel": "Completed"
 }

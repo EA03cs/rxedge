@@ -104,12 +104,13 @@ void main() {
       expect(find.text('Back to Sign In'), findsOneWidget);
     });
 
-    testWidgets('HomeScreen renders MR territory priorities', (WidgetTester tester) async {
+    testWidgets('HomeScreen renders MR dashboard', (WidgetTester tester) async {
       await tester.pumpWidget(buildTestableWidget(const HomeScreen()));
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.text("Today's Territory Priority"), findsOneWidget);
-      expect(find.text('7 of 10 Visits Complete'), findsOneWidget);
+      expect(find.byType(HomeScreen), findsOneWidget);
+      expect(find.text('Search drug monographs, guidelines...'), findsOneWidget);
     });
   });
 }
