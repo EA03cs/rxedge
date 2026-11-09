@@ -53,7 +53,10 @@ class AppScaffold extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  appBar!,
+                  SizedBox(
+                    height: appBar!.preferredSize.height,
+                    child: appBar!,
+                  ),
                   Divider(
                     height: RxShadows.hairlineBorderWidth,
                     thickness: RxShadows.hairlineBorderWidth,

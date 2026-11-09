@@ -226,5 +226,37 @@
     "placeholders": {
       "count": { "type": "int" }
     }
-  }
+  },
+  "learnTitle": "Smart Learning Hub",
+  "learnSubtitle": "Master product science and competitive detailing",
+  "tabPositioning": "Product Positioning",
+  "tabCompetitive": "Competitive Handling",
+  "lessonsCompleted": "{completed}/{total} lessons completed",
+  "@lessonsCompleted": {
+    "placeholders": {
+      "completed": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "btnBookmarks": "Bookmarks",
+  "keyMessage": "Key Message",
+  "targetDoctors": "Target Doctors",
+  "keyBenefits": "Key Benefits",
+  "dosageHighlights": "Dosage Highlights",
+  "proofPoints": "Proof Points",
+  "theirClaim": "Their claim",
+  "howToRespond": "How to respond",
+  "proofReference": "Proof / reference",
+  "copyTalkingPoint": "Copy talking point",
+  "talkingPointCopied": "Talking point copied to clipboard",
+  "markAsComplete": "Mark as complete",
+  "completedBadge": "Completed",
+  "takeQuickQuiz": "Take quick quiz",
+  "nextStep": "Next Step",
+  "bookmarksTitle": "Bookmarked Lessons",
+  "emptyBookmarksTitle": "No bookmarks saved yet",
+  "emptyBookmarksDesc": "Tap the bookmark icon while reading any lesson to save it for quick review.",
+  "btnBrowseLessons": "Browse Learning Hub",
+  "recommendedTag": "Recommended",
+  "inProgressTag": "In Progress"
 }

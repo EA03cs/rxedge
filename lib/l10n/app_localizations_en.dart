@@ -517,4 +517,86 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get learnTitle => 'Smart Learning Hub';
+
+  @override
+  String get learnSubtitle =>
+      'Master product science and competitive detailing';
+
+  @override
+  String get tabPositioning => 'Product Positioning';
+
+  @override
+  String get tabCompetitive => 'Competitive Handling';
+
+  @override
+  String lessonsCompleted(int completed, int total) {
+    return '$completed/$total lessons completed';
+  }
+
+  @override
+  String get btnBookmarks => 'Bookmarks';
+
+  @override
+  String get keyMessage => 'Key Message';
+
+  @override
+  String get targetDoctors => 'Target Doctors';
+
+  @override
+  String get keyBenefits => 'Key Benefits';
+
+  @override
+  String get dosageHighlights => 'Dosage Highlights';
+
+  @override
+  String get proofPoints => 'Proof Points';
+
+  @override
+  String get theirClaim => 'Their claim';
+
+  @override
+  String get howToRespond => 'How to respond';
+
+  @override
+  String get proofReference => 'Proof / reference';
+
+  @override
+  String get copyTalkingPoint => 'Copy talking point';
+
+  @override
+  String get talkingPointCopied => 'Talking point copied to clipboard';
+
+  @override
+  String get markAsComplete => 'Mark as complete';
+
+  @override
+  String get completedBadge => 'Completed';
+
+  @override
+  String get takeQuickQuiz => 'Take quick quiz';
+
+  @override
+  String get nextStep => 'Next Step';
+
+  @override
+  String get bookmarksTitle => 'Bookmarked Lessons';
+
+  @override
+  String get emptyBookmarksTitle => 'No bookmarks saved yet';
+
+  @override
+  String get emptyBookmarksDesc =>
+      'Tap the bookmark icon while reading any lesson to save it for quick review.';
+
+  @override
+  String get btnBrowseLessons => 'Browse Learning Hub';
+
+  @override
+  String get recommendedTag => 'Recommended';
+
+  @override
+  String get inProgressTag => 'In Progress';
 }

@@ -520,4 +520,85 @@ class AppLocalizationsAr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get learnTitle => 'مركز التعلم الذكي';
+
+  @override
+  String get learnSubtitle => 'أتقن العلوم الطبية للمنتجات والتعامل التنافسي';
+
+  @override
+  String get tabPositioning => 'تموضع المنتج';
+
+  @override
+  String get tabCompetitive => 'التعامل التنافسي';
+
+  @override
+  String lessonsCompleted(int completed, int total) {
+    return 'تم إكمال $completed من $total دروس';
+  }
+
+  @override
+  String get btnBookmarks => 'المحفوظات';
+
+  @override
+  String get keyMessage => 'الرسالة الأساسية';
+
+  @override
+  String get targetDoctors => 'الأطباء المستهدفون';
+
+  @override
+  String get keyBenefits => 'المزايا الإكلينيكية';
+
+  @override
+  String get dosageHighlights => 'أبرز إرشادات الجرعات';
+
+  @override
+  String get proofPoints => 'الأدلة الإكلينيكية';
+
+  @override
+  String get theirClaim => 'ادعاء المنافس';
+
+  @override
+  String get howToRespond => 'طريقة الرد المقترحة';
+
+  @override
+  String get proofReference => 'الدليل الإكلينيكي / المرجع';
+
+  @override
+  String get copyTalkingPoint => 'نسخ نقطة الحوار';
+
+  @override
+  String get talkingPointCopied => 'تم نسخ نقطة الحوار إلى الحافظة';
+
+  @override
+  String get markAsComplete => 'تحديد كمكتمل';
+
+  @override
+  String get completedBadge => 'مكتمل';
+
+  @override
+  String get takeQuickQuiz => 'خوض اختبار سريع';
+
+  @override
+  String get nextStep => 'الخطوة التالية';
+
+  @override
+  String get bookmarksTitle => 'الدروس المحفوظة';
+
+  @override
+  String get emptyBookmarksTitle => 'لا توجد دروس محفوظة بعد';
+
+  @override
+  String get emptyBookmarksDesc =>
+      'اضغط على أيقونة الحفظ أثناء قراءة أي درس للرجوع إليه بسرعة لاحقاً.';
+
+  @override
+  String get btnBrowseLessons => 'استعراض مركز التعلم';
+
+  @override
+  String get recommendedTag => 'موصى به';
+
+  @override
+  String get inProgressTag => 'قيد التقدم';
 }

@@ -1021,6 +1021,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 approved material} other{{count} approved materials}}'**
   String materialsCount(int count);
+
+  /// No description provided for @learnTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Learning Hub'**
+  String get learnTitle;
+
+  /// No description provided for @learnSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Master product science and competitive detailing'**
+  String get learnSubtitle;
+
+  /// No description provided for @tabPositioning.
+  ///
+  /// In en, this message translates to:
+  /// **'Product Positioning'**
+  String get tabPositioning;
+
+  /// No description provided for @tabCompetitive.
+  ///
+  /// In en, this message translates to:
+  /// **'Competitive Handling'**
+  String get tabCompetitive;
+
+  /// No description provided for @lessonsCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed}/{total} lessons completed'**
+  String lessonsCompleted(int completed, int total);
+
+  /// No description provided for @btnBookmarks.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmarks'**
+  String get btnBookmarks;
+
+  /// No description provided for @keyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Key Message'**
+  String get keyMessage;
+
+  /// No description provided for @targetDoctors.
+  ///
+  /// In en, this message translates to:
+  /// **'Target Doctors'**
+  String get targetDoctors;
+
+  /// No description provided for @keyBenefits.
+  ///
+  /// In en, this message translates to:
+  /// **'Key Benefits'**
+  String get keyBenefits;
+
+  /// No description provided for @dosageHighlights.
+  ///
+  /// In en, this message translates to:
+  /// **'Dosage Highlights'**
+  String get dosageHighlights;
+
+  /// No description provided for @proofPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Proof Points'**
+  String get proofPoints;
+
+  /// No description provided for @theirClaim.
+  ///
+  /// In en, this message translates to:
+  /// **'Their claim'**
+  String get theirClaim;
+
+  /// No description provided for @howToRespond.
+  ///
+  /// In en, this message translates to:
+  /// **'How to respond'**
+  String get howToRespond;
+
+  /// No description provided for @proofReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Proof / reference'**
+  String get proofReference;
+
+  /// No description provided for @copyTalkingPoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy talking point'**
+  String get copyTalkingPoint;
+
+  /// No description provided for @talkingPointCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Talking point copied to clipboard'**
+  String get talkingPointCopied;
+
+  /// No description provided for @markAsComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as complete'**
+  String get markAsComplete;
+
+  /// No description provided for @completedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completedBadge;
+
+  /// No description provided for @takeQuickQuiz.
+  ///
+  /// In en, this message translates to:
+  /// **'Take quick quiz'**
+  String get takeQuickQuiz;
+
+  /// No description provided for @nextStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Step'**
+  String get nextStep;
+
+  /// No description provided for @bookmarksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmarked Lessons'**
+  String get bookmarksTitle;
+
+  /// No description provided for @emptyBookmarksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookmarks saved yet'**
+  String get emptyBookmarksTitle;
+
+  /// No description provided for @emptyBookmarksDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the bookmark icon while reading any lesson to save it for quick review.'**
+  String get emptyBookmarksDesc;
+
+  /// No description provided for @btnBrowseLessons.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse Learning Hub'**
+  String get btnBrowseLessons;
+
+  /// No description provided for @recommendedTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get recommendedTag;
+
+  /// No description provided for @inProgressTag.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get inProgressTag;
 }
 
 class _AppLocalizationsDelegate
