@@ -17,6 +17,8 @@ class CoachMarksSheet extends ConsumerStatefulWidget {
         context: context,
         isDismissible: false,
         enableDrag: false,
+        isScrollControlled: true,
+        useSafeArea: true,
         shape: const RoundedRectangleBorder(borderRadius: RxRadii.borderSheet),
         builder: (_) => const CoachMarksSheet(),
       );
@@ -58,112 +60,114 @@ class _CoachMarksSheetState extends ConsumerState<CoachMarksSheet> {
     final isLast = _currentStep == steps.length - 1;
 
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsetsDirectional.all(RxSpacing.s24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Top Skip Row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  l10n.coachMarkTitle,
-                  style: textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: colors.primary,
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    ref.read(coachMarksProvider.notifier).completeCoachMarks();
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(
-                    l10n.btnSkip,
-                    style: textTheme.labelMedium?.copyWith(
-                      color: colors.textSecondary,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsetsDirectional.all(RxSpacing.s24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Top Skip Row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l10n.coachMarkTitle,
+                    style: textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: colors.primary,
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: RxSpacing.s16),
-
-            // Icon circle
-            Container(
-              width: 56.0,
-              height: 56.0,
-              decoration: BoxDecoration(
-                color: colors.primarySoft,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: colors.primary.withValues(alpha: 0.25),
-                  width: RxShadows.hairlineBorderWidth,
-                ),
-              ),
-              child: Icon(current.icon, size: 26.0, color: colors.primary),
-            ),
-            const SizedBox(height: RxSpacing.s16),
-
-            // Title
-            Text(
-              current.title,
-              textAlign: TextAlign.center,
-              style: textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: colors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: RxSpacing.s8),
-
-            // Description
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 320.0),
-              child: Text(
-                current.description,
-                textAlign: TextAlign.center,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colors.textSecondary,
-                  height: 1.45,
-                ),
-              ),
-            ),
-            const SizedBox(height: RxSpacing.s24),
-
-            // Dots Indicator
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(steps.length, (index) {
-                final isActive = index == _currentStep;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  margin: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s4),
-                  width: isActive ? 20.0 : 6.0,
-                  height: 6.0,
-                  decoration: BoxDecoration(
-                    color: isActive ? colors.primary : colors.border,
-                    borderRadius: BorderRadius.circular(3.0),
+                  TextButton(
+                    onPressed: () {
+                      ref.read(coachMarksProvider.notifier).completeCoachMarks();
+                      Navigator.of(context).pop();
+                    },
+                    child: Text(
+                      l10n.btnSkip,
+                      style: textTheme.labelMedium?.copyWith(
+                        color: colors.textSecondary,
+                      ),
+                    ),
                   ),
-                );
-              }),
-            ),
-            const SizedBox(height: RxSpacing.s24),
+                ],
+              ),
+              const SizedBox(height: RxSpacing.s16),
 
-            // Primary Next / Got It Button
-            AppButton(
-              text: isLast ? l10n.btnGotIt : 'Next',
-              onPressed: () {
-                if (isLast) {
-                  ref.read(coachMarksProvider.notifier).completeCoachMarks();
-                  Navigator.of(context).pop();
-                } else {
-                  setState(() => _currentStep++);
-                }
-              },
-            ),
-          ],
+              // Icon circle
+              Container(
+                width: 56.0,
+                height: 56.0,
+                decoration: BoxDecoration(
+                  color: colors.primarySoft,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: colors.primary.withValues(alpha: 0.25),
+                    width: RxShadows.hairlineBorderWidth,
+                  ),
+                ),
+                child: Icon(current.icon, size: 26.0, color: colors.primary),
+              ),
+              const SizedBox(height: RxSpacing.s16),
+
+              // Title
+              Text(
+                current.title,
+                textAlign: TextAlign.center,
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: colors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: RxSpacing.s8),
+
+              // Description
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 320.0),
+                child: Text(
+                  current.description,
+                  textAlign: TextAlign.center,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colors.textSecondary,
+                    height: 1.45,
+                  ),
+                ),
+              ),
+              const SizedBox(height: RxSpacing.s24),
+
+              // Dots Indicator
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(steps.length, (index) {
+                  final isActive = index == _currentStep;
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s4),
+                    width: isActive ? 20.0 : 6.0,
+                    height: 6.0,
+                    decoration: BoxDecoration(
+                      color: isActive ? colors.primary : colors.border,
+                      borderRadius: BorderRadius.circular(3.0),
+                    ),
+                  );
+                }),
+              ),
+              const SizedBox(height: RxSpacing.s24),
+
+              // Primary Next / Got It Button
+              AppButton(
+                text: isLast ? l10n.btnGotIt : l10n.next,
+                onPressed: () {
+                  if (isLast) {
+                    ref.read(coachMarksProvider.notifier).completeCoachMarks();
+                    Navigator.of(context).pop();
+                  } else {
+                    setState(() => _currentStep++);
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

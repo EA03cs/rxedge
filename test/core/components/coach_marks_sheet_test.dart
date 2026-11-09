@@ -74,5 +74,16 @@ void main() {
 
       verify(() => mockStorage.write('rxedge_coach_marks_completed', 'true')).called(1);
     });
+
+    testWidgets('renders cleanly without overflow in constrained height viewport', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(592, 288));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(CoachMarksSheet), findsOneWidget);
+    });
   });
 }
