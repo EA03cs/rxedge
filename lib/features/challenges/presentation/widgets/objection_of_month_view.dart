@@ -426,7 +426,7 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(LucideIcons.arrowRight, size: 18.0),
+                    icon: Icon(context.arrowForward, size: 18.0),
                     onPressed: () => _openShareResponseSheet(context),
                   ),
                 ],

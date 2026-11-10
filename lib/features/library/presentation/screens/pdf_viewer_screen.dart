@@ -197,7 +197,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
                   children: [
                     IconButton(
                       icon: Icon(
-                        LucideIcons.chevronLeft,
+                        context.chevronBack,
                         size: 18.0,
                         color: _currentPage > 1
                             ? colors.surface
@@ -220,7 +220,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
                     ),
                     IconButton(
                       icon: Icon(
-                        LucideIcons.chevronRight,
+                        context.chevronForward,
                         size: 18.0,
                         color: _currentPage < _totalPages
                             ? colors.surface

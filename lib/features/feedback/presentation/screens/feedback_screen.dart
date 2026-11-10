@@ -232,7 +232,7 @@ class FeedbackScreen extends ConsumerWidget {
             ),
             const SizedBox(width: RxSpacing.s8),
             Icon(
-              LucideIcons.chevronRight,
+              context.chevronForward,
               size: 18.0,
               color: colors.textTertiary,
             ),

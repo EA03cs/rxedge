@@ -168,7 +168,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   AppButton(
                     text: _currentPage == 2 ? l10n.getStarted : l10n.next,
                     variant: AppButtonVariant.primary,
-                    trailingIcon: _currentPage == 2 ? LucideIcons.check : LucideIcons.arrowRight,
+                    trailingIcon: _currentPage == 2 ? LucideIcons.check : context.arrowForward,
                     onPressed: _onNext,
                   ),
                 ],

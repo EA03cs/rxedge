@@ -101,7 +101,7 @@ class MonthlyChallengeCard extends StatelessWidget {
                   ),
                 ),
                 Icon(
-                  LucideIcons.chevronRight,
+                  context.chevronForward,
                   size: 16.0,
                   color: colors.textTertiary,
                 ),

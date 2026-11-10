@@ -238,7 +238,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                           : l10n.btnFinishQuiz,
                       variant: AppButtonVariant.primary,
                       trailingIcon: _currentIndex < totalQuestions - 1
-                          ? LucideIcons.arrowRight
+                          ? context.arrowForward
                           : LucideIcons.checkCircle,
                       onPressed: _onNext,
                     ),
@@ -568,7 +568,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
             const SizedBox(height: RxSpacing.s10),
             AppButton(
               text: l10n.btnBackToLearning,
-              leadingIcon: LucideIcons.arrowLeft,
+              leadingIcon: context.arrowBack,
               variant: AppButtonVariant.primary,
               onPressed: () => Navigator.of(context).pop(),
             ),

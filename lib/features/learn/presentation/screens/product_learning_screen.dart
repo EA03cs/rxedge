@@ -314,7 +314,7 @@ class ProductLearningScreen extends ConsumerWidget {
                               ),
                             ),
                             Icon(
-                              LucideIcons.chevronRight,
+                              context.chevronForward,
                               size: 18.0,
                               color: colors.textTertiary,
                             ),

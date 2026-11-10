@@ -214,7 +214,7 @@ class _EdetailViewerScreenState extends ConsumerState<EdetailViewerScreen> {
                     child: Row(
                       children: [
                         IconButton(
-                          icon: Icon(LucideIcons.arrowLeft, color: colors.textPrimary),
+                          icon: Icon(context.arrowBack, color: colors.textPrimary),
                           onPressed: () => Navigator.of(context).pop(),
                         ),
                         const SizedBox(width: RxSpacing.s4),

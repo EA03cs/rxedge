@@ -172,7 +172,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 NavItemData(icon: LucideIcons.home, label: l10n.tabHome),
                 NavItemData(icon: LucideIcons.graduationCap, label: l10n.tabLearn),
                 NavItemData(icon: LucideIcons.bookOpen, label: l10n.tabLibrary),
-                NavItemData(icon: LucideIcons.award, label: l10n.tabChallenges, badge: '🔥'),
+                NavItemData(icon: LucideIcons.award, label: l10n.tabChallenges),
                 NavItemData(icon: LucideIcons.messageSquare, label: l10n.tabFeedback),
               ],
             ),

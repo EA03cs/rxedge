@@ -427,7 +427,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 ),
               ),
               const SizedBox(width: RxSpacing.s6),
-              Icon(LucideIcons.chevronRight, size: 16.0, color: colors.textTertiary),
+              Icon(context.chevronForward, size: 16.0, color: colors.textTertiary),
             ],
           ),
         ),

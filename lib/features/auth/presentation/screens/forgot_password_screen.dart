@@ -22,7 +22,7 @@ class ForgotPasswordScreen extends StatelessWidget {
       backgroundColor: colors.background,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(LucideIcons.arrowLeft, size: 20.0, color: colors.textPrimary),
+          icon: Icon(context.arrowBack, size: 20.0, color: colors.textPrimary),
           onPressed: () => context.pop(),
         ),
       ),

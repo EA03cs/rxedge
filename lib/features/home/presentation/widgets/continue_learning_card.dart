@@ -118,7 +118,7 @@ class ContinueLearningCard extends StatelessWidget {
         AppButton(
           text: l10n.btnContinue,
           variant: AppButtonVariant.primary,
-          trailingIcon: LucideIcons.arrowRight,
+          trailingIcon: context.arrowForward,
           onPressed: () => context.go(AppRoutes.learn),
         ),
       ],
@@ -190,7 +190,7 @@ class ContinueLearningCard extends StatelessWidget {
         AppButton(
           text: l10n.btnStartLesson,
           variant: AppButtonVariant.primary,
-          trailingIcon: LucideIcons.arrowRight,
+          trailingIcon: context.arrowForward,
           onPressed: () => context.go(AppRoutes.learn),
         ),
       ],

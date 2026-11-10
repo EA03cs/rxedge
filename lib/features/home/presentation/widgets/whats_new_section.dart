@@ -61,7 +61,7 @@ class WhatsNewSection extends StatelessWidget {
                       ),
                       const SizedBox(width: RxSpacing.s2),
                       Icon(
-                        LucideIcons.chevronRight,
+                        context.chevronForward,
                         size: 14.0,
                         color: colors.primary,
                       ),
