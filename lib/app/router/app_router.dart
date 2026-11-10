@@ -166,7 +166,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               currentIndex: navigationShell.currentIndex,
               onTap: (index) => navigationShell.goBranch(
                 index,
-                initialLocation: index == navigationShell.currentIndex,
+                initialLocation: index == 0 || index == navigationShell.currentIndex,
               ),
               items: [
                 NavItemData(icon: LucideIcons.home, label: l10n.tabHome),

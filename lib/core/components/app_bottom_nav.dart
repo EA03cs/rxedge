@@ -53,7 +53,7 @@ class AppBottomNav extends StatelessWidget {
         child: SizedBox(
           height: 60.0,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: List.generate(items.length, (index) {
               final item = items[index];
               final isSelected = currentIndex == index;
@@ -66,10 +66,14 @@ class AppBottomNav extends StatelessWidget {
                     onTap: () => onTap(index),
                     splashColor: colors.primarySoft.withValues(alpha: 0.5),
                     highlightColor: Colors.transparent,
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(minHeight: RxSpacing.minTouchTarget),
+                    child: Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      color: Colors.transparent,
+                      alignment: Alignment.center,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Stack(
                             clipBehavior: Clip.none,

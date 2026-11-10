@@ -10,18 +10,25 @@ import 'app_button.dart';
 class CoachMarksSheet extends ConsumerStatefulWidget {
   const CoachMarksSheet({super.key});
 
+  static bool _hasShown = false;
+
   static Future<void> showIfFirstUse(BuildContext context, WidgetRef ref) async {
+    if (_hasShown) return;
     final shouldShow = ref.read(coachMarksProvider);
     if (shouldShow && context.mounted) {
+      _hasShown = true;
       await showModalBottomSheet<void>(
         context: context,
-        isDismissible: false,
-        enableDrag: false,
+        isDismissible: true,
+        enableDrag: true,
         isScrollControlled: true,
         useSafeArea: true,
         shape: const RoundedRectangleBorder(borderRadius: RxRadii.borderSheet),
         builder: (_) => const CoachMarksSheet(),
       );
+      if (context.mounted) {
+        ref.read(coachMarksProvider.notifier).completeCoachMarks();
+      }
     }
   }
 
