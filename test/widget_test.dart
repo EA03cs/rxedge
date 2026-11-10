@@ -77,22 +77,22 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 
-      // Check initial LTR / English
-      expect(container.read(localeProvider), const Locale('en'));
+      // Check initial RTL / Arabic (default)
+      expect(container.read(localeProvider), const Locale('ar'));
       expect(container.read(themeModeProvider), ThemeMode.light);
 
-      // Tap Language toggle button to switch to Arabic (RTL)
-      final langButton = find.text('العربية');
+      // Tap Language toggle button to switch to English (LTR)
+      final langButton = find.text('EN');
       expect(langButton, findsOneWidget);
       await tester.tap(langButton);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 
-      // Now locale is Arabic
-      expect(container.read(localeProvider), const Locale('ar'));
+      // Now locale is English
+      expect(container.read(localeProvider), const Locale('en'));
 
       // Tap Theme toggle button to switch to Dark Mode
-      final themeButton = find.byTooltip('تبديل المظهر');
+      final themeButton = find.byIcon(LucideIcons.moon);
       expect(themeButton, findsOneWidget);
       await tester.tap(themeButton);
       await tester.pump();

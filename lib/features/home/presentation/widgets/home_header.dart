@@ -5,6 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/router/app_router.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../../core/localization/app_locale_provider.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../notifications/presentation/controllers/notifications_controller.dart';
 
@@ -43,6 +44,7 @@ class HomeHeader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
     final authState = ref.watch(authControllerProvider);
     final user = authState is AuthAuthenticated ? authState.user : null;
 
@@ -121,7 +123,45 @@ class HomeHeader extends ConsumerWidget {
             ),
           ),
 
-          // 3. Notification Bell with unread dot
+          // 3. Quick Language Switcher & Actions
+          Consumer(
+            builder: (context, ref, _) {
+              final activeLocale = ref.watch(localeProvider);
+              final isArabic = activeLocale.languageCode == 'ar';
+              return InkWell(
+                onTap: () {
+                  final newLocale = isArabic ? const Locale('en') : const Locale('ar');
+                  ref.read(localeProvider.notifier).state = newLocale;
+                },
+                borderRadius: RxRadii.borderBadge,
+                child: Container(
+                  padding: const EdgeInsetsDirectional.symmetric(
+                    horizontal: RxSpacing.s8,
+                    vertical: RxSpacing.s4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.surfaceMuted,
+                    borderRadius: RxRadii.borderBadge,
+                    border: Border.all(
+                      color: colors.border,
+                      width: RxShadows.hairlineBorderWidth,
+                    ),
+                  ),
+                  child: Text(
+                    isArabic ? 'EN' : 'عربي',
+                    style: textTheme.labelSmall?.copyWith(
+                      color: colors.primary,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 11.0,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(width: RxSpacing.s4),
+
+          // 4. Notification Bell with unread dot
           Consumer(
             builder: (context, ref, _) {
               final unreadCount = ref.watch(unreadNotificationsCountProvider);
@@ -161,6 +201,17 @@ class HomeHeader extends ConsumerWidget {
                 ),
               );
             },
+          ),
+
+          // 5. Dedicated Profile / Settings Button
+          IconButton(
+            icon: Icon(
+              LucideIcons.user,
+              size: 20.0,
+              color: colors.textPrimary,
+            ),
+            tooltip: l10n.profileTitle,
+            onPressed: () => context.push(AppRoutes.profile),
           ),
         ],
       ),

@@ -27,7 +27,7 @@ class CoachMarksSheet extends ConsumerStatefulWidget {
         builder: (_) => const CoachMarksSheet(),
       );
       if (context.mounted) {
-        ref.read(coachMarksProvider.notifier).completeCoachMarks();
+        await ref.read(coachMarksProvider.notifier).completeCoachMarks();
       }
     }
   }

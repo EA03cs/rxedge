@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rxedge/l10n/app_localizations.dart';
 
-/// Active Locale Provider (defaults to English 'en', supports 'ar')
+/// Active Locale Provider (defaults to Arabic 'ar', supports 'en')
 final localeProvider = StateProvider<Locale>((ref) {
-  return const Locale('en');
+  return const Locale('ar');
 });
 
 /// Theme Mode Provider (defaults to light as primary)

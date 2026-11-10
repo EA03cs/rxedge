@@ -7,6 +7,7 @@ import '../../../../app/router/app_router.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/error/failure_message_mapper.dart';
 import '../../../../core/error/failures.dart';
+import '../../../../core/localization/app_locale_provider.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../controllers/auth_controller.dart';
 
@@ -206,21 +207,43 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Brand Mark
-                  Container(
-                    width: 48.0,
-                    height: 48.0,
-                    decoration: BoxDecoration(
-                      color: colors.primary,
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        LucideIcons.activity,
-                        size: 24.0,
-                        color: Colors.white,
+                  // Brand Mark & Language Toggle Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: 48.0,
+                        height: 48.0,
+                        decoration: BoxDecoration(
+                          color: colors.primary,
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            LucideIcons.activity,
+                            size: 24.0,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
-                    ),
+                      Consumer(
+                        builder: (context, ref, _) {
+                          final activeLocale = ref.watch(localeProvider);
+                          final isArabic = activeLocale.languageCode == 'ar';
+                          return TextButton.icon(
+                            icon: const Icon(LucideIcons.globe, size: 16),
+                            label: Text(
+                              isArabic ? 'English' : 'العربية',
+                              style: const TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                            onPressed: () {
+                              final newLocale = isArabic ? const Locale('en') : const Locale('ar');
+                              ref.read(localeProvider.notifier).state = newLocale;
+                            },
+                          );
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(height: RxSpacing.s24),
                   Text(
