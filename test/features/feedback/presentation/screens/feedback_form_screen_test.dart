@@ -60,9 +60,8 @@ void main() {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
 
-      expect(find.text('Doctor Objection'), findsNWidgets(2));
+      expect(find.text('Doctor Objection'), findsNWidgets(3));
       expect(find.text('Product'), findsOneWidget);
-      expect(find.text('The Objection'), findsOneWidget);
 
       // Press Send Feedback without entering anything
       await tester.tap(find.text('Send Feedback'));

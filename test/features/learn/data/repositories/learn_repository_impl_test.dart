@@ -136,6 +136,7 @@ void main() {
     test('markLessonCompleted persists completed status', () async {
       when(() => mockLocal.isCacheFresh()).thenReturn(true);
       when(() => mockLocal.getCachedProducts()).thenAnswer((_) async => testProducts);
+      when(() => mockRemote.completeLesson('les_1')).thenAnswer((_) async {});
       when(() => mockLocal.saveCompletedLessonIds(any())).thenAnswer((_) async {});
 
       // Prime in-memory
@@ -151,12 +152,14 @@ void main() {
         },
         failure: (_) => fail('Expected success'),
       );
+      verify(() => mockRemote.completeLesson('les_1')).called(1);
       verify(() => mockLocal.saveCompletedLessonIds({'les_1'})).called(1);
     });
 
     test('toggleLessonBookmark adds and removes bookmarks correctly', () async {
       when(() => mockLocal.isCacheFresh()).thenReturn(true);
       when(() => mockLocal.getCachedProducts()).thenAnswer((_) async => testProducts);
+      when(() => mockRemote.bookmarkLesson('les_1')).thenAnswer((_) async {});
       when(() => mockLocal.saveBookmarkedLessonIds(any())).thenAnswer((_) async {});
 
       await repository.getProducts();

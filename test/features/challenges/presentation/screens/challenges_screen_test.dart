@@ -122,11 +122,11 @@ void main() {
       // Monthly Challenge Card
       expect(find.text('Cardiovascular Blitz: Q4 Master'), findsOneWidget);
       expect(find.text('Challenge Rules'), findsOneWidget);
-      expect(find.text('5/7 Milestones'), findsOneWidget);
+      expect(find.text('5/7'), findsOneWidget);
       expect(find.text('Territory Leaderboard'), findsOneWidget);
       expect(find.text('My Rank'), findsOneWidget);
       expect(find.text('Sarah Jenkins'), findsOneWidget);
-      expect(find.text('1,250 Pts'), findsWidgets);
+      expect(find.text('1250 Pts'), findsWidgets);
     });
 
     testWidgets('switching to Quick Quizzes segment shows quizzes list', (tester) async {

@@ -5,6 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:rxedge/app/l10n/l10n.dart';
 import 'package:rxedge/app/theme/theme.dart';
+import 'package:rxedge/core/utils/result.dart';
 import 'package:rxedge/core/widgets/widgets.dart';
 import 'package:rxedge/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:rxedge/features/auth/domain/repositories/auth_repository.dart';
@@ -12,9 +13,14 @@ import 'package:rxedge/features/auth/presentation/screens/forgot_password_screen
 import 'package:rxedge/features/auth/presentation/screens/login_screen.dart';
 import 'package:rxedge/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:rxedge/features/auth/presentation/screens/splash_screen.dart';
+import 'package:rxedge/features/home/data/repositories/home_repository_impl.dart';
+import 'package:rxedge/features/home/domain/entities/home_dashboard_entity.dart';
+import 'package:rxedge/features/home/domain/repositories/home_repository.dart';
 import 'package:rxedge/features/home/presentation/screens/home_screen.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
+
+class MockHomeRepository extends Mock implements HomeRepository {}
 
 void main() {
   late MockAuthRepository mockRepository;
@@ -105,7 +111,51 @@ void main() {
     });
 
     testWidgets('HomeScreen renders MR dashboard', (WidgetTester tester) async {
-      await tester.pumpWidget(buildTestableWidget(const HomeScreen()));
+      final mockHomeRepo = MockHomeRepository();
+      when(() => mockHomeRepo.getHomeDashboard(forceRefresh: any(named: 'forceRefresh')))
+          .thenAnswer(
+        (_) async => const Result.success(
+          HomeDashboardEntity(
+            challenge: MonthlyChallengeEntity(
+              id: 'ch_1',
+              title: 'Cardio Sprint',
+              daysLeft: 5,
+              progress: 0.5,
+              currentRank: 2,
+              totalParticipants: 20,
+            ),
+            objection: DoctorObjectionEntity(
+              id: 'obj_1',
+              doctorQuote: 'Why switch therapy?',
+              doctorName: 'Dr. Tarek',
+              specialty: 'Cardiology',
+              productConcerned: 'Cardura XL',
+              responseSummary: '24-hour sustained efficacy.',
+            ),
+            recentMaterials: [],
+            stats: RepStatsEntity(
+              points: 300,
+              streakDays: 4,
+              quizzesCompleted: 3,
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            authRepositoryProvider.overrideWithValue(mockRepository),
+            homeRepositoryProvider.overrideWithValue(mockHomeRepo),
+          ],
+          child: MaterialApp(
+            theme: RxTheme.light(),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const HomeScreen(),
+          ),
+        ),
+      );
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pump(const Duration(milliseconds: 500));
 

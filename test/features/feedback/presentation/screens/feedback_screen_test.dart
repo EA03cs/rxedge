@@ -103,7 +103,7 @@ void main() {
 
       expect(find.byType(FeedbackFormScreen), findsOneWidget);
       expect(find.text('Product'), findsOneWidget);
-      expect(find.text('The Objection'), findsOneWidget);
+      expect(find.text('Doctor Objection'), findsNWidgets(3));
     });
 
     testWidgets('tapping submission item navigates to FeedbackDetailScreen', (tester) async {

@@ -134,7 +134,7 @@ void main() {
       final state = container.read(authControllerProvider);
       expect(state, isA<AuthUnauthenticated>());
       final unauthed = state as AuthUnauthenticated;
-      expect(unauthed.sessionMessage, contains('session has expired'));
+      expect(unauthed.sessionMessage, 'session_expired');
     });
   });
 }

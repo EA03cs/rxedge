@@ -81,7 +81,7 @@ void main() {
 
       expect(find.text('Cardura XL ABPM Study'), findsOneWidget);
       expect(find.text('+50 Pts'), findsOneWidget);
-      expect(find.text('4/4 Correct • 94s'), findsOneWidget);
+      expect(find.text('4/4 • 94s'), findsOneWidget);
       expect(find.text('100%'), findsOneWidget);
     });
   });

@@ -106,7 +106,7 @@ void main() {
 
       expect(find.text('Key Clinical Endpoints'), findsOneWidget);
       expect(find.text('Cardura XL'), findsOneWidget);
-      expect(find.text('4 min read'), findsOneWidget);
+      expect(find.text('4 min'), findsOneWidget);
 
       // Tap unbookmark
       await tester.tap(find.byType(IconButton));

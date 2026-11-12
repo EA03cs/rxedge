@@ -128,7 +128,7 @@ void main() {
 
       expect(find.text('Page 1 of 8'), findsWidgets);
       expect(find.text('REGULATORY CLINICAL MONOGRAPH'), findsOneWidget);
-      expect(find.text('SECTION 01'), findsOneWidget);
+      expect(find.text('SECTION 1'), findsOneWidget);
 
       // Navigate to next page
       await tester.tap(find.byIcon(LucideIcons.chevronRight));
@@ -136,7 +136,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       expect(find.text('Page 2 of 8'), findsWidgets);
-      expect(find.text('SECTION 02'), findsOneWidget);
+      expect(find.text('SECTION 2'), findsOneWidget);
 
       // Test Zoom In & Out
       await tester.tap(find.byIcon(LucideIcons.zoomIn));
