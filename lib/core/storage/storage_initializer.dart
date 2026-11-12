@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../services/logger_service.dart';
 
@@ -53,5 +54,19 @@ abstract final class StorageInitializer {
       return stored!;
     }
     return fallback;
+  }
+
+  static ThemeMode readInitialThemeMode({ThemeMode fallback = ThemeMode.light}) {
+    final stored = readPreference(prefThemeModeKey);
+    switch (stored) {
+      case 'system':
+        return ThemeMode.system;
+      case 'dark':
+        return ThemeMode.dark;
+      case 'light':
+        return ThemeMode.light;
+      default:
+        return fallback;
+    }
   }
 }

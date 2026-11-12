@@ -83,11 +83,18 @@ class NotificationDto {
       return null;
     }
     final cleaned = rawScreen.trim();
-    if (cleaned.startsWith('/')) return cleaned;
+    if (cleaned.startsWith('/')) {
+      if (cleaned == '/feedback/detail' || cleaned == '/feedback_detail') {
+        return '/feedback/detail';
+      }
+      return cleaned;
+    }
     switch (cleaned.toLowerCase()) {
       case 'feedback':
-      case 'feedback_detail':
         return '/feedback';
+      case 'feedback_detail':
+      case 'feedback/detail':
+        return '/feedback/detail';
       case 'library':
       case 'materials':
       case 'material_detail':

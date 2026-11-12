@@ -11,6 +11,7 @@ import '../../features/auth/presentation/screens/onboarding_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/challenges/presentation/screens/challenges_screen.dart';
 import '../../features/design_system/presentation/design_system_showcase_screen.dart';
+import '../../features/feedback/presentation/screens/feedback_detail_screen.dart';
 import '../../features/feedback/presentation/screens/feedback_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/learn/presentation/screens/learn_screen.dart';
@@ -40,6 +41,7 @@ abstract final class AppRoutes {
   static const String profile = '/profile';
   static const String notifications = '/notifications';
   static const String search = '/search';
+  static const String feedbackDetail = '/feedback/detail';
 
   // System & Design System
   static const String showcase = '/showcase';
@@ -154,6 +156,18 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.search,
         name: 'search',
         builder: (context, state) => const SearchScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.feedbackDetail,
+        name: 'feedback_detail',
+        builder: (context, state) {
+          final id = state.uri.queryParameters['id'] ??
+              (state.extra is String ? state.extra as String : null);
+          if (id == null || id.trim().isEmpty) {
+            return const FeedbackScreen();
+          }
+          return FeedbackDetailScreen(submissionId: id.trim());
+        },
       ),
 
       // 6. 5-Tab StatefulShellRoute (Home, Learn, Library, Challenges, Feedback)

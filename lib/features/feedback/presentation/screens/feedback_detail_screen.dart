@@ -8,6 +8,7 @@ import '../../../../core/widgets/rx_network_image.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/feedback_entities.dart';
 import '../controllers/feedback_controller.dart';
+import '../widgets/voice_note_player_card.dart';
 
 /// Screen displaying the full details of a submitted feedback item and marketing response
 class FeedbackDetailScreen extends ConsumerWidget {
@@ -24,9 +25,27 @@ class FeedbackDetailScreen extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
     final l10n = context.l10n;
 
+    final listAsync = ref.watch(feedbackListControllerProvider);
     final item = ref.watch(feedbackDetailProvider(submissionId));
 
     if (item == null) {
+      if (listAsync.isLoading) {
+        return AppScaffold(
+          appBar: AppBar(title: Text(l10n.feedbackDetailsTitle)),
+          body: const Center(child: CircularProgressIndicator()),
+        );
+      }
+      if (listAsync.hasError) {
+        return AppScaffold(
+          appBar: AppBar(title: Text(l10n.feedbackDetailsTitle)),
+          body: ErrorState(
+            title: l10n.unableLoadFeedback,
+            description: listAsync.error.toString().replaceAll('Exception: ', ''),
+            retryText: l10n.retry,
+            onRetry: () => ref.read(feedbackListControllerProvider.notifier).refresh(),
+          ),
+        );
+      }
       return AppScaffold(
         appBar: AppBar(title: Text(l10n.feedbackDetailsTitle)),
         body: Center(child: Text(l10n.submissionNotFound)),
@@ -122,21 +141,9 @@ class FeedbackDetailScreen extends ConsumerWidget {
                     _buildFieldRow(context, l10n.labelTopic, item.topic ?? '-'),
                     const SizedBox(height: RxSpacing.s12),
                     _buildFieldRow(context, l10n.labelDetails, item.details ?? '-'),
-                    if (item.voiceNoteUrl != null) ...[
+                    if (item.voiceNoteUrl != null && item.voiceNoteUrl!.isNotEmpty) ...[
                       const SizedBox(height: RxSpacing.s12),
-                      Row(
-                        children: [
-                          Icon(LucideIcons.mic, size: 16.0, color: colors.primary),
-                          const SizedBox(width: RxSpacing.s8),
-                          Text(
-                            l10n.voiceAttachedLabel,
-                            style: textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: colors.primary,
-                            ),
-                          ),
-                        ],
-                      ),
+                      VoiceNotePlayerCard(voiceSource: item.voiceNoteUrl!),
                     ],
                   ],
                   if (item.photoUrl != null && item.photoUrl!.isNotEmpty) ...[

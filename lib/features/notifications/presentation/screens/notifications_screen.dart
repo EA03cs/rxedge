@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
+import '../../../../app/router/app_router.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/notification_entities.dart';
@@ -96,7 +97,16 @@ class NotificationsScreen extends ConsumerWidget {
         }
         if (item.targetRoute != null && context.mounted) {
           final route = item.targetRoute!;
-          if (route == '/home' ||
+          if (route == AppRoutes.feedbackDetail) {
+            final targetId = item.targetId?.trim();
+            if (targetId != null && targetId.isNotEmpty) {
+              context.push(
+                '${AppRoutes.feedbackDetail}?id=${Uri.encodeQueryComponent(targetId)}',
+              );
+            } else {
+              context.go(AppRoutes.feedback);
+            }
+          } else if (route == '/home' ||
               route == '/learn' ||
               route == '/library' ||
               route == '/challenges' ||

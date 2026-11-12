@@ -9,9 +9,9 @@ final localeProvider = StateProvider<Locale>((ref) {
   return Locale(StorageInitializer.readInitialLocaleCode(fallback: 'ar'));
 });
 
-/// Theme Mode Provider (defaults to light as primary)
+/// Theme Mode Provider (persisted via StorageInitializer, defaults to light)
 final themeModeProvider = StateProvider<ThemeMode>((ref) {
-  return ThemeMode.light;
+  return StorageInitializer.readInitialThemeMode(fallback: ThemeMode.light);
 });
 
 /// Offline State Provider for testing / global state

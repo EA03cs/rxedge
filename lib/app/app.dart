@@ -57,6 +57,16 @@ class RxEdgeApp extends ConsumerWidget {
       }
     });
 
+    ref.listen<ThemeMode>(themeModeProvider, (previous, next) {
+      if (previous == null || previous == next) {
+        return;
+      }
+      StorageInitializer.writePreference(
+        StorageInitializer.prefThemeModeKey,
+        next.name,
+      );
+    });
+
     ref.listen<AsyncValue<bool>>(isOnlineStreamProvider, (previous, next) {
       final becameOnline =
           previous?.valueOrNull == false && next.valueOrNull == true;
