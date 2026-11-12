@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../../core/widgets/rx_network_image.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/feedback_entities.dart';
 import '../controllers/feedback_controller.dart';
@@ -117,22 +118,6 @@ class FeedbackDetailScreen extends ConsumerWidget {
                       const SizedBox(height: RxSpacing.s12),
                       _buildFieldRow(context, l10n.labelWhereHeard, item.whereHeard!),
                     ],
-                    if (item.photoUrl != null) ...[
-                      const SizedBox(height: RxSpacing.s12),
-                      Row(
-                        children: [
-                          Icon(LucideIcons.image, size: 16.0, color: colors.primary),
-                          const SizedBox(width: RxSpacing.s8),
-                          Text(
-                            l10n.photoAttachedLabel,
-                            style: textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: colors.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
                   ] else if (item.type == FeedbackType.fieldFeedback) ...[
                     _buildFieldRow(context, l10n.labelTopic, item.topic ?? '-'),
                     const SizedBox(height: RxSpacing.s12),
@@ -153,6 +138,32 @@ class FeedbackDetailScreen extends ConsumerWidget {
                         ],
                       ),
                     ],
+                  ],
+                  if (item.photoUrl != null && item.photoUrl!.isNotEmpty) ...[
+                    const SizedBox(height: RxSpacing.s12),
+                    Row(
+                      children: [
+                        Icon(LucideIcons.image, size: 16.0, color: colors.primary),
+                        const SizedBox(width: RxSpacing.s8),
+                        Text(
+                          l10n.photoAttachedLabel,
+                          style: textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: colors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: RxSpacing.s8),
+                    ClipRRect(
+                      borderRadius: RxRadii.borderInput,
+                      child: RxNetworkImage(
+                        imageUrl: item.photoUrl!,
+                        height: 180.0,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ],
                 ],
               ),

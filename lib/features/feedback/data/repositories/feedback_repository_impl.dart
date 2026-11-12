@@ -113,6 +113,22 @@ class FeedbackRepositoryImpl implements FeedbackRepository {
   }
 
   @override
+  Future<Result<String>> uploadAttachment({
+    required List<int> bytes,
+    required String filename,
+  }) async {
+    try {
+      final url = await _remoteDatasource.uploadAttachment(
+        bytes: bytes,
+        filename: filename,
+      );
+      return Result.success(url);
+    } catch (e, st) {
+      return Result.failure(ExceptionMapper.map(e, st));
+    }
+  }
+
+  @override
   Future<Result<FeedbackDraftEntity?>> getDraft(FeedbackType type) async {
     try {
       final dto = await _localDatasource.getDraft(type.name);

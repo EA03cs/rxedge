@@ -2,12 +2,17 @@ import 'package:dio/dio.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/network/api_endpoints.dart';
 import '../../../../core/network/api_response.dart';
+import '../../../../core/network/url_resolver.dart';
 import '../models/feedback_dto.dart';
 
 /// Remote Datasource Contract for Live Marketing Feedback
 abstract class FeedbackRemoteDatasource {
   Future<List<FeedbackItemDto>> getSubmissions();
   Future<FeedbackItemDto> submitFeedback(FeedbackItemDto item);
+  Future<String> uploadAttachment({
+    required List<int> bytes,
+    required String filename,
+  });
 }
 
 /// Remote Datasource Implementation backed by `/feedback` and `/feedback/my-submissions`
@@ -117,5 +122,39 @@ class FeedbackRemoteDatasourceImpl implements FeedbackRemoteDatasource {
       details: item.details,
       voiceNoteUrl: item.voiceNoteUrl,
     );
+  }
+
+  @override
+  Future<String> uploadAttachment({
+    required List<int> bytes,
+    required String filename,
+  }) async {
+    if (simulateError) {
+      throw const NetworkException('Unable to upload attachment');
+    }
+
+    if (dio != null) {
+      final formData = FormData.fromMap(<String, dynamic>{
+        'file': MultipartFile.fromBytes(bytes, filename: filename),
+        'subfolder': 'feedback',
+      });
+      final response = await dio!.post<dynamic>(
+        ApiEndpoints.mediaUpload,
+        data: formData,
+      );
+      final map = ApiResponseParser.unwrapMap(response.data);
+      final rawUrl = map['url'] as String? ?? '';
+      final resolved = UrlResolver.resolve(
+        rawUrl,
+        apiBaseUrl: dio!.options.baseUrl,
+      );
+      if (resolved == null || resolved.isEmpty) {
+        throw const ServerException('Upload succeeded without returning file URL');
+      }
+      return resolved;
+    }
+
+    await Future<void>.delayed(const Duration(milliseconds: 120));
+    return 'http://localhost:4010/uploads/feedback/$filename';
   }
 }

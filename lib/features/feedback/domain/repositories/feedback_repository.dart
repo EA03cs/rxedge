@@ -11,6 +11,10 @@ abstract class FeedbackRepository {
   Future<Result<List<FeedbackItemEntity>>> getSubmissions({bool forceRefresh = false});
   Future<Result<FeedbackItemEntity>> getSubmissionById(String id);
   Future<Result<FeedbackItemEntity>> submitFeedback(FeedbackItemEntity item);
+  Future<Result<String>> uploadAttachment({
+    required List<int> bytes,
+    required String filename,
+  });
   Future<Result<FeedbackDraftEntity?>> getDraft(FeedbackType type);
   Future<Result<void>> saveDraft(FeedbackDraftEntity draft);
   Future<Result<void>> clearDraft(FeedbackType type);

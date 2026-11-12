@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
@@ -51,8 +53,11 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
 
   // UI state
   bool _isSubmitting = false;
+  bool _isUploadingPhoto = false;
   bool _draftRestored = false;
   bool _showOptionalFields = false;
+  Uint8List? _attachedPhotoBytes;
+  String? _uploadedPhotoUrl;
   Timer? _autosaveTimer;
 
   @override
@@ -231,6 +236,7 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
           howResponded: _howRespondedController.text.trim().isEmpty
               ? null
               : _howRespondedController.text.trim(),
+          photoUrl: _uploadedPhotoUrl,
         );
         break;
 
@@ -250,6 +256,7 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
           whereHeard: _whereHeardController.text.trim().isEmpty
               ? null
               : _whereHeardController.text.trim(),
+          photoUrl: _uploadedPhotoUrl,
         );
         break;
 
@@ -266,6 +273,7 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
           submittedAt: DateTime.now(),
           topic: top,
           details: det,
+          photoUrl: _uploadedPhotoUrl,
         );
         break;
     }
@@ -506,6 +514,8 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
                   maxLines: 4,
                   onChanged: (_) => _onFieldChanged(),
                 ),
+                const SizedBox(height: RxSpacing.s16),
+                _buildPhotoAttachmentCard(context),
               ],
             ] else if (widget.type == FeedbackType.competitorClaim) ...[
               AppTextField(
@@ -534,50 +544,7 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
                   onChanged: (_) => _onFieldChanged(),
                 ),
                 const SizedBox(height: RxSpacing.s16),
-                // Photo Attachment toggle
-                InkWell(
-                  onTap: () {
-                    setState(() => _hasPhotoAttached = !_hasPhotoAttached);
-                    _onFieldChanged();
-                  },
-                  borderRadius: RxRadii.borderInput,
-                  child: Container(
-                    padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
-                    decoration: BoxDecoration(
-                      color: _hasPhotoAttached
-                          ? colors.primary.withValues(alpha: 0.05)
-                          : colors.surface,
-                      borderRadius: RxRadii.borderInput,
-                      border: Border.all(
-                        color: _hasPhotoAttached ? colors.primary : colors.border,
-                        width: RxShadows.hairlineBorderWidth,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          _hasPhotoAttached ? LucideIcons.checkCircle2 : LucideIcons.camera,
-                          size: 18.0,
-                          color: _hasPhotoAttached ? colors.primary : colors.textSecondary,
-                        ),
-                        const SizedBox(width: RxSpacing.s10),
-                        Expanded(
-                          child: Text(
-                            _hasPhotoAttached
-                                ? l10n.photoAttachedLabel
-                                : l10n.attachPhotoOptional,
-                            style: textTheme.bodySmall?.copyWith(
-                              fontWeight: _hasPhotoAttached ? FontWeight.w600 : FontWeight.w400,
-                              color: _hasPhotoAttached ? colors.primary : colors.textPrimary,
-                            ),
-                          ),
-                        ),
-                        if (_hasPhotoAttached)
-                          Icon(LucideIcons.x, size: 16.0, color: colors.textSecondary),
-                      ],
-                    ),
-                  ),
-                ),
+                _buildPhotoAttachmentCard(context),
               ],
             ] else if (widget.type == FeedbackType.fieldFeedback) ...[
               AppTextField(
@@ -599,6 +566,8 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
               ),
               if (_showOptionalFields) ...[
                 const SizedBox(height: RxSpacing.s16),
+                _buildPhotoAttachmentCard(context),
+                const SizedBox(height: RxSpacing.s12),
                 // Voice note simulated attachment
                 InkWell(
                   onTap: () {
@@ -653,12 +622,182 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
             AppButton(
               text: l10n.btnSendFeedback,
               leadingIcon: LucideIcons.send,
-              isLoading: _isSubmitting,
-              onPressed: _submit,
+              isLoading: _isSubmitting || _isUploadingPhoto,
+              onPressed: (_isSubmitting || _isUploadingPhoto) ? null : _submit,
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _pickAndUploadPhoto() async {
+    if (_isUploadingPhoto) return;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (sheetCtx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(LucideIcons.camera),
+              title: Text(isArabic ? 'التقاط صورة بالكاميرا' : 'Take Photo with Camera'),
+              onTap: () => Navigator.of(sheetCtx).pop(ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(LucideIcons.image),
+              title: Text(isArabic ? 'اختيار صورة من المعرض' : 'Choose from Gallery'),
+              onTap: () => Navigator.of(sheetCtx).pop(ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (source == null || !mounted) return;
+
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(
+        source: source,
+        imageQuality: 82,
+        maxWidth: 1600,
+      );
+      if (picked == null || !mounted) return;
+
+      final bytes = await picked.readAsBytes();
+      if (!mounted) return;
+
+      setState(() {
+        _attachedPhotoBytes = bytes;
+        _hasPhotoAttached = true;
+        _isUploadingPhoto = true;
+      });
+
+      final uploadRes = await ref.read(feedbackRepositoryProvider).uploadAttachment(
+            bytes: bytes,
+            filename: picked.name.isEmpty ? 'feedback_photo.jpg' : picked.name,
+          );
+      if (!mounted) return;
+
+      uploadRes.when(
+        success: (url) {
+          setState(() {
+            _uploadedPhotoUrl = url;
+            _hasPhotoAttached = true;
+            _isUploadingPhoto = false;
+          });
+          _onFieldChanged();
+        },
+        failure: (f) {
+          setState(() {
+            _isUploadingPhoto = false;
+            _hasPhotoAttached = _uploadedPhotoUrl != null;
+            if (_uploadedPhotoUrl == null) {
+              _attachedPhotoBytes = null;
+            }
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                f.debugMessage ??
+                    (isArabic
+                        ? 'تعذر رفع الصورة، تحقق من الاتصال وحاول مجدداً'
+                        : 'Failed to upload image. Please check connection.'),
+              ),
+              backgroundColor: context.rxColors.error,
+            ),
+          );
+        },
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isUploadingPhoto = false);
+    }
+  }
+
+  Widget _buildPhotoAttachmentCard(BuildContext context) {
+    final colors = context.rxColors;
+    final textTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
+    final hasImage = _hasPhotoAttached || _uploadedPhotoUrl != null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        InkWell(
+          onTap: () {
+            if (hasImage && !_isUploadingPhoto) {
+              setState(() {
+                _hasPhotoAttached = false;
+                _attachedPhotoBytes = null;
+                _uploadedPhotoUrl = null;
+              });
+              _onFieldChanged();
+            } else {
+              _pickAndUploadPhoto();
+            }
+          },
+          borderRadius: RxRadii.borderInput,
+          child: Container(
+            padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
+            decoration: BoxDecoration(
+              color: hasImage
+                  ? colors.primary.withValues(alpha: 0.05)
+                  : colors.surface,
+              borderRadius: RxRadii.borderInput,
+              border: Border.all(
+                color: hasImage ? colors.primary : colors.border,
+                width: RxShadows.hairlineBorderWidth,
+              ),
+            ),
+            child: Row(
+              children: [
+                if (_isUploadingPhoto)
+                  SizedBox(
+                    width: 18.0,
+                    height: 18.0,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.0,
+                      color: colors.primary,
+                    ),
+                  )
+                else
+                  Icon(
+                    hasImage ? LucideIcons.checkCircle2 : LucideIcons.camera,
+                    size: 18.0,
+                    color: hasImage ? colors.primary : colors.textSecondary,
+                  ),
+                const SizedBox(width: RxSpacing.s10),
+                Expanded(
+                  child: Text(
+                    hasImage ? l10n.photoAttachedLabel : l10n.attachPhotoOptional,
+                    style: textTheme.bodySmall?.copyWith(
+                      fontWeight: hasImage ? FontWeight.w600 : FontWeight.w400,
+                      color: hasImage ? colors.primary : colors.textPrimary,
+                    ),
+                  ),
+                ),
+                if (hasImage && !_isUploadingPhoto)
+                  Icon(LucideIcons.x, size: 16.0, color: colors.textSecondary),
+              ],
+            ),
+          ),
+        ),
+        if (_attachedPhotoBytes != null) ...[
+          const SizedBox(height: RxSpacing.s8),
+          ClipRRect(
+            borderRadius: RxRadii.borderInput,
+            child: Image.memory(
+              _attachedPhotoBytes!,
+              height: 120.0,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

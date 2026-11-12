@@ -128,6 +128,26 @@ void main() {
       verify(() => mockLocal.queueFeedbackSubmission(any())).called(1);
       verify(() => mockLocal.clearDraft('doctorObjection')).called(1);
     });
+
+    test('uploads image attachment via remote datasource and returns URL', () async {
+      when(
+        () => mockRemote.uploadAttachment(
+          bytes: any(named: 'bytes'),
+          filename: any(named: 'filename'),
+        ),
+      ).thenAnswer((_) async => 'http://rxedge.agro-plus.net/uploads/feedback/photo.jpg');
+
+      final result = await repository.uploadAttachment(
+        bytes: const <int>[1, 2, 3, 4],
+        filename: 'photo.jpg',
+      );
+
+      expect(result.isSuccess, isTrue);
+      result.when(
+        success: (url) => expect(url, endsWith('/uploads/feedback/photo.jpg')),
+        failure: (_) => fail('Expected upload URL'),
+      );
+    });
   });
 
   group('FeedbackRepositoryImpl - Drafts', () {
