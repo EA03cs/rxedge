@@ -1,7 +1,9 @@
 import 'dart:convert';
+import '../../../../core/network/api_endpoints.dart';
 import '../../../../core/services/logger_service.dart';
 import '../../../../core/storage/local_cache_service.dart';
 import '../../../../core/storage/offline_queue_service.dart';
+import '../../../../core/utils/uuid_v4.dart';
 import '../models/feedback_dto.dart';
 
 /// Local Datasource Contract for Live Marketing Feedback
@@ -83,12 +85,13 @@ class FeedbackLocalDatasourceImpl implements FeedbackLocalDatasource {
 
   @override
   Future<void> queueFeedbackSubmission(FeedbackItemDto item) async {
+    final clientId = item.clientSubmissionId ?? UuidV4.generate();
     _queueService.enqueue(
       OfflineQueueItem(
         id: 'fb_queue_${DateTime.now().millisecondsSinceEpoch}',
-        endpoint: '/api/v1/marketing/feedback',
+        endpoint: ApiEndpoints.feedback,
         httpMethod: 'POST',
-        payload: item.toJson(),
+        payload: item.toBackendPayload(overrideClientSubmissionId: clientId),
         createdAt: DateTime.now(),
       ),
     );

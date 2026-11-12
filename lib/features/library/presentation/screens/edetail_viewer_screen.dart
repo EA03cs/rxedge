@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../../core/widgets/rx_network_image.dart';
 import '../../domain/entities/material_item_entity.dart';
 import '../controllers/library_controller.dart';
 
@@ -408,6 +409,19 @@ class _EdetailViewerScreenState extends ConsumerState<EdetailViewerScreen> {
                 ),
               ),
               const SizedBox(height: RxSpacing.s20),
+
+              if ((slide.imageUrl ?? widget.material.fileUrl)?.trim().isNotEmpty ==
+                  true) ...[
+                RxNetworkImage(
+                  imageUrl: slide.imageUrl ?? widget.material.fileUrl,
+                  width: double.infinity,
+                  height: 220.0,
+                  fit: BoxFit.contain,
+                  borderRadius: RxRadii.borderBadge,
+                  fallbackIcon: LucideIcons.presentation,
+                ),
+                const SizedBox(height: RxSpacing.s20),
+              ],
 
               // Clinical Evidence Bullets
               ...slide.bulletEvidence.map((evidence) {

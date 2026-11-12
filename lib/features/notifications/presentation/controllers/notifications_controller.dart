@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../home/presentation/controllers/home_controller.dart';
 import '../../data/repositories/notifications_repository_impl.dart';
 import '../../domain/entities/notification_entities.dart';
 
@@ -17,7 +18,7 @@ class NotificationsController extends AutoDisposeAsyncNotifier<List<Notification
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final repo = ref.read(notificationsRepositoryProvider);
-      final result = await repo.getNotifications();
+      final result = await repo.getNotifications(forceRefresh: true);
       return result.when(
         success: (list) => list,
         failure: (f) => throw Exception(f.debugMessage ?? 'Failed to load notifications'),
@@ -62,6 +63,7 @@ final unreadNotificationsCountProvider = Provider.autoDispose<int>((ref) {
   final notifs = ref.watch(notificationsControllerProvider);
   return notifs.maybeWhen(
     data: (list) => list.where((n) => !n.isRead).length,
-    orElse: () => 0,
+    orElse: () =>
+        ref.watch(homeControllerProvider).valueOrNull?.unreadNotificationCount ?? 0,
   );
 });

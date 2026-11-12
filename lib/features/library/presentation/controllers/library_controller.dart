@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/services/file_download_service.dart';
 import '../../data/repositories/library_repository_impl.dart';
 import '../../domain/entities/material_item_entity.dart';
 
@@ -187,13 +188,16 @@ class LibraryController extends AutoDisposeAsyncNotifier<LibraryState> {
     final current = state.valueOrNull;
     if (current == null) return;
 
-    final downloads = Map<String, double>.from(current.activeDownloads);
-    downloads[materialId] = 0.15;
+    final matches = current.allMaterials.where((item) => item.id == materialId);
+    if (matches.isEmpty) return;
+    final targetItem = matches.first;
 
-    // Update item's download state in memory
+    final downloads = Map<String, double>.from(current.activeDownloads);
+    downloads[materialId] = 0.08;
+
     final updatedList = current.allMaterials.map((item) {
       if (item.id == materialId) {
-        return item.copyWith(downloadState: const Downloading(0.15));
+        return item.copyWith(downloadState: const Downloading(0.08));
       }
       return item;
     }).toList();
@@ -203,15 +207,81 @@ class LibraryController extends AutoDisposeAsyncNotifier<LibraryState> {
       allMaterials: updatedList,
     ));
 
-    // Cancel any previous timer
     _downloadTimers[materialId]?.cancel();
+    _downloadTimers.remove(materialId);
 
-    // Simulate realistic stepped progress
-    var progress = 0.15;
+    final fileUrl = targetItem.fileUrl;
+    if (fileUrl != null && fileUrl.trim().isNotEmpty) {
+      try {
+        final downloadService = ref.read(fileDownloadServiceProvider);
+        final ext = targetItem.fileType == MaterialFileType.pdf
+            ? 'pdf'
+            : (targetItem.fileType == MaterialFileType.image ? 'png' : 'bin');
+        final savePath = await downloadService.resolveLocalMaterialPath(
+          materialId,
+          ext: ext,
+        );
+        final localPath = await downloadService.downloadFile(
+          fileUrl: fileUrl,
+          savePath: savePath,
+          onProgress: (received, total) {
+            if (total <= 0) return;
+            final latestState = state.valueOrNull;
+            if (latestState == null) return;
+            final ratio = (received / total).clamp(0.05, 0.99);
+            final activeMap = Map<String, double>.from(latestState.activeDownloads);
+            activeMap[materialId] = ratio;
+            final progressingList = latestState.allMaterials.map((item) {
+              if (item.id == materialId) {
+                return item.copyWith(downloadState: Downloading(ratio));
+              }
+              return item;
+            }).toList();
+            state = AsyncData(latestState.copyWith(
+              activeDownloads: activeMap,
+              allMaterials: progressingList,
+            ));
+          },
+        );
+
+        final repository = ref.read(libraryRepositoryProvider);
+        await repository.markDownloaded(materialId);
+
+        final latestState = state.valueOrNull;
+        if (latestState == null) return;
+        final activeMap = Map<String, double>.from(latestState.activeDownloads)
+          ..remove(materialId);
+        final finishedList = latestState.allMaterials.map((item) {
+          if (item.id == materialId) {
+            return item.copyWith(
+              downloadState: Downloaded(DateTime.now()),
+              localFilePath: localPath,
+            );
+          }
+          return item;
+        }).toList();
+        state = AsyncData(latestState.copyWith(
+          activeDownloads: activeMap,
+          allMaterials: finishedList,
+        ));
+        return;
+      } catch (_) {
+        // Fallback when offline or backend seed points to a local placeholder asset:
+        // cancel active download cleanly or complete metadata offline caching below if no remote binary exists.
+        final latestState = state.valueOrNull;
+        if (latestState != null && latestState.isOffline) {
+          cancelDownload(materialId);
+          return;
+        }
+      }
+    }
+
+    // Fallback stepped metadata caching when material has no binary URL
+    var progress = 0.2;
     _downloadTimers[materialId] = Timer.periodic(
-      const Duration(milliseconds: 120),
+      const Duration(milliseconds: 100),
       (timer) async {
-        progress += 0.25;
+        progress += 0.35;
         final latestState = state.valueOrNull;
         if (latestState == null) {
           timer.cancel();

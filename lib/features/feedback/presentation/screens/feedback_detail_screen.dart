@@ -27,17 +27,18 @@ class FeedbackDetailScreen extends ConsumerWidget {
 
     if (item == null) {
       return AppScaffold(
-        appBar: AppBar(title: const Text('Feedback Details')),
-        body: const Center(child: Text('Submission not found')),
+        appBar: AppBar(title: Text(l10n.feedbackDetailsTitle)),
+        body: Center(child: Text(l10n.submissionNotFound)),
       );
     }
 
-    final dateFormatted = DateFormat('dd MMM yyyy, HH:mm').format(item.submittedAt);
+    final locale = Localizations.localeOf(context).languageCode;
+    final dateFormatted = DateFormat.yMMMd(locale).add_jm().format(item.submittedAt);
 
     return AppScaffold(
       appBar: AppBar(
         title: Text(
-          'Feedback Details',
+          l10n.feedbackDetailsTitle,
           style: textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w700,
             color: colors.textPrimary,
@@ -58,7 +59,7 @@ class FeedbackDetailScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _typeName(item.type),
+                        _typeName(context, item.type),
                         style: textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w700,
                           color: colors.textPrimary,
@@ -86,7 +87,7 @@ class FeedbackDetailScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Field Submission',
+                    l10n.fieldSubmissionHeader,
                     style: textTheme.labelLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: colors.textPrimary,
@@ -97,24 +98,24 @@ class FeedbackDetailScreen extends ConsumerWidget {
                   const SizedBox(height: RxSpacing.s12),
 
                   if (item.type == FeedbackType.doctorObjection) ...[
-                    _buildFieldRow(context, 'Product', item.product ?? '-'),
+                    _buildFieldRow(context, l10n.labelProduct, item.product ?? '-'),
                     const SizedBox(height: RxSpacing.s12),
-                    _buildFieldRow(context, 'Doctor Objection', item.objection ?? '-'),
+                    _buildFieldRow(context, l10n.labelDoctorObjection, item.objection ?? '-'),
                     if (item.doctorSpecialty != null && item.doctorSpecialty!.isNotEmpty) ...[
                       const SizedBox(height: RxSpacing.s12),
-                      _buildFieldRow(context, 'Doctor Specialty', item.doctorSpecialty!),
+                      _buildFieldRow(context, l10n.labelDoctorSpecialty, item.doctorSpecialty!),
                     ],
                     if (item.howResponded != null && item.howResponded!.isNotEmpty) ...[
                       const SizedBox(height: RxSpacing.s12),
-                      _buildFieldRow(context, 'How I Responded', item.howResponded!),
+                      _buildFieldRow(context, l10n.labelHowResponded, item.howResponded!),
                     ],
                   ] else if (item.type == FeedbackType.competitorClaim) ...[
-                    _buildFieldRow(context, 'Competitor', item.competitorName ?? '-'),
+                    _buildFieldRow(context, l10n.labelCompetitor, item.competitorName ?? '-'),
                     const SizedBox(height: RxSpacing.s12),
-                    _buildFieldRow(context, 'Claim Heard', item.claim ?? '-'),
+                    _buildFieldRow(context, l10n.labelClaimHeard, item.claim ?? '-'),
                     if (item.whereHeard != null && item.whereHeard!.isNotEmpty) ...[
                       const SizedBox(height: RxSpacing.s12),
-                      _buildFieldRow(context, 'Where Heard', item.whereHeard!),
+                      _buildFieldRow(context, l10n.labelWhereHeard, item.whereHeard!),
                     ],
                     if (item.photoUrl != null) ...[
                       const SizedBox(height: RxSpacing.s12),
@@ -123,7 +124,7 @@ class FeedbackDetailScreen extends ConsumerWidget {
                           Icon(LucideIcons.image, size: 16.0, color: colors.primary),
                           const SizedBox(width: RxSpacing.s8),
                           Text(
-                            'Promotional photo attached',
+                            l10n.photoAttachedLabel,
                             style: textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w600,
                               color: colors.primary,
@@ -133,9 +134,9 @@ class FeedbackDetailScreen extends ConsumerWidget {
                       ),
                     ],
                   ] else if (item.type == FeedbackType.fieldFeedback) ...[
-                    _buildFieldRow(context, 'Topic', item.topic ?? '-'),
+                    _buildFieldRow(context, l10n.labelTopic, item.topic ?? '-'),
                     const SizedBox(height: RxSpacing.s12),
-                    _buildFieldRow(context, 'Details', item.details ?? '-'),
+                    _buildFieldRow(context, l10n.labelDetails, item.details ?? '-'),
                     if (item.voiceNoteUrl != null) ...[
                       const SizedBox(height: RxSpacing.s12),
                       Row(
@@ -143,7 +144,7 @@ class FeedbackDetailScreen extends ConsumerWidget {
                           Icon(LucideIcons.mic, size: 16.0, color: colors.primary),
                           const SizedBox(width: RxSpacing.s8),
                           Text(
-                            'Voice note attached (0:32)',
+                            l10n.voiceAttachedLabel,
                             style: textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w600,
                               color: colors.primary,
@@ -203,7 +204,7 @@ class FeedbackDetailScreen extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          item.repliedBy ?? 'Medical Affairs',
+                          item.repliedBy ?? l10n.medicalAffairsDefault,
                           style: textTheme.bodySmall?.copyWith(
                             fontWeight: FontWeight.w600,
                             color: colors.textSecondary,
@@ -212,7 +213,7 @@ class FeedbackDetailScreen extends ConsumerWidget {
                         ),
                         if (item.repliedAt != null)
                           Text(
-                            DateFormat('dd MMM, HH:mm').format(item.repliedAt!),
+                            DateFormat.MMMd(locale).add_jm().format(item.repliedAt!),
                             style: textTheme.bodySmall?.copyWith(
                               color: colors.textTertiary,
                               fontSize: 11.5,
@@ -252,7 +253,7 @@ class FeedbackDetailScreen extends ConsumerWidget {
                           ),
                           const SizedBox(height: RxSpacing.s4),
                           Text(
-                            'Saved offline. It will be sent automatically as soon as an internet connection is established.',
+                            l10n.offlineQueueInfo,
                             style: textTheme.bodySmall?.copyWith(
                               color: colors.textSecondary,
                               height: 1.35,
@@ -355,14 +356,15 @@ class FeedbackDetailScreen extends ConsumerWidget {
     }
   }
 
-  String _typeName(FeedbackType type) {
+  String _typeName(BuildContext context, FeedbackType type) {
+    final l10n = context.l10n;
     switch (type) {
       case FeedbackType.doctorObjection:
-        return 'Doctor Objection';
+        return l10n.typeDoctorObjection;
       case FeedbackType.competitorClaim:
-        return 'Competitor Claim';
+        return l10n.typeCompetitorClaim;
       case FeedbackType.fieldFeedback:
-        return 'Field Feedback';
+        return l10n.typeFieldFeedback;
     }
   }
 }

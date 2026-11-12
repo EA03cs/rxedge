@@ -1,4 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/utils/result.dart';
+import '../../../home/presentation/controllers/home_controller.dart';
+import '../../../profile/presentation/controllers/profile_controller.dart';
 import '../../data/repositories/challenges_repository_impl.dart';
 import '../../domain/entities/challenges_entities.dart';
 
@@ -120,8 +123,25 @@ class ChallengesController extends AutoDisposeAsyncNotifier<ChallengesDashboardS
       timeTakenSeconds: timeTakenSeconds,
     );
 
+    ref.invalidate(homeControllerProvider);
+    ref.invalidate(profileControllerProvider);
+
     // Refresh state to update quiz completion status
     state = await AsyncValue.guard(() => _fetchData(forceRefresh: false));
+  }
+
+  Future<Result<QuizSubmissionResultEntity>> submitServerQuiz({
+    required String quizId,
+    required List<Map<String, String>> answers,
+  }) async {
+    final repo = ref.read(challengesRepositoryProvider);
+    final res = await repo.submitQuizAnswers(quizId: quizId, answers: answers);
+    if (res.isSuccess) {
+      ref.invalidate(homeControllerProvider);
+      ref.invalidate(profileControllerProvider);
+      state = await AsyncValue.guard(() => _fetchData(forceRefresh: true));
+    }
+    return res;
   }
 }
 

@@ -94,17 +94,35 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
 
   @override
   Future<Result<QuickQuizEntity>> getQuizById(String quizId) async {
-    final quizzesResult = await getQuickQuizzes();
-    return quizzesResult.when(
-      success: (list) {
-        final found = list.where((q) => q.id == quizId);
-        if (found.isNotEmpty) {
-          return Result.success(found.first);
-        }
-        return Result.failure(ExceptionMapper.map(Exception('Quiz not found: $quizId')));
-      },
-      failure: (f) => Result.failure(f),
-    );
+    if (_memoryQuickQuizzes != null) {
+      final found = _memoryQuickQuizzes!.where((q) => q.id == quizId);
+      if (found.isNotEmpty && found.first.questions.isNotEmpty) {
+        return Result.success(found.first);
+      }
+    }
+
+    try {
+      final remoteQuiz = await _remoteDatasource.getQuizById(quizId);
+      final domainQuiz = remoteQuiz.toDomain();
+      if (_memoryQuickQuizzes != null) {
+        _memoryQuickQuizzes = _memoryQuickQuizzes!
+            .map((q) => q.id == quizId ? domainQuiz : q)
+            .toList();
+      }
+      return Result.success(domainQuiz);
+    } catch (e, st) {
+      final quizzesResult = await getQuickQuizzes();
+      return quizzesResult.when(
+        success: (list) {
+          final found = list.where((q) => q.id == quizId && q.questions.isNotEmpty);
+          if (found.isNotEmpty) {
+            return Result.success(found.first);
+          }
+          return Result.failure(ExceptionMapper.map(e, st));
+        },
+        failure: (_) => Result.failure(ExceptionMapper.map(e, st)),
+      );
+    }
   }
 
   @override
@@ -252,6 +270,57 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
       }
 
       return Result.success(localResult);
+    }
+  }
+
+  @override
+  Future<Result<QuizSubmissionResultEntity>> submitQuizAnswers({
+    required String quizId,
+    required List<Map<String, String>> answers,
+  }) async {
+    try {
+      final dto = await _remoteDatasource.submitQuizAnswers(
+        quizId: quizId,
+        answers: answers,
+      );
+      final domain = dto.toDomain();
+
+      final correctCount = domain.answers.where((a) => a.isCorrect).length;
+      final totalQuestions =
+          domain.answers.isNotEmpty ? domain.answers.length : answers.length;
+
+      String quizTitle = '';
+      if (_memoryQuickQuizzes != null) {
+        _memoryQuickQuizzes = _memoryQuickQuizzes!.map((q) {
+          if (q.id == quizId) {
+            quizTitle = q.title;
+            return q.copyWith(
+              isCompleted: domain.isPassed,
+              lastScore: correctCount,
+              lastMaxScore: totalQuestions,
+            );
+          }
+          return q;
+        }).toList();
+      }
+
+      _localQuizHistory.insert(
+        0,
+        QuizResultHistoryEntity(
+          id: domain.attemptId,
+          quizId: quizId,
+          quizTitle: quizTitle,
+          score: correctCount,
+          totalQuestions: totalQuestions,
+          pointsEarned: domain.pointsAwarded,
+          timeTakenSeconds: 0,
+          completedAt: DateTime.now(),
+        ),
+      );
+
+      return Result.success(domain);
+    } catch (e, st) {
+      return Result.failure(ExceptionMapper.map(e, st));
     }
   }
 

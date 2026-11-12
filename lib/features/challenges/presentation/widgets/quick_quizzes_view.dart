@@ -28,13 +28,13 @@ class QuickQuizzesView extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     if (quizzes.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsetsDirectional.all(RxSpacing.s24),
+          padding: const EdgeInsetsDirectional.all(RxSpacing.s24),
           child: EmptyState(
             icon: LucideIcons.helpCircle,
-            title: 'No Quizzes Available',
-            description: 'New clinical quizzes will appear here with each detailing cycle.',
+            title: l10n.noQuizzesTitle,
+            description: l10n.noQuizzesDesc,
           ),
         ),
       );
@@ -81,7 +81,7 @@ class QuickQuizzesView extends StatelessWidget {
                     ),
                   ),
                   StatusBadge(
-                    label: '+${quiz.rewardPoints} Pts',
+                    label: l10n.pointsPlusValue(quiz.rewardPoints),
                     variant: StatusBadgeVariant.accent,
                   ),
                 ],
@@ -105,21 +105,21 @@ class QuickQuizzesView extends StatelessWidget {
                   Icon(LucideIcons.helpCircle, size: 14.0, color: colors.textSecondary),
                   const SizedBox(width: RxSpacing.s4),
                   Text(
-                    '${quiz.questions.length} questions',
+                    l10n.questionsCountLabel(quiz.displayQuestionCount),
                     style: textTheme.bodySmall?.copyWith(color: colors.textSecondary),
                   ),
                   const SizedBox(width: RxSpacing.s12),
                   Icon(LucideIcons.clock4, size: 14.0, color: colors.textSecondary),
                   const SizedBox(width: RxSpacing.s4),
                   Text(
-                    '${quiz.durationMinutes} min',
+                    l10n.minutesCountLabel(quiz.durationMinutes),
                     style: textTheme.bodySmall?.copyWith(color: colors.textSecondary),
                   ),
                   const Spacer(),
                   if (isDone) ...[
                     StatusBadge(
-                      label: quiz.lastScore != null
-                          ? 'Score: ${quiz.lastScore}/${quiz.lastMaxScore}'
+                      label: quiz.lastScore != null && quiz.lastMaxScore != null
+                          ? l10n.scoreOutOfLabel(quiz.lastScore!, quiz.lastMaxScore!)
                           : l10n.completedBadge,
                       variant: StatusBadgeVariant.success,
                       showDot: true,
@@ -162,7 +162,7 @@ class QuickQuizzesView extends StatelessWidget {
                       size: 14.0,
                     ),
                     label: Text(
-                      isDone ? 'Retake Quiz' : l10n.btnStartQuiz,
+                      isDone ? l10n.btnRetakeQuiz : l10n.btnStartQuiz,
                       style: textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w700,
                         color: isDone ? colors.primary : Colors.white,

@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import '../../../../core/error/exceptions.dart';
+import '../../../../core/network/api_endpoints.dart';
+import '../../../../core/network/api_response.dart';
 import '../models/challenges_dto.dart';
 
 /// Remote Datasource Contract for Challenges & Gamification
@@ -16,11 +18,15 @@ abstract class ChallengesRemoteDatasource {
     required int totalQuestions,
     required int timeTakenSeconds,
   });
+  Future<QuizSubmissionResultDto> submitQuizAnswers({
+    required String quizId,
+    required List<Map<String, String>> answers,
+  });
   Future<List<PastChallengeHistoryDto>> getPastChallengesHistory();
   Future<List<QuizResultHistoryDto>> getQuizResultsHistory();
 }
 
-/// Remote Datasource Implementation with realistic pharma field training data
+/// Remote Datasource Implementation backed by Gamification & Competitors APIs
 class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
   final Dio? dio;
   final bool simulateError;
@@ -35,6 +41,46 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
     if (simulateError) {
       throw const ServerException('Failed to retrieve monthly challenge data from server');
     }
+
+    if (dio != null) {
+      final responses = await Future.wait([
+        dio!.get<dynamic>(ApiEndpoints.monthlyChallenge),
+        dio!.get<dynamic>(ApiEndpoints.leaderboard),
+      ]);
+
+      final challengeData = ApiResponseParser.unwrapMap(responses[0].data);
+      final leaderboardData = ApiResponseParser.unwrapMap(responses[1].data);
+
+      final merged = Map<String, dynamic>.from(challengeData);
+      final topUsers = leaderboardData['leaderboard'];
+      if (topUsers is List) {
+        merged['leaderboard'] = topUsers;
+        merged['totalParticipants'] ??= topUsers.length;
+      }
+      final currentUser = leaderboardData['currentUser'];
+      if (currentUser is Map && currentUser['rank'] != null) {
+        merged['userRank'] = currentUser['rank'];
+      }
+      if (merged['id'] == null || (merged['id'] as String).isEmpty) {
+        return MonthlyChallengeDto(
+          id: 'none',
+          title: '',
+          deadlineIso: DateTime.now().add(const Duration(days: 7)).toIso8601String(),
+          rules: const [],
+          currentProgress: 0,
+          completedMilestones: 0,
+          totalMilestones: 0,
+          userRank: (merged['userRank'] as num?)?.toInt() ?? 0,
+          totalParticipants: (merged['totalParticipants'] as num?)?.toInt() ?? 0,
+          rewards: const [],
+          leaderboard: (merged['leaderboard'] as List<dynamic>? ?? const [])
+              .map((e) => LeaderboardEntryDto.fromJson(e as Map<String, dynamic>))
+              .toList(),
+        );
+      }
+      return MonthlyChallengeDto.fromJson(merged);
+    }
+
     await Future<void>.delayed(const Duration(milliseconds: 140));
 
     final deadline = DateTime.now().add(const Duration(days: 4, hours: 14));
@@ -139,6 +185,13 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
     if (simulateError) {
       throw const ServerException('Failed to retrieve quick quizzes');
     }
+
+    if (dio != null) {
+      final response = await dio!.get<dynamic>(ApiEndpoints.quizzes);
+      final list = ApiResponseParser.unwrapList(response.data);
+      return list.map(QuickQuizDto.fromJson).toList();
+    }
+
     await Future<void>.delayed(const Duration(milliseconds: 140));
 
     return [
@@ -305,6 +358,12 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
 
   @override
   Future<QuickQuizDto> getQuizById(String quizId) async {
+    if (dio != null) {
+      final response = await dio!.get<dynamic>(ApiEndpoints.quizById(quizId));
+      final map = ApiResponseParser.unwrapMap(response.data);
+      return QuickQuizDto.fromJson(map);
+    }
+
     final list = await getQuickQuizzes();
     final found = list.where((q) => q.id == quizId);
     if (found.isNotEmpty) {
@@ -318,6 +377,32 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
     if (simulateError) {
       throw const ServerException('Failed to retrieve objection of the month');
     }
+
+    if (dio != null) {
+      final response = await dio!.get<dynamic>(ApiEndpoints.objectionOfMonth);
+      final raw = ApiResponseParser.unwrapData(response.data);
+      if (raw is Map<String, dynamic> && raw.isNotEmpty) {
+        return ObjectionOfTheMonthDto.fromJson(raw);
+      }
+      if (raw is List && raw.isNotEmpty && raw.first is Map) {
+        return ObjectionOfTheMonthDto.fromJson(
+          Map<String, dynamic>.from(raw.first as Map),
+        );
+      }
+      return const ObjectionOfTheMonthDto(
+        id: '',
+        doctorQuote: '',
+        doctorName: '',
+        doctorSpecialty: '',
+        productConcerned: '',
+        recommendedResponse: '',
+        talkingPoints: [],
+        studyReference: '',
+        helpfulCount: 0,
+        communityResponseCount: 0,
+      );
+    }
+
     await Future<void>.delayed(const Duration(milliseconds: 120));
 
     return const ObjectionOfTheMonthDto(
@@ -395,7 +480,55 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
   }
 
   @override
+  Future<QuizSubmissionResultDto> submitQuizAnswers({
+    required String quizId,
+    required List<Map<String, String>> answers,
+  }) async {
+    if (dio != null) {
+      final response = await dio!.post<dynamic>(
+        ApiEndpoints.submitQuiz(quizId),
+        data: <String, dynamic>{'answers': answers},
+      );
+      final map = ApiResponseParser.unwrapMap(response.data);
+      return QuizSubmissionResultDto.fromJson(map);
+    }
+
+    await Future<void>.delayed(const Duration(milliseconds: 120));
+    return QuizSubmissionResultDto(
+      attemptId: 'local_${DateTime.now().millisecondsSinceEpoch}',
+      score: 100,
+      isPassed: true,
+      passingScore: 70,
+      pointsAwarded: 30,
+      answers: const [],
+    );
+  }
+
+  @override
   Future<List<PastChallengeHistoryDto>> getPastChallengesHistory() async {
+    if (dio != null) {
+      final response = await dio!.get<dynamic>(ApiEndpoints.pointsHistory);
+      final list = ApiResponseParser.unwrapList(
+        response.data,
+        nestedKeys: const ['items', 'transactions', 'results'],
+      );
+      return list
+          .where((item) => item['type'] == 'challenge_reward')
+          .map((item) {
+            return PastChallengeHistoryDto(
+              id: item['id'] as String? ?? '',
+              title: item['description'] as String? ?? '',
+              completedAtIso: item['createdAt'] as String? ??
+                  DateTime.now().toIso8601String(),
+              finalRank: 0,
+              totalParticipants: 0,
+              pointsEarned: (item['amount'] as num?)?.toInt() ?? 0,
+              badgeEarned: null,
+            );
+          })
+          .toList();
+    }
+
     await Future<void>.delayed(const Duration(milliseconds: 100));
     return [
       PastChallengeHistoryDto(
@@ -421,6 +554,30 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
 
   @override
   Future<List<QuizResultHistoryDto>> getQuizResultsHistory() async {
+    if (dio != null) {
+      final response = await dio!.get<dynamic>(ApiEndpoints.pointsHistory);
+      final list = ApiResponseParser.unwrapList(
+        response.data,
+        nestedKeys: const ['items', 'transactions', 'results'],
+      );
+      return list
+          .where((item) => item['type'] == 'quiz_completion')
+          .map((item) {
+            return QuizResultHistoryDto(
+              id: item['id'] as String? ?? '',
+              quizId: item['referenceId'] as String? ?? '',
+              quizTitle: item['description'] as String? ?? '',
+              score: 0,
+              totalQuestions: 0,
+              pointsEarned: (item['amount'] as num?)?.toInt() ?? 0,
+              timeTakenSeconds: 0,
+              completedAtIso: item['createdAt'] as String? ??
+                  DateTime.now().toIso8601String(),
+            );
+          })
+          .toList();
+    }
+
     await Future<void>.delayed(const Duration(milliseconds: 100));
     return [
       QuizResultHistoryDto(

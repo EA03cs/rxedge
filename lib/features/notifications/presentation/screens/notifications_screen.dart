@@ -49,9 +49,9 @@ class NotificationsScreen extends ConsumerWidget {
       body: notifsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => ErrorState(
-          title: 'Unable to load notifications',
-          description: err.toString(),
-          retryText: 'Retry',
+          title: l10n.unableLoadNotifications,
+          description: err.toString().replaceAll('Exception: ', ''),
+          retryText: l10n.retry,
           onRetry: () => ref.read(notificationsControllerProvider.notifier).refresh(),
         ),
         data: (items) {
@@ -95,7 +95,17 @@ class NotificationsScreen extends ConsumerWidget {
           ref.read(notificationsControllerProvider.notifier).markAsRead(item.id);
         }
         if (item.targetRoute != null && context.mounted) {
-          context.push(item.targetRoute!);
+          final route = item.targetRoute!;
+          if (route == '/home' ||
+              route == '/learn' ||
+              route == '/library' ||
+              route == '/challenges' ||
+              route == '/feedback' ||
+              route == '/profile') {
+            context.go(route);
+          } else {
+            context.push(route);
+          }
         }
       },
       borderRadius: RxRadii.borderCard,
@@ -149,7 +159,7 @@ class NotificationsScreen extends ConsumerWidget {
                       ),
                       const SizedBox(width: RxSpacing.s8),
                       Text(
-                        _formatTime(item.timestamp),
+                        _formatTime(context, item.timestamp),
                         style: textTheme.bodySmall?.copyWith(
                           color: colors.textTertiary,
                           fontSize: 11.5,
@@ -229,14 +239,15 @@ class NotificationsScreen extends ConsumerWidget {
     }
   }
 
-  String _formatTime(DateTime time) {
+  String _formatTime(BuildContext context, DateTime time) {
+    final l10n = context.l10n;
     final diff = DateTime.now().difference(time);
     if (diff.inMinutes < 60) {
-      return '${diff.inMinutes}m ago';
+      return l10n.minAgoCount(diff.inMinutes.clamp(1, 59));
     } else if (diff.inHours < 24) {
-      return '${diff.inHours}h ago';
+      return l10n.hoursAgoCount(diff.inHours);
     } else {
-      return '${diff.inDays}d ago';
+      return l10n.daysAgoCount(diff.inDays);
     }
   }
 }

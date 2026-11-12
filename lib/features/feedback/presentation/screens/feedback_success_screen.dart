@@ -89,8 +89,8 @@ class FeedbackSuccessScreen extends StatelessWidget {
                 // Subtitle
                 Text(
                   isOfflinePending
-                      ? 'Stored securely on your device. We will automatically submit it to medical affairs as soon as connection is restored.'
-                      : 'Commercial marketing and medical affairs review field intelligence reports daily to update talking points.',
+                      ? l10n.feedbackQueuedExtraNote
+                      : l10n.feedbackSentExtraNote,
                   textAlign: TextAlign.center,
                   style: textTheme.bodyMedium?.copyWith(
                     color: colors.textSecondary,
@@ -108,7 +108,7 @@ class FeedbackSuccessScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            _typeName(type),
+                            _typeName(context, type),
                             style: textTheme.labelMedium?.copyWith(
                               color: colors.textSecondary,
                               fontWeight: FontWeight.w600,
@@ -166,14 +166,15 @@ class FeedbackSuccessScreen extends StatelessWidget {
     );
   }
 
-  String _typeName(FeedbackType type) {
+  String _typeName(BuildContext context, FeedbackType type) {
+    final l10n = context.l10n;
     switch (type) {
       case FeedbackType.doctorObjection:
-        return 'Doctor Objection';
+        return l10n.typeDoctorObjection;
       case FeedbackType.competitorClaim:
-        return 'Competitor Claim';
+        return l10n.typeCompetitorClaim;
       case FeedbackType.fieldFeedback:
-        return 'Field Feedback';
+        return l10n.typeFieldFeedback;
     }
   }
 }

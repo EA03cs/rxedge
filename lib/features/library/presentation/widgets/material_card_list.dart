@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../../core/widgets/rx_network_image.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/material_item_entity.dart';
 
@@ -37,12 +39,9 @@ class MaterialCardList extends StatelessWidget {
     }
   }
 
-  String _formatDate(DateTime dt) {
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
-    return '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
+  String _formatDate(BuildContext context, DateTime dt) {
+    final locale = Localizations.localeOf(context).languageCode;
+    return DateFormat.yMMMd(locale).format(dt);
   }
 
   @override
@@ -75,25 +74,40 @@ class MaterialCardList extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // 1. Thumbnail / File Type Icon Box
-            Container(
-              width: 48.0,
-              height: 48.0,
-              decoration: BoxDecoration(
-                color: colors.surfaceMuted,
+            if ((item.thumbnailUrl ??
+                    (item.fileType == MaterialFileType.image
+                        ? item.fileUrl
+                        : null))
+                ?.trim()
+                .isNotEmpty ==
+                true)
+              RxNetworkImage(
+                imageUrl: item.thumbnailUrl ?? item.fileUrl,
+                width: 48.0,
+                height: 48.0,
                 borderRadius: RxRadii.borderBadge,
-                border: Border.all(
-                  color: colors.border,
-                  width: RxShadows.hairlineBorderWidth,
+                fallbackIcon: _getTypeIcon(item.fileType),
+              )
+            else
+              Container(
+                width: 48.0,
+                height: 48.0,
+                decoration: BoxDecoration(
+                  color: colors.surfaceMuted,
+                  borderRadius: RxRadii.borderBadge,
+                  border: Border.all(
+                    color: colors.border,
+                    width: RxShadows.hairlineBorderWidth,
+                  ),
+                ),
+                child: Center(
+                  child: Icon(
+                    _getTypeIcon(item.fileType),
+                    size: 22.0,
+                    color: colors.primary,
+                  ),
                 ),
               ),
-              child: Center(
-                child: Icon(
-                  _getTypeIcon(item.fileType),
-                  size: 22.0,
-                  color: colors.primary,
-                ),
-              ),
-            ),
             const SizedBox(width: RxSpacing.s12),
 
             // 2. Middle Content
@@ -143,7 +157,7 @@ class MaterialCardList extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        '${item.formattedSize} • ${_formatDate(item.updatedAt)}',
+                        '${item.formattedSize} • ${_formatDate(context, item.updatedAt)}',
                         style: textTheme.bodySmall?.copyWith(
                           color: colors.textSecondary,
                           fontSize: 11.0,
@@ -158,7 +172,7 @@ class MaterialCardList extends StatelessWidget {
                         ),
                         const SizedBox(width: RxSpacing.s2),
                         Text(
-                          'Offline',
+                          l10n.offlineStatusBadge,
                           style: textTheme.labelSmall?.copyWith(
                             color: colors.success,
                             fontSize: 10.5,

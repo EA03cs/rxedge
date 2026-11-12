@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../../core/error/failure_message_mapper.dart';
 import '../../../../core/widgets/widgets.dart';
+import '../../data/repositories/challenges_repository_impl.dart';
 import '../../domain/entities/challenges_entities.dart';
 import '../controllers/challenges_controller.dart';
 
@@ -30,10 +32,16 @@ class QuickQuizScreen extends ConsumerStatefulWidget {
 }
 
 class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
+  late QuickQuizEntity _quiz;
+  bool _isLoadingQuiz = false;
+  String? _loadError;
+
   int _currentIndex = 0;
   int? _selectedOptionIndex;
   bool _isAnswerSubmitted = false;
+  bool _isSubmitting = false;
   final Map<int, int> _userAnswers = {}; // questionIndex -> selectedOptionIndex
+  QuizSubmissionResultEntity? _serverResult;
 
   late final Stopwatch _stopwatch;
   Timer? _ticker;
@@ -43,10 +51,49 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
   @override
   void initState() {
     super.initState();
-    _stopwatch = Stopwatch()..start();
+    _quiz = widget.quiz;
+    _stopwatch = Stopwatch();
+    if (_quiz.questions.isEmpty) {
+      _loadQuizQuestions();
+    } else {
+      _startTimer();
+    }
+  }
+
+  void _startTimer() {
+    _stopwatch.start();
+    _ticker?.cancel();
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) setState(() {});
+      if (mounted && !_isFinished) setState(() {});
     });
+  }
+
+  Future<void> _loadQuizQuestions() async {
+    setState(() {
+      _isLoadingQuiz = true;
+      _loadError = null;
+    });
+
+    final result = await ref.read(challengesRepositoryProvider).getQuizById(_quiz.id);
+    if (!mounted) return;
+
+    result.when(
+      success: (loadedQuiz) {
+        setState(() {
+          _quiz = loadedQuiz;
+          _isLoadingQuiz = false;
+        });
+        if (loadedQuiz.questions.isNotEmpty) {
+          _startTimer();
+        }
+      },
+      failure: (failure) {
+        setState(() {
+          _isLoadingQuiz = false;
+          _loadError = FailureMessageMapper.map(context, failure);
+        });
+      },
+    );
   }
 
   @override
@@ -56,21 +103,28 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
     super.dispose();
   }
 
+  bool get _isServerEvaluated =>
+      _quiz.questions.isNotEmpty && _quiz.questions.first.isServerEvaluated;
+
   void _onOptionSelected(int optionIndex) {
-    if (_isAnswerSubmitted) return;
+    final currentQuestion = _quiz.questions[_currentIndex];
+    if (!currentQuestion.isServerEvaluated && _isAnswerSubmitted) return;
+    if (_isSubmitting) return;
 
     setState(() {
       _selectedOptionIndex = optionIndex;
-      _isAnswerSubmitted = true;
       _userAnswers[_currentIndex] = optionIndex;
+      if (!currentQuestion.isServerEvaluated) {
+        _isAnswerSubmitted = true;
+      }
     });
   }
 
   void _onNext() {
-    if (_currentIndex < widget.quiz.questions.length - 1) {
+    if (_currentIndex < _quiz.questions.length - 1) {
       setState(() {
         _currentIndex++;
-        _selectedOptionIndex = null;
+        _selectedOptionIndex = _userAnswers[_currentIndex];
         _isAnswerSubmitted = false;
       });
     } else {
@@ -78,20 +132,86 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
     }
   }
 
-  void _finishQuiz() {
+  Future<void> _finishQuiz() async {
+    if (_isServerEvaluated) {
+      final payload = <Map<String, String>>[];
+      for (int i = 0; i < _quiz.questions.length; i++) {
+        final q = _quiz.questions[i];
+        final selectedIdx = _userAnswers[i];
+        if (selectedIdx != null && selectedIdx < q.optionIds.length) {
+          payload.add({
+            'questionId': q.id,
+            'selectedOptionId': q.optionIds[selectedIdx],
+          });
+        }
+      }
+
+      if (payload.length < _quiz.questions.length) {
+        return;
+      }
+
+      setState(() => _isSubmitting = true);
+      final res = await ref
+          .read(challengesControllerProvider.notifier)
+          .submitServerQuiz(quizId: _quiz.id, answers: payload);
+
+      if (!mounted) return;
+      res.when(
+        success: (evalResult) {
+          _stopwatch.stop();
+          _ticker?.cancel();
+
+          final updatedQuestions = _quiz.questions.map((q) {
+            final match = evalResult.answers.where((a) => a.questionId == q.id);
+            if (match.isEmpty) return q;
+            final a = match.first;
+            var resolvedCorrectIdx = a.correctOptionId != null
+                ? q.optionIds.indexOf(a.correctOptionId!)
+                : -1;
+            if (resolvedCorrectIdx < 0 && a.correctOptionText != null) {
+              resolvedCorrectIdx = q.options.indexOf(a.correctOptionText!);
+            }
+            return q.copyWith(
+              correctOptionIndex: resolvedCorrectIdx,
+              explanation: a.explanation ?? q.explanation,
+            );
+          }).toList();
+
+          setState(() {
+            _quiz = _quiz.copyWith(questions: updatedQuestions);
+            _serverResult = evalResult;
+            _isSubmitting = false;
+            _isFinished = true;
+          });
+        },
+        failure: (failure) {
+          setState(() => _isSubmitting = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(FailureMessageMapper.map(context, failure)),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        },
+      );
+      return;
+    }
+
     _stopwatch.stop();
     _ticker?.cancel();
 
     final score = _calculateScore();
-    final total = widget.quiz.questions.length;
+    final total = _quiz.questions.length;
     final elapsedSec = _stopwatch.elapsed.inSeconds;
 
-    ref.read(challengesControllerProvider.notifier).onQuizCompleted(
-          quizId: widget.quiz.id,
-          score: score,
-          totalQuestions: total,
-          timeTakenSeconds: elapsedSec,
-        );
+    unawaited(
+      ref.read(challengesControllerProvider.notifier).onQuizCompleted(
+            quizId: _quiz.id,
+            score: score,
+            totalQuestions: total,
+            timeTakenSeconds: elapsedSec,
+          ),
+    );
 
     setState(() {
       _isFinished = true;
@@ -99,10 +219,13 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
   }
 
   int _calculateScore() {
+    if (_serverResult != null) {
+      return _serverResult!.answers.where((a) => a.isCorrect).length;
+    }
     int score = 0;
-    for (int i = 0; i < widget.quiz.questions.length; i++) {
+    for (int i = 0; i < _quiz.questions.length; i++) {
       final chosen = _userAnswers[i];
-      final correct = widget.quiz.questions[i].correctOptionIndex;
+      final correct = _quiz.questions[i].correctOptionIndex;
       if (chosen == correct) {
         score++;
       }
@@ -115,6 +238,8 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
       _currentIndex = 0;
       _selectedOptionIndex = null;
       _isAnswerSubmitted = false;
+      _isSubmitting = false;
+      _serverResult = null;
       _userAnswers.clear();
       _isFinished = false;
       _showReviewMistakes = false;
@@ -126,6 +251,38 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingQuiz || _loadError != null || _quiz.questions.isEmpty) {
+      final colors = context.rxColors;
+      final textTheme = Theme.of(context).textTheme;
+      return AppScaffold(
+        appBar: AppBar(
+          title: Text(
+            _quiz.title,
+            style: textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: colors.textPrimary,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        body: Center(
+          child: _isLoadingQuiz
+              ? const CircularProgressIndicator()
+              : Padding(
+                  padding: const EdgeInsetsDirectional.all(RxSpacing.s24),
+                  child: EmptyState(
+                    icon: LucideIcons.helpCircle,
+                    title: _quiz.title,
+                    description: _loadError ?? '',
+                    actionText: context.l10n.retry,
+                    onAction: _loadQuizQuestions,
+                  ),
+                ),
+        ),
+      );
+    }
+
     if (_isFinished) {
       return _buildResultScreen(context);
     }
@@ -137,14 +294,14 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
 
-    final currentQuestion = widget.quiz.questions[_currentIndex];
-    final totalQuestions = widget.quiz.questions.length;
+    final currentQuestion = _quiz.questions[_currentIndex];
+    final totalQuestions = _quiz.questions.length;
     final progress = (_currentIndex + 1) / totalQuestions;
 
     return AppScaffold(
       appBar: AppBar(
         title: Text(
-          widget.quiz.title,
+          _quiz.title,
           style: textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.w700,
             color: colors.textPrimary,
@@ -226,7 +383,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                   }),
                   const SizedBox(height: RxSpacing.s16),
 
-                  // Immediate Right/Wrong Feedback with One-Line Explanation
+                  // Immediate Right/Wrong Feedback with One-Line Explanation (local quizzes)
                   if (_isAnswerSubmitted) ...[
                     _buildFeedbackBox(context, currentQuestion),
                     const SizedBox(height: RxSpacing.s20),
@@ -241,6 +398,20 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                           ? context.arrowForward
                           : LucideIcons.checkCircle,
                       onPressed: _onNext,
+                    ),
+                  ] else if (currentQuestion.isServerEvaluated &&
+                      _selectedOptionIndex != null) ...[
+                    const SizedBox(height: RxSpacing.s8),
+                    AppButton(
+                      text: _currentIndex < totalQuestions - 1
+                          ? l10n.btnNextQuestion
+                          : l10n.btnFinishQuiz,
+                      variant: AppButtonVariant.primary,
+                      isLoading: _isSubmitting,
+                      trailingIcon: _currentIndex < totalQuestions - 1
+                          ? context.arrowForward
+                          : LucideIcons.checkCircle,
+                      onPressed: _isSubmitting ? null : _onNext,
                     ),
                   ],
                   const SizedBox(height: RxSpacing.s24),
@@ -348,6 +519,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
   }
 
   Widget _buildFeedbackBox(BuildContext context, QuizQuestionEntity question) {
+    final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
 
@@ -378,7 +550,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isCorrect ? 'Correct Recall' : 'Clinical Rationale',
+                  isCorrect ? l10n.correctRecallLabel : l10n.clinicalRationaleLabel,
                   style: textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: isCorrect ? colors.success : colors.primary,
@@ -406,10 +578,11 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
     final textTheme = Theme.of(context).textTheme;
 
     final score = _calculateScore();
-    final total = widget.quiz.questions.length;
+    final total = _quiz.questions.length;
     final percent = total == 0 ? 0.0 : score / total;
-    final isHighScore = percent >= 0.8;
-    final pointsEarned = (score * 10) + (score == total ? 10 : 0);
+    final isHighScore = _serverResult?.isPassed ?? (percent >= 0.8);
+    final pointsEarned = _serverResult?.pointsAwarded ??
+        ((score * 10) + (score == total ? 10 : 0));
 
     return AppScaffold(
       appBar: AppBar(
@@ -482,7 +655,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                   const SizedBox(height: RxSpacing.s16),
 
                   Text(
-                    '$score of $total Questions Correct',
+                    l10n.scoreCorrectOfTotal(score, total),
                     style: textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: colors.textPrimary,
@@ -503,12 +676,12 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                       Column(
                         children: [
                           Text(
-                            'Points Earned',
+                            l10n.pointsEarnedLabel,
                             style: textTheme.bodySmall?.copyWith(color: colors.textSecondary),
                           ),
                           const SizedBox(height: 4.0),
                           StatusBadge(
-                            label: '+$pointsEarned Pts',
+                            label: l10n.pointsPlusValue(pointsEarned),
                             variant: StatusBadgeVariant.accent,
                           ),
                         ],
@@ -521,7 +694,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                       Column(
                         children: [
                           Text(
-                            'Time Elapsed',
+                            l10n.timeElapsedLabel,
                             style: textTheme.bodySmall?.copyWith(color: colors.textSecondary),
                           ),
                           const SizedBox(height: 4.0),
@@ -549,7 +722,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
 
             // 3 Actions: Review Mistakes, Retry, Back to learning
             AppButton(
-              text: _showReviewMistakes ? 'Hide Mistakes' : l10n.btnReviewMistakes,
+              text: _showReviewMistakes ? l10n.btnHideMistakes : l10n.btnReviewMistakes,
               leadingIcon: LucideIcons.fileSearch,
               variant: AppButtonVariant.secondary,
               onPressed: () {
@@ -580,14 +753,15 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
   }
 
   Widget _buildMistakesReview(BuildContext context) {
+    final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
 
     final wrongQuestions = <(int index, QuizQuestionEntity q, int chosen)>[];
-    for (int i = 0; i < widget.quiz.questions.length; i++) {
+    for (int i = 0; i < _quiz.questions.length; i++) {
       final chosen = _userAnswers[i] ?? -1;
-      final q = widget.quiz.questions[i];
-      if (chosen != q.correctOptionIndex) {
+      final q = _quiz.questions[i];
+      if (q.correctOptionIndex >= 0 && chosen != q.correctOptionIndex) {
         wrongQuestions.add((i, q, chosen));
       }
     }
@@ -605,11 +779,13 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
           children: [
             Icon(LucideIcons.checkCircle, color: colors.success, size: 18.0),
             const SizedBox(width: RxSpacing.s8),
-            Text(
-              'Flawless! Zero incorrect answers to review.',
-              style: textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: colors.textPrimary,
+            Expanded(
+              child: Text(
+                l10n.flawlessAnswersMsg,
+                style: textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: colors.textPrimary,
+                ),
               ),
             ),
           ],
@@ -621,7 +797,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Incorrect Answers Breakdown',
+          l10n.incorrectBreakdownTitle,
           style: textTheme.labelLarge?.copyWith(
             fontWeight: FontWeight.w700,
             color: colors.textPrimary,
@@ -655,7 +831,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                         const SizedBox(width: RxSpacing.s6),
                         Expanded(
                           child: Text(
-                            'Your answer: ${q.options[chosen]}',
+                            l10n.yourAnswerPrefix(q.options[chosen]),
                             style: textTheme.bodySmall?.copyWith(
                               color: colors.error,
                               height: 1.3,
@@ -673,7 +849,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                       const SizedBox(width: RxSpacing.s6),
                       Expanded(
                         child: Text(
-                          'Correct answer: ${q.options[correct]}',
+                          l10n.correctAnswerPrefix(q.options[correct]),
                           style: textTheme.bodySmall?.copyWith(
                             color: colors.success,
                             fontWeight: FontWeight.w600,

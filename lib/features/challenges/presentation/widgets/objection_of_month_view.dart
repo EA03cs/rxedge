@@ -70,7 +70,7 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                         Icon(LucideIcons.thumbsUp, size: 13.0, color: colors.textSecondary),
                         const SizedBox(width: RxSpacing.s4),
                         Text(
-                          '${widget.objection.helpfulCount} helpful votes',
+                          l10n.helpfulVotesCount(widget.objection.helpfulCount),
                           style: textTheme.labelSmall?.copyWith(
                             color: colors.textSecondary,
                             fontSize: 11.0,
@@ -112,13 +112,14 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            widget.objection.doctorName,
-                            style: textTheme.labelSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: colors.textPrimary,
+                          if (widget.objection.doctorName.trim().isNotEmpty)
+                            Text(
+                              widget.objection.doctorName,
+                              style: textTheme.labelSmall?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: colors.textPrimary,
+                              ),
                             ),
-                          ),
                           Text(
                             widget.objection.doctorSpecialty,
                             style: textTheme.bodySmall?.copyWith(
@@ -209,7 +210,7 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                       Icon(LucideIcons.checkCircle2, size: 18.0, color: colors.primary),
                       const SizedBox(width: RxSpacing.s8),
                       Text(
-                        'Recommended Clinical Response',
+                        l10n.recommendedClinicalResponseLabel,
                         style: textTheme.labelLarge?.copyWith(
                           fontWeight: FontWeight.w700,
                           color: colors.primary,
@@ -230,7 +231,7 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
 
                   // Structured Talking Points
                   Text(
-                    'Key Detailing Anchors',
+                    l10n.keyDetailingAnchorsLabel,
                     style: textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: colors.textSecondary,
@@ -419,7 +420,9 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                           ),
                         ),
                         Text(
-                          '${widget.objection.communityResponseCount} peers contributed field phrasing',
+                          l10n.peersContributedCount(
+                            widget.objection.communityResponseCount,
+                          ),
                           style: textTheme.bodySmall?.copyWith(color: colors.textSecondary),
                         ),
                       ],

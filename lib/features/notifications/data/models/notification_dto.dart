@@ -33,16 +33,79 @@ class NotificationDto {
       };
 
   factory NotificationDto.fromJson(Map<String, dynamic> json) {
+    final rawType =
+        (json['typeString'] as String?) ?? (json['type'] as String?) ?? '';
+    final rawTargetScreen =
+        (json['targetRoute'] as String?) ?? (json['targetScreen'] as String?);
     return NotificationDto(
-      id: json['id'] as String,
-      typeString: json['typeString'] as String,
-      title: json['title'] as String,
-      body: json['body'] as String,
-      timestampIso: json['timestampIso'] as String,
+      id: json['id'] as String? ?? '',
+      typeString: _normalizeType(rawType),
+      title: json['title'] as String? ?? '',
+      body: json['body'] as String? ?? '',
+      timestampIso: (json['timestampIso'] as String?) ??
+          (json['createdAt'] as String?) ??
+          DateTime.now().toIso8601String(),
       isRead: json['isRead'] as bool? ?? false,
-      targetRoute: json['targetRoute'] as String?,
+      targetRoute: _normalizeRoute(rawTargetScreen, rawType),
       targetId: json['targetId'] as String?,
     );
+  }
+
+  static String _normalizeType(String raw) {
+    switch (raw.toLowerCase()) {
+      case 'newmaterial':
+      case 'new_material':
+        return 'newMaterial';
+      case 'newchallenge':
+      case 'new_challenge':
+        return 'newChallenge';
+      case 'feedbackreply':
+      case 'feedback_reply':
+        return 'feedbackReply';
+      case 'quizreminder':
+      case 'quiz_reminder':
+      default:
+        return 'quizReminder';
+    }
+  }
+
+  static String? _normalizeRoute(String? rawScreen, String rawType) {
+    if (rawScreen == null || rawScreen.trim().isEmpty) {
+      switch (_normalizeType(rawType)) {
+        case 'feedbackReply':
+          return '/feedback';
+        case 'newMaterial':
+          return '/library';
+        case 'newChallenge':
+        case 'quizReminder':
+          return '/challenges';
+      }
+      return null;
+    }
+    final cleaned = rawScreen.trim();
+    if (cleaned.startsWith('/')) return cleaned;
+    switch (cleaned.toLowerCase()) {
+      case 'feedback':
+      case 'feedback_detail':
+        return '/feedback';
+      case 'library':
+      case 'materials':
+      case 'material_detail':
+        return '/library';
+      case 'challenges':
+      case 'quizzes':
+      case 'quiz':
+        return '/challenges';
+      case 'learn':
+      case 'lesson':
+        return '/learn';
+      case 'home':
+        return '/home';
+      case 'profile':
+        return '/profile';
+      default:
+        return '/$cleaned';
+    }
   }
 
   NotificationItemEntity toDomain() {

@@ -62,6 +62,7 @@ class MaterialSlide {
   final List<String> clinicalKeyPoints;
   final List<String> bulletEvidence;
   final String? chartCaption;
+  final String? imageUrl;
 
   const MaterialSlide({
     required this.slideNumber,
@@ -70,6 +71,7 @@ class MaterialSlide {
     required this.clinicalKeyPoints,
     required this.bulletEvidence,
     this.chartCaption,
+    this.imageUrl,
   });
 
   @override
@@ -99,6 +101,9 @@ class MaterialItemEntity {
   final String description;
   final int pageCount;
   final List<MaterialSlide> slides;
+  final String? fileUrl;
+  final String? thumbnailUrl;
+  final String? localFilePath;
 
   const MaterialItemEntity({
     required this.id,
@@ -115,6 +120,9 @@ class MaterialItemEntity {
     required this.description,
     this.pageCount = 1,
     this.slides = const [],
+    this.fileUrl,
+    this.thumbnailUrl,
+    this.localFilePath,
   });
 
   bool get isDownloaded => downloadState is Downloaded;
@@ -148,6 +156,9 @@ class MaterialItemEntity {
     String? description,
     int? pageCount,
     List<MaterialSlide>? slides,
+    String? fileUrl,
+    String? thumbnailUrl,
+    String? localFilePath,
   }) {
     return MaterialItemEntity(
       id: id ?? this.id,
@@ -164,6 +175,9 @@ class MaterialItemEntity {
       description: description ?? this.description,
       pageCount: pageCount ?? this.pageCount,
       slides: slides ?? this.slides,
+      fileUrl: fileUrl ?? this.fileUrl,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
+      localFilePath: localFilePath ?? this.localFilePath,
     );
   }
 

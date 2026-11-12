@@ -1,15 +1,38 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/network/api_endpoints.dart';
+import '../../../../core/network/api_response.dart';
+import '../../../../core/network/dio_client.dart';
 import '../../../../core/storage/local_cache_service.dart';
 import '../../../../core/utils/result.dart';
+import '../../../challenges/data/repositories/challenges_repository_impl.dart';
+import '../../../challenges/domain/repositories/challenges_repository.dart';
+import '../../../learn/data/repositories/learn_repository_impl.dart';
+import '../../../learn/domain/repositories/learn_repository.dart';
+import '../../../library/data/repositories/library_repository_impl.dart';
+import '../../../library/domain/repositories/library_repository.dart';
 import '../../domain/entities/search_entities.dart';
 import '../../domain/repositories/search_repository.dart';
 
 class SearchRepositoryImpl implements SearchRepository {
+  final Dio? _dio;
   final LocalCacheService _cacheService;
+  final LearnRepository? _learnRepository;
+  final LibraryRepository? _libraryRepository;
+  final ChallengesRepository? _challengesRepository;
   static const String _recentSearchesKey = 'rxedge_recent_searches';
 
-  SearchRepositoryImpl({required LocalCacheService cacheService})
-      : _cacheService = cacheService;
+  SearchRepositoryImpl({
+    Dio? dio,
+    required LocalCacheService cacheService,
+    LearnRepository? learnRepository,
+    LibraryRepository? libraryRepository,
+    ChallengesRepository? challengesRepository,
+  })  : _dio = dio,
+        _cacheService = cacheService,
+        _learnRepository = learnRepository,
+        _libraryRepository = libraryRepository,
+        _challengesRepository = challengesRepository;
 
   static const List<SearchResultItemEntity> _searchIndex = [
     // Lessons
@@ -102,14 +125,120 @@ class SearchRepositoryImpl implements SearchRepository {
 
   @override
   Future<Result<Map<SearchResultCategory, List<SearchResultItemEntity>>>> search(String query) async {
-    final cleanQuery = query.trim().toLowerCase();
+    final trimmedQuery = query.trim();
+    final cleanQuery = trimmedQuery.toLowerCase();
     if (cleanQuery.isEmpty) {
       return const Result.success({});
     }
 
-    await Future<void>.delayed(const Duration(milliseconds: 90));
+    if (_dio != null) {
+      try {
+        final response = await _dio.get<dynamic>(
+          ApiEndpoints.search,
+          queryParameters: {'q': trimmedQuery},
+        );
+        final payload = ApiResponseParser.unwrapMap(response.data);
+        final grouped = _mapServerSearchPayload(payload);
+        if (grouped.isNotEmpty) {
+          return Result.success(grouped);
+        }
+      } catch (_) {
+        // Fall through to local repository/cache aggregation if offline or endpoint unreachable.
+      }
+    }
 
-    final matches = _searchIndex.where((item) {
+    final liveItems = <SearchResultItemEntity>[];
+
+    if (_learnRepository != null ||
+        _libraryRepository != null ||
+        _challengesRepository != null) {
+      if (_learnRepository != null) {
+        final productsRes = await _learnRepository.getProducts();
+        productsRes.when(
+          success: (products) {
+            for (final prod in products) {
+              for (final lesson in prod.lessons) {
+                liveItems.add(
+                  SearchResultItemEntity(
+                    id: 'lesson_${lesson.id}',
+                    category: SearchResultCategory.lesson,
+                    title: lesson.title,
+                    subtitle: lesson.sections.firstOrNull?.keyTakeaway ??
+                        lesson.sections.firstOrNull?.content ??
+                        prod.therapeuticArea,
+                    badgeText: prod.name,
+                    targetRoute: '/learn',
+                    targetId: prod.id,
+                  ),
+                );
+              }
+              for (final comp in prod.competitors) {
+                liveItems.add(
+                  SearchResultItemEntity(
+                    id: 'comp_${comp.id}',
+                    category: SearchResultCategory.objection,
+                    title: comp.competitorName,
+                    subtitle: '${comp.theirClaim} • ${comp.howToRespond}',
+                    badgeText: prod.name,
+                    targetRoute: '/learn',
+                    targetId: prod.id,
+                  ),
+                );
+              }
+            }
+          },
+          failure: (_) {},
+        );
+      }
+
+      if (_libraryRepository != null) {
+        final materialsRes = await _libraryRepository.getMaterials();
+        materialsRes.when(
+          success: (materials) {
+            for (final mat in materials) {
+              liveItems.add(
+                SearchResultItemEntity(
+                  id: 'mat_${mat.id}',
+                  category: SearchResultCategory.libraryFile,
+                  title: mat.title,
+                  subtitle: '${mat.productName} • ${mat.formattedSize}',
+                  badgeText: mat.productName,
+                  targetRoute: '/library',
+                  targetId: mat.id,
+                ),
+              );
+            }
+          },
+          failure: (_) {},
+        );
+      }
+
+      if (_challengesRepository != null) {
+        final objRes = await _challengesRepository.getObjectionOfTheMonth();
+        objRes.when(
+          success: (obj) {
+            if (obj.doctorQuote.trim().isNotEmpty) {
+              liveItems.add(
+                SearchResultItemEntity(
+                  id: 'obj_${obj.id}',
+                  category: SearchResultCategory.objection,
+                  title: obj.doctorQuote,
+                  subtitle: obj.recommendedResponse,
+                  badgeText: obj.productConcerned,
+                  targetRoute: '/challenges',
+                  targetId: obj.id,
+                ),
+              );
+            }
+          },
+          failure: (_) {},
+        );
+      }
+    }
+
+    final source = liveItems.isNotEmpty ? liveItems : _searchIndex;
+
+    final matches = source.where((item) {
       final inTitle = item.title.toLowerCase().contains(cleanQuery);
       final inSubtitle = item.subtitle.toLowerCase().contains(cleanQuery);
       final inBadge = item.badgeText.toLowerCase().contains(cleanQuery);
@@ -124,10 +253,98 @@ class SearchRepositoryImpl implements SearchRepository {
     return Result.success(grouped);
   }
 
+  Map<SearchResultCategory, List<SearchResultItemEntity>> _mapServerSearchPayload(
+    Map<String, dynamic> payload,
+  ) {
+    final grouped = <SearchResultCategory, List<SearchResultItemEntity>>{};
+
+    void addItem(SearchResultItemEntity item) {
+      grouped.putIfAbsent(item.category, () => []).add(item);
+    }
+
+    final products = (payload['products'] as List<dynamic>? ?? const []);
+    for (final raw in products.whereType<Map<dynamic, dynamic>>()) {
+      final map = Map<String, dynamic>.from(raw);
+      final id = map['id']?.toString() ?? '';
+      if (id.isEmpty) continue;
+      addItem(
+        SearchResultItemEntity(
+          id: 'prod_$id',
+          category: SearchResultCategory.lesson,
+          title: map['name']?.toString() ?? '',
+          subtitle: map['keyMessage']?.toString() ?? map['description']?.toString() ?? '',
+          badgeText: map['therapeuticAreaName']?.toString() ??
+              map['therapeuticArea']?.toString() ??
+              '',
+          targetRoute: '/learn',
+          targetId: id,
+        ),
+      );
+    }
+
+    final lessons = (payload['lessons'] as List<dynamic>? ?? const []);
+    for (final raw in lessons.whereType<Map<dynamic, dynamic>>()) {
+      final map = Map<String, dynamic>.from(raw);
+      final id = map['id']?.toString() ?? '';
+      if (id.isEmpty) continue;
+      addItem(
+        SearchResultItemEntity(
+          id: 'lesson_$id',
+          category: SearchResultCategory.lesson,
+          title: map['title']?.toString() ?? '',
+          subtitle: map['summary']?.toString() ?? '',
+          badgeText: map['productName']?.toString() ?? '',
+          targetRoute: '/learn',
+          targetId: map['productId']?.toString() ?? id,
+        ),
+      );
+    }
+
+    final materials = (payload['materials'] as List<dynamic>? ?? const []);
+    for (final raw in materials.whereType<Map<dynamic, dynamic>>()) {
+      final map = Map<String, dynamic>.from(raw);
+      final id = map['id']?.toString() ?? '';
+      if (id.isEmpty) continue;
+      addItem(
+        SearchResultItemEntity(
+          id: 'mat_$id',
+          category: SearchResultCategory.libraryFile,
+          title: map['title']?.toString() ?? '',
+          subtitle: map['description']?.toString() ?? '',
+          badgeText: map['productName']?.toString() ?? map['type']?.toString() ?? '',
+          targetRoute: '/library',
+          targetId: id,
+        ),
+      );
+    }
+
+    final competitors = (payload['competitors'] as List<dynamic>? ?? const []);
+    for (final raw in competitors.whereType<Map<dynamic, dynamic>>()) {
+      final map = Map<String, dynamic>.from(raw);
+      final id = map['id']?.toString() ?? '';
+      if (id.isEmpty) continue;
+      final claims = map['claims']?.toString() ?? '';
+      final responseText = map['recommendedResponse']?.toString() ?? '';
+      addItem(
+        SearchResultItemEntity(
+          id: 'comp_$id',
+          category: SearchResultCategory.objection,
+          title: map['name']?.toString() ?? '',
+          subtitle: [claims, responseText].where((s) => s.isNotEmpty).join(' • '),
+          badgeText: map['productName']?.toString() ?? map['activeIngredient']?.toString() ?? '',
+          targetRoute: '/learn',
+          targetId: map['productId']?.toString() ?? id,
+        ),
+      );
+    }
+
+    return grouped;
+  }
+
   @override
   Future<Result<List<String>>> getRecentSearches() async {
     final list = _cacheService.get<List<String>>(_recentSearchesKey) ??
-        ['Cardura XL', 'GITS delivery', 'AtorvaCare', 'Amlodipine'];
+        const <String>[];
     return Result.success(list);
   }
 
@@ -137,7 +354,7 @@ class SearchRepositoryImpl implements SearchRepository {
     if (clean.isEmpty) return const Result.success(null);
 
     final current = _cacheService.get<List<String>>(_recentSearchesKey) ??
-        ['Cardura XL', 'GITS delivery', 'AtorvaCare', 'Amlodipine'];
+        const <String>[];
 
     final updated = List<String>.from(current);
     updated.remove(clean);
@@ -166,6 +383,16 @@ class SearchRepositoryImpl implements SearchRepository {
 
 /// Riverpod Providers for Search
 final searchRepositoryProvider = Provider<SearchRepository>((ref) {
+  final dio = ref.watch(dioClientProvider);
   final cache = ref.watch(localCacheServiceProvider);
-  return SearchRepositoryImpl(cacheService: cache);
+  final learnRepo = ref.watch(learnRepositoryProvider);
+  final libraryRepo = ref.watch(libraryRepositoryProvider);
+  final challengesRepo = ref.watch(challengesRepositoryProvider);
+  return SearchRepositoryImpl(
+    dio: dio,
+    cacheService: cache,
+    learnRepository: learnRepo,
+    libraryRepository: libraryRepo,
+    challengesRepository: challengesRepo,
+  );
 });

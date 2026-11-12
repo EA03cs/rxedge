@@ -23,6 +23,10 @@ abstract class ChallengesRepository {
     required int totalQuestions,
     required int timeTakenSeconds,
   });
+  Future<Result<QuizSubmissionResultEntity>> submitQuizAnswers({
+    required String quizId,
+    required List<Map<String, String>> answers,
+  });
   Future<Result<List<PastChallengeHistoryEntity>>> getPastChallengesHistory();
   Future<Result<List<QuizResultHistoryEntity>>> getQuizResultsHistory();
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../../core/widgets/rx_network_image.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/material_item_entity.dart';
 
@@ -37,12 +39,9 @@ class MaterialCardGrid extends StatelessWidget {
     }
   }
 
-  String _formatDate(DateTime dt) {
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
-    return '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
+  String _formatDate(BuildContext context, DateTime dt) {
+    final locale = Localizations.localeOf(context).languageCode;
+    return DateFormat.yMMMd(locale).format(dt);
   }
 
   @override
@@ -93,30 +92,52 @@ class MaterialCardGrid extends StatelessWidget {
               ),
               child: Stack(
                 children: [
-                  // Centered Type Icon & Tag
-                  Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          _getTypeIcon(item.fileType),
-                          size: 32.0,
-                          color: colors.primary,
+                  if ((item.thumbnailUrl ??
+                          (item.fileType == MaterialFileType.image
+                              ? item.fileUrl
+                              : null))
+                      ?.trim()
+                      .isNotEmpty ==
+                      true)
+                    Positioned.fill(
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(RxRadii.card),
                         ),
-                        const SizedBox(height: RxSpacing.s4),
-                        Text(
-                          item.fileType == MaterialFileType.edetailSlides
-                              ? '${item.slides.length} slides'
-                              : '${item.pageCount} ${item.pageCount == 1 ? 'page' : 'pages'}',
-                          style: textTheme.labelSmall?.copyWith(
-                            color: colors.textSecondary,
-                            fontSize: 10.5,
-                            fontWeight: FontWeight.w500,
+                        child: RxNetworkImage(
+                          imageUrl: item.thumbnailUrl ?? item.fileUrl,
+                          width: double.infinity,
+                          height: 104.0,
+                          fit: BoxFit.cover,
+                          fallbackIcon: _getTypeIcon(item.fileType),
+                        ),
+                      ),
+                    )
+                  else
+                    // Centered Type Icon & Tag
+                    Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _getTypeIcon(item.fileType),
+                            size: 32.0,
+                            color: colors.primary,
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: RxSpacing.s4),
+                          Text(
+                            item.fileType == MaterialFileType.edetailSlides
+                                ? l10n.slidesCountLabel(item.slides.length)
+                                : l10n.pagesCountLabel(item.pageCount),
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colors.textSecondary,
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
 
                   // Offline Available Indicator
                   if (item.isDownloaded)
@@ -146,7 +167,7 @@ class MaterialCardGrid extends StatelessWidget {
                             ),
                             const SizedBox(width: RxSpacing.s2),
                             Text(
-                              'Offline',
+                              l10n.offlineStatusBadge,
                               style: textTheme.labelSmall?.copyWith(
                                 color: colors.success,
                                 fontSize: 9.5,
@@ -202,7 +223,7 @@ class MaterialCardGrid extends StatelessWidget {
                             ),
                             const SizedBox(width: RxSpacing.s4),
                             Text(
-                              'Online only',
+                              l10n.onlineOnlyStatusBadge,
                               style: textTheme.labelSmall?.copyWith(
                                 color: colors.textSecondary,
                                 fontSize: 9.5,
@@ -271,7 +292,7 @@ class MaterialCardGrid extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${item.formattedSize} • ${_formatDate(item.updatedAt)}',
+                        '${item.formattedSize} • ${_formatDate(context, item.updatedAt)}',
                         style: textTheme.bodySmall?.copyWith(
                           color: colors.textSecondary,
                           fontSize: 10.5,

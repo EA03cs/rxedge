@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
@@ -117,14 +118,16 @@ class _PastChallengesTab extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${item.completedAt.year}-${_twoDigits(item.completedAt.month)}',
+                        DateFormat.yMMM(
+                          Localizations.localeOf(context).languageCode,
+                        ).format(item.completedAt),
                         style: textTheme.labelSmall?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: colors.textSecondary,
                         ),
                       ),
                       StatusBadge(
-                        label: '+${item.pointsEarned} Pts',
+                        label: l10n.pointsPlusValue(item.pointsEarned),
                         variant: StatusBadgeVariant.accent,
                       ),
                     ],
@@ -141,7 +144,10 @@ class _PastChallengesTab extends ConsumerWidget {
                   Row(
                     children: [
                       StatusBadge(
-                        label: 'Rank #${item.finalRank} of ${item.totalParticipants}',
+                        label: l10n.rankOfTotalSimple(
+                          item.finalRank,
+                          item.totalParticipants,
+                        ),
                         variant: item.finalRank <= 3 ? StatusBadgeVariant.info : StatusBadgeVariant.neutral,
                       ),
                       if (item.badgeEarned != null) ...[
@@ -168,8 +174,6 @@ class _PastChallengesTab extends ConsumerWidget {
       },
     );
   }
-
-  String _twoDigits(int n) => n >= 10 ? '$n' : '0$n';
 }
 
 class _QuizResultsTab extends ConsumerWidget {
@@ -246,7 +250,7 @@ class _QuizResultsTab extends ConsumerWidget {
                         ),
                         const SizedBox(height: 2.0),
                         Text(
-                          '${res.score}/${res.totalQuestions} Correct • ${res.timeTakenSeconds}s',
+                          '${res.score}/${res.totalQuestions} • ${res.timeTakenSeconds}s',
                           style: textTheme.bodySmall?.copyWith(
                             color: colors.textSecondary,
                             fontSize: 12.0,
@@ -257,7 +261,7 @@ class _QuizResultsTab extends ConsumerWidget {
                   ),
                   const SizedBox(width: RxSpacing.s8),
                   StatusBadge(
-                    label: '+${res.pointsEarned} Pts',
+                    label: l10n.pointsPlusValue(res.pointsEarned),
                     variant: StatusBadgeVariant.accent,
                   ),
                 ],

@@ -20,6 +20,8 @@ enum FeedbackStatus {
 
 class FeedbackItemEntity {
   final String id;
+  final String? clientSubmissionId;
+  final String? productId;
   final FeedbackType type;
   final String title;
   final DateTime submittedAt;
@@ -49,6 +51,8 @@ class FeedbackItemEntity {
 
   const FeedbackItemEntity({
     required this.id,
+    this.clientSubmissionId,
+    this.productId,
     required this.type,
     required this.title,
     required this.submittedAt,
@@ -71,6 +75,8 @@ class FeedbackItemEntity {
 
   FeedbackItemEntity copyWith({
     String? id,
+    String? clientSubmissionId,
+    String? productId,
     FeedbackType? type,
     String? title,
     DateTime? submittedAt,
@@ -92,6 +98,8 @@ class FeedbackItemEntity {
   }) {
     return FeedbackItemEntity(
       id: id ?? this.id,
+      clientSubmissionId: clientSubmissionId ?? this.clientSubmissionId,
+      productId: productId ?? this.productId,
       type: type ?? this.type,
       title: title ?? this.title,
       submittedAt: submittedAt ?? this.submittedAt,

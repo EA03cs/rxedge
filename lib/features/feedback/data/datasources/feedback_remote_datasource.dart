@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import '../../../../core/error/exceptions.dart';
+import '../../../../core/network/api_endpoints.dart';
+import '../../../../core/network/api_response.dart';
 import '../models/feedback_dto.dart';
 
 /// Remote Datasource Contract for Live Marketing Feedback
@@ -8,7 +10,7 @@ abstract class FeedbackRemoteDatasource {
   Future<FeedbackItemDto> submitFeedback(FeedbackItemDto item);
 }
 
-/// Remote Datasource Implementation with realistic pharma field intelligence data
+/// Remote Datasource Implementation backed by `/feedback` and `/feedback/my-submissions`
 class FeedbackRemoteDatasourceImpl implements FeedbackRemoteDatasource {
   final Dio? dio;
   final bool simulateError;
@@ -23,6 +25,13 @@ class FeedbackRemoteDatasourceImpl implements FeedbackRemoteDatasource {
     if (simulateError) {
       throw const ServerException('Failed to retrieve marketing feedback submissions');
     }
+
+    if (dio != null) {
+      final response = await dio!.get<dynamic>(ApiEndpoints.myFeedbackSubmissions);
+      final list = ApiResponseParser.unwrapList(response.data);
+      return list.map(FeedbackItemDto.fromJson).toList();
+    }
+
     await Future<void>.delayed(const Duration(milliseconds: 140));
 
     return [
@@ -78,6 +87,16 @@ class FeedbackRemoteDatasourceImpl implements FeedbackRemoteDatasource {
     if (simulateError) {
       throw const NetworkException('Unable to reach marketing server');
     }
+
+    if (dio != null) {
+      final response = await dio!.post<dynamic>(
+        ApiEndpoints.feedback,
+        data: item.toBackendPayload(),
+      );
+      final map = ApiResponseParser.unwrapMap(response.data);
+      return FeedbackItemDto.fromJson(map);
+    }
+
     await Future<void>.delayed(const Duration(milliseconds: 180));
 
     return FeedbackItemDto(

@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import '../../../../core/error/exceptions.dart';
+import '../../../../core/network/api_endpoints.dart';
+import '../../../../core/network/api_response.dart';
 import '../models/material_item_dto.dart';
 
 /// Remote Datasource Contract for Resource Library
@@ -7,7 +9,7 @@ abstract class LibraryRemoteDatasource {
   Future<List<MaterialItemDto>> getMaterials();
 }
 
-/// Remote Datasource Implementation with realistic clinical detailing assets
+/// Remote Datasource Implementation backed by GET /media/materials
 class LibraryRemoteDatasourceImpl implements LibraryRemoteDatasource {
   final Dio? dio;
   final bool simulateError;
@@ -23,8 +25,15 @@ class LibraryRemoteDatasourceImpl implements LibraryRemoteDatasource {
       throw const ServerException('Failed to retrieve materials from enterprise server');
     }
 
-    // Realistic network latency simulation
-    await Future<void>.delayed(const Duration(milliseconds: 180));
+    if (dio != null) {
+      final response = await dio!.get<dynamic>(ApiEndpoints.materials);
+      final list = ApiResponseParser.unwrapList(response.data);
+      final dtos = list.map(MaterialItemDto.fromJson).toList();
+      return _normalizeEdetailingDecks(dtos);
+    }
+
+    // Fallback offline/test fixtures when Dio is not provided
+    await Future<void>.delayed(const Duration(milliseconds: 50));
 
     return [
       // 1. Cardura XL Monograph (PDF)
@@ -258,5 +267,65 @@ class LibraryRemoteDatasourceImpl implements LibraryRemoteDatasource {
             'Comparative head-to-head clinical trial data demonstrating dual efficacy in male hypertensive patients with concomitant lower urinary tract symptoms (LUTS/BPH).',
       ),
     ];
+  }
+
+  /// Groups slide-level `e_detailing` rows for the same product into a single
+  /// interactive presentation when `slides` are not already nested.
+  List<MaterialItemDto> _normalizeEdetailingDecks(List<MaterialItemDto> items) {
+    final result = <MaterialItemDto>[];
+    final groupedDecks = <String, List<MaterialItemDto>>{};
+
+    for (final item in items) {
+      if (item.fileType == 'edetail' && item.slides.isEmpty) {
+        final key = item.productName.isNotEmpty ? item.productName : item.id;
+        groupedDecks.putIfAbsent(key, () => []).add(item);
+      } else {
+        result.add(item);
+      }
+    }
+
+    for (final deckItems in groupedDecks.values) {
+      deckItems.sort((a, b) => (a.slideOrder ?? 1).compareTo(b.slideOrder ?? 1));
+      final first = deckItems.first;
+      final slides = <MaterialSlideDto>[
+        for (var i = 0; i < deckItems.length; i++)
+          MaterialSlideDto(
+            slideNumber: deckItems[i].slideOrder ?? (i + 1),
+            title: deckItems[i].title,
+            headline: deckItems[i].description.isNotEmpty
+                ? deckItems[i].description
+                : deckItems[i].title,
+            clinicalKeyPoints: deckItems[i].description.isNotEmpty
+                ? [deckItems[i].description]
+                : const [],
+            bulletEvidence: const [],
+            imageUrl: deckItems[i].fileUrl,
+          ),
+      ];
+
+      result.add(
+        MaterialItemDto(
+          id: first.id,
+          title: first.title,
+          productName: first.productName,
+          category: first.category,
+          fileType: first.fileType,
+          fileSizeBytes: deckItems.fold<int>(0, (sum, e) => sum + e.fileSizeBytes),
+          updatedAt: first.updatedAt,
+          badge: first.badge,
+          isFavorite: first.isFavorite,
+          isDownloaded: first.isDownloaded,
+          viewCount: first.viewCount,
+          description: first.description,
+          pageCount: slides.length,
+          slides: slides,
+          fileUrl: first.fileUrl,
+          thumbnailUrl: first.thumbnailUrl ?? first.fileUrl,
+          slideOrder: first.slideOrder,
+        ),
+      );
+    }
+
+    return result;
   }
 }

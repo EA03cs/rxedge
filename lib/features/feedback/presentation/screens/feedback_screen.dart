@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../../core/services/sync_service.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/feedback_entities.dart';
 import '../controllers/feedback_controller.dart';
@@ -42,9 +43,9 @@ class FeedbackScreen extends ConsumerWidget {
       body: submissionsAsync.when(
         loading: () => const FeedbackSkeletonLoader(),
         error: (err, _) => ErrorState(
-          title: 'Unable to load feedback',
-          description: err.toString(),
-          retryText: 'Retry',
+          title: l10n.unableLoadFeedback,
+          description: err.toString().replaceAll('Exception: ', ''),
+          retryText: l10n.retry,
           onRetry: () => ref.read(feedbackListControllerProvider.notifier).refresh(),
         ),
         data: (submissions) {
@@ -77,10 +78,23 @@ class FeedbackScreen extends ConsumerWidget {
                           const SizedBox(width: RxSpacing.s10),
                           Expanded(
                             child: Text(
-                              'Some submissions are pending offline and will sync when connected.',
+                              l10n.pendingOfflineWarning,
                               style: textTheme.bodySmall?.copyWith(
                                 color: colors.warning,
                                 fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              await ref.read(syncServiceProvider).flushQueue(force: true);
+                              await ref.read(feedbackListControllerProvider.notifier).refresh();
+                            },
+                            child: Text(
+                              l10n.actionSyncNow,
+                              style: textTheme.labelSmall?.copyWith(
+                                color: colors.warning,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
@@ -243,10 +257,12 @@ class FeedbackScreen extends ConsumerWidget {
   }
 
   Widget _buildSubmissionCard(BuildContext context, FeedbackItemEntity item) {
+    final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
 
-    final dateFormatted = DateFormat('dd MMM yyyy').format(item.submittedAt);
+    final locale = Localizations.localeOf(context).languageCode;
+    final dateFormatted = DateFormat.yMMMd(locale).format(item.submittedAt);
     final isAnswered = item.status == FeedbackStatus.answered;
 
     return InkWell(
@@ -283,7 +299,7 @@ class FeedbackScreen extends ConsumerWidget {
                     ),
                     const SizedBox(width: RxSpacing.s6),
                     Text(
-                      _getTypeName(item.type),
+                      _getTypeName(context, item.type),
                       style: textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                         color: colors.textSecondary,
@@ -322,7 +338,7 @@ class FeedbackScreen extends ConsumerWidget {
                       Icon(LucideIcons.messagesSquare, size: 13.0, color: colors.success),
                       const SizedBox(width: RxSpacing.s4),
                       Text(
-                        'Answered',
+                        l10n.statusAnswered,
                         style: textTheme.labelSmall?.copyWith(
                           color: colors.success,
                           fontWeight: FontWeight.w600,
@@ -380,14 +396,15 @@ class FeedbackScreen extends ConsumerWidget {
     }
   }
 
-  String _getTypeName(FeedbackType type) {
+  String _getTypeName(BuildContext context, FeedbackType type) {
+    final l10n = context.l10n;
     switch (type) {
       case FeedbackType.doctorObjection:
-        return 'Doctor Objection';
+        return l10n.typeDoctorObjection;
       case FeedbackType.competitorClaim:
-        return 'Competitor Claim';
+        return l10n.typeCompetitorClaim;
       case FeedbackType.fieldFeedback:
-        return 'Field Feedback';
+        return l10n.typeFieldFeedback;
     }
   }
 }

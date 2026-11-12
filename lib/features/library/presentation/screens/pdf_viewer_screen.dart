@@ -254,7 +254,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'REGULATORY CLINICAL MONOGRAPH',
+              l10n.regulatoryMonographHeader,
               style: textTheme.labelSmall?.copyWith(
                 color: colors.primary,
                 fontWeight: FontWeight.w700,
@@ -263,7 +263,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
               ),
             ),
             Text(
-              'SECTION 0$_currentPage',
+              l10n.sectionNumberLabel(_currentPage),
               style: textTheme.labelSmall?.copyWith(
                 color: colors.textSecondary,
                 fontWeight: FontWeight.w600,
@@ -288,12 +288,40 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
         const SizedBox(height: RxSpacing.s8),
 
         Text(
-          'Therapeutic Class: ${widget.material.productName} • Cardioprotective Indications',
+          l10n.therapeuticClassLabel(widget.material.productName),
           style: textTheme.bodySmall?.copyWith(
             color: colors.textSecondary,
             fontWeight: FontWeight.w500,
           ),
         ),
+        if (widget.material.isDownloaded ||
+            (widget.material.fileUrl?.trim().isNotEmpty == true)) ...[
+          const SizedBox(height: RxSpacing.s8),
+          Container(
+            padding: const EdgeInsetsDirectional.symmetric(
+              horizontal: RxSpacing.s8,
+              vertical: 4.0,
+            ),
+            decoration: BoxDecoration(
+              color: widget.material.isDownloaded
+                  ? colors.successSoft
+                  : colors.primarySoft,
+              borderRadius: RxRadii.borderBadge,
+            ),
+            child: Text(
+              widget.material.isDownloaded
+                  ? l10n.offlineAvailable
+                  : '${l10n.onlineOnlyStatusBadge} • ${widget.material.formattedSize}',
+              style: textTheme.labelSmall?.copyWith(
+                color: widget.material.isDownloaded
+                    ? colors.success
+                    : colors.primary,
+                fontWeight: FontWeight.w600,
+                fontSize: 11.0,
+              ),
+            ),
+          ),
+        ],
         const SizedBox(height: RxSpacing.s20),
 
         // Monograph Body
@@ -376,7 +404,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
           children: [
             Expanded(
               child: Text(
-                'Document ID: ${widget.material.id.toUpperCase()}',
+                l10n.documentIdLabel(widget.material.id.toUpperCase()),
                 style: textTheme.labelSmall?.copyWith(
                   color: colors.textTertiary,
                   fontSize: 10.0,
@@ -386,7 +414,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
             ),
             const SizedBox(width: RxSpacing.s8),
             Text(
-              'Confidential Medical Detailing',
+              l10n.confidentialDetailingFooter,
               style: textTheme.labelSmall?.copyWith(
                 color: colors.textTertiary,
                 fontSize: 10.0,

@@ -4,7 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../../core/utils/uuid_v4.dart';
 import '../../../../core/widgets/widgets.dart';
+import '../../../learn/domain/entities/learning_entities.dart';
+import '../../../learn/presentation/controllers/learn_controller.dart';
 import '../../data/repositories/feedback_repository_impl.dart';
 import '../../domain/entities/feedback_entities.dart';
 import '../controllers/feedback_controller.dart';
@@ -44,6 +47,7 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
   // Validation error states
   String? _field1Error;
   String? _field2Error;
+  String? _selectedProductId;
 
   // UI state
   bool _isSubmitting = false;
@@ -195,14 +199,27 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
 
     String title;
     FeedbackItemEntity item;
+    final submissionId = UuidV4.generate();
+    final products =
+        ref.read(learnControllerProvider).valueOrNull ??
+            const <ProductLearningEntity>[];
 
     switch (widget.type) {
       case FeedbackType.doctorObjection:
         final prod = _productController.text.trim();
         final obj = _objectionController.text.trim();
+        final matchedProductId = _selectedProductId ??
+            products
+                .where(
+                  (p) => p.name.trim().toLowerCase() == prod.toLowerCase(),
+                )
+                .map((p) => p.id)
+                .firstOrNull;
         title = '$prod: ${obj.length > 40 ? "${obj.substring(0, 40)}..." : obj}';
         item = FeedbackItemEntity(
           id: '',
+          clientSubmissionId: submissionId,
+          productId: matchedProductId,
           type: FeedbackType.doctorObjection,
           title: title,
           submittedAt: DateTime.now(),
@@ -223,6 +240,8 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
         title = '$comp: ${cl.length > 40 ? "${cl.substring(0, 40)}..." : cl}';
         item = FeedbackItemEntity(
           id: '',
+          clientSubmissionId: submissionId,
+          productId: _selectedProductId,
           type: FeedbackType.competitorClaim,
           title: title,
           submittedAt: DateTime.now(),
@@ -231,7 +250,6 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
           whereHeard: _whereHeardController.text.trim().isEmpty
               ? null
               : _whereHeardController.text.trim(),
-          photoUrl: _hasPhotoAttached ? 'assets/mock/attached_photo.jpg' : null,
         );
         break;
 
@@ -241,12 +259,13 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
         title = top;
         item = FeedbackItemEntity(
           id: '',
+          clientSubmissionId: submissionId,
+          productId: _selectedProductId,
           type: FeedbackType.fieldFeedback,
           title: title,
           submittedAt: DateTime.now(),
           topic: top,
           details: det,
-          voiceNoteUrl: _hasVoiceNoteAttached ? 'assets/mock/voice_note.m4a' : null,
         );
         break;
     }
@@ -273,9 +292,10 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
         );
       },
       failure: (failure) {
+        final l10n = context.l10n;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(failure.debugMessage ?? 'Submission failed'),
+            content: Text(failure.debugMessage ?? l10n.submissionFailedFallback),
             backgroundColor: context.rxColors.error,
           ),
         );
@@ -390,20 +410,80 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
             ),
             const SizedBox(height: RxSpacing.s20),
 
+            if ((ref.watch(learnControllerProvider).valueOrNull ??
+                    const <ProductLearningEntity>[])
+                .isNotEmpty) ...[
+              Builder(
+                builder: (context) {
+                  final products =
+                      ref.watch(learnControllerProvider).valueOrNull ??
+                          const <ProductLearningEntity>[];
+                  final validSelected = products.any(
+                    (p) => p.id == _selectedProductId,
+                  )
+                      ? _selectedProductId
+                      : null;
+                  return DropdownButtonFormField<String?>(
+                    initialValue: validSelected,
+                    decoration: InputDecoration(
+                      labelText: l10n.selectProductOptional,
+                      filled: true,
+                      fillColor: colors.surface,
+                      border: OutlineInputBorder(
+                        borderRadius: RxRadii.borderInput,
+                        borderSide: BorderSide(
+                          color: colors.border,
+                          width: RxShadows.hairlineBorderWidth,
+                        ),
+                      ),
+                    ),
+                    items: [
+                      DropdownMenuItem<String?>(
+                        value: null,
+                        child: Text(l10n.noProductSelected),
+                      ),
+                      ...products.map(
+                        (p) => DropdownMenuItem<String?>(
+                          value: p.id,
+                          child: Text(p.name),
+                        ),
+                      ),
+                    ],
+                    onChanged: (val) {
+                      setState(() {
+                        _selectedProductId = val;
+                        if (val != null &&
+                            widget.type == FeedbackType.doctorObjection) {
+                          final picked = products
+                              .where((p) => p.id == val)
+                              .firstOrNull;
+                          if (picked != null) {
+                            _productController.text = picked.name;
+                          }
+                        }
+                      });
+                      _onFieldChanged();
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: RxSpacing.s16),
+            ],
+
             // Form inputs depending on feedback type
             if (widget.type == FeedbackType.doctorObjection) ...[
               AppTextField(
                 controller: _productController,
-                label: 'Product',
-                hint: 'e.g. Cardura XL, AtorvaCare',
+                label: l10n.labelProduct,
+                hint: l10n.productHintExamples,
                 errorText: _field1Error,
                 onChanged: (_) => _onFieldChanged(),
               ),
               const SizedBox(height: RxSpacing.s16),
               AppTextField(
                 controller: _objectionController,
-                label: 'The Objection',
-                hint: 'What exact concern or skepticism did the doctor express?',
+                label: l10n.labelDoctorObjection,
+                hint: l10n.hintDoctorObjection,
                 errorText: _field2Error,
                 minLines: 3,
                 maxLines: 5,
@@ -413,15 +493,15 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
                 const SizedBox(height: RxSpacing.s16),
                 AppTextField(
                   controller: _doctorSpecialtyController,
-                  label: 'Doctor Specialty (optional)',
-                  hint: 'e.g. Interventional Cardiologist, Nephrologist',
+                  label: l10n.optionalFieldSuffix(l10n.labelDoctorSpecialty),
+                  hint: l10n.specialtyHintExamples,
                   onChanged: (_) => _onFieldChanged(),
                 ),
                 const SizedBox(height: RxSpacing.s16),
                 AppTextField(
                   controller: _howRespondedController,
-                  label: 'How I Responded (optional)',
-                  hint: 'What clinical talking point or trial data did you share?',
+                  label: l10n.optionalFieldSuffix(l10n.labelHowResponded),
+                  hint: l10n.hintHowResponded,
                   minLines: 2,
                   maxLines: 4,
                   onChanged: (_) => _onFieldChanged(),
@@ -430,16 +510,16 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
             ] else if (widget.type == FeedbackType.competitorClaim) ...[
               AppTextField(
                 controller: _competitorNameController,
-                label: 'Competitor Name & Product',
-                hint: 'e.g. PharmaStar Generic Atorvastatin',
+                label: l10n.labelCompetitorProduct,
+                hint: l10n.competitorHintExamples,
                 errorText: _field1Error,
                 onChanged: (_) => _onFieldChanged(),
               ),
               const SizedBox(height: RxSpacing.s16),
               AppTextField(
                 controller: _claimController,
-                label: 'The Claim Heard',
-                hint: 'What promotional statement or comparison was made?',
+                label: l10n.labelClaimHeard,
+                hint: l10n.hintCompetitorClaim,
                 errorText: _field2Error,
                 minLines: 3,
                 maxLines: 5,
@@ -449,8 +529,8 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
                 const SizedBox(height: RxSpacing.s16),
                 AppTextField(
                   controller: _whereHeardController,
-                  label: 'Where Heard (optional)',
-                  hint: 'e.g. Cardiology CME Conference, Hospital Dept Meeting',
+                  label: l10n.optionalFieldSuffix(l10n.labelWhereHeard),
+                  hint: l10n.whereHeardHintExamples,
                   onChanged: (_) => _onFieldChanged(),
                 ),
                 const SizedBox(height: RxSpacing.s16),
@@ -484,8 +564,8 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
                         Expanded(
                           child: Text(
                             _hasPhotoAttached
-                                ? 'Photo flyer attached (sample_flyer.jpg)'
-                                : 'Attach flyer or promotional photo (optional)',
+                                ? l10n.photoAttachedLabel
+                                : l10n.attachPhotoOptional,
                             style: textTheme.bodySmall?.copyWith(
                               fontWeight: _hasPhotoAttached ? FontWeight.w600 : FontWeight.w400,
                               color: _hasPhotoAttached ? colors.primary : colors.textPrimary,
@@ -502,16 +582,16 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
             ] else if (widget.type == FeedbackType.fieldFeedback) ...[
               AppTextField(
                 controller: _topicController,
-                label: 'Topic / Campaign',
-                hint: 'e.g. Sample Availability, Laminated Visual Aid Request',
+                label: l10n.labelTopicCampaign,
+                hint: l10n.topicHintExamples,
                 errorText: _field1Error,
                 onChanged: (_) => _onFieldChanged(),
               ),
               const SizedBox(height: RxSpacing.s16),
               AppTextField(
                 controller: _detailsController,
-                label: 'Details',
-                hint: 'Explain the situation or request clearly for the marketing team...',
+                label: l10n.labelDetails,
+                hint: l10n.hintDetails,
                 errorText: _field2Error,
                 minLines: 4,
                 maxLines: 6,
@@ -549,8 +629,8 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
                         Expanded(
                           child: Text(
                             _hasVoiceNoteAttached
-                                ? 'Voice note recorded (0:32)'
-                                : 'Attach quick voice note (optional)',
+                                ? l10n.voiceAttachedLabel
+                                : l10n.attachVoiceOptional,
                             style: textTheme.bodySmall?.copyWith(
                               fontWeight:
                                   _hasVoiceNoteAttached ? FontWeight.w600 : FontWeight.w400,

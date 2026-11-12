@@ -118,6 +118,7 @@ class QuizQuestionEntity {
   final String id;
   final String question;
   final List<String> options;
+  final List<String> optionIds;
   final int correctOptionIndex;
   final String explanation;
 
@@ -125,9 +126,30 @@ class QuizQuestionEntity {
     required this.id,
     required this.question,
     required this.options,
+    this.optionIds = const [],
     required this.correctOptionIndex,
     required this.explanation,
   });
+
+  bool get isServerEvaluated => correctOptionIndex < 0;
+
+  QuizQuestionEntity copyWith({
+    String? id,
+    String? question,
+    List<String>? options,
+    List<String>? optionIds,
+    int? correctOptionIndex,
+    String? explanation,
+  }) {
+    return QuizQuestionEntity(
+      id: id ?? this.id,
+      question: question ?? this.question,
+      options: options ?? this.options,
+      optionIds: optionIds ?? this.optionIds,
+      correctOptionIndex: correctOptionIndex ?? this.correctOptionIndex,
+      explanation: explanation ?? this.explanation,
+    );
+  }
 
   @override
   bool operator ==(Object other) =>
@@ -147,6 +169,7 @@ class QuickQuizEntity {
   final int durationMinutes;
   final int rewardPoints;
   final List<QuizQuestionEntity> questions;
+  final int? questionCount;
   final bool isCompleted;
   final int? lastScore;
   final int? lastMaxScore;
@@ -158,10 +181,14 @@ class QuickQuizEntity {
     required this.durationMinutes,
     required this.rewardPoints,
     required this.questions,
+    this.questionCount,
     this.isCompleted = false,
     this.lastScore,
     this.lastMaxScore,
   });
+
+  int get displayQuestionCount =>
+      questions.isNotEmpty ? questions.length : (questionCount ?? 0);
 
   QuickQuizEntity copyWith({
     String? id,
@@ -170,6 +197,7 @@ class QuickQuizEntity {
     int? durationMinutes,
     int? rewardPoints,
     List<QuizQuestionEntity>? questions,
+    int? questionCount,
     bool? isCompleted,
     int? lastScore,
     int? lastMaxScore,
@@ -181,6 +209,7 @@ class QuickQuizEntity {
       durationMinutes: durationMinutes ?? this.durationMinutes,
       rewardPoints: rewardPoints ?? this.rewardPoints,
       questions: questions ?? this.questions,
+      questionCount: questionCount ?? this.questionCount,
       isCompleted: isCompleted ?? this.isCompleted,
       lastScore: lastScore ?? this.lastScore,
       lastMaxScore: lastMaxScore ?? this.lastMaxScore,
@@ -310,4 +339,40 @@ class QuizResultHistoryEntity {
 
   double get percentage => totalQuestions == 0 ? 0.0 : score / totalQuestions;
   bool get isHighScore => percentage >= 0.8;
+}
+
+class QuizAnswerEvaluationEntity {
+  final String questionId;
+  final String? selectedOptionId;
+  final bool isCorrect;
+  final String? explanation;
+  final String? correctOptionId;
+  final String? correctOptionText;
+
+  const QuizAnswerEvaluationEntity({
+    required this.questionId,
+    this.selectedOptionId,
+    required this.isCorrect,
+    this.explanation,
+    this.correctOptionId,
+    this.correctOptionText,
+  });
+}
+
+class QuizSubmissionResultEntity {
+  final String attemptId;
+  final int scorePercentage;
+  final bool isPassed;
+  final int passingScore;
+  final int pointsAwarded;
+  final List<QuizAnswerEvaluationEntity> answers;
+
+  const QuizSubmissionResultEntity({
+    required this.attemptId,
+    required this.scorePercentage,
+    required this.isPassed,
+    required this.passingScore,
+    required this.pointsAwarded,
+    required this.answers,
+  });
 }

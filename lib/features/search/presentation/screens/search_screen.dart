@@ -123,7 +123,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final textTheme = Theme.of(context).textTheme;
     final l10n = context.l10n;
 
-    const quickPills = ['Cardura XL', 'AtorvaCare', 'GITS delivery', 'Dosing', 'Hypotension'];
+    final quickPills = [
+      'Cardura XL',
+      'AtorvaCare',
+      l10n.suggestedTopicGits,
+      l10n.suggestedTopicDosing,
+      l10n.suggestedTopicHypotension,
+    ];
 
     return SingleChildScrollView(
       padding: const EdgeInsetsDirectional.all(RxSpacing.s16),
@@ -227,7 +233,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
           // Suggested quick searches
           Text(
-            'Suggested Topics',
+            l10n.suggestedTopicsLabel,
             style: textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: colors.textPrimary,
@@ -272,9 +278,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     return resultsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, _) => ErrorState(
-        title: 'Search failed',
-        description: err.toString(),
-        retryText: 'Retry',
+        title: l10n.searchFailedTitle,
+        description: err.toString().replaceAll('Exception: ', ''),
+        retryText: l10n.retry,
         onRetry: () => ref.refresh(searchResultsProvider(_activeQuery)),
       ),
       data: (map) {

@@ -41,13 +41,16 @@ class MonthlyChallengeView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const StatusBadge(
-                      label: 'Active Sprint',
+                    StatusBadge(
+                      label: l10n.activeSprintBadge,
                       variant: StatusBadgeVariant.info,
                       showDot: true,
                     ),
                     StatusBadge(
-                      label: '${challenge.daysLeft}d ${challenge.hoursLeft}h left',
+                      label: l10n.timeLeftCountdown(
+                        challenge.daysLeft,
+                        challenge.hoursLeft,
+                      ),
                       variant: StatusBadgeVariant.neutral,
                       icon: LucideIcons.clock4,
                     ),
@@ -138,7 +141,7 @@ class MonthlyChallengeView extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '${challenge.completedMilestones}/${challenge.totalMilestones} Milestones',
+                      '${challenge.completedMilestones}/${challenge.totalMilestones}',
                       style: textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                         color: colors.primary,
@@ -201,89 +204,106 @@ class MonthlyChallengeView extends StatelessWidget {
           ),
           const SizedBox(height: RxSpacing.s4),
           Text(
-            'Updated hourly across District medical reps',
+            l10n.leaderboardUpdateCaption,
             style: textTheme.bodySmall?.copyWith(color: colors.textSecondary),
           ),
           const SizedBox(height: RxSpacing.s12),
 
           // Pinned "My Rank" Highlight Strip
-          Container(
-            padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
-            decoration: BoxDecoration(
-              color: colors.primarySoft,
-              borderRadius: RxRadii.borderCard,
-              border: Border.all(
-                color: colors.primary.withValues(alpha: 0.3),
-                width: RxShadows.hairlineBorderWidth,
-              ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 32.0,
-                  height: 32.0,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: colors.primary,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Text(
-                    '#${challenge.userRank}',
-                    style: textTheme.labelSmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                    ),
+          Builder(
+            builder: (context) {
+              final currentEntry = challenge.leaderboard
+                  .where((e) => e.isCurrentUser)
+                  .firstOrNull;
+              final userPoints =
+                  currentEntry?.points ?? challenge.completedMilestones;
+              return Container(
+                padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
+                decoration: BoxDecoration(
+                  color: colors.primarySoft,
+                  borderRadius: RxRadii.borderCard,
+                  border: Border.all(
+                    color: colors.primary.withValues(alpha: 0.3),
+                    width: RxShadows.hairlineBorderWidth,
                   ),
                 ),
-                const SizedBox(width: RxSpacing.s12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 32.0,
+                      height: 32.0,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: colors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        challenge.userRank > 0 ? '#${challenge.userRank}' : '-',
+                        style: textTheme.labelSmall?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: RxSpacing.s12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            l10n.pinnedMyRank,
-                            style: textTheme.labelMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: colors.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(width: RxSpacing.s6),
-                          Container(
-                            padding: const EdgeInsetsDirectional.symmetric(horizontal: 6.0, vertical: 1.0),
-                            decoration: BoxDecoration(
-                              color: colors.primary,
-                              borderRadius: BorderRadius.circular(4.0),
-                            ),
-                            child: Text(
-                              'You',
-                              style: textTheme.labelSmall?.copyWith(
-                                color: Colors.white,
-                                fontSize: 10.0,
-                                fontWeight: FontWeight.w700,
+                          Row(
+                            children: [
+                              Text(
+                                l10n.pinnedMyRank,
+                                style: textTheme.labelMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: colors.textPrimary,
+                                ),
                               ),
+                              const SizedBox(width: RxSpacing.s6),
+                              Container(
+                                padding: const EdgeInsetsDirectional.symmetric(
+                                  horizontal: 6.0,
+                                  vertical: 1.0,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colors.primary,
+                                  borderRadius: BorderRadius.circular(4.0),
+                                ),
+                                child: Text(
+                                  l10n.youLabel,
+                                  style: textTheme.labelSmall?.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 10.0,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 2.0),
+                          Text(
+                            challenge.totalParticipants > 0
+                                ? l10n.rankOfTotalDistrict(
+                                    challenge.userRank,
+                                    challenge.totalParticipants,
+                                  )
+                                : l10n.statPoints(userPoints),
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colors.textSecondary,
+                              fontSize: 12.0,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 2.0),
-                      Text(
-                        'Rank #${challenge.userRank} of ${challenge.totalParticipants} in District',
-                        style: textTheme.bodySmall?.copyWith(
-                          color: colors.textSecondary,
-                          fontSize: 12.0,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                    StatusBadge(
+                      label: l10n.statPoints(userPoints),
+                      variant: StatusBadgeVariant.accent,
+                    ),
+                  ],
                 ),
-                const StatusBadge(
-                  label: '1,250 Pts',
-                  variant: StatusBadgeVariant.accent,
-                ),
-              ],
-            ),
+              );
+            },
           ),
           const SizedBox(height: RxSpacing.s12),
 
@@ -329,8 +349,8 @@ class MonthlyChallengeView extends StatelessWidget {
                                     ),
                                     if (rep.isCurrentUser) ...[
                                       const SizedBox(width: RxSpacing.s6),
-                                      const StatusBadge(
-                                        label: 'You',
+                                      StatusBadge(
+                                        label: l10n.youLabel,
                                         variant: StatusBadgeVariant.info,
                                       ),
                                     ],
@@ -352,7 +372,7 @@ class MonthlyChallengeView extends StatelessWidget {
 
                           // Points (Restrained amber accent)
                           StatusBadge(
-                            label: '${rep.points} Pts',
+                            label: l10n.statPoints(rep.points),
                             variant: rep.rank <= 3 ? StatusBadgeVariant.accent : StatusBadgeVariant.neutral,
                           ),
                         ],
