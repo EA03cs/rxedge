@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../../core/storage/local_file_helper.dart';
 import '../../../../core/widgets/rx_network_image.dart';
 import '../../domain/entities/material_item_entity.dart';
 import '../controllers/library_controller.dart';
@@ -182,12 +183,14 @@ class _ImageViewerScreenState extends ConsumerState<ImageViewerScreen> {
                     ),
                     const SizedBox(height: RxSpacing.s24),
 
-                    // Visual Chart Graphic Container
-                    if (widget.material.fileUrl?.trim().isNotEmpty == true)
+                    // Visual Chart Graphic Container (offline file or remote image)
+                    if (widget.material.fileUrl?.trim().isNotEmpty == true ||
+                        localFileExists(widget.material.localFilePath))
                       ClipRRect(
                         borderRadius: RxRadii.borderCard,
                         child: RxNetworkImage(
                           imageUrl: widget.material.fileUrl,
+                          localFilePath: widget.material.localFilePath,
                           width: double.infinity,
                           height: 300.0,
                           fit: BoxFit.contain,
@@ -197,7 +200,7 @@ class _ImageViewerScreenState extends ConsumerState<ImageViewerScreen> {
                       )
                     else
                       Container(
-                        height: 280.0,
+                        height: 220.0,
                         width: double.infinity,
                         decoration: BoxDecoration(
                           color: colors.surfaceMuted,
@@ -207,100 +210,42 @@ class _ImageViewerScreenState extends ConsumerState<ImageViewerScreen> {
                             width: RxShadows.hairlineBorderWidth,
                           ),
                         ),
-                        padding: const EdgeInsetsDirectional.all(RxSpacing.s16),
+                        padding: const EdgeInsetsDirectional.all(RxSpacing.s20),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Mean Ambulatory SBP Reduction over 24 Hours (mm Hg)',
-                                    style: textTheme.labelSmall?.copyWith(
-                                      fontWeight: FontWeight.w700,
-                                      color: colors.textPrimary,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                const SizedBox(width: RxSpacing.s8),
-                                Row(
-                                  children: [
-                                    Container(
-                                      width: 10.0,
-                                      height: 10.0,
-                                      decoration: BoxDecoration(
-                                        color: colors.primary,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                    const SizedBox(width: RxSpacing.s4),
-                                    Text(
-                                      widget.material.productName,
-                                      style: textTheme.labelSmall?.copyWith(
-                                        fontSize: 10.5,
-                                        color: colors.textPrimary,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                            Icon(
+                              LucideIcons.imageOff,
+                              size: 36.0,
+                              color: colors.textTertiary,
                             ),
-                            const Spacer(),
-
-                            // Simulated Plot Curves
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: List.generate(12, (index) {
-                                final heights = [
-                                  140.0, 155.0, 170.0, 185.0, 195.0, 190.0,
-                                  180.0, 175.0, 180.0, 190.0, 160.0, 150.0
-                                ];
-                                final h = heights[index];
-                                return Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      width: 16.0,
-                                      height: h * 0.7,
-                                      decoration: BoxDecoration(
-                                        color: colors.primary.withValues(
-                                          alpha: 0.75 + (index % 3) * 0.1,
-                                        ),
-                                        borderRadius: const BorderRadius.vertical(
-                                          top: Radius.circular(3.0),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: RxSpacing.s4),
-                                    Text(
-                                      '${(index * 2).toString().padLeft(2, '0')}h',
-                                      style: textTheme.labelSmall?.copyWith(
-                                        color: colors.textTertiary,
-                                        fontSize: 9.5,
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }),
+                            const SizedBox(height: RxSpacing.s12),
+                            Text(
+                              Localizations.localeOf(context).languageCode == 'ar'
+                                  ? 'لا توجد صورة مرفقة لهذه المادة العلمية حالياً'
+                                  : 'No visual media file is attached to this material yet.',
+                              textAlign: TextAlign.center,
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colors.textSecondary,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                            const Spacer(),
                           ],
                         ),
                       ),
                     const SizedBox(height: RxSpacing.s16),
 
-                    Text(
-                      'P-value < 0.001 vs placebo. Confidence Interval 95% (-14.2 to -9.8 mm Hg). Evaluated via 24h continuous non-invasive oscillometric cuffs.',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colors.textTertiary,
-                        fontSize: 11.0,
-                        fontStyle: FontStyle.italic,
+                    if (widget.material.fileUrl?.trim().isNotEmpty == true ||
+                        localFileExists(widget.material.localFilePath))
+                      Text(
+                        widget.material.isDownloaded
+                            ? l10n.offlineAvailable
+                            : '${l10n.onlineOnlyStatusBadge} • ${widget.material.formattedSize}',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colors.textTertiary,
+                          fontSize: 11.0,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../../core/storage/local_file_helper.dart';
 import '../../../../core/widgets/rx_network_image.dart';
 import '../../domain/entities/material_item_entity.dart';
 import '../controllers/library_controller.dart';
@@ -411,9 +412,13 @@ class _EdetailViewerScreenState extends ConsumerState<EdetailViewerScreen> {
               const SizedBox(height: RxSpacing.s20),
 
               if ((slide.imageUrl ?? widget.material.fileUrl)?.trim().isNotEmpty ==
-                  true) ...[
+                      true ||
+                  (slide.imageUrl == null &&
+                      localFileExists(widget.material.localFilePath))) ...[
                 RxNetworkImage(
                   imageUrl: slide.imageUrl ?? widget.material.fileUrl,
+                  localFilePath:
+                      slide.imageUrl == null ? widget.material.localFilePath : null,
                   width: double.infinity,
                   height: 220.0,
                   fit: BoxFit.contain,

@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:pdfrx/pdfrx.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../../core/network/url_resolver.dart';
+import '../../../../core/storage/local_file_helper.dart';
 import '../../domain/entities/material_item_entity.dart';
 import '../controllers/library_controller.dart';
 
 /// PDF Monograph & Clinical Brochure Viewer
 ///
-/// Features:
-/// - Page indicator (Page X of Y)
-/// - Zoom in, Zoom out, Fit to width, Pinch-to-zoom via InteractiveViewer
-/// - Multi-page navigation (Next / Prev floating pill)
-/// - Purely flat, professional medical reader layout
+/// Renders actual PDF documents via `pdfrx` from either:
+/// 1) Downloaded offline local file (`widget.material.localFilePath`), or
+/// 2) Remote resolved backend URL (`widget.material.fileUrl`).
+///
+/// Falls back cleanly to structured monograph metadata if no PDF binary exists yet.
 class PdfViewerScreen extends ConsumerStatefulWidget {
   final MaterialItemEntity material;
 
@@ -27,14 +30,27 @@ class PdfViewerScreen extends ConsumerStatefulWidget {
 
 class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
   late final TransformationController _transformationController;
+  final PdfViewerController _pdfController = PdfViewerController();
+
   int _currentPage = 1;
-  late final int _totalPages;
+  int _totalPages = 1;
+  int _reloadToken = 0;
+
+  bool get _hasLocalFile => localFileExists(widget.material.localFilePath);
+
+  String? get _resolvedRemoteUrl => UrlResolver.resolve(widget.material.fileUrl);
+
+  bool get _usesNativePdf {
+    if (_hasLocalFile) return true;
+    final remote = _resolvedRemoteUrl;
+    return remote != null && Uri.tryParse(remote)?.hasScheme == true;
+  }
 
   @override
   void initState() {
     super.initState();
     _transformationController = TransformationController();
-    _totalPages = widget.material.pageCount > 0 ? widget.material.pageCount : 6;
+    _totalPages = widget.material.pageCount > 0 ? widget.material.pageCount : 1;
   }
 
   @override
@@ -44,32 +60,57 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
   }
 
   void _zoomIn() {
+    if (_usesNativePdf && _pdfController.isReady) {
+      _pdfController.zoomUp();
+      return;
+    }
     final matrix = _transformationController.value.clone();
-    _transformationController.value = matrix.multiplied(Matrix4.diagonal3Values(1.25, 1.25, 1.0));
+    _transformationController.value =
+        matrix.multiplied(Matrix4.diagonal3Values(1.25, 1.25, 1.0));
   }
 
   void _zoomOut() {
+    if (_usesNativePdf && _pdfController.isReady) {
+      _pdfController.zoomDown();
+      return;
+    }
     final matrix = _transformationController.value.clone();
-    _transformationController.value = matrix.multiplied(Matrix4.diagonal3Values(0.8, 0.8, 1.0));
+    _transformationController.value =
+        matrix.multiplied(Matrix4.diagonal3Values(0.8, 0.8, 1.0));
   }
 
   void _resetZoom() {
+    if (_usesNativePdf && _pdfController.isReady) {
+      final fitMatrix = _pdfController.calcMatrixForFit(pageNumber: _currentPage);
+      if (fitMatrix != null) {
+        _pdfController.goTo(fitMatrix);
+      }
+      return;
+    }
     _transformationController.value = Matrix4.identity();
   }
 
   void _nextPage() {
-    if (_currentPage < _totalPages) {
+    if (_currentPage >= _totalPages) return;
+    final targetPage = _currentPage + 1;
+    if (_usesNativePdf && _pdfController.isReady) {
+      _pdfController.goToPage(pageNumber: targetPage);
+    } else {
       setState(() {
-        _currentPage++;
+        _currentPage = targetPage;
         _resetZoom();
       });
     }
   }
 
   void _prevPage() {
-    if (_currentPage > 1) {
+    if (_currentPage <= 1) return;
+    final targetPage = _currentPage - 1;
+    if (_usesNativePdf && _pdfController.isReady) {
+      _pdfController.goToPage(pageNumber: targetPage);
+    } else {
       setState(() {
-        _currentPage--;
+        _currentPage = targetPage;
         _resetZoom();
       });
     }
@@ -126,7 +167,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
           ),
           IconButton(
             icon: Icon(
-              widget.material.isFavorite ? LucideIcons.bookmark : LucideIcons.bookmark,
+              LucideIcons.bookmark,
               size: 18.0,
               color: widget.material.isFavorite ? colors.primary : colors.textSecondary,
             ),
@@ -139,37 +180,40 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
       ),
       body: Stack(
         children: [
-          // 1. Zoomable Document Page Canvas
-          InteractiveViewer(
-            transformationController: _transformationController,
-            minScale: 0.5,
-            maxScale: 3.5,
-            child: SingleChildScrollView(
-              padding: const EdgeInsetsDirectional.all(RxSpacing.s16),
-              child: Center(
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 680),
-                  padding: const EdgeInsetsDirectional.all(RxSpacing.s24),
-                  decoration: BoxDecoration(
-                    color: colors.surface,
-                    borderRadius: RxRadii.borderCard,
-                    border: Border.all(
-                      color: colors.border,
-                      width: RxShadows.hairlineBorderWidth,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
+          // 1. Real PDF Reader or Metadata Summary Canvas
+          if (_usesNativePdf)
+            _buildNativePdfViewer(colors, textTheme, l10n)
+          else
+            InteractiveViewer(
+              transformationController: _transformationController,
+              minScale: 0.5,
+              maxScale: 3.5,
+              child: SingleChildScrollView(
+                padding: const EdgeInsetsDirectional.all(RxSpacing.s16),
+                child: Center(
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 680),
+                    padding: const EdgeInsetsDirectional.all(RxSpacing.s24),
+                    decoration: BoxDecoration(
+                      color: colors.surface,
+                      borderRadius: RxRadii.borderCard,
+                      border: Border.all(
+                        color: colors.border,
+                        width: RxShadows.hairlineBorderWidth,
                       ),
-                    ],
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.04),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: _buildFallbackMetadataContent(colors, textTheme, l10n),
                   ),
-                  child: _buildDocumentContent(colors, textTheme, l10n),
                 ),
               ),
             ),
-          ),
 
           // 2. Floating Bottom Page Navigation Pill
           Positioned(
@@ -240,11 +284,136 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
     );
   }
 
-  Widget _buildDocumentContent(
+  Widget _buildNativePdfViewer(
     RxColors colors,
     TextTheme textTheme,
     AppLocalizations l10n,
   ) {
+    final params = PdfViewerParams(
+      backgroundColor: colors.surfaceMuted,
+      onViewerReady: (document, _) {
+        if (!mounted) return;
+        setState(() {
+          _totalPages = document.pages.isNotEmpty ? document.pages.length : 1;
+        });
+      },
+      onPageChanged: (pageNumber) {
+        if (pageNumber == null || !mounted) return;
+        setState(() => _currentPage = pageNumber);
+      },
+      loadingBannerBuilder: (context, bytesDownloaded, totalBytes) {
+        final progress = (totalBytes != null && totalBytes > 0)
+            ? bytesDownloaded / totalBytes
+            : null;
+        return Center(
+          child: Container(
+            padding: const EdgeInsetsDirectional.all(RxSpacing.s20),
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: RxRadii.borderCard,
+              border: Border.all(
+                color: colors.border,
+                width: RxShadows.hairlineBorderWidth,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(value: progress, color: colors.primary),
+                const SizedBox(height: RxSpacing.s12),
+                Text(
+                  Localizations.localeOf(context).languageCode == 'ar'
+                      ? 'جاري تحميل ملف الـ PDF...'
+                      : 'Loading PDF document...',
+                  style: textTheme.bodySmall?.copyWith(color: colors.textSecondary),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+      errorBannerBuilder: (context, error, stackTrace, documentRef) {
+        final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+        return SingleChildScrollView(
+          padding: const EdgeInsetsDirectional.all(RxSpacing.s16),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsetsDirectional.all(RxSpacing.s16),
+                decoration: BoxDecoration(
+                  color: colors.warningSoft,
+                  borderRadius: RxRadii.borderCard,
+                  border: Border.all(
+                    color: colors.warning.withValues(alpha: 0.3),
+                    width: RxShadows.hairlineBorderWidth,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Icon(LucideIcons.fileWarning, size: 28.0, color: colors.warning),
+                    const SizedBox(height: RxSpacing.s8),
+                    Text(
+                      isArabic
+                          ? 'تعذر تحميل ملف الـ PDF حالياً'
+                          : 'Unable to load the PDF file right now.',
+                      style: textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: colors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: RxSpacing.s8),
+                    TextButton.icon(
+                      onPressed: () => setState(() => _reloadToken++),
+                      icon: Icon(LucideIcons.refreshCw, size: 16.0, color: colors.primary),
+                      label: Text(l10n.retry),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: RxSpacing.s16),
+              Container(
+                constraints: const BoxConstraints(maxWidth: 680),
+                padding: const EdgeInsetsDirectional.all(RxSpacing.s24),
+                decoration: BoxDecoration(
+                  color: colors.surface,
+                  borderRadius: RxRadii.borderCard,
+                  border: Border.all(
+                    color: colors.border,
+                    width: RxShadows.hairlineBorderWidth,
+                  ),
+                ),
+                child: _buildFallbackMetadataContent(colors, textTheme, l10n),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (_hasLocalFile) {
+      return PdfViewer.file(
+        widget.material.localFilePath!,
+        key: ValueKey('pdf_local_${widget.material.id}_$_reloadToken'),
+        controller: _pdfController,
+        params: params,
+      );
+    }
+
+    return PdfViewer.uri(
+      Uri.parse(_resolvedRemoteUrl!),
+      key: ValueKey('pdf_net_${widget.material.id}_$_reloadToken'),
+      controller: _pdfController,
+      params: params,
+    );
+  }
+
+  Widget _buildFallbackMetadataContent(
+    RxColors colors,
+    TextTheme textTheme,
+    AppLocalizations l10n,
+  ) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -324,15 +493,6 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
         ],
         const SizedBox(height: RxSpacing.s20),
 
-        // Monograph Body
-        Text(
-          '1. Indications & Clinical Pharmacology',
-          style: textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: colors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: RxSpacing.s8),
         Text(
           widget.material.description,
           style: textTheme.bodyMedium?.copyWith(
@@ -342,7 +502,6 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
         ),
         const SizedBox(height: RxSpacing.s16),
 
-        // Simulated Dosage Table
         Container(
           width: double.infinity,
           padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
@@ -354,49 +513,26 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
               width: RxShadows.hairlineBorderWidth,
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              Text(
-                'Dosing Guidance & Pharmacokinetic Steady State',
-                style: textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: colors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: RxSpacing.s8),
-              Text(
-                '• Standard Initiation: 4mg once daily with morning or evening meal.\n'
-                '• Titration Threshold: May increase to 8mg after 4 consecutive weeks of baseline evaluation.\n'
-                '• Renal Clearance: No dosage adjustment required in CKD Stages 1 through 4.',
-                style: textTheme.bodySmall?.copyWith(
-                  color: colors.textSecondary,
-                  height: 1.45,
+              Icon(LucideIcons.fileText, size: 18.0, color: colors.textSecondary),
+              const SizedBox(width: RxSpacing.s10),
+              Expanded(
+                child: Text(
+                  isArabic
+                      ? 'لا يتوفر ملف PDF مرفق لهذه المادة حالياً، يمكنك الاطلاع على الملخص أعلاه.'
+                      : 'No PDF document file is attached to this material yet; summary details are displayed above.',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colors.textSecondary,
+                    height: 1.4,
+                  ),
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: RxSpacing.s20),
-
-        Text(
-          '2. Efficacy in Key Randomized Controlled Trials',
-          style: textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: colors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: RxSpacing.s8),
-        Text(
-          'Across multinational double-blind trials, sustained 24-hour therapeutic coverage was demonstrated with a trough-to-peak ratio exceeding 78%. Holter ABPM monitoring confirmed reduction in night-time ambulatory systolic surges without reflexive orthostatic tachycardia.',
-          style: textTheme.bodyMedium?.copyWith(
-            color: colors.textPrimary,
-            height: 1.5,
-          ),
-        ),
         const SizedBox(height: RxSpacing.s24),
 
-        // Footer signature
         const Divider(height: 1.0),
         const SizedBox(height: RxSpacing.s12),
         Row(
