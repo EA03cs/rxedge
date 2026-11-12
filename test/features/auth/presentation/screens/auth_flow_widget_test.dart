@@ -5,6 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:rxedge/app/l10n/l10n.dart';
 import 'package:rxedge/app/theme/theme.dart';
+import 'package:rxedge/core/error/failures.dart';
 import 'package:rxedge/core/utils/result.dart';
 import 'package:rxedge/core/widgets/widgets.dart';
 import 'package:rxedge/features/auth/data/repositories/auth_repository_impl.dart';
@@ -161,6 +162,84 @@ void main() {
 
       expect(find.byType(HomeScreen), findsOneWidget);
       expect(find.text('Search drug monographs, guidelines...'), findsOneWidget);
+    });
+
+    testWidgets('LoginScreen surfaces backend Joi ValidationFailure errors cleanly', (WidgetTester tester) async {
+      when(
+        () => mockRepository.login(
+          username: any(named: 'username'),
+          password: any(named: 'password'),
+          keepSignedIn: any(named: 'keepSignedIn'),
+        ),
+      ).thenAnswer(
+        (_) async => const Result.failure(
+          ValidationFailure(
+            {
+              'field_0': 'VALIDATION_EMAIL_INVALID',
+              'field_1': 'VALIDATION_PASSWORD_MIN',
+            },
+            debugMessage: 'Validation failed',
+          ),
+        ),
+      );
+
+      await tester.pumpWidget(buildTestableWidget(const LoginScreen()));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextFormField).at(0), 'REP-101');
+      await tester.enterText(find.byType(TextFormField).at(1), '123');
+      await tester.tap(find.byType(AppButton));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please enter a valid work email (e.g. rep@rxedge.com).'), findsOneWidget);
+      expect(find.text('Password must be at least 6 characters.'), findsOneWidget);
+    });
+
+    testWidgets('LoginScreen falls back to general banner for unmapped ValidationFailure and 401', (WidgetTester tester) async {
+      when(
+        () => mockRepository.login(
+          username: any(named: 'username'),
+          password: any(named: 'password'),
+          keepSignedIn: any(named: 'keepSignedIn'),
+        ),
+      ).thenAnswer(
+        (_) async => const Result.failure(
+          ValidationFailure(
+            {'field_0': 'UNKNOWN_RULE'},
+            debugMessage: 'Validation failed',
+          ),
+        ),
+      );
+
+      await tester.pumpWidget(buildTestableWidget(const LoginScreen()));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextFormField).at(0), 'rep@rxedge.com');
+      await tester.enterText(find.byType(TextFormField).at(1), 'secret123');
+      await tester.tap(find.byType(AppButton));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please check the highlighted fields and try again.'), findsOneWidget);
+
+      when(
+        () => mockRepository.login(
+          username: any(named: 'username'),
+          password: any(named: 'password'),
+          keepSignedIn: any(named: 'keepSignedIn'),
+        ),
+      ).thenAnswer(
+        (_) async => const Result.failure(
+          UnauthorizedFailure(debugMessage: 'Invalid credentials'),
+        ),
+      );
+
+      await tester.tap(find.byType(AppButton));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Invalid username or password. Please verify and try again.'),
+        findsOneWidget,
+      );
     });
   });
 }

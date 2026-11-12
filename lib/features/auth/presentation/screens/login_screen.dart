@@ -7,7 +7,6 @@ import '../../../../app/router/app_router.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/error/failure_message_mapper.dart';
 import '../../../../core/error/failures.dart';
-import '../../../../core/localization/app_locale_provider.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../controllers/auth_controller.dart';
 
@@ -67,25 +66,68 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    final failure = await ref.read(authControllerProvider.notifier).login(
-      username: username,
-      password: password,
-      keepSignedIn: _keepSignedIn,
-    );
+    FocusScope.of(context).unfocus();
+
+    final Failure? failure;
+    try {
+      failure = await ref.read(authControllerProvider.notifier).login(
+        username: username,
+        password: password,
+        keepSignedIn: _keepSignedIn,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _generalError = FailureMessageMapper.map(
+          context,
+          UnknownFailure(debugMessage: e.toString()),
+        );
+      });
+      return;
+    }
 
     if (!mounted) return;
 
-    if (failure != null) {
+    final resolvedFailure = failure;
+    if (resolvedFailure != null) {
       setState(() {
-        if (failure is ValidationFailure) {
-          _usernameError = failure.fieldErrors['username'];
-          _passwordError = failure.fieldErrors['password'];
-        } else if (failure is UnauthorizedFailure) {
+        if (resolvedFailure is ValidationFailure) {
+          _applyValidationFailure(l10n, resolvedFailure);
+        } else if (resolvedFailure is UnauthorizedFailure) {
           _generalError = l10n.invalidCredentials;
         } else {
-          _generalError = FailureMessageMapper.map(context, failure);
+          _generalError = FailureMessageMapper.map(context, resolvedFailure);
         }
       });
+    }
+  }
+
+  void _applyValidationFailure(AppLocalizations l10n, ValidationFailure failure) {
+    final fields = failure.fieldErrors;
+    final directUser = fields['username'] ?? fields['email'];
+    final directPass = fields['password'];
+
+    if (directUser != null) {
+      _usernameError = FailureMessageMapper.localizeValidationCode(l10n, directUser);
+    }
+    if (directPass != null) {
+      _passwordError = FailureMessageMapper.localizeValidationCode(l10n, directPass);
+    }
+
+    // Backend Joi middleware returns errors as a flat list (e.g. `field_0: VALIDATION_EMAIL_INVALID`).
+    for (final entry in fields.entries) {
+      final raw = entry.value;
+      final upper = raw.toUpperCase();
+      if (_usernameError == null &&
+          (upper.contains('EMAIL') || upper.contains('USERNAME'))) {
+        _usernameError = FailureMessageMapper.localizeValidationCode(l10n, raw);
+      } else if (_passwordError == null && upper.contains('PASSWORD')) {
+        _passwordError = FailureMessageMapper.localizeValidationCode(l10n, raw);
+      }
+    }
+
+    if (_usernameError == null && _passwordError == null) {
+      _generalError = FailureMessageMapper.map(context, failure);
     }
   }
 
@@ -149,6 +191,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 leadingIcon: LucideIcons.fingerprint,
                 onPressed: () {
                   Navigator.pop(bottomSheetContext);
+                  if (!mounted) return;
                   ref.read(authControllerProvider.notifier).setBiometrics(true);
                   context.go(AppRoutes.home);
                 },
@@ -159,6 +202,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 variant: AppButtonVariant.ghost,
                 onPressed: () {
                   Navigator.pop(bottomSheetContext);
+                  if (!mounted) return;
                   ref.read(authControllerProvider.notifier).dismissBiometricPrompt();
                   context.go(AppRoutes.home);
                 },

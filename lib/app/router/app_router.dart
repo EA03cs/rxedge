@@ -91,7 +91,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         case AuthAuthenticating():
           return null;
 
-        case AuthAuthenticated():
+        case AuthAuthenticated(promptBiometrics: final promptBiometrics):
+          if (location == AppRoutes.login && promptBiometrics) {
+            return null;
+          }
           if (location == AppRoutes.login ||
               location == AppRoutes.splash ||
               location == AppRoutes.onboarding) {
