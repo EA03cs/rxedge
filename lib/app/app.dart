@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/services/connectivity_service.dart';
+import '../core/services/socket_service.dart';
 import '../core/services/sync_service.dart';
 import '../core/storage/local_cache_service.dart';
 import '../core/storage/storage_initializer.dart';
@@ -26,6 +27,14 @@ class RxEdgeApp extends ConsumerWidget {
     final activeThemeMode = ref.watch(themeModeProvider);
     final router = ref.watch(routerProvider);
     final isArabic = activeLocale.languageCode == 'ar';
+
+    ref.listen<AuthState>(authControllerProvider, (previous, next) {
+      if (next is AuthAuthenticated) {
+        ref.read(socketServiceProvider).connectIfAuthenticated();
+      } else if (next is AuthUnauthenticated) {
+        ref.read(socketServiceProvider).disconnect();
+      }
+    });
 
     ref.listen<Locale>(localeProvider, (previous, next) {
       if (previous == null || previous.languageCode == next.languageCode) {
