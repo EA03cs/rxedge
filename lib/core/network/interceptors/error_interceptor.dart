@@ -1,73 +1,64 @@
 import 'package:dio/dio.dart';
 import '../../error/exceptions.dart';
+import '../api_response.dart';
 
-/// Maps DioExceptions to strongly-typed AppExceptions
+/// Translates raw [DioException] transport and backend API responses
+/// (matching `D:\Backend\rxedge\src\Utils\Response.js` and `Validation.js`)
+/// into typed [AppException] instances attached to `err.error`.
 class ErrorInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    AppException exception;
+    final AppException mappedException = switch (err.type) {
+      DioExceptionType.connectionTimeout ||
+      DioExceptionType.sendTimeout ||
+      DioExceptionType.receiveTimeout ||
+      DioExceptionType.connectionError =>
+        const NetworkException(),
+      DioExceptionType.badResponse => _mapBadResponse(err),
+      DioExceptionType.cancel => const NetworkException('Request cancelled'),
+      DioExceptionType.badCertificate ||
+      DioExceptionType.unknown ||
+      _ =>
+        err.error is AppException
+            ? err.error! as AppException
+            : NetworkException(err.message ?? 'Network communication error'),
+    };
 
-    switch (err.type) {
-      case DioExceptionType.connectionTimeout:
-      case DioExceptionType.sendTimeout:
-      case DioExceptionType.receiveTimeout:
-      case DioExceptionType.transformTimeout:
-      case DioExceptionType.connectionError:
-        exception = const NetworkException('Network connection timed out or is unavailable');
-        break;
+    handler.next(err.copyWith(error: mappedException));
+  }
 
-      case DioExceptionType.badResponse:
-        final response = err.response;
-        final statusCode = response?.statusCode;
-        final data = response?.data;
+  AppException _mapBadResponse(DioException err) {
+    final statusCode = err.response?.statusCode;
+    final body = err.response?.data;
+    final serverMessage =
+        ApiResponseParser.extractErrorMessage(body) ?? err.message ?? 'Server error';
+    final Map<String, dynamic>? bodyMap =
+        body is Map ? Map<String, dynamic>.from(body) : null;
 
-        if (statusCode == 401) {
-          exception = const UnauthorizedException('Authentication credentials missing or expired');
-        } else if (statusCode == 404) {
-          exception = const NotFoundException('Requested resource does not exist');
-        } else if (statusCode == 422) {
-          final fieldErrors = <String, String>{};
-          if (data is Map<String, dynamic> && data['errors'] is Map) {
-            final errs = data['errors'] as Map;
-            errs.forEach((k, v) => fieldErrors[k.toString()] = v.toString());
-          }
-          exception = ValidationException(fieldErrors, 'Validation failed');
-        } else {
-          final msg = (data is Map && data['message'] != null)
-              ? data['message'].toString()
-              : 'Server responded with status $statusCode';
-          exception = ServerException(
-            msg,
-            statusCode: statusCode,
-            data: data is Map<String, dynamic> ? data : null,
-          );
-        }
-        break;
-
-      case DioExceptionType.cancel:
-        exception = const UnknownException('Request was cancelled');
-        break;
-
-      case DioExceptionType.badCertificate:
-        exception = const NetworkException('SSL/TLS Certificate verification failed');
-        break;
-
-      case DioExceptionType.unknown:
-        if (err.error is AppException) {
-          exception = err.error as AppException;
-        } else {
-          exception = UnknownException(err.message ?? 'Unknown network error', err.error);
-        }
-        break;
+    if (statusCode == 401) {
+      return UnauthorizedException(serverMessage);
     }
 
-    handler.reject(
-      DioException(
-        requestOptions: err.requestOptions,
-        response: err.response,
-        error: exception,
-        type: err.type,
-      ),
+    if (statusCode == 404) {
+      return NotFoundException(serverMessage);
+    }
+
+    // Backend Joi `Validation.js` returns HTTP 400 with `{ errors: [...] }`
+    // and some endpoints use HTTP 422.
+    if (statusCode == 422 ||
+        (statusCode == 400 &&
+            bodyMap != null &&
+            (bodyMap['errors'] != null ||
+                (bodyMap['error'] is Map &&
+                    bodyMap['error']['code'] == 'VALIDATION_ERROR')))) {
+      final fields = ApiResponseParser.extractFieldErrors(body);
+      return ValidationException(fields, serverMessage);
+    }
+
+    return ServerException(
+      serverMessage,
+      statusCode: statusCode,
+      data: bodyMap,
     );
   }
 }

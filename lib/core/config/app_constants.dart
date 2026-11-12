@@ -14,13 +14,19 @@ abstract final class AppConstants {
   static const String headerContentType = 'Content-Type';
   static const String headerContentTypeJson = 'application/json';
   static const String headerAccept = 'Accept';
+  static const String headerAcceptLanguage = 'Accept-Language';
+  static const String headerIfNoneMatch = 'If-None-Match';
   static const String headerAppVersion = 'X-App-Version';
   static const String headerDeviceId = 'X-Device-Id';
+  static const String keyLastSyncManifest = 'rxedge_last_sync_manifest';
 
-  // Cache & Stale Times
+  // Cache & Stale Times & Timeouts
+  static const Duration connectTimeout = Duration(seconds: 15);
+  static const Duration receiveTimeout = Duration(seconds: 20);
   static const Duration defaultCacheTtl = Duration(hours: 4);
   static const Duration offlineQueueRetryDelay = Duration(seconds: 30);
   static const int maxOfflineRetries = 5;
+  static const int maxOfflineQueueRetries = maxOfflineRetries;
 
   // Debounce & Throttling
   static const Duration searchDebounceDuration = Duration(milliseconds: 300);

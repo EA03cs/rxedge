@@ -6,6 +6,7 @@ import '../config/env_config.dart';
 import '../storage/secure_storage_service.dart';
 import 'interceptors/auth_interceptor.dart';
 import 'interceptors/error_interceptor.dart';
+import 'interceptors/language_interceptor.dart';
 import 'interceptors/logging_interceptor.dart';
 
 /// Configured Dio Client instance provider
@@ -25,8 +26,10 @@ final dioClientProvider = Provider<Dio>((ref) {
   final dio = Dio(options);
 
   dio.interceptors.addAll([
+    LanguageInterceptor(ref),
     AuthInterceptor(
       secureStorage,
+      refreshBaseUrl: EnvConfig.baseUrl,
       onSessionExpired: () {
         ref.read(authControllerProvider.notifier).handleSessionExpired();
       },

@@ -1,51 +1,45 @@
-import 'package:flutter/widgets.dart';
-import '../../l10n/app_localizations.dart';
+import 'package:flutter/material.dart';
+import 'package:rxedge/l10n/app_localizations.dart';
 import 'failures.dart';
 
-/// Single failure-to-message mapper
-///
-/// Follows Architecture Contract:
-/// "A single mapper converts Failure to a user-friendly localized message. No raw errors, no status codes in the UI."
+/// Maps sealed domain [Failure] values into user-facing localized UI strings.
 abstract final class FailureMessageMapper {
   static String map(BuildContext context, Failure failure) {
-    final l10n = AppLocalizations.of(context);
-    final isArabic = l10n?.localeName == 'ar';
-
+    final l10n = AppLocalizations.of(context)!;
     switch (failure) {
       case NetworkFailure():
-        return isArabic
-            ? 'تعذر الاتصال بالشبكة. يرجى التحقق من اتصال الإنترنت والمحاولة ثانية.'
-            : 'Unable to connect. Please verify your internet connection and try again.';
-
-      case ServerFailure():
-        return isArabic
-            ? 'الخدمة غير متاحة حالياً. يرجى المحاولة بعد قليل.'
-            : 'The service is temporarily unavailable. Please try again in a moment.';
-
-      case UnauthorizedFailure():
-        return isArabic
-            ? 'انتهت صلاحية الجلسة. يرجى تسجيل الدخول مجدداً للمتابعة.'
-            : 'Your session has expired. Please sign in again to continue.';
-
-      case ValidationFailure():
-        return isArabic
-            ? 'يرجى مراجعة البيانات المدخلة وتصحيح الحقول المطلوبة.'
-            : 'Please review the entered information and correct any errors.';
-
-      case CacheFailure():
-        return isArabic
-            ? 'تعذر قراءة البيانات المحفوظة محلياً.'
-            : 'Unable to read locally stored data.';
-
+        return l10n.errNetwork;
+      case UnauthorizedFailure(debugMessage: final msg):
+        if (_isSafeServerMessage(msg)) return msg!;
+        return l10n.errUnauthorized;
       case NotFoundFailure():
-        return isArabic
-            ? 'المورد المطلوب غير موجود.'
-            : 'The requested resource could not be found.';
-
+        return l10n.errNotFound;
+      case ValidationFailure(fieldErrors: final fields, debugMessage: final msg):
+        if (fields.isNotEmpty) return fields.values.first;
+        if (_isSafeServerMessage(msg)) return msg!;
+        return l10n.errValidation;
+      case CacheFailure():
+        return l10n.errCache;
+      case ServerFailure(statusCode: final code, debugMessage: final msg):
+        if (code != null && code >= 400 && code < 500 && _isSafeServerMessage(msg)) {
+          return msg!;
+        }
+        return l10n.errServer;
       case UnknownFailure():
-        return isArabic
-            ? 'حدث خطأ غير متوقع. يرجى المحاولة مجدداً.'
-            : 'An unexpected issue occurred. Please try again.';
+        return l10n.errUnknown;
     }
+  }
+
+  static bool _isSafeServerMessage(String? msg) {
+    if (msg == null) return false;
+    final trimmed = msg.trim();
+    if (trimmed.isEmpty) return false;
+    // Never leak internal transport/Dart exception details to the UI.
+    if (trimmed.contains('DioException') ||
+        trimmed.contains('Exception:') ||
+        trimmed.startsWith('Instance of ')) {
+      return false;
+    }
+    return true;
   }
 }
