@@ -90,7 +90,7 @@ void main() {
       final state = container.read(authControllerProvider);
       expect(state, isA<AuthAuthenticated>());
       final authed = state as AuthAuthenticated;
-      expect(authed.promptBiometrics, isTrue);
+      expect(authed.promptBiometrics, isFalse);
     });
 
     test('failed login returns Failure and remains AuthUnauthenticated', () async {

@@ -97,11 +97,10 @@ class AuthController extends Notifier<AuthState> {
     );
 
     return result.when(
-      success: (user) async {
-        final biometricEnabled = await _repository.isBiometricEnabled();
+      success: (user) {
         state = AuthAuthenticated(
           user: user,
-          promptBiometrics: !biometricEnabled,
+          promptBiometrics: false,
         );
         return null;
       },

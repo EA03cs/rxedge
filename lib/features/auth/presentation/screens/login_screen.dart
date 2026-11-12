@@ -131,89 +131,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  void _showBiometricDialog(BuildContext context) {
-    final colors = context.rxColors;
-    final l10n = context.l10n;
-    final textTheme = Theme.of(context).textTheme;
-
-    showModalBottomSheet<void>(
-      context: context,
-      isDismissible: false,
-      enableDrag: false,
-      shape: const RoundedRectangleBorder(borderRadius: RxRadii.borderSheet),
-      backgroundColor: colors.surface,
-      builder: (bottomSheetContext) {
-        return Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(
-            RxSpacing.s24,
-            RxSpacing.s24,
-            RxSpacing.s24,
-            RxSpacing.s32,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 56.0,
-                height: 56.0,
-                decoration: BoxDecoration(
-                  color: colors.primarySoft,
-                  borderRadius: BorderRadius.circular(16.0),
-                ),
-                child: Icon(
-                  LucideIcons.fingerprint,
-                  size: 28.0,
-                  color: colors.primary,
-                ),
-              ),
-              const SizedBox(height: RxSpacing.s16),
-              Text(
-                l10n.biometricPromptTitle,
-                textAlign: TextAlign.center,
-                style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: colors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: RxSpacing.s8),
-              Text(
-                l10n.biometricPromptDesc,
-                textAlign: TextAlign.center,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colors.textSecondary,
-                  height: 1.45,
-                ),
-              ),
-              const SizedBox(height: RxSpacing.s24),
-              AppButton(
-                text: l10n.enableBiometrics,
-                variant: AppButtonVariant.primary,
-                leadingIcon: LucideIcons.fingerprint,
-                onPressed: () {
-                  Navigator.pop(bottomSheetContext);
-                  if (!mounted) return;
-                  ref.read(authControllerProvider.notifier).setBiometrics(true);
-                  context.go(AppRoutes.home);
-                },
-              ),
-              const SizedBox(height: RxSpacing.s12),
-              AppButton(
-                text: l10n.maybeLater,
-                variant: AppButtonVariant.ghost,
-                onPressed: () {
-                  Navigator.pop(bottomSheetContext);
-                  if (!mounted) return;
-                  ref.read(authControllerProvider.notifier).dismissBiometricPrompt();
-                  context.go(AppRoutes.home);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final colors = context.rxColors;
@@ -222,15 +139,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState is AuthAuthenticating;
 
-    // Listen for state change to authenticated
+    // Listen for state change to authenticated and navigate directly to home
     ref.listen<AuthState>(authControllerProvider, (previous, next) {
       if (!mounted) return;
       if (next is AuthAuthenticated) {
-        if (next.promptBiometrics) {
-          _showBiometricDialog(context);
-        } else {
-          context.go(AppRoutes.home);
-        }
+        context.go(AppRoutes.home);
       }
     });
 
