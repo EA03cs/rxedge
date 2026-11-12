@@ -3,6 +3,7 @@ import '../../../../core/error/exceptions.dart';
 import '../../../../core/network/api_endpoints.dart';
 import '../../../../core/network/api_response.dart';
 import '../../../../core/network/url_resolver.dart';
+import '../../../../core/storage/local_file_helper.dart';
 import '../models/feedback_dto.dart';
 
 /// Remote Datasource Contract for Live Marketing Feedback
@@ -94,9 +95,22 @@ class FeedbackRemoteDatasourceImpl implements FeedbackRemoteDatasource {
     }
 
     if (dio != null) {
+      final payload = item.toBackendPayload();
+      await _uploadLocalPathIfNeeded(
+        payload: payload,
+        fieldKey: 'attachmentUrl',
+        localPath: item.photoUrl,
+        fallbackFilename: 'feedback_photo.jpg',
+      );
+      await _uploadLocalPathIfNeeded(
+        payload: payload,
+        fieldKey: 'voiceNoteUrl',
+        localPath: item.voiceNoteUrl,
+        fallbackFilename: 'voice_note.m4a',
+      );
       final response = await dio!.post<dynamic>(
         ApiEndpoints.feedback,
-        data: item.toBackendPayload(),
+        data: payload,
       );
       final map = ApiResponseParser.unwrapMap(response.data);
       return FeedbackItemDto.fromJson(map);
@@ -156,5 +170,27 @@ class FeedbackRemoteDatasourceImpl implements FeedbackRemoteDatasource {
 
     await Future<void>.delayed(const Duration(milliseconds: 120));
     return 'http://localhost:4010/uploads/feedback/$filename';
+  }
+
+  Future<void> _uploadLocalPathIfNeeded({
+    required Map<String, dynamic> payload,
+    required String fieldKey,
+    required String? localPath,
+    required String fallbackFilename,
+  }) async {
+    if (payload[fieldKey] != null ||
+        localPath == null ||
+        !localFileExists(localPath)) {
+      return;
+    }
+    final bytes = await readLocalFileBytes(localPath);
+    if (bytes == null || bytes.isEmpty) return;
+    final filename = localPath.split(RegExp(r'[/\\]')).last;
+    final uploadedUrl = await uploadAttachment(
+      bytes: bytes,
+      filename: filename.isEmpty ? fallbackFilename : filename,
+    );
+    payload[fieldKey] = uploadedUrl;
+    await deleteLocalFile(localPath);
   }
 }

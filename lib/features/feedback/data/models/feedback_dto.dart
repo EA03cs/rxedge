@@ -142,11 +142,15 @@ class FeedbackItemDto {
                 ? claim!.trim()
                 : title.trim()));
 
-    final rawAttachment = photoUrl ?? voiceNoteUrl;
-    final validAttachment = rawAttachment != null &&
-            (rawAttachment.startsWith('http://') ||
-                rawAttachment.startsWith('https://'))
-        ? rawAttachment
+    final validAttachment = photoUrl != null &&
+            (photoUrl!.startsWith('http://') ||
+                photoUrl!.startsWith('https://'))
+        ? photoUrl
+        : null;
+    final validVoiceNote = voiceNoteUrl != null &&
+            (voiceNoteUrl!.startsWith('http://') ||
+                voiceNoteUrl!.startsWith('https://'))
+        ? voiceNoteUrl
         : null;
 
     return <String, dynamic>{
@@ -163,6 +167,7 @@ class FeedbackItemDto {
         'competitorName': competitorName!.trim(),
       if (claim != null && claim!.trim().isNotEmpty) 'competitorClaim': claim!.trim(),
       'attachmentUrl': ?validAttachment,
+      'voiceNoteUrl': ?validVoiceNote,
     };
   }
 

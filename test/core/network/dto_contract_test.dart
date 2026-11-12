@@ -1,10 +1,16 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rxedge/core/storage/local_cache_service.dart';
+import 'package:rxedge/core/storage/offline_queue_service.dart';
+import 'package:rxedge/core/storage/storage_initializer.dart';
 import 'package:rxedge/features/auth/data/models/user_dto.dart';
 import 'package:rxedge/features/challenges/data/models/challenges_dto.dart';
+import 'package:rxedge/features/feedback/data/datasources/feedback_local_datasource.dart';
 import 'package:rxedge/features/feedback/data/models/feedback_dto.dart';
 import 'package:rxedge/features/home/data/models/home_dashboard_dto.dart';
 import 'package:rxedge/features/learn/data/models/learning_dto.dart';
 import 'package:rxedge/features/library/data/models/material_item_dto.dart';
+import 'package:rxedge/features/notifications/data/models/notification_dto.dart';
 
 void main() {
   group('Backend DTO Parsing Contracts', () {
@@ -215,6 +221,81 @@ void main() {
       expect(payload.containsKey('attachmentUrl'), isFalse);
       expect(payload['details'], 'الدواء مكلف مقارنة بالبدائل');
       expect(payload['representativeResponse'], 'شرحنا ثبات 24 ساعة');
+    });
+
+    test('NotificationDto normalizes /feedback/detail and feedback_detail routes', () {
+      final fromSlash = NotificationDto.fromJson(<String, dynamic>{
+        'id': 'notif-1',
+        'type': 'feedback_reply',
+        'title': 'رد جديد',
+        'body': 'تم الرد على ملاحظتك',
+        'targetScreen': '/feedback/detail',
+        'targetId': 'fb-123',
+      });
+      final fromSnake = NotificationDto.fromJson(<String, dynamic>{
+        'id': 'notif-2',
+        'type': 'feedback_reply',
+        'title': 'رد جديد',
+        'body': 'تم الرد',
+        'targetScreen': 'feedback_detail',
+        'targetId': 'fb-456',
+      });
+
+      expect(fromSlash.targetRoute, '/feedback/detail');
+      expect(fromSlash.targetId, 'fb-123');
+      expect(fromSnake.targetRoute, '/feedback/detail');
+      expect(fromSnake.targetId, 'fb-456');
+    });
+
+    test('FeedbackLocalDatasourceImpl queues localAttachmentPath for offline photo replay', () async {
+      final queue = OfflineQueueService();
+      final cache = LocalCacheService();
+      final local = FeedbackLocalDatasourceImpl(
+        cacheService: cache,
+        queueService: queue,
+      );
+
+      await local.queueFeedbackSubmission(
+        const FeedbackItemDto(
+          id: 'pending_1',
+          clientSubmissionId: '11111111-1111-4111-8111-111111111111',
+          typeString: 'competitorClaim',
+          title: 'Competitor Claim',
+          submittedAtIso: '2026-11-12T10:00:00Z',
+          competitorName: 'PharmaX',
+          claim: 'Unverified flyer',
+          photoUrl: '/data/user/0/app/pending_photo.jpg',
+          voiceNoteUrl: '/data/user/0/app/pending_voice.m4a',
+        ),
+      );
+
+      expect(queue.pendingItems, hasLength(1));
+      final queuedPayload = queue.pendingItems.single.payload;
+      expect(queuedPayload.containsKey('attachmentUrl'), isFalse);
+      expect(queuedPayload.containsKey('voiceNoteUrl'), isFalse);
+      expect(queuedPayload['localAttachmentPath'], '/data/user/0/app/pending_photo.jpg');
+      expect(queuedPayload['localVoiceNotePath'], '/data/user/0/app/pending_voice.m4a');
+    });
+
+    test('FeedbackItemDto.toBackendPayload includes HTTP attachmentUrl and voiceNoteUrl', () {
+      const dto = FeedbackItemDto(
+        id: 'fb_2',
+        clientSubmissionId: '11111111-1111-4111-8111-111111111111',
+        typeString: 'fieldFeedback',
+        title: 'Field Suggestion',
+        submittedAtIso: '2026-11-12T10:00:00Z',
+        details: 'Need printed pocket cards',
+        photoUrl: 'http://rxedge.agro-plus.net/uploads/feedback/photo.jpg',
+        voiceNoteUrl: 'http://rxedge.agro-plus.net/uploads/feedback/voice.m4a',
+      );
+
+      final payload = dto.toBackendPayload();
+      expect(payload['attachmentUrl'], 'http://rxedge.agro-plus.net/uploads/feedback/photo.jpg');
+      expect(payload['voiceNoteUrl'], 'http://rxedge.agro-plus.net/uploads/feedback/voice.m4a');
+    });
+
+    test('StorageInitializer reads fallback ThemeMode when box is not opened', () {
+      expect(StorageInitializer.readInitialThemeMode(), ThemeMode.light);
     });
   });
 }

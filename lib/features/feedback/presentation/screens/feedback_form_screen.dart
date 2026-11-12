@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:record/record.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../../core/storage/local_file_helper.dart';
 import '../../../../core/utils/uuid_v4.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../../learn/domain/entities/learning_entities.dart';
@@ -13,6 +15,7 @@ import '../../../learn/presentation/controllers/learn_controller.dart';
 import '../../data/repositories/feedback_repository_impl.dart';
 import '../../domain/entities/feedback_entities.dart';
 import '../controllers/feedback_controller.dart';
+import '../widgets/voice_note_player_card.dart';
 import 'feedback_success_screen.dart';
 
 /// Guided Feedback Form with progressive disclosure and autosaved draft
@@ -54,10 +57,18 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
   // UI state
   bool _isSubmitting = false;
   bool _isUploadingPhoto = false;
+  bool _isRecordingVoice = false;
+  bool _isUploadingVoice = false;
+  int _recordingSeconds = 0;
+  Timer? _recordingTimer;
+  AudioRecorder? _recorder;
   bool _draftRestored = false;
   bool _showOptionalFields = false;
   Uint8List? _attachedPhotoBytes;
   String? _uploadedPhotoUrl;
+  String? _localPhotoPath;
+  String? _uploadedVoiceNoteUrl;
+  String? _localVoicePath;
   Timer? _autosaveTimer;
 
   @override
@@ -138,6 +149,10 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
   @override
   void dispose() {
     _autosaveTimer?.cancel();
+    _recordingTimer?.cancel();
+    try {
+      _recorder?.dispose();
+    } catch (_) {}
     _productController.dispose();
     _objectionController.dispose();
     _doctorSpecialtyController.dispose();
@@ -236,7 +251,7 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
           howResponded: _howRespondedController.text.trim().isEmpty
               ? null
               : _howRespondedController.text.trim(),
-          photoUrl: _uploadedPhotoUrl,
+          photoUrl: _uploadedPhotoUrl ?? _localPhotoPath,
         );
         break;
 
@@ -256,7 +271,7 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
           whereHeard: _whereHeardController.text.trim().isEmpty
               ? null
               : _whereHeardController.text.trim(),
-          photoUrl: _uploadedPhotoUrl,
+          photoUrl: _uploadedPhotoUrl ?? _localPhotoPath,
         );
         break;
 
@@ -273,7 +288,8 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
           submittedAt: DateTime.now(),
           topic: top,
           details: det,
-          photoUrl: _uploadedPhotoUrl,
+          photoUrl: _uploadedPhotoUrl ?? _localPhotoPath,
+          voiceNoteUrl: _uploadedVoiceNoteUrl ?? _localVoicePath,
         );
         break;
     }
@@ -568,51 +584,7 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
                 const SizedBox(height: RxSpacing.s16),
                 _buildPhotoAttachmentCard(context),
                 const SizedBox(height: RxSpacing.s12),
-                // Voice note simulated attachment
-                InkWell(
-                  onTap: () {
-                    setState(() => _hasVoiceNoteAttached = !_hasVoiceNoteAttached);
-                    _onFieldChanged();
-                  },
-                  borderRadius: RxRadii.borderInput,
-                  child: Container(
-                    padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
-                    decoration: BoxDecoration(
-                      color: _hasVoiceNoteAttached
-                          ? colors.primary.withValues(alpha: 0.05)
-                          : colors.surface,
-                      borderRadius: RxRadii.borderInput,
-                      border: Border.all(
-                        color: _hasVoiceNoteAttached ? colors.primary : colors.border,
-                        width: RxShadows.hairlineBorderWidth,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          _hasVoiceNoteAttached ? LucideIcons.checkCircle2 : LucideIcons.mic,
-                          size: 18.0,
-                          color: _hasVoiceNoteAttached ? colors.primary : colors.textSecondary,
-                        ),
-                        const SizedBox(width: RxSpacing.s10),
-                        Expanded(
-                          child: Text(
-                            _hasVoiceNoteAttached
-                                ? l10n.voiceAttachedLabel
-                                : l10n.attachVoiceOptional,
-                            style: textTheme.bodySmall?.copyWith(
-                              fontWeight:
-                                  _hasVoiceNoteAttached ? FontWeight.w600 : FontWeight.w400,
-                              color: _hasVoiceNoteAttached ? colors.primary : colors.textPrimary,
-                            ),
-                          ),
-                        ),
-                        if (_hasVoiceNoteAttached)
-                          Icon(LucideIcons.x, size: 16.0, color: colors.textSecondary),
-                      ],
-                    ),
-                  ),
-                ),
+                _buildVoiceAttachmentCard(context),
               ],
             ],
 
@@ -622,8 +594,13 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
             AppButton(
               text: l10n.btnSendFeedback,
               leadingIcon: LucideIcons.send,
-              isLoading: _isSubmitting || _isUploadingPhoto,
-              onPressed: (_isSubmitting || _isUploadingPhoto) ? null : _submit,
+              isLoading: _isSubmitting || _isUploadingPhoto || _isUploadingVoice,
+              onPressed: (_isSubmitting ||
+                      _isUploadingPhoto ||
+                      _isUploadingVoice ||
+                      _isRecordingVoice)
+                  ? null
+                  : _submit,
             ),
           ],
         ),
@@ -681,16 +658,41 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
           );
       if (!mounted) return;
 
-      uploadRes.when(
-        success: (url) {
+      await uploadRes.when<Future<void>>(
+        success: (url) async {
           setState(() {
             _uploadedPhotoUrl = url;
+            _localPhotoPath = null;
             _hasPhotoAttached = true;
             _isUploadingPhoto = false;
           });
           _onFieldChanged();
         },
-        failure: (f) {
+        failure: (f) async {
+          final savedLocalPath = await savePendingUploadBytes(
+            bytes,
+            picked.name.isEmpty ? 'feedback_photo.jpg' : picked.name,
+          );
+          if (!mounted) return;
+          if (savedLocalPath != null) {
+            setState(() {
+              _uploadedPhotoUrl = null;
+              _localPhotoPath = savedLocalPath;
+              _hasPhotoAttached = true;
+              _isUploadingPhoto = false;
+            });
+            _onFieldChanged();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  isArabic
+                      ? 'تم حفظ الصورة محلياً وسيتم رفعها تلقائياً عند عودة الإنترنت'
+                      : 'Photo saved locally and will upload when back online.',
+                ),
+              ),
+            );
+            return;
+          }
           setState(() {
             _isUploadingPhoto = false;
             _hasPhotoAttached = _uploadedPhotoUrl != null;
@@ -729,11 +731,14 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
         InkWell(
           onTap: () {
             if (hasImage && !_isUploadingPhoto) {
+              final oldLocal = _localPhotoPath;
               setState(() {
                 _hasPhotoAttached = false;
                 _attachedPhotoBytes = null;
                 _uploadedPhotoUrl = null;
+                _localPhotoPath = null;
               });
+              deleteLocalFile(oldLocal);
               _onFieldChanged();
             } else {
               _pickAndUploadPhoto();
@@ -798,6 +803,229 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
           ),
         ],
       ],
+    );
+  }
+
+  String _formatRecordingDuration(int totalSeconds) {
+    final mins = (totalSeconds ~/ 60).toString().padLeft(2, '0');
+    final secs = (totalSeconds % 60).toString().padLeft(2, '0');
+    return '$mins:$secs';
+  }
+
+  Future<void> _toggleVoiceRecording() async {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    try {
+      final recorder = _recorder ??= AudioRecorder();
+
+      if (_isRecordingVoice) {
+        _recordingTimer?.cancel();
+        final path = await recorder.stop();
+        if (!mounted) return;
+
+        setState(() {
+          _isRecordingVoice = false;
+        });
+
+        if (path == null || path.isEmpty) return;
+
+        final bytes = await readLocalFileBytes(path);
+        if (!mounted) return;
+        if (bytes == null || bytes.isEmpty) {
+          setState(() {
+            _localVoicePath = path;
+            _hasVoiceNoteAttached = true;
+          });
+          _onFieldChanged();
+          return;
+        }
+
+        setState(() => _isUploadingVoice = true);
+        final uploadRes = await ref.read(feedbackRepositoryProvider).uploadAttachment(
+              bytes: bytes,
+              filename: 'voice_${DateTime.now().millisecondsSinceEpoch}.m4a',
+            );
+        if (!mounted) return;
+
+        await uploadRes.when<Future<void>>(
+          success: (url) async {
+            setState(() {
+              _uploadedVoiceNoteUrl = url;
+              _localVoicePath = path;
+              _hasVoiceNoteAttached = true;
+              _isUploadingVoice = false;
+            });
+            _onFieldChanged();
+          },
+          failure: (_) async {
+            setState(() {
+              _uploadedVoiceNoteUrl = null;
+              _localVoicePath = path;
+              _hasVoiceNoteAttached = true;
+              _isUploadingVoice = false;
+            });
+            _onFieldChanged();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  isArabic
+                      ? 'تم حفظ التسجيل الصوتي محلياً وسيتم رفعه تلقائياً عند عودة الإنترنت'
+                      : 'Voice note saved locally and will upload when back online.',
+                ),
+              ),
+            );
+          },
+        );
+        return;
+      }
+
+      final hasPerm = await recorder.hasPermission();
+      if (!mounted) return;
+      if (!hasPerm) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isArabic
+                  ? 'يرجى منح صلاحية الميكروفون لتسجيل ملاحظة صوتية'
+                  : 'Microphone permission is required to record a voice note.',
+            ),
+            backgroundColor: context.rxColors.error,
+          ),
+        );
+        return;
+      }
+
+      final targetPath = await createRecordingFilePath();
+      if (!mounted) return;
+      if (targetPath == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isArabic
+                  ? 'التسجيل الصوتي متاح على تطبيق الهاتف حالياً'
+                  : 'Voice recording is available on mobile devices.',
+            ),
+          ),
+        );
+        return;
+      }
+
+      await recorder.start(
+        const RecordConfig(
+          encoder: AudioEncoder.aacLc,
+          bitRate: 64000,
+          sampleRate: 16000,
+        ),
+        path: targetPath,
+      );
+      if (!mounted) return;
+
+      _recordingTimer?.cancel();
+      setState(() {
+        _isRecordingVoice = true;
+        _recordingSeconds = 0;
+      });
+      _recordingTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+        if (!mounted) return;
+        setState(() => _recordingSeconds++);
+      });
+    } catch (_) {
+      if (!mounted) return;
+      _recordingTimer?.cancel();
+      setState(() {
+        _isRecordingVoice = false;
+        _isUploadingVoice = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isArabic
+                ? 'تعذر بدء التسجيل الصوتي على هذا الجهاز'
+                : 'Unable to record audio on this device.',
+          ),
+          backgroundColor: context.rxColors.error,
+        ),
+      );
+    }
+  }
+
+  Widget _buildVoiceAttachmentCard(BuildContext context) {
+    final colors = context.rxColors;
+    final textTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final voiceSource = _localVoicePath ?? _uploadedVoiceNoteUrl;
+
+    if (voiceSource != null && voiceSource.isNotEmpty && !_isRecordingVoice) {
+      return VoiceNotePlayerCard(
+        voiceSource: voiceSource,
+        durationLabel: _recordingSeconds > 0
+            ? _formatRecordingDuration(_recordingSeconds)
+            : null,
+        onRemove: () {
+          final oldPath = _localVoicePath;
+          setState(() {
+            _hasVoiceNoteAttached = false;
+            _uploadedVoiceNoteUrl = null;
+            _localVoicePath = null;
+            _recordingSeconds = 0;
+          });
+          deleteLocalFile(oldPath);
+          _onFieldChanged();
+        },
+      );
+    }
+
+    return InkWell(
+      onTap: _isUploadingVoice ? null : _toggleVoiceRecording,
+      borderRadius: RxRadii.borderInput,
+      child: Container(
+        padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
+        decoration: BoxDecoration(
+          color: _isRecordingVoice
+              ? colors.error.withValues(alpha: 0.08)
+              : colors.surface,
+          borderRadius: RxRadii.borderInput,
+          border: Border.all(
+            color: _isRecordingVoice ? colors.error : colors.border,
+            width: RxShadows.hairlineBorderWidth,
+          ),
+        ),
+        child: Row(
+          children: [
+            if (_isUploadingVoice)
+              SizedBox(
+                width: 18.0,
+                height: 18.0,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.0,
+                  color: colors.primary,
+                ),
+              )
+            else
+              Icon(
+                _isRecordingVoice ? LucideIcons.square : LucideIcons.mic,
+                size: 18.0,
+                color: _isRecordingVoice ? colors.error : colors.textSecondary,
+              ),
+            const SizedBox(width: RxSpacing.s10),
+            Expanded(
+              child: Text(
+                _isUploadingVoice
+                    ? (isArabic ? 'جاري رفع التسجيل الصوتي...' : 'Uploading voice note...')
+                    : (_isRecordingVoice
+                        ? (isArabic
+                            ? 'جاري التسجيل... اضغط للإيقاف (${_formatRecordingDuration(_recordingSeconds)})'
+                            : 'Recording... Tap to stop (${_formatRecordingDuration(_recordingSeconds)})')
+                        : l10n.attachVoiceOptional),
+                style: textTheme.bodySmall?.copyWith(
+                  fontWeight: _isRecordingVoice ? FontWeight.w600 : FontWeight.w400,
+                  color: _isRecordingVoice ? colors.error : colors.textPrimary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

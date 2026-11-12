@@ -86,12 +86,27 @@ class FeedbackLocalDatasourceImpl implements FeedbackLocalDatasource {
   @override
   Future<void> queueFeedbackSubmission(FeedbackItemDto item) async {
     final clientId = item.clientSubmissionId ?? UuidV4.generate();
+    final payload = item.toBackendPayload(overrideClientSubmissionId: clientId);
+    final rawPhoto = item.photoUrl;
+    if (rawPhoto != null &&
+        rawPhoto.trim().isNotEmpty &&
+        !rawPhoto.startsWith('http://') &&
+        !rawPhoto.startsWith('https://')) {
+      payload['localAttachmentPath'] = rawPhoto.trim();
+    }
+    final rawVoice = item.voiceNoteUrl;
+    if (rawVoice != null &&
+        rawVoice.trim().isNotEmpty &&
+        !rawVoice.startsWith('http://') &&
+        !rawVoice.startsWith('https://')) {
+      payload['localVoiceNotePath'] = rawVoice.trim();
+    }
     _queueService.enqueue(
       OfflineQueueItem(
         id: 'fb_queue_${DateTime.now().millisecondsSinceEpoch}',
         endpoint: ApiEndpoints.feedback,
         httpMethod: 'POST',
-        payload: item.toBackendPayload(overrideClientSubmissionId: clientId),
+        payload: payload,
         createdAt: DateTime.now(),
       ),
     );

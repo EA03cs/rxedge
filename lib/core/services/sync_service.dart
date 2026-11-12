@@ -4,9 +4,11 @@ import '../config/app_constants.dart';
 import '../network/api_endpoints.dart';
 import '../network/api_response.dart';
 import '../network/dio_client.dart';
+import '../network/url_resolver.dart';
 import '../services/connectivity_service.dart';
 import '../services/logger_service.dart';
 import '../storage/local_cache_service.dart';
+import '../storage/local_file_helper.dart';
 import '../storage/offline_queue_service.dart';
 
 /// Synchronizes offline queued mutations (feedback/quizzes/lesson completions)
@@ -93,15 +95,75 @@ class SyncService {
   }
 
   Future<void> _replayItem(OfflineQueueItem item) async {
-    final payload = Map<String, dynamic>.from(item.payload)
-      ..remove('localAttachmentPath')
-      ..remove('localItemId');
+    final payload = Map<String, dynamic>.from(item.payload);
+    final localAttachmentPath = payload.remove('localAttachmentPath') as String?;
+    final localVoiceNotePath = payload.remove('localVoiceNotePath') as String?;
+    payload.remove('localItemId');
+
+    final pathsToDelete = <String>[];
+    await _uploadQueuedLocalFile(
+      payload: payload,
+      localPath: localAttachmentPath,
+      payloadKey: 'attachmentUrl',
+      fallbackFilename: 'feedback_attachment.jpg',
+      pathsToDelete: pathsToDelete,
+    );
+    await _uploadQueuedLocalFile(
+      payload: payload,
+      localPath: localVoiceNotePath,
+      payloadKey: 'voiceNoteUrl',
+      fallbackFilename: 'voice_note.m4a',
+      pathsToDelete: pathsToDelete,
+    );
 
     await _dio.request<dynamic>(
       item.endpoint,
       data: payload,
       options: Options(method: item.httpMethod),
     );
+
+    for (final path in pathsToDelete) {
+      await deleteLocalFile(path);
+    }
+  }
+
+  Future<void> _uploadQueuedLocalFile({
+    required Map<String, dynamic> payload,
+    required String? localPath,
+    required String payloadKey,
+    required String fallbackFilename,
+    required List<String> pathsToDelete,
+  }) async {
+    if (localPath == null ||
+        localPath.trim().isEmpty ||
+        payload[payloadKey] != null) {
+      return;
+    }
+    final bytes = await readLocalFileBytes(localPath);
+    if (bytes == null || bytes.isEmpty) return;
+
+    final filename = localPath.split(RegExp(r'[/\\]')).last;
+    final formData = FormData.fromMap(<String, dynamic>{
+      'file': MultipartFile.fromBytes(
+        bytes,
+        filename: filename.isEmpty ? fallbackFilename : filename,
+      ),
+      'subfolder': 'feedback',
+    });
+    final uploadResp = await _dio.post<dynamic>(
+      ApiEndpoints.mediaUpload,
+      data: formData,
+    );
+    final map = ApiResponseParser.unwrapMap(uploadResp.data);
+    final rawUrl = map['url'] as String? ?? '';
+    final resolvedUrl = UrlResolver.resolve(
+      rawUrl,
+      apiBaseUrl: _dio.options.baseUrl,
+    );
+    if (resolvedUrl != null && resolvedUrl.isNotEmpty) {
+      payload[payloadKey] = resolvedUrl;
+      pathsToDelete.add(localPath);
+    }
   }
 
   /// Queries `/sync/manifest` to check for updated modules and invalidate stale caches.
