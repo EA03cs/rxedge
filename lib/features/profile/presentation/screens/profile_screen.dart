@@ -305,6 +305,7 @@ class ProfileScreen extends ConsumerWidget {
                 onSelectionChanged: (newVal) {
                   final nextLang = newVal.first;
                   ref.read(localeProvider.notifier).state = Locale(nextLang);
+                  ref.read(profileControllerProvider.notifier).refresh();
                   Future<void>.microtask(() async {
                     try {
                       await ref

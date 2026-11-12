@@ -8,6 +8,7 @@ import '../../../../app/theme/theme.dart';
 import '../../../../core/localization/app_locale_provider.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../notifications/presentation/controllers/notifications_controller.dart';
+import '../controllers/home_controller.dart';
 
 /// Top Header of the Home Screen
 ///
@@ -132,6 +133,7 @@ class HomeHeader extends ConsumerWidget {
                 onTap: () {
                   final newLocale = isArabic ? const Locale('en') : const Locale('ar');
                   ref.read(localeProvider.notifier).state = newLocale;
+                  ref.read(homeControllerProvider.notifier).refresh();
                 },
                 borderRadius: RxRadii.borderBadge,
                 child: Container(

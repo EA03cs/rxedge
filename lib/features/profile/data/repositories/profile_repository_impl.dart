@@ -21,18 +21,20 @@ class ProfileRepositoryImpl implements ProfileRepository {
         _localDatasource = localDatasource;
 
   @override
-  Future<Result<UserProfileEntity>> getProfile() async {
-    if (_memoryProfile != null) {
+  Future<Result<UserProfileEntity>> getProfile({bool forceRefresh = false}) async {
+    if (!forceRefresh && _memoryProfile != null) {
       return Result.success(_memoryProfile!);
     }
 
     try {
-      final cached = await _localDatasource.getCachedProfile();
-      if (cached != null) {
-        _memoryProfile = cached.toDomain().copyWith(
-              storageUsageBytes: _localDatasource.getStorageUsage(),
-            );
-        return Result.success(_memoryProfile!);
+      if (!forceRefresh) {
+        final cached = await _localDatasource.getCachedProfile();
+        if (cached != null) {
+          _memoryProfile = cached.toDomain().copyWith(
+                storageUsageBytes: _localDatasource.getStorageUsage(),
+              );
+          return Result.success(_memoryProfile!);
+        }
       }
 
       final remoteDto = await _remoteDatasource.getProfile();

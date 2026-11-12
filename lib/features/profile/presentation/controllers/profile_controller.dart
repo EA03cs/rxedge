@@ -17,7 +17,7 @@ class ProfileController extends AutoDisposeAsyncNotifier<UserProfileEntity> {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final repo = ref.read(profileRepositoryProvider);
-      final result = await repo.getProfile();
+      final result = await repo.getProfile(forceRefresh: true);
       return result.when(
         success: (profile) => profile,
         failure: (f) => throw Exception(f.debugMessage ?? 'Failed to load profile'),

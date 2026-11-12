@@ -6,13 +6,21 @@ import '../core/services/sync_service.dart';
 import '../core/storage/local_cache_service.dart';
 import '../core/storage/storage_initializer.dart';
 import '../features/auth/presentation/controllers/auth_controller.dart';
+import '../features/challenges/data/repositories/challenges_repository_impl.dart';
 import '../features/challenges/presentation/controllers/challenges_controller.dart';
+import '../features/feedback/data/repositories/feedback_repository_impl.dart';
 import '../features/feedback/presentation/controllers/feedback_controller.dart';
+import '../features/home/data/repositories/home_repository_impl.dart';
 import '../features/home/presentation/controllers/home_controller.dart';
+import '../features/learn/data/repositories/learn_repository_impl.dart';
 import '../features/learn/presentation/controllers/learn_controller.dart';
+import '../features/library/data/repositories/library_repository_impl.dart';
 import '../features/library/presentation/controllers/library_controller.dart';
+import '../features/notifications/data/repositories/notifications_repository_impl.dart';
 import '../features/notifications/presentation/controllers/notifications_controller.dart';
+import '../features/profile/data/repositories/profile_repository_impl.dart';
 import '../features/profile/presentation/controllers/profile_controller.dart';
+import '../features/search/data/repositories/search_repository_impl.dart';
 import 'l10n/l10n.dart';
 import 'router/app_router.dart';
 import 'theme/theme.dart';
@@ -47,6 +55,17 @@ class RxEdgeApp extends ConsumerWidget {
       ref.read(localCacheServiceProvider).clear();
 
       if (ref.read(authControllerProvider) is AuthAuthenticated) {
+        // 1. Invalidate repositories to destroy in-memory cached language entities
+        ref.invalidate(homeRepositoryProvider);
+        ref.invalidate(learnRepositoryProvider);
+        ref.invalidate(libraryRepositoryProvider);
+        ref.invalidate(challengesRepositoryProvider);
+        ref.invalidate(feedbackRepositoryProvider);
+        ref.invalidate(notificationsRepositoryProvider);
+        ref.invalidate(profileRepositoryProvider);
+        ref.invalidate(searchRepositoryProvider);
+
+        // 2. Invalidate controllers so they re-fetch immediately in the new language
         ref.invalidate(homeControllerProvider);
         ref.invalidate(learnControllerProvider);
         ref.invalidate(libraryControllerProvider);

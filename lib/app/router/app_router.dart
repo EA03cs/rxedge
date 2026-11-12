@@ -48,10 +48,13 @@ abstract final class AppRoutes {
   static const String appInfo = '/app-info';
 }
 
-/// Listenable that notifies GoRouter when AuthState changes
-class AuthStateListenable extends ChangeNotifier {
-  AuthStateListenable(Ref ref) {
+/// Listenable that notifies GoRouter when AuthState or Locale changes
+class AppRouterListenable extends ChangeNotifier {
+  AppRouterListenable(Ref ref) {
     ref.listen<AuthState>(authControllerProvider, (previous, next) {
+      notifyListeners();
+    });
+    ref.listen<Locale>(localeProvider, (previous, next) {
       notifyListeners();
     });
   }
@@ -59,12 +62,12 @@ class AuthStateListenable extends ChangeNotifier {
 
 /// Router Provider supporting deep linking, auth redirect guard, and tab state preservation
 final routerProvider = Provider<GoRouter>((ref) {
-  final authListenable = AuthStateListenable(ref);
+  final routerListenable = AppRouterListenable(ref);
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: AppRoutes.splash,
-    refreshListenable: authListenable,
+    refreshListenable: routerListenable,
     debugLogDiagnostics: false,
     redirect: (context, state) {
       final authState = ref.read(authControllerProvider);
@@ -177,23 +180,28 @@ final routerProvider = Provider<GoRouter>((ref) {
       // 6. 5-Tab StatefulShellRoute (Home, Learn, Library, Challenges, Feedback)
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
-          final l10n = context.l10n;
-          return AppScaffold(
-            body: ConnectivityBanner(child: navigationShell),
-            bottomNavigationBar: AppBottomNav(
-              currentIndex: navigationShell.currentIndex,
-              onTap: (index) => navigationShell.goBranch(
-                index,
-                initialLocation: index == 0 || index == navigationShell.currentIndex,
-              ),
-              items: [
-                NavItemData(icon: LucideIcons.home, label: l10n.tabHome),
-                NavItemData(icon: LucideIcons.graduationCap, label: l10n.tabLearn),
-                NavItemData(icon: LucideIcons.bookOpen, label: l10n.tabLibrary),
-                NavItemData(icon: LucideIcons.award, label: l10n.tabChallenges),
-                NavItemData(icon: LucideIcons.messageSquare, label: l10n.tabFeedback),
-              ],
-            ),
+          return Consumer(
+            builder: (context, ref, _) {
+              ref.watch(localeProvider);
+              final l10n = context.l10n;
+              return AppScaffold(
+                body: ConnectivityBanner(child: navigationShell),
+                bottomNavigationBar: AppBottomNav(
+                  currentIndex: navigationShell.currentIndex,
+                  onTap: (index) => navigationShell.goBranch(
+                    index,
+                    initialLocation: index == 0 || index == navigationShell.currentIndex,
+                  ),
+                  items: [
+                    NavItemData(icon: LucideIcons.home, label: l10n.tabHome),
+                    NavItemData(icon: LucideIcons.graduationCap, label: l10n.tabLearn),
+                    NavItemData(icon: LucideIcons.bookOpen, label: l10n.tabLibrary),
+                    NavItemData(icon: LucideIcons.award, label: l10n.tabChallenges),
+                    NavItemData(icon: LucideIcons.messageSquare, label: l10n.tabFeedback),
+                  ],
+                ),
+              );
+            },
           );
         },
         branches: [
