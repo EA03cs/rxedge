@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app/app.dart';
+import 'core/config/env_config.dart';
 import 'core/config/flavor_config.dart';
+import 'core/storage/storage_initializer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await StorageInitializer.init();
 
   FlavorConfig.initialize(
     flavor: AppFlavor.staging,
     appName: 'RxEdge (Staging)',
-    apiBaseUrl: 'https://api-staging.rxedge.internal/v1',
+    apiBaseUrl: EnvConfig.defaultLiveBaseUrl,
     enableLogging: true,
   );
 
