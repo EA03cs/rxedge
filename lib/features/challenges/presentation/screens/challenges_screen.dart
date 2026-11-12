@@ -46,7 +46,7 @@ class ChallengesScreen extends ConsumerWidget {
             icon: const Icon(LucideIcons.history, size: 20.0),
             tooltip: l10n.btnHistory,
             onPressed: () {
-              Navigator.of(context).push<void>(
+              Navigator.of(context, rootNavigator: true).push<void>(
                 MaterialPageRoute(builder: (_) => const HistoryScreen()),
               );
             },

@@ -44,7 +44,7 @@ class LearnScreen extends ConsumerWidget {
             icon: const Icon(LucideIcons.bookmark, size: 22.0),
             tooltip: l10n.btnBookmarks,
             onPressed: () {
-              Navigator.of(context).push<void>(
+              Navigator.of(context, rootNavigator: true).push<void>(
                 MaterialPageRoute(
                   builder: (_) => const BookmarksScreen(),
                 ),
@@ -107,7 +107,7 @@ class LearnScreen extends ConsumerWidget {
                     const SizedBox(width: RxSpacing.s8),
                     _BookmarksPillButton(
                       onTap: () {
-                        Navigator.of(context).push<void>(
+                        Navigator.of(context, rootNavigator: true).push<void>(
                           MaterialPageRoute(
                             builder: (_) => const BookmarksScreen(),
                           ),
@@ -210,7 +210,7 @@ class _ProductCard extends StatelessWidget {
       padding: const EdgeInsetsDirectional.only(bottom: RxSpacing.s12),
       child: AppCard(
         onTap: () {
-          Navigator.of(context).push<void>(
+          Navigator.of(context, rootNavigator: true).push<void>(
             MaterialPageRoute(
               builder: (_) => ProductLearningScreen(product: product),
             ),

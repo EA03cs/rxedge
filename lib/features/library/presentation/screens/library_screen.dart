@@ -45,7 +45,7 @@ class LibraryScreen extends ConsumerWidget {
         break;
     }
 
-    Navigator.of(context).push<void>(
+    Navigator.of(context, rootNavigator: true).push<void>(
       MaterialPageRoute(builder: (_) => destination),
     );
   }

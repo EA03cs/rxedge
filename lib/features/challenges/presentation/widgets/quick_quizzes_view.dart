@@ -50,7 +50,7 @@ class QuickQuizzesView extends StatelessWidget {
 
         return AppCard(
           onTap: () {
-            Navigator.of(context).push<void>(
+            Navigator.of(context, rootNavigator: true).push<void>(
               MaterialPageRoute(
                 builder: (_) => QuickQuizScreen(quiz: quiz),
               ),
@@ -135,7 +135,7 @@ class QuickQuizzesView extends StatelessWidget {
                 children: [
                   OutlinedButton.icon(
                     onPressed: () {
-                      Navigator.of(context).push<void>(
+                      Navigator.of(context, rootNavigator: true).push<void>(
                         MaterialPageRoute(
                           builder: (_) => QuickQuizScreen(quiz: quiz),
                         ),

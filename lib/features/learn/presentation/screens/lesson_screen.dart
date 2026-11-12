@@ -429,7 +429,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                   matchedQuiz ??= quizzes.isNotEmpty ? quizzes.first : null;
                   if (matchedQuiz != null) {
                     final targetQuiz = matchedQuiz;
-                    Navigator.of(context).push<void>(
+                    Navigator.of(context, rootNavigator: true).push<void>(
                       MaterialPageRoute(
                         builder: (_) => QuickQuizScreen(quiz: targetQuiz),
                       ),

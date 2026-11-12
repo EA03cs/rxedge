@@ -152,24 +152,30 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: RxSpacing.s6),
-                Row(
+                Wrap(
+                  spacing: RxSpacing.s8,
+                  runSpacing: RxSpacing.s6,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     StatusBadge(
                       label: '${l10n.employeeIdLabel}: ${profile.employeeId}',
                       variant: StatusBadgeVariant.neutral,
                     ),
-                    const SizedBox(width: RxSpacing.s8),
-                    Expanded(
-                      child: Text(
-                        profile.territory,
-                        style: textTheme.bodySmall?.copyWith(
-                          color: colors.textTertiary,
-                          fontSize: 11.5,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                    if (profile.territory.isNotEmpty)
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(LucideIcons.mapPin, size: 12.0, color: colors.textTertiary),
+                          const SizedBox(width: 4.0),
+                          Text(
+                            profile.territory,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colors.textTertiary,
+                              fontSize: 11.5,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
                   ],
                 ),
               ],
@@ -211,24 +217,26 @@ class ProfileScreen extends ConsumerWidget {
             children: [
               Icon(LucideIcons.award, size: 28.0, color: colors.accent),
               const SizedBox(width: RxSpacing.s10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.statPoints(profile.points),
-                    style: textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: colors.textPrimary,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.statPoints(profile.points),
+                      style: textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: colors.textPrimary,
+                      ),
                     ),
-                  ),
-                  Text(
-                    l10n.topTenTerritoryBadge,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colors.textSecondary,
-                      fontSize: 12.0,
+                    Text(
+                      l10n.topTenTerritoryBadge,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colors.textSecondary,
+                        fontSize: 12.0,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
@@ -268,19 +276,26 @@ class ProfileScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(LucideIcons.globe, size: 18.0, color: colors.textSecondary),
-                  const SizedBox(width: RxSpacing.s10),
-                  Text(
-                    l10n.languagePreference,
-                    style: textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: colors.textPrimary,
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(LucideIcons.globe, size: 18.0, color: colors.textSecondary),
+                    const SizedBox(width: RxSpacing.s10),
+                    Expanded(
+                      child: Text(
+                        l10n.languagePreference,
+                        style: textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: colors.textPrimary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: RxSpacing.s8),
               SegmentedButton<String>(
                 segments: const [
                   ButtonSegment(value: 'en', label: Text('English')),
@@ -309,9 +324,9 @@ class ProfileScreen extends ConsumerWidget {
           const Divider(height: 1.0),
           const SizedBox(height: RxSpacing.s16),
 
-          // Theme Row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // Theme Section (Column layout with full-width SegmentedButton to avoid overflow)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
@@ -326,28 +341,44 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              SegmentedButton<ThemeMode>(
-                segments: [
-                  ButtonSegment(
-                    value: ThemeMode.system,
-                    label: Text(l10n.themeSystem),
+              const SizedBox(height: RxSpacing.s12),
+              SizedBox(
+                width: double.infinity,
+                child: SegmentedButton<ThemeMode>(
+                  segments: [
+                    ButtonSegment(
+                      value: ThemeMode.system,
+                      label: Text(
+                        l10n.themeSystem,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    ButtonSegment(
+                      value: ThemeMode.light,
+                      label: Text(
+                        l10n.themeLight,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    ButtonSegment(
+                      value: ThemeMode.dark,
+                      label: Text(
+                        l10n.themeDark,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                  selected: {activeThemeMode},
+                  onSelectionChanged: (newVal) {
+                    ref.read(themeModeProvider.notifier).state = newVal.first;
+                  },
+                  style: SegmentedButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                    textStyle: textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
                   ),
-                  ButtonSegment(
-                    value: ThemeMode.light,
-                    label: Text(l10n.themeLight),
-                  ),
-                  ButtonSegment(
-                    value: ThemeMode.dark,
-                    label: Text(l10n.themeDark),
-                  ),
-                ],
-                selected: {activeThemeMode},
-                onSelectionChanged: (newVal) {
-                  ref.read(themeModeProvider.notifier).state = newVal.first;
-                },
-                style: SegmentedButton.styleFrom(
-                  visualDensity: VisualDensity.compact,
-                  textStyle: textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
                 ),
               ),
             ],

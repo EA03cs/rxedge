@@ -47,31 +47,19 @@ class AppScaffold extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: backgroundColor ?? colors.background,
-      appBar: appBar != null
-          ? PreferredSize(
-              preferredSize: appBar!.preferredSize + const Offset(0, 1.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    height: appBar!.preferredSize.height,
-                    child: appBar!,
-                  ),
-                  Divider(
-                    height: RxShadows.hairlineBorderWidth,
-                    thickness: RxShadows.hairlineBorderWidth,
-                    color: colors.border,
-                  ),
-                ],
-              ),
-            )
-          : null,
+      appBar: appBar,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       body: SafeArea(
         top: appBar == null && safeAreaTop,
         bottom: bottomNavigationBar == null && safeAreaBottom,
         child: Column(
           children: [
+            if (appBar != null)
+              Divider(
+                height: RxShadows.hairlineBorderWidth,
+                thickness: RxShadows.hairlineBorderWidth,
+                color: colors.border,
+              ),
             if (isOffline)
               OfflineBanner(
                 message: offlineMessage,

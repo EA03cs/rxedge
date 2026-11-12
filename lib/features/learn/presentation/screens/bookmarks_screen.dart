@@ -70,7 +70,7 @@ class _BookmarkedLessonCard extends ConsumerWidget {
 
     return AppCard(
       onTap: () {
-        Navigator.of(context).push<void>(
+        Navigator.of(context, rootNavigator: true).push<void>(
           MaterialPageRoute(
             builder: (_) => LessonScreen(lesson: lesson),
           ),

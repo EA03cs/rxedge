@@ -264,7 +264,7 @@ class ProductLearningScreen extends ConsumerWidget {
                         padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
                         onTap: () {
                           Navigator.of(ctx).pop();
-                          Navigator.of(context).push<void>(
+                          Navigator.of(context, rootNavigator: true).push<void>(
                             MaterialPageRoute(
                               builder: (_) => LessonScreen(lesson: lesson),
                             ),

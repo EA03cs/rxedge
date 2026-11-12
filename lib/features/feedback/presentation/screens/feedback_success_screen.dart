@@ -145,7 +145,7 @@ class FeedbackSuccessScreen extends StatelessWidget {
                   variant: AppButtonVariant.secondary,
                   leadingIcon: LucideIcons.plus,
                   onPressed: () {
-                    Navigator.of(context).pushReplacement<void, void>(
+                    Navigator.of(context, rootNavigator: true).pushReplacement<void, void>(
                       MaterialPageRoute<void>(
                         builder: (_) => FeedbackFormScreen(type: type),
                       ),

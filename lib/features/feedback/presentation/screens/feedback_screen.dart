@@ -192,7 +192,7 @@ class FeedbackScreen extends ConsumerWidget {
 
     return InkWell(
       onTap: () {
-        Navigator.of(context).push<void>(
+        Navigator.of(context, rootNavigator: true).push<void>(
           MaterialPageRoute<void>(
             builder: (_) => FeedbackFormScreen(type: type),
           ),
@@ -267,7 +267,7 @@ class FeedbackScreen extends ConsumerWidget {
 
     return InkWell(
       onTap: () {
-        Navigator.of(context).push<void>(
+        Navigator.of(context, rootNavigator: true).push<void>(
           MaterialPageRoute<void>(
             builder: (_) => FeedbackDetailScreen(submissionId: item.id),
           ),

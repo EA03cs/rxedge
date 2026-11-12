@@ -141,23 +141,27 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const AppInfoScreen(),
       ),
 
-      // Secondary Feature Screens
+      // Secondary Feature Screens (Pushed over root navigator without bottom nav bar)
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: AppRoutes.profile,
         name: 'profile',
         builder: (context, state) => const ProfileScreen(),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: AppRoutes.notifications,
         name: 'notifications',
         builder: (context, state) => const NotificationsScreen(),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: AppRoutes.search,
         name: 'search',
         builder: (context, state) => const SearchScreen(),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: AppRoutes.feedbackDetail,
         name: 'feedback_detail',
         builder: (context, state) {

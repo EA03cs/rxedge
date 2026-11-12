@@ -306,7 +306,7 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
         ref.read(feedbackListControllerProvider.notifier).addSubmission(submittedItem);
 
         // Replace route with success screen
-        Navigator.of(context).pushReplacement<void, void>(
+        Navigator.of(context, rootNavigator: true).pushReplacement<void, void>(
           MaterialPageRoute<void>(
             builder: (_) => FeedbackSuccessScreen(
               submittedItem: submittedItem,
