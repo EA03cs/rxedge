@@ -5,6 +5,7 @@ import '../entities/profile_entities.dart';
 abstract class ProfileRepository {
   Future<Result<UserProfileEntity>> getProfile();
   Future<Result<void>> updateNotificationPreferences(NotificationPreferencesEntity preferences);
+  Future<Result<void>> updateLanguagePreference(String languageCode);
   Future<Result<void>> clearCachedDownloads();
   Future<Result<int>> getStorageUsage();
 }

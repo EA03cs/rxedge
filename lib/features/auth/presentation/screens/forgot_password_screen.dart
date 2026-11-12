@@ -80,7 +80,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Commercial IT & Marketing Helpdesk',
+                                l10n.forgotHelpdeskTitle,
                                 style: textTheme.labelMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
                                   color: colors.textPrimary,
@@ -108,7 +108,9 @@ class ForgotPasswordScreen extends StatelessWidget {
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Support request sent to ${l10n.supportEmail}'),
+                          content: Text(
+                            l10n.forgotSupportSentToast(l10n.supportEmail),
+                          ),
                           behavior: SnackBarBehavior.floating,
                         ),
                       );

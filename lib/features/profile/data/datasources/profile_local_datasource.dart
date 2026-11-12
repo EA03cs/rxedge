@@ -38,11 +38,14 @@ class ProfileLocalDatasourceImpl implements ProfileLocalDatasource {
 
   @override
   Future<void> clearDownloads() async {
+    _cacheService.clear();
     _cacheService.put<int>(_storageKey, 0);
   }
 
   @override
   int getStorageUsage() {
-    return _cacheService.get<int>(_storageKey) ?? 25800000;
+    final stored = _cacheService.get<int>(_storageKey);
+    if (stored != null) return stored;
+    return _cacheService.estimateStoredBytes();
   }
 }

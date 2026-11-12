@@ -138,7 +138,7 @@ class AuthController extends Notifier<AuthState> {
   /// Handles 401 Unauthorized expiration
   void handleSessionExpired() {
     AppLogger.w('Handling centralized session expiration');
-    logout(message: 'Your session has expired. Please sign in again.');
+    logout(message: 'session_expired');
   }
 }
 

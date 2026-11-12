@@ -192,7 +192,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     String? sessionExpiredNotice;
     if (authState is AuthUnauthenticated && authState.sessionMessage != null) {
-      sessionExpiredNotice = authState.sessionMessage;
+      sessionExpiredNotice = authState.sessionMessage == 'session_expired'
+          ? l10n.sessionExpiredNotice
+          : authState.sessionMessage;
     }
 
     return Scaffold(

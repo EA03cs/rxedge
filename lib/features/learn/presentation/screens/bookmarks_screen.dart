@@ -64,6 +64,7 @@ class _BookmarkedLessonCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
 
@@ -134,15 +135,15 @@ class _BookmarkedLessonCard extends ConsumerWidget {
               ),
               const SizedBox(width: RxSpacing.s4),
               Text(
-                '${lesson.durationMinutes} min read',
+                l10n.minutesCountLabel(lesson.durationMinutes),
                 style: textTheme.bodySmall?.copyWith(
                   color: colors.textSecondary,
                 ),
               ),
               const SizedBox(width: RxSpacing.s12),
               if (lesson.isCompleted)
-                const StatusBadge(
-                  label: 'Completed',
+                StatusBadge(
+                  label: l10n.completedBadge,
                   variant: StatusBadgeVariant.success,
                   showDot: true,
                 ),

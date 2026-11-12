@@ -1843,6 +1843,840 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Skip'**
   String get btnSkip;
+
+  /// No description provided for @btnClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get btnClose;
+
+  /// No description provided for @btnClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get btnClear;
+
+  /// No description provided for @supportAndSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Support & Security'**
+  String get supportAndSecurity;
+
+  /// No description provided for @actionSyncNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync Now'**
+  String get actionSyncNow;
+
+  /// No description provided for @pendingSyncNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} queued for sync'**
+  String pendingSyncNotice(int count);
+
+  /// No description provided for @defaultRepName.
+  ///
+  /// In en, this message translates to:
+  /// **'Field Representative'**
+  String get defaultRepName;
+
+  /// No description provided for @dailyDetailingItinerary.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Detailing Itinerary'**
+  String get dailyDetailingItinerary;
+
+  /// No description provided for @moduleProgressCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Module {completed} of {total}'**
+  String moduleProgressCount(int completed, int total);
+
+  /// No description provided for @recommendedDetailingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Master the key clinical trials and first-line detailing messaging.'**
+  String get recommendedDetailingSubtitle;
+
+  /// No description provided for @clinicalDetailingGuidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical Detailing Guidance'**
+  String get clinicalDetailingGuidance;
+
+  /// No description provided for @recommendedClinicalCounter.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended Clinical Counter'**
+  String get recommendedClinicalCounter;
+
+  /// No description provided for @profileTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileTooltip;
+
+  /// No description provided for @notificationsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationsTooltip;
+
+  /// No description provided for @noLearningModulesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Learning Modules'**
+  String get noLearningModulesTitle;
+
+  /// No description provided for @noLearningModulesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical detailing modules will appear here once assigned by your medical director.'**
+  String get noLearningModulesDesc;
+
+  /// No description provided for @bookmarksLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmarks'**
+  String get bookmarksLabel;
+
+  /// No description provided for @lessonModulesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Lesson Modules'**
+  String get lessonModulesLabel;
+
+  /// No description provided for @lessonsTabLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Lessons'**
+  String get lessonsTabLabel;
+
+  /// No description provided for @noCompetitorsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No competitor comparisons available for this product.'**
+  String get noCompetitorsAvailable;
+
+  /// No description provided for @clinicalRecallQuizTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical Recall Quiz'**
+  String get clinicalRecallQuizTitle;
+
+  /// No description provided for @lessonQuizReinforceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Reinforce your detailing confidence with {count} quick clinical recall questions.'**
+  String lessonQuizReinforceDesc(int count);
+
+  /// No description provided for @lessonQuizDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This quiz includes {count} questions testing key study endpoints and competitor differentiation.'**
+  String lessonQuizDialogBody(int count);
+
+  /// No description provided for @btnStartQuizNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Quiz Now (+50 Pts)'**
+  String get btnStartQuizNow;
+
+  /// No description provided for @btnReviewLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Review Later'**
+  String get btnReviewLater;
+
+  /// No description provided for @offlineStatusBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get offlineStatusBadge;
+
+  /// No description provided for @onlineOnlyStatusBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Online only'**
+  String get onlineOnlyStatusBadge;
+
+  /// No description provided for @slidesCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} slides'**
+  String slidesCountLabel(int count);
+
+  /// No description provided for @pagesCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 page} other{{count} pages}}'**
+  String pagesCountLabel(int count);
+
+  /// No description provided for @regulatoryMonographHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'REGULATORY CLINICAL MONOGRAPH'**
+  String get regulatoryMonographHeader;
+
+  /// No description provided for @sectionNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'SECTION {number}'**
+  String sectionNumberLabel(int number);
+
+  /// No description provided for @therapeuticClassLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Therapeutic Class: {productName}'**
+  String therapeuticClassLabel(String productName);
+
+  /// No description provided for @clinicalVisualAidBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'CLINICAL TRIAL VISUAL AID'**
+  String get clinicalVisualAidBadge;
+
+  /// No description provided for @documentIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Document ID: {id}'**
+  String documentIdLabel(String id);
+
+  /// No description provided for @confidentialDetailingFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Confidential Medical Detailing'**
+  String get confidentialDetailingFooter;
+
+  /// No description provided for @activeSprintBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Sprint'**
+  String get activeSprintBadge;
+
+  /// No description provided for @timeLeftCountdown.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d {hours}h left'**
+  String timeLeftCountdown(int days, int hours);
+
+  /// No description provided for @leaderboardUpdateCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated hourly across District medical reps'**
+  String get leaderboardUpdateCaption;
+
+  /// No description provided for @youLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get youLabel;
+
+  /// No description provided for @rankOfTotalDistrict.
+  ///
+  /// In en, this message translates to:
+  /// **'Rank #{rank} of {total} in District'**
+  String rankOfTotalDistrict(int rank, int total);
+
+  /// No description provided for @rankOfTotalSimple.
+  ///
+  /// In en, this message translates to:
+  /// **'Rank #{rank} of {total}'**
+  String rankOfTotalSimple(int rank, int total);
+
+  /// No description provided for @noQuizzesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Quizzes Available'**
+  String get noQuizzesTitle;
+
+  /// No description provided for @noQuizzesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'New clinical quizzes will appear here with each detailing cycle.'**
+  String get noQuizzesDesc;
+
+  /// No description provided for @questionsCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} questions'**
+  String questionsCountLabel(int count);
+
+  /// No description provided for @minutesCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String minutesCountLabel(int minutes);
+
+  /// No description provided for @scoreOutOfLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Score: {score}/{total}'**
+  String scoreOutOfLabel(int score, int total);
+
+  /// No description provided for @btnRetakeQuiz.
+  ///
+  /// In en, this message translates to:
+  /// **'Retake Quiz'**
+  String get btnRetakeQuiz;
+
+  /// No description provided for @pointsPlusValue.
+  ///
+  /// In en, this message translates to:
+  /// **'+{points} Pts'**
+  String pointsPlusValue(int points);
+
+  /// No description provided for @correctRecallLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct Recall'**
+  String get correctRecallLabel;
+
+  /// No description provided for @clinicalRationaleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical Rationale'**
+  String get clinicalRationaleLabel;
+
+  /// No description provided for @scoreCorrectOfTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'{score} of {total} Questions Correct'**
+  String scoreCorrectOfTotal(int score, int total);
+
+  /// No description provided for @pointsEarnedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Points Earned'**
+  String get pointsEarnedLabel;
+
+  /// No description provided for @timeElapsedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Time Elapsed'**
+  String get timeElapsedLabel;
+
+  /// No description provided for @btnHideMistakes.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Mistakes'**
+  String get btnHideMistakes;
+
+  /// No description provided for @flawlessAnswersMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Flawless! Zero incorrect answers to review.'**
+  String get flawlessAnswersMsg;
+
+  /// No description provided for @incorrectBreakdownTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect Answers Breakdown'**
+  String get incorrectBreakdownTitle;
+
+  /// No description provided for @yourAnswerPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Your answer: {answer}'**
+  String yourAnswerPrefix(String answer);
+
+  /// No description provided for @correctAnswerPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct answer: {answer}'**
+  String correctAnswerPrefix(String answer);
+
+  /// No description provided for @recommendedClinicalResponseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended Clinical Response'**
+  String get recommendedClinicalResponseLabel;
+
+  /// No description provided for @keyDetailingAnchorsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Key Detailing Anchors'**
+  String get keyDetailingAnchorsLabel;
+
+  /// No description provided for @unableLoadFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load feedback'**
+  String get unableLoadFeedback;
+
+  /// No description provided for @pendingOfflineWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Some submissions are pending offline and will sync when connected.'**
+  String get pendingOfflineWarning;
+
+  /// No description provided for @feedbackDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback Details'**
+  String get feedbackDetailsTitle;
+
+  /// No description provided for @submissionNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Submission not found'**
+  String get submissionNotFound;
+
+  /// No description provided for @fieldSubmissionHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Field Submission'**
+  String get fieldSubmissionHeader;
+
+  /// No description provided for @labelProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get labelProduct;
+
+  /// No description provided for @labelDoctorObjection.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor Objection'**
+  String get labelDoctorObjection;
+
+  /// No description provided for @labelDoctorSpecialty.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor Specialty'**
+  String get labelDoctorSpecialty;
+
+  /// No description provided for @labelHowResponded.
+  ///
+  /// In en, this message translates to:
+  /// **'How I Responded'**
+  String get labelHowResponded;
+
+  /// No description provided for @labelCompetitor.
+  ///
+  /// In en, this message translates to:
+  /// **'Competitor'**
+  String get labelCompetitor;
+
+  /// No description provided for @labelClaimHeard.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim Heard'**
+  String get labelClaimHeard;
+
+  /// No description provided for @labelWhereHeard.
+  ///
+  /// In en, this message translates to:
+  /// **'Where Heard'**
+  String get labelWhereHeard;
+
+  /// No description provided for @labelTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Topic'**
+  String get labelTopic;
+
+  /// No description provided for @labelDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get labelDetails;
+
+  /// No description provided for @optionalFieldSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} (optional)'**
+  String optionalFieldSuffix(String label);
+
+  /// No description provided for @hintDoctorObjection.
+  ///
+  /// In en, this message translates to:
+  /// **'What exact concern or skepticism did the doctor express?'**
+  String get hintDoctorObjection;
+
+  /// No description provided for @hintHowResponded.
+  ///
+  /// In en, this message translates to:
+  /// **'What clinical talking point or trial data did you share?'**
+  String get hintHowResponded;
+
+  /// No description provided for @labelCompetitorProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Competitor Name & Product'**
+  String get labelCompetitorProduct;
+
+  /// No description provided for @hintCompetitorClaim.
+  ///
+  /// In en, this message translates to:
+  /// **'What promotional statement or comparison was made?'**
+  String get hintCompetitorClaim;
+
+  /// No description provided for @labelTopicCampaign.
+  ///
+  /// In en, this message translates to:
+  /// **'Topic / Campaign'**
+  String get labelTopicCampaign;
+
+  /// No description provided for @hintDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain the situation or request clearly for the marketing team...'**
+  String get hintDetails;
+
+  /// No description provided for @attachPhotoOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach flyer or promotional photo (optional)'**
+  String get attachPhotoOptional;
+
+  /// No description provided for @photoAttachedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Promotional photo attached'**
+  String get photoAttachedLabel;
+
+  /// No description provided for @attachVoiceOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach quick voice note (optional)'**
+  String get attachVoiceOptional;
+
+  /// No description provided for @voiceAttachedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice note attached'**
+  String get voiceAttachedLabel;
+
+  /// No description provided for @medicalAffairsDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical Affairs'**
+  String get medicalAffairsDefault;
+
+  /// No description provided for @offlineQueueInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved offline. It will be sent automatically as soon as an internet connection is established.'**
+  String get offlineQueueInfo;
+
+  /// No description provided for @submissionFailedFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Submission failed'**
+  String get submissionFailedFallback;
+
+  /// No description provided for @feedbackSentExtraNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Commercial marketing and medical affairs review field intelligence reports daily to update talking points.'**
+  String get feedbackSentExtraNote;
+
+  /// No description provided for @feedbackQueuedExtraNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Stored securely on your device. We will automatically submit it to medical affairs as soon as connection is restored.'**
+  String get feedbackQueuedExtraNote;
+
+  /// No description provided for @selectProductOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Related Product (optional)'**
+  String get selectProductOptional;
+
+  /// No description provided for @noProductSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'General / No specific product'**
+  String get noProductSelected;
+
+  /// No description provided for @unableLoadNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load notifications'**
+  String get unableLoadNotifications;
+
+  /// No description provided for @unableLoadProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load profile'**
+  String get unableLoadProfile;
+
+  /// No description provided for @storageStatusDownloaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded'**
+  String get storageStatusDownloaded;
+
+  /// No description provided for @storageStatusEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty'**
+  String get storageStatusEmpty;
+
+  /// No description provided for @offlineStorageDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded brochures, e-detail decks, and monographs are available when offline.'**
+  String get offlineStorageDesc;
+
+  /// No description provided for @searchFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search failed'**
+  String get searchFailedTitle;
+
+  /// No description provided for @suggestedTopicsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested Topics'**
+  String get suggestedTopicsLabel;
+
+  /// No description provided for @suggestedTopicDosing.
+  ///
+  /// In en, this message translates to:
+  /// **'Dosing'**
+  String get suggestedTopicDosing;
+
+  /// No description provided for @suggestedTopicHypotension.
+  ///
+  /// In en, this message translates to:
+  /// **'Hypotension'**
+  String get suggestedTopicHypotension;
+
+  /// No description provided for @suggestedTopicGits.
+  ///
+  /// In en, this message translates to:
+  /// **'GITS delivery'**
+  String get suggestedTopicGits;
+
+  /// No description provided for @systemDiagnosticsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'System Diagnostics'**
+  String get systemDiagnosticsTitle;
+
+  /// No description provided for @appMetadataTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Application Metadata'**
+  String get appMetadataTitle;
+
+  /// No description provided for @appMetadataSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Active runtime environment and build specification'**
+  String get appMetadataSubtitle;
+
+  /// No description provided for @unableLoadDiagnostics.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to Load Diagnostics'**
+  String get unableLoadDiagnostics;
+
+  /// No description provided for @retryConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry Connection'**
+  String get retryConnection;
+
+  /// No description provided for @minSupportedVersionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Min Supported Version'**
+  String get minSupportedVersionLabel;
+
+  /// No description provided for @maintenanceStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintenance Status'**
+  String get maintenanceStatusLabel;
+
+  /// No description provided for @maintenanceActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active (Read Only)'**
+  String get maintenanceActive;
+
+  /// No description provided for @operationalStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Operational'**
+  String get operationalStatus;
+
+  /// No description provided for @apiEndpointLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'API Endpoint'**
+  String get apiEndpointLabel;
+
+  /// No description provided for @configuredBaseUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Configured Base URL'**
+  String get configuredBaseUrl;
+
+  /// No description provided for @serverTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Server Time'**
+  String get serverTimeLabel;
+
+  /// No description provided for @refreshSystemStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh System Status'**
+  String get refreshSystemStatus;
+
+  /// No description provided for @forgotHelpdeskTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Commercial IT & Marketing Helpdesk'**
+  String get forgotHelpdeskTitle;
+
+  /// No description provided for @forgotSupportSentToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Support request sent to {email}'**
+  String forgotSupportSentToast(String email);
+
+  /// No description provided for @taglineFieldMedical.
+  ///
+  /// In en, this message translates to:
+  /// **'Field Medical Intelligence'**
+  String get taglineFieldMedical;
+
+  /// No description provided for @pointTxQuizCompletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Quiz Reward'**
+  String get pointTxQuizCompletion;
+
+  /// No description provided for @pointTxLessonCompletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Module Completion Reward'**
+  String get pointTxLessonCompletion;
+
+  /// No description provided for @pointTxChallengeReward.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Challenge Bonus'**
+  String get pointTxChallengeReward;
+
+  /// No description provided for @pointTxManualAdjustment.
+  ///
+  /// In en, this message translates to:
+  /// **'Administrative Adjustment'**
+  String get pointTxManualAdjustment;
+
+  /// No description provided for @helpfulVotesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} helpful votes'**
+  String helpfulVotesCount(int count);
+
+  /// No description provided for @peersContributedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} peers contributed field phrasing'**
+  String peersContributedCount(int count);
+
+  /// No description provided for @minAgoCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m ago'**
+  String minAgoCount(int count);
+
+  /// No description provided for @hoursAgoCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h ago'**
+  String hoursAgoCount(int count);
+
+  /// No description provided for @daysAgoCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}d ago'**
+  String daysAgoCount(int count);
+
+  /// No description provided for @topTenTerritoryBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Top 10% in Territory'**
+  String get topTenTerritoryBadge;
+
+  /// No description provided for @productHintExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Cardura XL, AtorvaCare'**
+  String get productHintExamples;
+
+  /// No description provided for @specialtyHintExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Interventional Cardiologist, Nephrologist'**
+  String get specialtyHintExamples;
+
+  /// No description provided for @competitorHintExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. PharmaStar Generic Atorvastatin'**
+  String get competitorHintExamples;
+
+  /// No description provided for @whereHeardHintExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Cardiology CME Conference, Hospital Dept Meeting'**
+  String get whereHeardHintExamples;
+
+  /// No description provided for @topicHintExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Sample Availability, Laminated Visual Aid Request'**
+  String get topicHintExamples;
+
+  /// No description provided for @errNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. Please check your network and try again.'**
+  String get errNetwork;
+
+  /// No description provided for @errUnauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session is unauthorized or expired. Please sign in again.'**
+  String get errUnauthorized;
+
+  /// No description provided for @errNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested content could not be found.'**
+  String get errNotFound;
+
+  /// No description provided for @errValidation.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check the highlighted fields and try again.'**
+  String get errValidation;
+
+  /// No description provided for @errCache.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to read local offline cache.'**
+  String get errCache;
+
+  /// No description provided for @errServer.
+  ///
+  /// In en, this message translates to:
+  /// **'The server encountered an error. Please try again shortly.'**
+  String get errServer;
+
+  /// No description provided for @errUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred. Please try again.'**
+  String get errUnknown;
 }
 
 class _AppLocalizationsDelegate

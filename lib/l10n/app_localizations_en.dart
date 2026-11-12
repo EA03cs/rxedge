@@ -959,4 +959,504 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get btnSkip => 'Skip';
+
+  @override
+  String get btnClose => 'Close';
+
+  @override
+  String get btnClear => 'Clear';
+
+  @override
+  String get supportAndSecurity => 'Support & Security';
+
+  @override
+  String get actionSyncNow => 'Sync Now';
+
+  @override
+  String pendingSyncNotice(int count) {
+    return '$count queued for sync';
+  }
+
+  @override
+  String get defaultRepName => 'Field Representative';
+
+  @override
+  String get dailyDetailingItinerary => 'Daily Detailing Itinerary';
+
+  @override
+  String moduleProgressCount(int completed, int total) {
+    return 'Module $completed of $total';
+  }
+
+  @override
+  String get recommendedDetailingSubtitle =>
+      'Master the key clinical trials and first-line detailing messaging.';
+
+  @override
+  String get clinicalDetailingGuidance => 'Clinical Detailing Guidance';
+
+  @override
+  String get recommendedClinicalCounter => 'Recommended Clinical Counter';
+
+  @override
+  String get profileTooltip => 'Profile';
+
+  @override
+  String get notificationsTooltip => 'Notifications';
+
+  @override
+  String get noLearningModulesTitle => 'No Learning Modules';
+
+  @override
+  String get noLearningModulesDesc =>
+      'Clinical detailing modules will appear here once assigned by your medical director.';
+
+  @override
+  String get bookmarksLabel => 'Bookmarks';
+
+  @override
+  String get lessonModulesLabel => 'Lesson Modules';
+
+  @override
+  String get lessonsTabLabel => 'Lessons';
+
+  @override
+  String get noCompetitorsAvailable =>
+      'No competitor comparisons available for this product.';
+
+  @override
+  String get clinicalRecallQuizTitle => 'Clinical Recall Quiz';
+
+  @override
+  String lessonQuizReinforceDesc(int count) {
+    return 'Reinforce your detailing confidence with $count quick clinical recall questions.';
+  }
+
+  @override
+  String lessonQuizDialogBody(int count) {
+    return 'This quiz includes $count questions testing key study endpoints and competitor differentiation.';
+  }
+
+  @override
+  String get btnStartQuizNow => 'Start Quiz Now (+50 Pts)';
+
+  @override
+  String get btnReviewLater => 'Review Later';
+
+  @override
+  String get offlineStatusBadge => 'Offline';
+
+  @override
+  String get onlineOnlyStatusBadge => 'Online only';
+
+  @override
+  String slidesCountLabel(int count) {
+    return '$count slides';
+  }
+
+  @override
+  String pagesCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pages',
+      one: '1 page',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get regulatoryMonographHeader => 'REGULATORY CLINICAL MONOGRAPH';
+
+  @override
+  String sectionNumberLabel(int number) {
+    return 'SECTION $number';
+  }
+
+  @override
+  String therapeuticClassLabel(String productName) {
+    return 'Therapeutic Class: $productName';
+  }
+
+  @override
+  String get clinicalVisualAidBadge => 'CLINICAL TRIAL VISUAL AID';
+
+  @override
+  String documentIdLabel(String id) {
+    return 'Document ID: $id';
+  }
+
+  @override
+  String get confidentialDetailingFooter => 'Confidential Medical Detailing';
+
+  @override
+  String get activeSprintBadge => 'Active Sprint';
+
+  @override
+  String timeLeftCountdown(int days, int hours) {
+    return '${days}d ${hours}h left';
+  }
+
+  @override
+  String get leaderboardUpdateCaption =>
+      'Updated hourly across District medical reps';
+
+  @override
+  String get youLabel => 'You';
+
+  @override
+  String rankOfTotalDistrict(int rank, int total) {
+    return 'Rank #$rank of $total in District';
+  }
+
+  @override
+  String rankOfTotalSimple(int rank, int total) {
+    return 'Rank #$rank of $total';
+  }
+
+  @override
+  String get noQuizzesTitle => 'No Quizzes Available';
+
+  @override
+  String get noQuizzesDesc =>
+      'New clinical quizzes will appear here with each detailing cycle.';
+
+  @override
+  String questionsCountLabel(int count) {
+    return '$count questions';
+  }
+
+  @override
+  String minutesCountLabel(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String scoreOutOfLabel(int score, int total) {
+    return 'Score: $score/$total';
+  }
+
+  @override
+  String get btnRetakeQuiz => 'Retake Quiz';
+
+  @override
+  String pointsPlusValue(int points) {
+    return '+$points Pts';
+  }
+
+  @override
+  String get correctRecallLabel => 'Correct Recall';
+
+  @override
+  String get clinicalRationaleLabel => 'Clinical Rationale';
+
+  @override
+  String scoreCorrectOfTotal(int score, int total) {
+    return '$score of $total Questions Correct';
+  }
+
+  @override
+  String get pointsEarnedLabel => 'Points Earned';
+
+  @override
+  String get timeElapsedLabel => 'Time Elapsed';
+
+  @override
+  String get btnHideMistakes => 'Hide Mistakes';
+
+  @override
+  String get flawlessAnswersMsg =>
+      'Flawless! Zero incorrect answers to review.';
+
+  @override
+  String get incorrectBreakdownTitle => 'Incorrect Answers Breakdown';
+
+  @override
+  String yourAnswerPrefix(String answer) {
+    return 'Your answer: $answer';
+  }
+
+  @override
+  String correctAnswerPrefix(String answer) {
+    return 'Correct answer: $answer';
+  }
+
+  @override
+  String get recommendedClinicalResponseLabel =>
+      'Recommended Clinical Response';
+
+  @override
+  String get keyDetailingAnchorsLabel => 'Key Detailing Anchors';
+
+  @override
+  String get unableLoadFeedback => 'Unable to load feedback';
+
+  @override
+  String get pendingOfflineWarning =>
+      'Some submissions are pending offline and will sync when connected.';
+
+  @override
+  String get feedbackDetailsTitle => 'Feedback Details';
+
+  @override
+  String get submissionNotFound => 'Submission not found';
+
+  @override
+  String get fieldSubmissionHeader => 'Field Submission';
+
+  @override
+  String get labelProduct => 'Product';
+
+  @override
+  String get labelDoctorObjection => 'Doctor Objection';
+
+  @override
+  String get labelDoctorSpecialty => 'Doctor Specialty';
+
+  @override
+  String get labelHowResponded => 'How I Responded';
+
+  @override
+  String get labelCompetitor => 'Competitor';
+
+  @override
+  String get labelClaimHeard => 'Claim Heard';
+
+  @override
+  String get labelWhereHeard => 'Where Heard';
+
+  @override
+  String get labelTopic => 'Topic';
+
+  @override
+  String get labelDetails => 'Details';
+
+  @override
+  String optionalFieldSuffix(String label) {
+    return '$label (optional)';
+  }
+
+  @override
+  String get hintDoctorObjection =>
+      'What exact concern or skepticism did the doctor express?';
+
+  @override
+  String get hintHowResponded =>
+      'What clinical talking point or trial data did you share?';
+
+  @override
+  String get labelCompetitorProduct => 'Competitor Name & Product';
+
+  @override
+  String get hintCompetitorClaim =>
+      'What promotional statement or comparison was made?';
+
+  @override
+  String get labelTopicCampaign => 'Topic / Campaign';
+
+  @override
+  String get hintDetails =>
+      'Explain the situation or request clearly for the marketing team...';
+
+  @override
+  String get attachPhotoOptional =>
+      'Attach flyer or promotional photo (optional)';
+
+  @override
+  String get photoAttachedLabel => 'Promotional photo attached';
+
+  @override
+  String get attachVoiceOptional => 'Attach quick voice note (optional)';
+
+  @override
+  String get voiceAttachedLabel => 'Voice note attached';
+
+  @override
+  String get medicalAffairsDefault => 'Medical Affairs';
+
+  @override
+  String get offlineQueueInfo =>
+      'Saved offline. It will be sent automatically as soon as an internet connection is established.';
+
+  @override
+  String get submissionFailedFallback => 'Submission failed';
+
+  @override
+  String get feedbackSentExtraNote =>
+      'Commercial marketing and medical affairs review field intelligence reports daily to update talking points.';
+
+  @override
+  String get feedbackQueuedExtraNote =>
+      'Stored securely on your device. We will automatically submit it to medical affairs as soon as connection is restored.';
+
+  @override
+  String get selectProductOptional => 'Related Product (optional)';
+
+  @override
+  String get noProductSelected => 'General / No specific product';
+
+  @override
+  String get unableLoadNotifications => 'Unable to load notifications';
+
+  @override
+  String get unableLoadProfile => 'Unable to load profile';
+
+  @override
+  String get storageStatusDownloaded => 'Downloaded';
+
+  @override
+  String get storageStatusEmpty => 'Empty';
+
+  @override
+  String get offlineStorageDesc =>
+      'Downloaded brochures, e-detail decks, and monographs are available when offline.';
+
+  @override
+  String get searchFailedTitle => 'Search failed';
+
+  @override
+  String get suggestedTopicsLabel => 'Suggested Topics';
+
+  @override
+  String get suggestedTopicDosing => 'Dosing';
+
+  @override
+  String get suggestedTopicHypotension => 'Hypotension';
+
+  @override
+  String get suggestedTopicGits => 'GITS delivery';
+
+  @override
+  String get systemDiagnosticsTitle => 'System Diagnostics';
+
+  @override
+  String get appMetadataTitle => 'Application Metadata';
+
+  @override
+  String get appMetadataSubtitle =>
+      'Active runtime environment and build specification';
+
+  @override
+  String get unableLoadDiagnostics => 'Unable to Load Diagnostics';
+
+  @override
+  String get retryConnection => 'Retry Connection';
+
+  @override
+  String get minSupportedVersionLabel => 'Min Supported Version';
+
+  @override
+  String get maintenanceStatusLabel => 'Maintenance Status';
+
+  @override
+  String get maintenanceActive => 'Active (Read Only)';
+
+  @override
+  String get operationalStatus => 'Operational';
+
+  @override
+  String get apiEndpointLabel => 'API Endpoint';
+
+  @override
+  String get configuredBaseUrl => 'Configured Base URL';
+
+  @override
+  String get serverTimeLabel => 'Server Time';
+
+  @override
+  String get refreshSystemStatus => 'Refresh System Status';
+
+  @override
+  String get forgotHelpdeskTitle => 'Commercial IT & Marketing Helpdesk';
+
+  @override
+  String forgotSupportSentToast(String email) {
+    return 'Support request sent to $email';
+  }
+
+  @override
+  String get taglineFieldMedical => 'Field Medical Intelligence';
+
+  @override
+  String get pointTxQuizCompletion => 'Quick Quiz Reward';
+
+  @override
+  String get pointTxLessonCompletion => 'Module Completion Reward';
+
+  @override
+  String get pointTxChallengeReward => 'Monthly Challenge Bonus';
+
+  @override
+  String get pointTxManualAdjustment => 'Administrative Adjustment';
+
+  @override
+  String helpfulVotesCount(int count) {
+    return '$count helpful votes';
+  }
+
+  @override
+  String peersContributedCount(int count) {
+    return '$count peers contributed field phrasing';
+  }
+
+  @override
+  String minAgoCount(int count) {
+    return '${count}m ago';
+  }
+
+  @override
+  String hoursAgoCount(int count) {
+    return '${count}h ago';
+  }
+
+  @override
+  String daysAgoCount(int count) {
+    return '${count}d ago';
+  }
+
+  @override
+  String get topTenTerritoryBadge => 'Top 10% in Territory';
+
+  @override
+  String get productHintExamples => 'e.g. Cardura XL, AtorvaCare';
+
+  @override
+  String get specialtyHintExamples =>
+      'e.g. Interventional Cardiologist, Nephrologist';
+
+  @override
+  String get competitorHintExamples => 'e.g. PharmaStar Generic Atorvastatin';
+
+  @override
+  String get whereHeardHintExamples =>
+      'e.g. Cardiology CME Conference, Hospital Dept Meeting';
+
+  @override
+  String get topicHintExamples =>
+      'e.g. Sample Availability, Laminated Visual Aid Request';
+
+  @override
+  String get errNetwork =>
+      'No internet connection. Please check your network and try again.';
+
+  @override
+  String get errUnauthorized =>
+      'Your session is unauthorized or expired. Please sign in again.';
+
+  @override
+  String get errNotFound => 'Requested content could not be found.';
+
+  @override
+  String get errValidation =>
+      'Please check the highlighted fields and try again.';
+
+  @override
+  String get errCache => 'Unable to read local offline cache.';
+
+  @override
+  String get errServer =>
+      'The server encountered an error. Please try again shortly.';
+
+  @override
+  String get errUnknown => 'An unexpected error occurred. Please try again.';
 }

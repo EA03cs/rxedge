@@ -4,6 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/router/app_router.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../../core/widgets/rx_network_image.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/home_dashboard_entity.dart';
 
@@ -109,7 +110,10 @@ class ContinueLearningCard extends StatelessWidget {
         ProgressBar(
           value: item.progress,
           height: 6.0,
-          label: 'Module ${item.completedModules} of ${item.totalModules}',
+          label: l10n.moduleProgressCount(
+            item.completedModules,
+            item.totalModules,
+          ),
           trailingText: '$percentage%',
         ),
         const SizedBox(height: RxSpacing.s16),
@@ -133,56 +137,79 @@ class ContinueLearningCard extends StatelessWidget {
     RecommendedProductEntity? product,
   ) {
     final prodName = product?.productName ?? 'Cardura XL';
-    final rationale = product?.description ??
-        'Master the key clinical trials and first-line hypertension detailing messaging.';
+    final rationale =
+        product?.description ?? l10n.recommendedDetailingSubtitle;
+    final boxImageUrl = product?.boxImageUrl;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Recommended badge
-        Container(
-          padding: const EdgeInsetsDirectional.symmetric(
-            horizontal: RxSpacing.s8,
-            vertical: RxSpacing.s2,
-          ),
-          decoration: BoxDecoration(
-            color: colors.primarySoft,
-            borderRadius: RxRadii.borderBadge,
-            border: Border.all(
-              color: colors.primary.withValues(alpha: 0.2),
-              width: RxShadows.hairlineBorderWidth,
-            ),
-          ),
-          child: Text(
-            l10n.recommendedLabel,
-            style: textTheme.labelSmall?.copyWith(
-              color: colors.primary,
-              fontWeight: FontWeight.w600,
-              fontSize: 11.5,
-            ),
-          ),
-        ),
-        const SizedBox(height: RxSpacing.s10),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Recommended badge
+                  Container(
+                    padding: const EdgeInsetsDirectional.symmetric(
+                      horizontal: RxSpacing.s8,
+                      vertical: RxSpacing.s2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colors.primarySoft,
+                      borderRadius: RxRadii.borderBadge,
+                      border: Border.all(
+                        color: colors.primary.withValues(alpha: 0.2),
+                        width: RxShadows.hairlineBorderWidth,
+                      ),
+                    ),
+                    child: Text(
+                      l10n.recommendedLabel,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colors.primary,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 11.5,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: RxSpacing.s10),
 
-        // "Start with [Product Name]" headline
-        Text(
-          l10n.noLessonStarted(prodName),
-          style: textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: colors.textPrimary,
-            letterSpacing: -0.2,
-          ),
-        ),
-        const SizedBox(height: RxSpacing.s6),
+                  // "Start with [Product Name]" headline
+                  Text(
+                    l10n.noLessonStarted(prodName),
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: colors.textPrimary,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                  const SizedBox(height: RxSpacing.s6),
 
-        // Clinical Rationale
-        Text(
-          rationale,
-          style: textTheme.bodySmall?.copyWith(
-            color: colors.textSecondary,
-            height: 1.45,
-          ),
+                  // Clinical Rationale
+                  Text(
+                    rationale,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colors.textSecondary,
+                      height: 1.45,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (boxImageUrl != null && boxImageUrl.trim().isNotEmpty) ...[
+              const SizedBox(width: RxSpacing.s12),
+              RxNetworkImage(
+                imageUrl: boxImageUrl,
+                width: 56,
+                height: 56,
+                borderRadius: RxRadii.borderBadge,
+                fallbackIcon: LucideIcons.pill,
+              ),
+            ],
+          ],
         ),
         const SizedBox(height: RxSpacing.s16),
 

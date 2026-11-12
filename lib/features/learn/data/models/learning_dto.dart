@@ -1,5 +1,107 @@
 import '../../domain/entities/learning_entities.dart';
 
+/// Splits backend single-string positioning fields (newlines, bullets, Latin/Arabic semicolons)
+/// into clean scannable bullet lists. Supports `List` or `String` inputs.
+List<String> parseClinicalBulletList(dynamic raw) {
+  if (raw == null) return const [];
+  if (raw is List) {
+    return raw
+        .map((e) => e.toString().trim())
+        .where((s) => s.isNotEmpty)
+        .toList();
+  }
+  final text = raw.toString().trim();
+  if (text.isEmpty) return const [];
+
+  final parts = text
+      .split(RegExp(r'(?:\r?\n|•|؛|;)'))
+      .map((s) => s.replaceFirst(RegExp(r'^[-*]\s+'), '').trim())
+      .where((s) => s.isNotEmpty)
+      .toList();
+
+  return parts.isNotEmpty ? parts : [text];
+}
+
+/// Converts backend `summary` + markdown/plain `content` into structured [LessonSectionDto]s
+/// when explicit `sections[]` are not already provided.
+List<LessonSectionDto> parseLessonSectionsFromContent({
+  dynamic rawSections,
+  String? summary,
+  String? content,
+  required String fallbackTitle,
+}) {
+  if (rawSections is List && rawSections.isNotEmpty) {
+    return rawSections
+        .whereType<Map<dynamic, dynamic>>()
+        .map((e) => LessonSectionDto.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
+  }
+
+  final sections = <LessonSectionDto>[];
+  final trimmedSummary = summary?.trim();
+  final trimmedContent = content?.trim() ?? '';
+
+  if (trimmedContent.isEmpty) {
+    if (trimmedSummary != null && trimmedSummary.isNotEmpty) {
+      sections.add(
+        LessonSectionDto(
+          title: fallbackTitle,
+          content: trimmedSummary,
+          keyTakeaway: trimmedSummary,
+        ),
+      );
+    }
+    return sections;
+  }
+
+  // Split by markdown headings or blank-line paragraphs.
+  final blocks = trimmedContent.split(RegExp(r'\r?\n\s*\r?\n'));
+  String? pendingHeading;
+
+  for (var i = 0; i < blocks.length; i++) {
+    final block = blocks[i].trim();
+    if (block.isEmpty) continue;
+
+    final headingMatch = RegExp(r'^#{1,3}\s+(.+)$').firstMatch(block);
+    if (headingMatch != null && !block.contains('\n')) {
+      pendingHeading = headingMatch.group(1)!.trim();
+      continue;
+    }
+
+    var sectionTitle = pendingHeading ?? fallbackTitle;
+    var body = block;
+
+    final lines = block.split(RegExp(r'\r?\n'));
+    if (lines.length > 1 && lines.first.trim().startsWith('#')) {
+      sectionTitle = lines.first.replaceFirst(RegExp(r'^#{1,3}\s+'), '').trim();
+      body = lines.skip(1).join('\n').trim();
+    }
+
+    pendingHeading = null;
+    sections.add(
+      LessonSectionDto(
+        title: sectionTitle,
+        content: body,
+        keyTakeaway: (i == 0 && trimmedSummary != null && trimmedSummary.isNotEmpty)
+            ? trimmedSummary
+            : null,
+      ),
+    );
+  }
+
+  if (sections.isEmpty && trimmedSummary != null && trimmedSummary.isNotEmpty) {
+    sections.add(
+      LessonSectionDto(
+        title: fallbackTitle,
+        content: trimmedSummary,
+        keyTakeaway: trimmedSummary,
+      ),
+    );
+  }
+
+  return sections;
+}
+
 class LessonSectionDto {
   final String title;
   final String content;
@@ -15,14 +117,14 @@ class LessonSectionDto {
     return LessonSectionDto(
       title: json['title'] as String? ?? '',
       content: json['content'] as String? ?? '',
-      keyTakeaway: json['key_takeaway'] as String?,
+      keyTakeaway: json['key_takeaway'] as String? ?? json['keyTakeaway'] as String?,
     );
   }
 
   Map<String, dynamic> toJson() => {
         'title': title,
         'content': content,
-        'key_takeaway': keyTakeaway,
+        if (keyTakeaway != null) 'key_takeaway': keyTakeaway,
       };
 
   LessonSection toDomain() => LessonSection(
@@ -58,19 +160,36 @@ class LessonDto {
   });
 
   factory LessonDto.fromJson(Map<String, dynamic> json) {
+    final title = json['title']?.toString() ?? '';
+    final parsedSections = parseLessonSectionsFromContent(
+      rawSections: json['sections'],
+      summary: json['summary']?.toString(),
+      content: json['content']?.toString(),
+      fallbackTitle: title,
+    );
+
     return LessonDto(
-      id: json['id'] as String? ?? '',
-      productId: json['product_id'] as String? ?? '',
-      productName: json['product_name'] as String? ?? '',
-      title: json['title'] as String? ?? '',
-      durationMinutes: json['duration_minutes'] as int? ?? 5,
-      isCompleted: json['is_completed'] as bool? ?? false,
-      isBookmarked: json['is_bookmarked'] as bool? ?? false,
-      order: json['order'] as int? ?? 1,
-      sections: (json['sections'] as List<dynamic>? ?? [])
-          .map((e) => LessonSectionDto.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      quizQuestionCount: json['quiz_question_count'] as int? ?? 3,
+      id: json['id']?.toString() ?? '',
+      productId:
+          json['product_id']?.toString() ?? json['productId']?.toString() ?? '',
+      productName: json['product_name']?.toString() ??
+          json['productName']?.toString() ??
+          '',
+      title: title,
+      durationMinutes: (json['duration_minutes'] as num?)?.toInt() ??
+          (json['estimatedMinutes'] as num?)?.toInt() ??
+          5,
+      isCompleted:
+          json['is_completed'] as bool? ?? json['isCompleted'] as bool? ?? false,
+      isBookmarked:
+          json['is_bookmarked'] as bool? ?? json['isBookmarked'] as bool? ?? false,
+      order: (json['order'] as num?)?.toInt() ??
+          (json['orderIndex'] as num?)?.toInt() ??
+          1,
+      sections: parsedSections,
+      quizQuestionCount: (json['quiz_question_count'] as num?)?.toInt() ??
+          (json['quizQuestionCount'] as num?)?.toInt() ??
+          3,
     );
   }
 
@@ -118,19 +237,21 @@ class ProductPositioningDto {
 
   factory ProductPositioningDto.fromJson(Map<String, dynamic> json) {
     return ProductPositioningDto(
-      keyMessage: json['key_message'] as String? ?? '',
-      targetDoctors: (json['target_doctors'] as List<dynamic>? ?? [])
-          .map((e) => e.toString())
-          .toList(),
-      keyBenefits: (json['key_benefits'] as List<dynamic>? ?? [])
-          .map((e) => e.toString())
-          .toList(),
-      dosageHighlights: (json['dosage_highlights'] as List<dynamic>? ?? [])
-          .map((e) => e.toString())
-          .toList(),
-      proofPoints: (json['proof_points'] as List<dynamic>? ?? [])
-          .map((e) => e.toString())
-          .toList(),
+      keyMessage: json['key_message']?.toString() ??
+          json['keyMessage']?.toString() ??
+          '',
+      targetDoctors: parseClinicalBulletList(
+        json['target_doctors'] ?? json['targetDoctorSpecialties'],
+      ),
+      keyBenefits: parseClinicalBulletList(
+        json['key_benefits'] ?? json['keyBenefits'],
+      ),
+      dosageHighlights: parseClinicalBulletList(
+        json['dosage_highlights'] ?? json['dosageHighlights'],
+      ),
+      proofPoints: parseClinicalBulletList(
+        json['proof_points'] ?? json['clinicalProofPoints'],
+      ),
     );
   }
 
@@ -168,11 +289,23 @@ class CompetitorComparisonDto {
 
   factory CompetitorComparisonDto.fromJson(Map<String, dynamic> json) {
     return CompetitorComparisonDto(
-      id: json['id'] as String? ?? '',
-      competitorName: json['competitor_name'] as String? ?? '',
-      theirClaim: json['their_claim'] as String? ?? '',
-      howToRespond: json['how_to_respond'] as String? ?? '',
-      proofReference: json['proof_reference'] as String? ?? '',
+      id: json['id']?.toString() ?? '',
+      competitorName: json['competitor_name']?.toString() ??
+          json['competitorName']?.toString() ??
+          json['name']?.toString() ??
+          '',
+      theirClaim: json['their_claim']?.toString() ??
+          json['theirClaim']?.toString() ??
+          json['claims']?.toString() ??
+          '',
+      howToRespond: json['how_to_respond']?.toString() ??
+          json['howToRespond']?.toString() ??
+          json['recommendedResponse']?.toString() ??
+          '',
+      proofReference: json['proof_reference']?.toString() ??
+          json['proofReference']?.toString() ??
+          json['clinicalReference']?.toString() ??
+          '',
     );
   }
 
@@ -198,6 +331,7 @@ class ProductLearningDto {
   final String name;
   final String therapeuticArea;
   final bool isRecommended;
+  final String? boxImageUrl;
   final ProductPositioningDto positioning;
   final List<CompetitorComparisonDto> competitors;
   final List<LessonDto> lessons;
@@ -206,26 +340,37 @@ class ProductLearningDto {
     required this.id,
     required this.name,
     required this.therapeuticArea,
-    this.isRecommended = false,
+    required this.isRecommended,
+    this.boxImageUrl,
     required this.positioning,
     required this.competitors,
     required this.lessons,
   });
 
   factory ProductLearningDto.fromJson(Map<String, dynamic> json) {
+    final positioningSource = json['positioning'] is Map
+        ? Map<String, dynamic>.from(json['positioning'] as Map)
+        : json;
+
     return ProductLearningDto(
-      id: json['id'] as String? ?? '',
-      name: json['name'] as String? ?? '',
-      therapeuticArea: json['therapeutic_area'] as String? ?? '',
-      isRecommended: json['is_recommended'] as bool? ?? false,
-      positioning: ProductPositioningDto.fromJson(
-        json['positioning'] as Map<String, dynamic>? ?? {},
-      ),
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      therapeuticArea: json['therapeuticAreaName']?.toString() ??
+          json['therapeutic_area']?.toString() ??
+          json['therapeuticArea']?.toString() ??
+          '',
+      isRecommended:
+          json['is_recommended'] as bool? ?? json['isRecommended'] as bool? ?? false,
+      boxImageUrl:
+          json['box_image_url']?.toString() ?? json['boxImageUrl']?.toString(),
+      positioning: ProductPositioningDto.fromJson(positioningSource),
       competitors: (json['competitors'] as List<dynamic>? ?? [])
-          .map((e) => CompetitorComparisonDto.fromJson(e as Map<String, dynamic>))
+          .whereType<Map<dynamic, dynamic>>()
+          .map((e) => CompetitorComparisonDto.fromJson(Map<String, dynamic>.from(e)))
           .toList(),
       lessons: (json['lessons'] as List<dynamic>? ?? [])
-          .map((e) => LessonDto.fromJson(e as Map<String, dynamic>))
+          .whereType<Map<dynamic, dynamic>>()
+          .map((e) => LessonDto.fromJson(Map<String, dynamic>.from(e)))
           .toList(),
     );
   }
@@ -235,6 +380,7 @@ class ProductLearningDto {
         'name': name,
         'therapeutic_area': therapeuticArea,
         'is_recommended': isRecommended,
+        if (boxImageUrl != null) 'box_image_url': boxImageUrl,
         'positioning': positioning.toJson(),
         'competitors': competitors.map((e) => e.toJson()).toList(),
         'lessons': lessons.map((e) => e.toJson()).toList(),
@@ -245,6 +391,7 @@ class ProductLearningDto {
         name: name,
         therapeuticArea: therapeuticArea,
         isRecommended: isRecommended,
+        boxImageUrl: boxImageUrl,
         positioning: positioning.toDomain(),
         competitors: competitors.map((e) => e.toDomain()).toList(),
         lessons: lessons.map((e) => e.toDomain()).toList(),

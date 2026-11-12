@@ -21,6 +21,7 @@ class ObjectionQuoteCard extends StatelessWidget {
   });
 
   void _showResponseSheet(BuildContext context) {
+    final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
 
@@ -57,7 +58,7 @@ class ObjectionQuoteCard extends StatelessWidget {
               const SizedBox(height: RxSpacing.s16),
 
               Text(
-                'Clinical Detailing Guidance',
+                l10n.clinicalDetailingGuidance,
                 style: textTheme.labelSmall?.copyWith(
                   color: colors.primary,
                   fontWeight: FontWeight.w700,
@@ -97,7 +98,7 @@ class ObjectionQuoteCard extends StatelessWidget {
               const SizedBox(height: RxSpacing.s16),
 
               Text(
-                'Recommended Clinical Counter',
+                l10n.recommendedClinicalCounter,
                 style: textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: colors.textPrimary,
@@ -115,7 +116,7 @@ class ObjectionQuoteCard extends StatelessWidget {
               const SizedBox(height: RxSpacing.s24),
 
               AppButton(
-                text: 'Got it',
+                text: l10n.btnGotIt,
                 variant: AppButtonVariant.secondary,
                 onPressed: () => Navigator.of(ctx).pop(),
               ),

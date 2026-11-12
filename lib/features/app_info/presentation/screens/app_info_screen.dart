@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/error/failure_message_mapper.dart';
 import '../../../../core/error/failures.dart';
@@ -20,6 +21,7 @@ class AppInfoScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
     final appInfoAsync = ref.watch(appInfoControllerProvider);
@@ -27,7 +29,7 @@ class AppInfoScreen extends ConsumerWidget {
     return AppScaffold(
       appBar: AppBar(
         title: Text(
-          'System Diagnostics',
+          l10n.systemDiagnosticsTitle,
           style: textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
             color: colors.textPrimary,
@@ -39,9 +41,9 @@ class AppInfoScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SectionHeader(
-              title: 'Application Metadata',
-              subtitle: 'Active runtime environment and build specification',
+            SectionHeader(
+              title: l10n.appMetadataTitle,
+              subtitle: l10n.appMetadataSubtitle,
             ),
             const SizedBox(height: RxSpacing.s8),
             appInfoAsync.when(
@@ -75,24 +77,26 @@ class AppInfoScreen extends ConsumerWidget {
   }
 
   Widget _buildErrorState(BuildContext context, WidgetRef ref, Object error) {
+    final l10n = context.l10n;
     String message;
     if (error is Failure) {
       message = FailureMessageMapper.map(context, error);
     } else {
-      message = 'Failed to load system metadata. Please try again.';
+      message = l10n.errorStateDescription;
     }
 
     return AppCard(
       child: ErrorState(
-        title: 'Unable to Load Diagnostics',
+        title: l10n.unableLoadDiagnostics,
         description: message,
-        retryText: 'Retry Connection',
+        retryText: l10n.retryConnection,
         onRetry: () => ref.read(appInfoControllerProvider.notifier).refresh(),
       ),
     );
   }
 
   Widget _buildContent(BuildContext context, WidgetRef ref, AppInfoEntity info) {
+    final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
 
@@ -152,19 +156,19 @@ class AppInfoScreen extends ConsumerWidget {
               const SizedBox(height: RxSpacing.s16),
               Divider(color: colors.border, height: 1.0),
               const SizedBox(height: RxSpacing.s16),
-              _buildMetaRow(context, 'Min Supported Version', info.minSupportedVersion),
+              _buildMetaRow(context, l10n.minSupportedVersionLabel, info.minSupportedVersion),
               const SizedBox(height: RxSpacing.s8),
-              _buildMetaRow(context, 'Maintenance Status', info.maintenanceMode ? 'Active (Read Only)' : 'Operational'),
+              _buildMetaRow(context, l10n.maintenanceStatusLabel, info.maintenanceMode ? l10n.maintenanceActive : l10n.operationalStatus),
               const SizedBox(height: RxSpacing.s8),
-              _buildMetaRow(context, 'API Endpoint', info.apiEndpoint.isNotEmpty ? info.apiEndpoint : 'Configured Base URL'),
+              _buildMetaRow(context, l10n.apiEndpointLabel, info.apiEndpoint.isNotEmpty ? info.apiEndpoint : l10n.configuredBaseUrl),
               const SizedBox(height: RxSpacing.s8),
-              _buildMetaRow(context, 'Server Time', Formatters.formatDate(info.serverTimestamp, format: 'yyyy-MM-dd HH:mm:ss')),
+              _buildMetaRow(context, l10n.serverTimeLabel, Formatters.formatDate(info.serverTimestamp, format: 'yyyy-MM-dd HH:mm:ss')),
             ],
           ),
         ),
         const SizedBox(height: RxSpacing.s20),
         AppButton(
-          text: 'Refresh System Status',
+          text: l10n.refreshSystemStatus,
           leadingIcon: LucideIcons.rotateCw,
           variant: AppButtonVariant.secondary,
           onPressed: () => ref.read(appInfoControllerProvider.notifier).refresh(),

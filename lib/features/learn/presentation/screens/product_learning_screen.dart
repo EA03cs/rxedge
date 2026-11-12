@@ -49,7 +49,7 @@ class ProductLearningScreen extends ConsumerWidget {
           actions: [
             IconButton(
               icon: const Icon(LucideIcons.listOrdered, size: 22.0),
-              tooltip: 'Lesson Modules',
+              tooltip: l10n.lessonModulesLabel,
               onPressed: () => _openLessonsSheet(context, liveProduct),
             ),
             const SizedBox(width: RxSpacing.s8),
@@ -162,7 +162,7 @@ class ProductLearningScreen extends ConsumerWidget {
                     ),
                     icon: const Icon(LucideIcons.bookOpen, size: 14.0),
                     label: Text(
-                      'Lessons',
+                      l10n.lessonsTabLabel,
                       style: textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w700,
                         color: colors.primary,
@@ -192,6 +192,7 @@ class ProductLearningScreen extends ConsumerWidget {
   }
 
   void _openLessonsSheet(BuildContext context, ProductLearningEntity product) {
+    final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
 
@@ -226,7 +227,7 @@ class ProductLearningScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Lesson Modules',
+                          l10n.lessonModulesLabel,
                           style: textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w800,
                             color: colors.textPrimary,
@@ -234,7 +235,10 @@ class ProductLearningScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 2.0),
                         Text(
-                          '${product.completedLessonsCount} of ${product.totalLessonsCount} completed',
+                          l10n.lessonsCompleted(
+                            product.completedLessonsCount,
+                            product.totalLessonsCount,
+                          ),
                           style: textTheme.bodySmall?.copyWith(
                             color: colors.textSecondary,
                           ),

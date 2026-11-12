@@ -1,8 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/error/exception_mapper.dart';
+import '../../../../core/error/failures.dart';
+import '../../../../core/network/api_endpoints.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/services/logger_service.dart';
 import '../../../../core/storage/local_cache_service.dart';
+import '../../../../core/storage/offline_queue_service.dart';
 import '../../../../core/utils/result.dart';
 import '../../domain/entities/learning_entities.dart';
 import '../../domain/repositories/learn_repository.dart';
@@ -10,77 +13,87 @@ import '../datasources/learn_local_datasource.dart';
 import '../datasources/learn_remote_datasource.dart';
 import '../models/learning_dto.dart';
 
-/// Repository Implementation for Smart Learning Hub
+/// Repository Implementation for Learn
+///
+/// Strategy:
+/// - In-memory cache first for snappy UI reactivity
+/// - Fresh Hive cache next (`learn_products_list`)
+/// - Remote API (`GET /products`, `GET /learn/lessons`, `GET /competitors`)
+/// - Stale cache fallback offline
+/// - Lesson completions and bookmarks synced to backend with offline queue fallback
 class LearnRepositoryImpl implements LearnRepository {
   final LearnRemoteDatasource _remoteDatasource;
   final LearnLocalDatasource _localDatasource;
+  final OfflineQueueService? _queueService;
 
   List<ProductLearningEntity>? _memoryProducts;
 
   LearnRepositoryImpl({
     required LearnRemoteDatasource remoteDatasource,
     required LearnLocalDatasource localDatasource,
+    OfflineQueueService? queueService,
   })  : _remoteDatasource = remoteDatasource,
-        _localDatasource = localDatasource;
+        _localDatasource = localDatasource,
+        _queueService = queueService;
 
   @override
-  Future<Result<List<ProductLearningEntity>>> getProducts({bool forceRefresh = false}) async {
-    // 1. In-memory cache
-    if (!forceRefresh && _memoryProducts != null && _memoryProducts!.isNotEmpty) {
+  Future<Result<List<ProductLearningEntity>>> getProducts({
+    bool forceRefresh = false,
+  }) async {
+    if (!forceRefresh && _memoryProducts != null) {
       return Result.success(_memoryProducts!);
     }
 
-    // 2. Local fresh cache
     if (!forceRefresh && _localDatasource.isCacheFresh()) {
       try {
         final cached = await _localDatasource.getCachedProducts();
         if (cached != null) {
-          AppLogger.d('Returning fresh cached Learn products');
-          final domainItems = await _mergeWithOverrides(cached);
-          _memoryProducts = domainItems;
-          return Result.success(domainItems);
+          AppLogger.d('Returning fresh cached Products & Lessons');
+          _memoryProducts = await _mergeWithOverrides(cached);
+          return Result.success(_memoryProducts!);
         }
       } catch (e) {
-        AppLogger.w('Failed reading cached learning products: $e');
+        AppLogger.w('Failed reading cached products: $e');
       }
     }
 
-    // 3. Remote fetch
     try {
-      AppLogger.d('Fetching remote Learn products...');
-      final remoteList = await _remoteDatasource.getProducts();
-      await _localDatasource.cacheProducts(remoteList);
+      AppLogger.d('Fetching remote Learn Products & Lessons...');
+      final remoteDtos = await _remoteDatasource.getProducts();
+      await _localDatasource.cacheProducts(remoteDtos);
 
-      final domainItems = await _mergeWithOverrides(remoteList);
-      _memoryProducts = domainItems;
-      return Result.success(domainItems);
+      _memoryProducts = await _mergeWithOverrides(remoteDtos);
+      return Result.success(_memoryProducts!);
     } catch (e, st) {
-      AppLogger.w('Remote learning fetch failed, attempting stale fallback', error: e);
-
+      AppLogger.w('Remote fetch failed for Learn, attempting stale cache fallback',
+          error: e);
       try {
-        final staleCache = await _localDatasource.getCachedProducts();
-        if (staleCache != null) {
-          final domainItems = await _mergeWithOverrides(staleCache);
-          _memoryProducts = domainItems;
-          return Result.success(domainItems);
+        final stale = await _localDatasource.getCachedProducts();
+        if (stale != null) {
+          _memoryProducts = await _mergeWithOverrides(stale);
+          return Result.success(_memoryProducts!);
         }
       } catch (_) {}
 
-      final failure = ExceptionMapper.map(e, st);
-      return Result.failure(failure);
+      return Result.failure(ExceptionMapper.map(e, st));
     }
   }
 
   @override
   Future<Result<ProductLearningEntity>> getProductById(String id) async {
+    if (_memoryProducts != null) {
+      final found = _memoryProducts!.where((p) => p.id == id);
+      if (found.isNotEmpty) return Result.success(found.first);
+    }
+
     final productsResult = await getProducts();
     return productsResult.when(
       success: (list) {
         final found = list.where((p) => p.id == id);
-        if (found.isNotEmpty) {
-          return Result.success(found.first);
-        }
-        return Result.failure(ExceptionMapper.map(Exception('Product not found: $id')));
+        if (found.isNotEmpty) return Result.success(found.first);
+        return Result.failure(
+          ExceptionMapper.map(Exception('Product not found: $id')),
+        );
       },
       failure: (f) => Result.failure(f),
     );
@@ -88,17 +101,23 @@ class LearnRepositoryImpl implements LearnRepository {
 
   @override
   Future<Result<LessonEntity>> getLessonById(String lessonId) async {
+    if (_memoryProducts != null) {
+      for (final product in _memoryProducts!) {
+        final found = product.lessons.where((l) => l.id == lessonId);
+        if (found.isNotEmpty) return Result.success(found.first);
+      }
+    }
+
     final productsResult = await getProducts();
     return productsResult.when(
       success: (list) {
         for (final product in list) {
-          for (final lesson in product.lessons) {
-            if (lesson.id == lessonId) {
-              return Result.success(lesson);
-            }
-          }
+          final found = product.lessons.where((l) => l.id == lessonId);
+          if (found.isNotEmpty) return Result.success(found.first);
         }
-        return Result.failure(ExceptionMapper.map(Exception('Lesson not found: $lessonId')));
+        return Result.failure(
+          ExceptionMapper.map(Exception('Lesson not found: $lessonId')),
+        );
       },
       failure: (f) => Result.failure(f),
     );
@@ -107,11 +126,30 @@ class LearnRepositoryImpl implements LearnRepository {
   @override
   Future<Result<LessonEntity>> markLessonCompleted(String lessonId) async {
     try {
+      try {
+        await _remoteDatasource.completeLesson(lessonId);
+      } catch (e, st) {
+        final mapped = ExceptionMapper.map(e, st);
+        if (mapped is NetworkFailure && _queueService != null) {
+          _queueService.enqueue(
+            OfflineQueueItem(
+              id: 'lesson_complete_$lessonId',
+              endpoint: ApiEndpoints.completeLesson(lessonId),
+              httpMethod: 'POST',
+              payload: const <String, dynamic>{},
+              createdAt: DateTime.now(),
+            ),
+          );
+          AppLogger.i('Lesson completion queued offline: $lessonId');
+        } else if (mapped is! NetworkFailure) {
+          rethrow;
+        }
+      }
+
       final completed = await _localDatasource.getCompletedLessonIds();
       final updatedCompleted = Set<String>.from(completed)..add(lessonId);
       await _localDatasource.saveCompletedLessonIds(updatedCompleted);
 
-      // Update in memory
       LessonEntity? updatedLesson;
       if (_memoryProducts != null) {
         _memoryProducts = _memoryProducts!.map((product) {
@@ -143,6 +181,23 @@ class LearnRepositoryImpl implements LearnRepository {
   @override
   Future<Result<LessonEntity>> toggleLessonBookmark(String lessonId) async {
     try {
+      try {
+        await _remoteDatasource.bookmarkLesson(lessonId);
+      } catch (e, st) {
+        final mapped = ExceptionMapper.map(e, st);
+        if (mapped is NetworkFailure && _queueService != null) {
+          _queueService.enqueue(
+            OfflineQueueItem(
+              id: 'lesson_bookmark_${lessonId}_${DateTime.now().millisecondsSinceEpoch}',
+              endpoint: ApiEndpoints.bookmarkLesson(lessonId),
+              httpMethod: 'POST',
+              payload: const <String, dynamic>{},
+              createdAt: DateTime.now(),
+            ),
+          );
+        }
+      }
+
       final bookmarks = await _localDatasource.getBookmarkedLessonIds();
       final isBookmarked = bookmarks.contains(lessonId);
 
@@ -210,8 +265,8 @@ class LearnRepositoryImpl implements LearnRepository {
     return dtoList.map((dto) {
       final domainProduct = dto.toDomain();
       final updatedLessons = domainProduct.lessons.map((lesson) {
-        final isDone = completed.isNotEmpty ? completed.contains(lesson.id) : lesson.isCompleted;
-        final isMarked = bookmarks.isNotEmpty ? bookmarks.contains(lesson.id) : lesson.isBookmarked;
+        final isDone = lesson.isCompleted || completed.contains(lesson.id);
+        final isMarked = lesson.isBookmarked || bookmarks.contains(lesson.id);
         return lesson.copyWith(
           isCompleted: isDone,
           isBookmarked: isMarked,
@@ -223,7 +278,6 @@ class LearnRepositoryImpl implements LearnRepository {
   }
 }
 
-/// Riverpod Providers for Learn Data Layer
 final learnRemoteDatasourceProvider = Provider<LearnRemoteDatasource>((ref) {
   final dio = ref.watch(dioClientProvider);
   return LearnRemoteDatasourceImpl(dio: dio);
@@ -237,8 +291,10 @@ final learnLocalDatasourceProvider = Provider<LearnLocalDatasource>((ref) {
 final learnRepositoryProvider = Provider<LearnRepository>((ref) {
   final remote = ref.watch(learnRemoteDatasourceProvider);
   final local = ref.watch(learnLocalDatasourceProvider);
+  final queue = ref.watch(offlineQueueServiceProvider);
   return LearnRepositoryImpl(
     remoteDatasource: remote,
     localDatasource: local,
+    queueService: queue,
   );
 });

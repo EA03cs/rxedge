@@ -960,4 +960,496 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get btnSkip => 'تخطي';
+
+  @override
+  String get btnClose => 'إغلاق';
+
+  @override
+  String get btnClear => 'مسح';
+
+  @override
+  String get supportAndSecurity => 'الدعم والأمان';
+
+  @override
+  String get actionSyncNow => 'مزامنة الآن';
+
+  @override
+  String pendingSyncNotice(int count) {
+    return '$count قيد المزامنة';
+  }
+
+  @override
+  String get defaultRepName => 'مندوب الدعاية الطبية';
+
+  @override
+  String get dailyDetailingItinerary => 'الجدول العلمي اليومي';
+
+  @override
+  String moduleProgressCount(int completed, int total) {
+    return 'الوحدة $completed من $total';
+  }
+
+  @override
+  String get recommendedDetailingSubtitle =>
+      'أتقن التجارب السريرية الرئيسية ورسائل الترويج للخط العلاجي الأول.';
+
+  @override
+  String get clinicalDetailingGuidance => 'التوجيه السريري للترويج';
+
+  @override
+  String get recommendedClinicalCounter => 'الرد السريري الموصى به';
+
+  @override
+  String get profileTooltip => 'الملف الشخصي';
+
+  @override
+  String get notificationsTooltip => 'الإشعارات';
+
+  @override
+  String get noLearningModulesTitle => 'لا توجد وحدات تعليمية';
+
+  @override
+  String get noLearningModulesDesc =>
+      'ستظهر الوحدات العلمية هنا فور تعيينها من قبل المدير الطبي.';
+
+  @override
+  String get bookmarksLabel => 'المحفوظات';
+
+  @override
+  String get lessonModulesLabel => 'وحدات الدروس';
+
+  @override
+  String get lessonsTabLabel => 'الدروس';
+
+  @override
+  String get noCompetitorsAvailable =>
+      'لا توجد مقارنات متاحة مع المنافسين لهذا المنتج.';
+
+  @override
+  String get clinicalRecallQuizTitle => 'اختبار الاستيعاب السريري';
+
+  @override
+  String lessonQuizReinforceDesc(int count) {
+    return 'عزز ثقتك في الترويج من خلال $count أسئلة مراجعة سريرية سريعة.';
+  }
+
+  @override
+  String lessonQuizDialogBody(int count) {
+    return 'يتضمن هذا الاختبار $count أسئلة تختبر نتائج الدراسات الرئيسية والتمييز أمام المنافسين.';
+  }
+
+  @override
+  String get btnStartQuizNow => 'ابدأ الاختبار الآن (+50 نقطة)';
+
+  @override
+  String get btnReviewLater => 'مراجعة لاحقاً';
+
+  @override
+  String get offlineStatusBadge => 'متاح دون إنترنت';
+
+  @override
+  String get onlineOnlyStatusBadge => 'عبر الإنترنت فقط';
+
+  @override
+  String slidesCountLabel(int count) {
+    return '$count شرائح';
+  }
+
+  @override
+  String pagesCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count صفحة',
+      many: '$count صفحة',
+      few: '$count صفحات',
+      two: 'صفحتان',
+      one: 'صفحة واحدة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get regulatoryMonographHeader => 'الدليل السريري المعتمد';
+
+  @override
+  String sectionNumberLabel(int number) {
+    return 'القسم $number';
+  }
+
+  @override
+  String therapeuticClassLabel(String productName) {
+    return 'الفئة العلاجية: $productName';
+  }
+
+  @override
+  String get clinicalVisualAidBadge => 'وسيلة عرض سريرية';
+
+  @override
+  String documentIdLabel(String id) {
+    return 'معرف المستند: $id';
+  }
+
+  @override
+  String get confidentialDetailingFooter => 'مادة ترويجية طبية معتمدة';
+
+  @override
+  String get activeSprintBadge => 'التحدي النشط';
+
+  @override
+  String timeLeftCountdown(int days, int hours) {
+    return 'متبقي $days ي $hours س';
+  }
+
+  @override
+  String get leaderboardUpdateCaption => 'يُحدّث كل ساعة بين مندوبي المنطقة';
+
+  @override
+  String get youLabel => 'أنت';
+
+  @override
+  String rankOfTotalDistrict(int rank, int total) {
+    return 'الترتيب #$rank من $total في المنطقة';
+  }
+
+  @override
+  String rankOfTotalSimple(int rank, int total) {
+    return 'الترتيب #$rank من $total';
+  }
+
+  @override
+  String get noQuizzesTitle => 'لا توجد اختبارات متاحة';
+
+  @override
+  String get noQuizzesDesc =>
+      'ستظهر الاختبارات السريرية الجديدة مع كل دورة ترويجية.';
+
+  @override
+  String questionsCountLabel(int count) {
+    return '$count أسئلة';
+  }
+
+  @override
+  String minutesCountLabel(int minutes) {
+    return '$minutes د';
+  }
+
+  @override
+  String scoreOutOfLabel(int score, int total) {
+    return 'النتيجة: $score/$total';
+  }
+
+  @override
+  String get btnRetakeQuiz => 'إعادة الاختبار';
+
+  @override
+  String pointsPlusValue(int points) {
+    return '+$points نقطة';
+  }
+
+  @override
+  String get correctRecallLabel => 'استيعاب صحيح';
+
+  @override
+  String get clinicalRationaleLabel => 'التعليل السريري';
+
+  @override
+  String scoreCorrectOfTotal(int score, int total) {
+    return '$score من أصل $total إجابات صحيحة';
+  }
+
+  @override
+  String get pointsEarnedLabel => 'النقاط المكتسبة';
+
+  @override
+  String get timeElapsedLabel => 'الوقت المستغرق';
+
+  @override
+  String get btnHideMistakes => 'إخفاء الأخطاء';
+
+  @override
+  String get flawlessAnswersMsg => 'ممتاز! لا توجد إجابات خاطئة للمراجعة.';
+
+  @override
+  String get incorrectBreakdownTitle => 'تفصيل الإجابات الخاطئة';
+
+  @override
+  String yourAnswerPrefix(String answer) {
+    return 'إجابتك: $answer';
+  }
+
+  @override
+  String correctAnswerPrefix(String answer) {
+    return 'الإجابة الصحيحة: $answer';
+  }
+
+  @override
+  String get recommendedClinicalResponseLabel => 'الرد السريري الموصى به';
+
+  @override
+  String get keyDetailingAnchorsLabel => 'ركائز الإقناع الرئيسية';
+
+  @override
+  String get unableLoadFeedback => 'تعذر تحميل الملاحظات';
+
+  @override
+  String get pendingOfflineWarning =>
+      'توجد مشاركات محفوظة دون إنترنت وستتم مزامنتها فور الاتصال.';
+
+  @override
+  String get feedbackDetailsTitle => 'تفاصيل الملاحظة';
+
+  @override
+  String get submissionNotFound => 'لم يتم العثور على المشاركة';
+
+  @override
+  String get fieldSubmissionHeader => 'المشاركة الميدانية';
+
+  @override
+  String get labelProduct => 'المنتج';
+
+  @override
+  String get labelDoctorObjection => 'اعتراض الطبيب';
+
+  @override
+  String get labelDoctorSpecialty => 'تخصص الطبيب';
+
+  @override
+  String get labelHowResponded => 'كيف رددت';
+
+  @override
+  String get labelCompetitor => 'المنافس';
+
+  @override
+  String get labelClaimHeard => 'الادعاء المسموع';
+
+  @override
+  String get labelWhereHeard => 'مكان السماع';
+
+  @override
+  String get labelTopic => 'الموضوع';
+
+  @override
+  String get labelDetails => 'التفاصيل';
+
+  @override
+  String optionalFieldSuffix(String label) {
+    return '$label (اختياري)';
+  }
+
+  @override
+  String get hintDoctorObjection =>
+      'ما هو الاعتراض أو التشكيك الدقيق الذي أبداه الطبيب؟';
+
+  @override
+  String get hintHowResponded =>
+      'ما هي النقطة العلمية أو الدراسة التي استشهدت بها؟';
+
+  @override
+  String get labelCompetitorProduct => 'اسم المنافس والمنتج';
+
+  @override
+  String get hintCompetitorClaim =>
+      'ما العبارة الترويجية أو المقارنة التي قيلت؟';
+
+  @override
+  String get labelTopicCampaign => 'الموضوع / الحملة';
+
+  @override
+  String get hintDetails => 'اشرح الموقف أو الطلب بوضوح لفريق التسويق...';
+
+  @override
+  String get attachPhotoOptional => 'إرفاق صورة أو مطوية ترويجية (اختياري)';
+
+  @override
+  String get photoAttachedLabel => 'تم إرفاق صورة ترويجية';
+
+  @override
+  String get attachVoiceOptional => 'إرفاق ملاحظة صوتية سريعة (اختياري)';
+
+  @override
+  String get voiceAttachedLabel => 'تم إرفاق ملاحظة صوتية';
+
+  @override
+  String get medicalAffairsDefault => 'الشؤون الطبية';
+
+  @override
+  String get offlineQueueInfo =>
+      'محفوظ دون إنترنت. سيتم الإرسال تلقائياً فور توفر اتصال بالإنترنت.';
+
+  @override
+  String get submissionFailedFallback => 'تعذر إرسال الملاحظة';
+
+  @override
+  String get feedbackSentExtraNote =>
+      'يراجع فريق التسويق والشؤون الطبية تقارير الميدان يومياً لتحديث نقاط الحوار العلمي.';
+
+  @override
+  String get feedbackQueuedExtraNote =>
+      'محفوظ بأمان على جهازك. سيتم إرساله تلقائياً لفريق التسويق فور عودة الاتصال.';
+
+  @override
+  String get selectProductOptional => 'المنتج المرتبط (اختياري)';
+
+  @override
+  String get noProductSelected => 'ملاحظة عامة / دون منتج محدد';
+
+  @override
+  String get unableLoadNotifications => 'تعذر تحميل الإشعارات';
+
+  @override
+  String get unableLoadProfile => 'تعذر تحميل الملف الشخصي';
+
+  @override
+  String get storageStatusDownloaded => 'محمل محلياً';
+
+  @override
+  String get storageStatusEmpty => 'فارغ';
+
+  @override
+  String get offlineStorageDesc =>
+      'البروشورات وعروض الترويج والملفات المحملة متاحة للاستخدام دون اتصال بالإنترنت.';
+
+  @override
+  String get searchFailedTitle => 'تعذر إجراء البحث';
+
+  @override
+  String get suggestedTopicsLabel => 'موضوعات مقترحة';
+
+  @override
+  String get suggestedTopicDosing => 'الجرعات';
+
+  @override
+  String get suggestedTopicHypotension => 'انخفاض الضغط';
+
+  @override
+  String get suggestedTopicGits => 'تقنية GITS';
+
+  @override
+  String get systemDiagnosticsTitle => 'فحص وتشخيص النظام';
+
+  @override
+  String get appMetadataTitle => 'بيانات التطبيق';
+
+  @override
+  String get appMetadataSubtitle => 'بيئة التشغيل النشطة ومواصفات الإصدار';
+
+  @override
+  String get unableLoadDiagnostics => 'تعذر تحميل بيانات التشخيص';
+
+  @override
+  String get retryConnection => 'إعادة محاولة الاتصال';
+
+  @override
+  String get minSupportedVersionLabel => 'أقل إصدار مدعوم';
+
+  @override
+  String get maintenanceStatusLabel => 'حالة الصيانة';
+
+  @override
+  String get maintenanceActive => 'تحت الصيانة (قراءة فقط)';
+
+  @override
+  String get operationalStatus => 'يعمل بكفاءة';
+
+  @override
+  String get apiEndpointLabel => 'نقطة اتصال الخادم';
+
+  @override
+  String get configuredBaseUrl => 'الرابط المهيأ في التطبيق';
+
+  @override
+  String get serverTimeLabel => 'توقيت الخادم';
+
+  @override
+  String get refreshSystemStatus => 'تحديث حالة النظام';
+
+  @override
+  String get forgotHelpdeskTitle => 'دعم تقنية المعلومات والتسويق التجاري';
+
+  @override
+  String forgotSupportSentToast(String email) {
+    return 'تم إرسال طلب الدعم إلى $email';
+  }
+
+  @override
+  String get taglineFieldMedical => 'الذكاء الميداني للدعاية الطبية';
+
+  @override
+  String get pointTxQuizCompletion => 'مكافأة اجتياز اختبار سريع';
+
+  @override
+  String get pointTxLessonCompletion => 'مكافأة إتمام وحدة تعليمية';
+
+  @override
+  String get pointTxChallengeReward => 'مكافأة التحدي الشهري';
+
+  @override
+  String get pointTxManualAdjustment => 'تعديل نقاط إداري';
+
+  @override
+  String helpfulVotesCount(int count) {
+    return '$count تقييم مفيد';
+  }
+
+  @override
+  String peersContributedCount(int count) {
+    return 'ساهم $count زميل بصياغات ميدانية';
+  }
+
+  @override
+  String minAgoCount(int count) {
+    return 'منذ $count د';
+  }
+
+  @override
+  String hoursAgoCount(int count) {
+    return 'منذ $count س';
+  }
+
+  @override
+  String daysAgoCount(int count) {
+    return 'منذ $count ي';
+  }
+
+  @override
+  String get topTenTerritoryBadge => 'من أفضل ١٠٪ في المنطقة';
+
+  @override
+  String get productHintExamples => 'مثال: كاردورا إكس إل، أتورفاكير';
+
+  @override
+  String get specialtyHintExamples => 'مثال: استشاري قلب، استشاري كلى';
+
+  @override
+  String get competitorHintExamples => 'مثال: مستحضر منافس مثيل';
+
+  @override
+  String get whereHeardHintExamples => 'مثال: مؤتمر طبي، اجتماع قسم بالمستشفى';
+
+  @override
+  String get topicHintExamples => 'مثال: توفر العينات، طلب وسيلة عرض';
+
+  @override
+  String get errNetwork =>
+      'لا يوجد اتصال بالإنترنت. يرجى التحقق من الشبكة والمحاولة مرة أخرى.';
+
+  @override
+  String get errUnauthorized =>
+      'انتهت صلاحية جلستك أو غير مصرح بالوصول. يرجى تسجيل الدخول مرة أخرى.';
+
+  @override
+  String get errNotFound => 'تعذر العثور على المحتوى المطلوب.';
+
+  @override
+  String get errValidation => 'يرجى مراجعة الحقول المدخلة والمحاولة مرة أخرى.';
+
+  @override
+  String get errCache => 'تعذر قراءة البيانات المحفوظة محلياً.';
+
+  @override
+  String get errServer => 'حدث خطأ في الخادم. يرجى المحاولة مرة أخرى بعد قليل.';
+
+  @override
+  String get errUnknown => 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.';
 }

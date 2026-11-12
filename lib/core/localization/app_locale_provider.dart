@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:rxedge/l10n/app_localizations.dart';
+import '../storage/storage_initializer.dart';
 
 /// Active Locale Provider (defaults to Arabic 'ar', supports 'en')
 final localeProvider = StateProvider<Locale>((ref) {
-  return const Locale('ar');
+  return Locale(StorageInitializer.readInitialLocaleCode(fallback: 'ar'));
 });
 
 /// Theme Mode Provider (defaults to light as primary)

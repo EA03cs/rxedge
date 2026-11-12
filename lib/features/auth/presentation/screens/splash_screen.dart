@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
 
 /// Splash Screen
@@ -40,6 +41,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
 
@@ -69,7 +71,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
               ),
               const SizedBox(height: RxSpacing.s20),
               Text(
-                'RxEdge',
+                l10n.appName,
                 style: textTheme.headlineLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: colors.textPrimary,
@@ -78,7 +80,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
               ),
               const SizedBox(height: RxSpacing.s4),
               Text(
-                'Field Medical Intelligence',
+                l10n.taglineFieldMedical,
                 style: textTheme.bodySmall?.copyWith(
                   color: colors.textSecondary,
                   letterSpacing: 0.2,

@@ -1,9 +1,8 @@
 import '../../domain/entities/app_info_entity.dart';
+import '../../../../core/config/env_config.dart';
+import '../../../../core/config/flavor_config.dart';
 
-/// Data Transfer Object (DTO) for App Info
-///
-/// Follows Architecture Contract:
-/// "DTOs separate from domain entities with explicit mappers."
+/// Data Transfer Object (DTO) for App Info & Backend Health (`/health`)
 class AppInfoDto {
   final String appName;
   final String version;
@@ -26,16 +25,34 @@ class AppInfoDto {
   });
 
   factory AppInfoDto.fromJson(Map<String, dynamic> json) {
+    final status = json['status']?.toString().toLowerCase();
+    final defaultEnv = FlavorConfig.isInitialized
+        ? FlavorConfig.instance.flavor.name
+        : 'production';
+    final rawTs = json['server_timestamp'] ?? json['timestamp'];
+
     return AppInfoDto(
-      appName: json['app_name'] as String? ?? 'RxEdge',
+      appName: json['app_name'] as String? ??
+          json['appName'] as String? ??
+          'RxEdge',
       version: json['version'] as String? ?? '1.0.0',
-      buildNumber: json['build_number'] as String? ?? '1',
-      environment: json['environment'] as String? ?? 'production',
-      apiEndpoint: json['api_endpoint'] as String? ?? '',
-      minSupportedVersion: json['min_supported_version'] as String? ?? '1.0.0',
-      maintenanceMode: json['maintenance_mode'] as bool? ?? false,
-      serverTimestamp: json['server_timestamp'] != null
-          ? DateTime.parse(json['server_timestamp'] as String)
+      buildNumber: json['build_number'] as String? ??
+          json['buildNumber'] as String? ??
+          '1',
+      environment: json['environment'] as String? ??
+          json['env'] as String? ??
+          defaultEnv,
+      apiEndpoint: json['api_endpoint'] as String? ??
+          json['apiEndpoint'] as String? ??
+          EnvConfig.baseUrl,
+      minSupportedVersion: json['min_supported_version'] as String? ??
+          json['minSupportedVersion'] as String? ??
+          '1.0.0',
+      maintenanceMode: json['maintenance_mode'] as bool? ??
+          json['maintenanceMode'] as bool? ??
+          (status == 'maintenance'),
+      serverTimestamp: rawTs != null
+          ? (DateTime.tryParse(rawTs.toString()) ?? DateTime.now())
           : DateTime.now(),
     );
   }

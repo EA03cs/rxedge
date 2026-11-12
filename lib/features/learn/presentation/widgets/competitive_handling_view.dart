@@ -41,7 +41,7 @@ class _CompetitiveHandlingViewState extends State<CompetitiveHandlingView> {
         child: Padding(
           padding: const EdgeInsetsDirectional.all(RxSpacing.s24),
           child: Text(
-            'No competitor comparisons available for this product.',
+            l10n.noCompetitorsAvailable,
             style: textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
             textAlign: TextAlign.center,
           ),
@@ -60,7 +60,7 @@ class _CompetitiveHandlingViewState extends State<CompetitiveHandlingView> {
           // Competitor selector chips (if more than 1)
           if (widget.competitors.length > 1) ...[
             Text(
-              'Select Competitor',
+              l10n.labelCompetitor,
               style: textTheme.labelMedium?.copyWith(
                 color: colors.textSecondary,
                 fontWeight: FontWeight.w600,

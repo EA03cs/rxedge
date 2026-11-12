@@ -150,6 +150,7 @@ class ProductLearningEntity {
   final String name;
   final String therapeuticArea;
   final bool isRecommended;
+  final String? boxImageUrl;
   final ProductPositioningEntity positioning;
   final List<CompetitorComparisonEntity> competitors;
   final List<LessonEntity> lessons;
@@ -159,6 +160,7 @@ class ProductLearningEntity {
     required this.name,
     required this.therapeuticArea,
     this.isRecommended = false,
+    this.boxImageUrl,
     required this.positioning,
     required this.competitors,
     required this.lessons,
@@ -181,6 +183,7 @@ class ProductLearningEntity {
     String? name,
     String? therapeuticArea,
     bool? isRecommended,
+    String? boxImageUrl,
     ProductPositioningEntity? positioning,
     List<CompetitorComparisonEntity>? competitors,
     List<LessonEntity>? lessons,
@@ -190,6 +193,7 @@ class ProductLearningEntity {
       name: name ?? this.name,
       therapeuticArea: therapeuticArea ?? this.therapeuticArea,
       isRecommended: isRecommended ?? this.isRecommended,
+      boxImageUrl: boxImageUrl ?? this.boxImageUrl,
       positioning: positioning ?? this.positioning,
       competitors: competitors ?? this.competitors,
       lessons: lessons ?? this.lessons,

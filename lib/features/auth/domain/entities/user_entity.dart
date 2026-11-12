@@ -1,7 +1,4 @@
-/// Pure Dart User Domain Entity
-///
-/// Follows Clean Architecture Dependency Rule:
-/// "Domain has zero Flutter/Dio/Hive imports."
+/// Authenticated Medical Representative User Entity
 class UserEntity {
   final String id;
   final String email;
@@ -10,6 +7,9 @@ class UserEntity {
   final String role;
   final String territory;
   final String token;
+  final String? avatarUrl;
+  final int totalPoints;
+  final int currentStreak;
 
   const UserEntity({
     required this.id,
@@ -19,31 +19,34 @@ class UserEntity {
     required this.role,
     required this.territory,
     required this.token,
+    this.avatarUrl,
+    this.totalPoints = 0,
+    this.currentStreak = 0,
   });
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is UserEntity &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          email == other.email &&
-          employeeId == other.employeeId &&
-          displayName == other.displayName &&
-          role == other.role &&
-          territory == other.territory &&
-          token == other.token;
-
-  @override
-  int get hashCode =>
-      id.hashCode ^
-      email.hashCode ^
-      employeeId.hashCode ^
-      displayName.hashCode ^
-      role.hashCode ^
-      territory.hashCode ^
-      token.hashCode;
-
-  @override
-  String toString() => 'UserEntity(id: $id, name: $displayName, role: $role, territory: $territory)';
+  UserEntity copyWith({
+    String? id,
+    String? email,
+    String? employeeId,
+    String? displayName,
+    String? role,
+    String? territory,
+    String? token,
+    String? avatarUrl,
+    int? totalPoints,
+    int? currentStreak,
+  }) {
+    return UserEntity(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      employeeId: employeeId ?? this.employeeId,
+      displayName: displayName ?? this.displayName,
+      role: role ?? this.role,
+      territory: territory ?? this.territory,
+      token: token ?? this.token,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      totalPoints: totalPoints ?? this.totalPoints,
+      currentStreak: currentStreak ?? this.currentStreak,
+    );
+  }
 }

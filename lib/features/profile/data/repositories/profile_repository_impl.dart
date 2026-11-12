@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/error/exception_mapper.dart';
+import '../../../../core/network/dio_client.dart';
 import '../../../../core/storage/local_cache_service.dart';
 import '../../../../core/utils/result.dart';
 import '../../domain/entities/profile_entities.dart';
@@ -64,6 +65,16 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
+  Future<Result<void>> updateLanguagePreference(String languageCode) async {
+    try {
+      await _remoteDatasource.updateLanguagePreference(languageCode);
+      return const Result.success(null);
+    } catch (e, st) {
+      return Result.failure(ExceptionMapper.map(e, st));
+    }
+  }
+
+  @override
   Future<Result<void>> clearCachedDownloads() async {
     try {
       await _localDatasource.clearDownloads();
@@ -89,7 +100,8 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
 /// Riverpod Providers for Profile
 final profileRemoteDatasourceProvider = Provider<ProfileRemoteDatasource>((ref) {
-  return ProfileRemoteDatasourceImpl();
+  final dio = ref.watch(dioClientProvider);
+  return ProfileRemoteDatasourceImpl(dio: dio);
 });
 
 final profileLocalDatasourceProvider = Provider<ProfileLocalDatasource>((ref) {

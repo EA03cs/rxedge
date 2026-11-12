@@ -48,9 +48,9 @@ class HomeHeader extends ConsumerWidget {
     final authState = ref.watch(authControllerProvider);
     final user = authState is AuthAuthenticated ? authState.user : null;
 
-    final displayName = user?.displayName ?? 'Field Representative';
+    final displayName = user?.displayName ?? l10n.defaultRepName;
     final firstName = displayName.split(' ').first;
-    final territory = user?.territory ?? 'Daily Detailing Itinerary';
+    final territory = user?.territory ?? l10n.dailyDetailingItinerary;
     final greeting = _getGreeting(context, firstName);
 
     return Padding(
@@ -64,7 +64,7 @@ class HomeHeader extends ConsumerWidget {
           // 1. Avatar circle (Tapping opens Profile/Diagnostics)
           Semantics(
             button: true,
-            label: 'Profile for $displayName',
+            label: l10n.profileTooltip,
             child: InkWell(
               onTap: () => context.push(AppRoutes.profile),
               borderRadius: BorderRadius.circular(RxSpacing.s20),
@@ -167,7 +167,7 @@ class HomeHeader extends ConsumerWidget {
               final unreadCount = ref.watch(unreadNotificationsCountProvider);
               return Semantics(
                 button: true,
-                label: 'Notifications',
+                label: l10n.notificationsTooltip,
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
@@ -177,7 +177,7 @@ class HomeHeader extends ConsumerWidget {
                         size: 20.0,
                         color: colors.textPrimary,
                       ),
-                      tooltip: 'Notifications',
+                      tooltip: l10n.notificationsTooltip,
                       onPressed: () => context.push(AppRoutes.notifications),
                     ),
                     if (unreadCount > 0)

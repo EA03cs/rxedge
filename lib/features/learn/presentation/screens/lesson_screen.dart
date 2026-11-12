@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
+import '../../../../app/router/app_router.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
+import '../../../challenges/domain/entities/challenges_entities.dart';
+import '../../../challenges/presentation/controllers/challenges_controller.dart';
+import '../../../challenges/presentation/screens/quick_quiz_screen.dart';
 import '../../domain/entities/learning_entities.dart';
 import '../controllers/learn_controller.dart';
 
@@ -314,7 +319,9 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                           ),
                           const SizedBox(height: RxSpacing.s4),
                           Text(
-                            'Reinforce your detailing confidence with ${liveLesson.quizQuestionCount} quick clinical recall questions.',
+                            l10n.lessonQuizReinforceDesc(
+                              liveLesson.quizQuestionCount,
+                            ),
                             style: textTheme.bodySmall?.copyWith(
                               color: colors.textSecondary,
                             ),
@@ -341,6 +348,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   }
 
   void _openQuickQuiz(BuildContext context, LessonEntity lesson) {
+    final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
 
@@ -371,7 +379,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Clinical Recall Quiz',
+                          l10n.clinicalRecallQuizTitle,
                           style: textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w700,
                             color: colors.textPrimary,
@@ -390,7 +398,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
               ),
               const SizedBox(height: RxSpacing.s16),
               Text(
-                'This quiz includes ${lesson.quizQuestionCount} questions testing key study endpoints and competitor differentiation points.',
+                l10n.lessonQuizDialogBody(lesson.quizQuestionCount),
                 style: textTheme.bodyMedium?.copyWith(
                   color: colors.textPrimary,
                   height: 1.45,
@@ -398,22 +406,42 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
               ),
               const SizedBox(height: RxSpacing.s24),
               AppButton(
-                text: 'Start Quiz Now (+50 Pts)',
+                text: l10n.btnStartQuizNow,
                 variant: AppButtonVariant.primary,
                 onPressed: () {
                   Navigator.of(ctx).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Quiz session initialized'),
-                      backgroundColor: colors.primary,
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
+                  final quizzes =
+                      ref.read(challengesControllerProvider).valueOrNull?.quizzes ??
+                          const <QuickQuizEntity>[];
+                  QuickQuizEntity? matchedQuiz;
+                  final lessonTitleLower = lesson.title.toLowerCase();
+                  final prodLower = lesson.productName.toLowerCase();
+                  for (final q in quizzes) {
+                    final qTitle = q.title.toLowerCase();
+                    final qCat = q.category.toLowerCase();
+                    if (qTitle.contains(lessonTitleLower) ||
+                        qCat.contains(prodLower) ||
+                        qTitle.contains(prodLower)) {
+                      matchedQuiz = q;
+                      break;
+                    }
+                  }
+                  matchedQuiz ??= quizzes.isNotEmpty ? quizzes.first : null;
+                  if (matchedQuiz != null) {
+                    final targetQuiz = matchedQuiz;
+                    Navigator.of(context).push<void>(
+                      MaterialPageRoute(
+                        builder: (_) => QuickQuizScreen(quiz: targetQuiz),
+                      ),
+                    );
+                  } else {
+                    context.go(AppRoutes.challenges);
+                  }
                 },
               ),
               const SizedBox(height: RxSpacing.s8),
               AppButton(
-                text: 'Review Later',
+                text: l10n.btnReviewLater,
                 variant: AppButtonVariant.ghost,
                 onPressed: () => Navigator.of(ctx).pop(),
               ),

@@ -5,6 +5,7 @@ import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
+import '../../data/repositories/profile_repository_impl.dart';
 import '../../domain/entities/profile_entities.dart';
 import '../controllers/profile_controller.dart';
 
@@ -35,9 +36,9 @@ class ProfileScreen extends ConsumerWidget {
       body: profileAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => ErrorState(
-          title: 'Unable to load profile',
-          description: err.toString(),
-          retryText: 'Retry',
+          title: l10n.unableLoadProfile,
+          description: err.toString().replaceAll('Exception: ', ''),
+          retryText: l10n.retry,
           onRetry: () => ref.read(profileControllerProvider.notifier).refresh(),
         ),
         data: (profile) {
@@ -70,7 +71,7 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: RxSpacing.s24),
 
                 // 6. Security & Company Support
-                const SectionHeader(title: 'Support & Security'),
+                SectionHeader(title: l10n.supportAndSecurity),
                 _buildSecurityCard(context),
                 const SizedBox(height: RxSpacing.s24),
 
@@ -214,14 +215,14 @@ class ProfileScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${profile.points} Pts',
+                    l10n.statPoints(profile.points),
                     style: textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: colors.textPrimary,
                     ),
                   ),
                   Text(
-                    'Top 10% in Cairo Territory',
+                    l10n.topTenTerritoryBadge,
                     style: textTheme.bodySmall?.copyWith(
                       color: colors.textSecondary,
                       fontSize: 12.0,
@@ -287,7 +288,15 @@ class ProfileScreen extends ConsumerWidget {
                 ],
                 selected: {activeLocale.languageCode},
                 onSelectionChanged: (newVal) {
-                  ref.read(localeProvider.notifier).state = Locale(newVal.first);
+                  final nextLang = newVal.first;
+                  ref.read(localeProvider.notifier).state = Locale(nextLang);
+                  Future<void>.microtask(() async {
+                    try {
+                      await ref
+                          .read(profileRepositoryProvider)
+                          .updateLanguagePreference(nextLang);
+                    } catch (_) {}
+                  });
                 },
                 style: SegmentedButton.styleFrom(
                   visualDensity: VisualDensity.compact,
@@ -470,7 +479,9 @@ class ProfileScreen extends ConsumerWidget {
                 ],
               ),
               StatusBadge(
-                label: profile.storageUsageBytes > 0 ? 'Downloaded' : 'Empty',
+                label: profile.storageUsageBytes > 0
+                    ? l10n.storageStatusDownloaded
+                    : l10n.storageStatusEmpty,
                 variant: profile.storageUsageBytes > 0
                     ? StatusBadgeVariant.info
                     : StatusBadgeVariant.neutral,
@@ -479,7 +490,7 @@ class ProfileScreen extends ConsumerWidget {
           ),
           const SizedBox(height: RxSpacing.s12),
           Text(
-            'Downloaded brochures, e-detail decks, and monographs are available when offline.',
+            l10n.offlineStorageDesc,
             style: textTheme.bodySmall?.copyWith(
               color: colors.textSecondary,
               height: 1.35,
@@ -572,7 +583,7 @@ class ProfileScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () async {
@@ -584,7 +595,7 @@ class ProfileScreen extends ConsumerWidget {
                 );
               }
             },
-            child: const Text('Clear'),
+            child: Text(l10n.btnClear),
           ),
         ],
       ),
@@ -601,14 +612,14 @@ class ProfileScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
               ref.read(authControllerProvider.notifier).logout();
             },
-            child: const Text('Sign Out'),
+            child: Text(l10n.logoutTitle),
           ),
         ],
       ),
@@ -647,7 +658,7 @@ class ProfileScreen extends ConsumerWidget {
               ),
               const SizedBox(height: RxSpacing.s16),
               AppButton(
-                text: 'Close',
+                text: l10n.btnClose,
                 onPressed: () => Navigator.of(ctx).pop(),
               ),
             ],
@@ -709,7 +720,7 @@ class ProfileScreen extends ConsumerWidget {
               ),
               const SizedBox(height: RxSpacing.s16),
               AppButton(
-                text: 'Close',
+                text: l10n.btnClose,
                 onPressed: () => Navigator.of(ctx).pop(),
               ),
             ],

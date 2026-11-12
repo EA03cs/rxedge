@@ -1,15 +1,13 @@
-library;
-
-/// Pure Dart Domain Entities for Home Dashboard
+/// Domain Entities for RxEdge Home Dashboard
 ///
-/// Follows Clean Architecture Dependency Rule:
-/// "Domain has zero Flutter/Dio/Hive imports."
-
+/// Follows Architecture Contract:
+/// "Pure domain entities without JSON or Flutter dependencies."
 enum MaterialBadgeType {
   newRelease,
   updated,
 }
 
+/// Active Continue Learning Item
 class ContinueLearningEntity {
   final String id;
   final String productName;
@@ -42,17 +40,20 @@ class ContinueLearningEntity {
       id.hashCode ^ productName.hashCode ^ lessonTitle.hashCode ^ progress.hashCode;
 }
 
+/// Recommended Starting Product for new reps
 class RecommendedProductEntity {
   final String id;
   final String productName;
   final String therapeuticArea;
   final String description;
+  final String? boxImageUrl;
 
   const RecommendedProductEntity({
     required this.id,
     required this.productName,
     required this.therapeuticArea,
     required this.description,
+    this.boxImageUrl,
   });
 
   @override
@@ -61,12 +62,14 @@ class RecommendedProductEntity {
       other is RecommendedProductEntity &&
           runtimeType == other.runtimeType &&
           id == other.id &&
-          productName == other.productName;
+          productName == other.productName &&
+          boxImageUrl == other.boxImageUrl;
 
   @override
-  int get hashCode => id.hashCode ^ productName.hashCode;
+  int get hashCode => id.hashCode ^ productName.hashCode ^ boxImageUrl.hashCode;
 }
 
+/// Active Monthly Challenge Card Data
 class MonthlyChallengeEntity {
   final String id;
   final String title;
@@ -91,13 +94,13 @@ class MonthlyChallengeEntity {
           runtimeType == other.runtimeType &&
           id == other.id &&
           title == other.title &&
-          daysLeft == other.daysLeft &&
-          progress == other.progress;
+          currentRank == other.currentRank;
 
   @override
-  int get hashCode => id.hashCode ^ title.hashCode ^ daysLeft.hashCode ^ progress.hashCode;
+  int get hashCode => id.hashCode ^ title.hashCode ^ currentRank.hashCode;
 }
 
+/// Objection of the Month Quote Data
 class DoctorObjectionEntity {
   final String id;
   final String doctorQuote;
@@ -127,12 +130,15 @@ class DoctorObjectionEntity {
   int get hashCode => id.hashCode ^ doctorQuote.hashCode;
 }
 
+/// Recent Library Material Item for "What's new"
 class MaterialUpdateEntity {
   final String id;
   final String title;
   final String specialty;
   final MaterialBadgeType badgeType;
   final DateTime updatedAt;
+  final String? thumbnailUrl;
+  final String? fileUrl;
 
   const MaterialUpdateEntity({
     required this.id,
@@ -140,6 +146,8 @@ class MaterialUpdateEntity {
     required this.specialty,
     required this.badgeType,
     required this.updatedAt,
+    this.thumbnailUrl,
+    this.fileUrl,
   });
 
   @override
@@ -186,6 +194,7 @@ class HomeDashboardEntity {
   final DoctorObjectionEntity objection;
   final List<MaterialUpdateEntity> recentMaterials;
   final RepStatsEntity stats;
+  final int unreadNotificationCount;
 
   const HomeDashboardEntity({
     this.continueLesson,
@@ -194,6 +203,7 @@ class HomeDashboardEntity {
     required this.objection,
     required this.recentMaterials,
     required this.stats,
+    this.unreadNotificationCount = 0,
   });
 
   @override
@@ -205,7 +215,8 @@ class HomeDashboardEntity {
           recommendedProduct == other.recommendedProduct &&
           challenge == other.challenge &&
           objection == other.objection &&
-          stats == other.stats;
+          stats == other.stats &&
+          unreadNotificationCount == other.unreadNotificationCount;
 
   @override
   int get hashCode =>
@@ -213,5 +224,6 @@ class HomeDashboardEntity {
       recommendedProduct.hashCode ^
       challenge.hashCode ^
       objection.hashCode ^
-      stats.hashCode;
+      stats.hashCode ^
+      unreadNotificationCount.hashCode;
 }

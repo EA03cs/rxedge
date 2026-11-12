@@ -130,22 +130,37 @@ class UserProfileDto {
       };
 
   factory UserProfileDto.fromJson(Map<String, dynamic> json) {
+    final userObj = json['user'] is Map
+        ? Map<String, dynamic>.from(json['user'] as Map)
+        : json;
+    final territoryRaw = userObj['territory'];
+    final territoryStr = territoryRaw is Map
+        ? (territoryRaw['name'] as String? ?? '')
+        : (territoryRaw as String? ?? '');
+
     return UserProfileDto(
-      id: json['id'] as String,
-      displayName: json['displayName'] as String,
-      email: json['email'] as String,
-      employeeId: json['employeeId'] as String,
-      territory: json['territory'] as String,
-      role: json['role'] as String,
-      points: json['points'] as int? ?? 1250,
-      streakDays: json['streakDays'] as int? ?? 4,
-      badges: (json['badges'] as List<dynamic>? ?? [])
+      id: userObj['id'] as String? ?? '',
+      displayName: (userObj['displayName'] as String?) ??
+          (userObj['name'] as String?) ??
+          '',
+      email: userObj['email'] as String? ?? '',
+      employeeId: (userObj['employeeId'] as String?) ??
+          (userObj['employeeCode'] as String?) ??
+          '',
+      territory: territoryStr,
+      role: userObj['role'] as String? ?? 'MEDICAL_REP',
+      points: ((userObj['points'] ?? userObj['totalPoints']) as num?)?.toInt() ?? 0,
+      streakDays:
+          ((userObj['streakDays'] ?? userObj['currentStreak']) as num?)?.toInt() ??
+              0,
+      badges: (userObj['badges'] as List<dynamic>? ?? [])
           .map((e) => BadgeDto.fromJson(e as Map<String, dynamic>))
           .toList(),
       notificationPreferences: NotificationPreferencesDto.fromJson(
-        json['notificationPreferences'] as Map<String, dynamic>? ?? {},
+        userObj['notificationPreferences'] as Map<String, dynamic>? ?? {},
       ),
-      storageUsageBytes: json['storageUsageBytes'] as int? ?? 25800000,
+      storageUsageBytes:
+          (userObj['storageUsageBytes'] as num?)?.toInt() ?? 0,
     );
   }
 

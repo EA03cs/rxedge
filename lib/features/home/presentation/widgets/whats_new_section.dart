@@ -4,6 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/router/app_router.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../../core/widgets/rx_network_image.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/home_dashboard_entity.dart';
 
@@ -89,24 +90,33 @@ class WhatsNewSection extends StatelessWidget {
                 onTap: () => context.go(AppRoutes.library),
                 child: Row(
                   children: [
-                    Container(
-                      width: 36.0,
-                      height: 36.0,
-                      decoration: BoxDecoration(
-                        color: colors.surfaceMuted,
+                    if (item.thumbnailUrl?.trim().isNotEmpty == true)
+                      RxNetworkImage(
+                        imageUrl: item.thumbnailUrl,
+                        width: 40.0,
+                        height: 40.0,
                         borderRadius: RxRadii.borderBadge,
-                        border: Border.all(
-                          color: colors.border,
-                          width: RxShadows.hairlineBorderWidth,
+                        fallbackIcon: LucideIcons.fileText,
+                      )
+                    else
+                      Container(
+                        width: 40.0,
+                        height: 40.0,
+                        decoration: BoxDecoration(
+                          color: colors.surfaceMuted,
+                          borderRadius: RxRadii.borderBadge,
+                          border: Border.all(
+                            color: colors.border,
+                            width: RxShadows.hairlineBorderWidth,
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        child: Icon(
+                          LucideIcons.fileText,
+                          size: 18.0,
+                          color: colors.primary,
                         ),
                       ),
-                      alignment: Alignment.center,
-                      child: Icon(
-                        LucideIcons.fileText,
-                        size: 18.0,
-                        color: colors.primary,
-                      ),
-                    ),
                     const SizedBox(width: RxSpacing.s12),
                     Expanded(
                       child: Column(

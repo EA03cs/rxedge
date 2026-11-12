@@ -1,23 +1,38 @@
+import 'package:dio/dio.dart';
 import '../../../../core/error/exceptions.dart';
+import '../../../../core/network/api_endpoints.dart';
+import '../../../../core/network/api_response.dart';
 import '../models/profile_dto.dart';
 
 /// Contract for Remote Profile Datasource
 abstract class ProfileRemoteDatasource {
   Future<UserProfileDto> getProfile();
   Future<void> updateNotificationPreferences(NotificationPreferencesDto preferences);
+  Future<void> updateLanguagePreference(String languageCode);
 }
 
-/// Realistic pharma representative profile datasource
+/// Pharma representative profile datasource backed by `GET /auth/me`
 class ProfileRemoteDatasourceImpl implements ProfileRemoteDatasource {
+  final Dio? dio;
   final bool simulateError;
 
-  ProfileRemoteDatasourceImpl({this.simulateError = false});
+  ProfileRemoteDatasourceImpl({
+    this.dio,
+    this.simulateError = false,
+  });
 
   @override
   Future<UserProfileDto> getProfile() async {
     if (simulateError) {
       throw const ServerException('Failed to retrieve user profile');
     }
+
+    if (dio != null) {
+      final response = await dio!.get<dynamic>(ApiEndpoints.me);
+      final data = ApiResponseParser.unwrapMap(response.data);
+      return UserProfileDto.fromJson(data);
+    }
+
     await Future<void>.delayed(const Duration(milliseconds: 100));
 
     return UserProfileDto(
@@ -65,5 +80,20 @@ class ProfileRemoteDatasourceImpl implements ProfileRemoteDatasource {
       throw const ServerException('Failed to update preferences on server');
     }
     await Future<void>.delayed(const Duration(milliseconds: 80));
+  }
+
+  @override
+  Future<void> updateLanguagePreference(String languageCode) async {
+    if (simulateError) {
+      throw const ServerException('Failed to update language preference');
+    }
+    if (dio != null) {
+      await dio!.patch<dynamic>(
+        ApiEndpoints.mePreferences,
+        data: {'language': languageCode},
+      );
+      return;
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 50));
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../../core/widgets/rx_network_image.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/learning_entities.dart';
 import '../controllers/learn_controller.dart';
@@ -71,8 +72,8 @@ class LearnScreen extends ConsumerWidget {
             return Center(
               child: EmptyState(
                 icon: LucideIcons.graduationCap,
-                title: 'No Learning Modules',
-                description: 'Clinical detailing modules will appear here once assigned by your medical director.',
+                title: l10n.noLearningModulesTitle,
+                description: l10n.noLearningModulesDesc,
                 actionText: l10n.retry,
                 onAction: () => ref.read(learnControllerProvider.notifier).refresh(),
               ),
@@ -136,6 +137,7 @@ class _BookmarksPillButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
     final bookmarks = ref.watch(bookmarkedLessonsProvider);
@@ -162,7 +164,7 @@ class _BookmarksPillButton extends ConsumerWidget {
             Icon(LucideIcons.bookmark, size: 13.0, color: colors.textSecondary),
             const SizedBox(width: RxSpacing.s6),
             Text(
-              'Bookmarks',
+              l10n.bookmarksLabel,
               style: textTheme.labelSmall?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: colors.textSecondary,
@@ -217,6 +219,17 @@ class _ProductCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            if (product.boxImageUrl != null &&
+                product.boxImageUrl!.trim().isNotEmpty) ...[
+              RxNetworkImage(
+                imageUrl: product.boxImageUrl,
+                width: 52,
+                height: 52,
+                borderRadius: RxRadii.borderBadge,
+                fallbackIcon: LucideIcons.pill,
+              ),
+              const SizedBox(width: RxSpacing.s12),
+            ],
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

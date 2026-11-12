@@ -1,4 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/storage/local_cache_service.dart';
+import '../../../home/presentation/controllers/home_controller.dart';
+import '../../../profile/presentation/controllers/profile_controller.dart';
 import '../../domain/entities/learning_entities.dart';
 import '../../data/repositories/learn_repository_impl.dart';
 
@@ -46,6 +49,10 @@ class LearnController extends AutoDisposeAsyncNotifier<List<ProductLearningEntit
           updated.sort(_compareProducts);
           return updated;
         });
+        ref.read(localCacheServiceProvider).remove('home_dashboard_cache');
+        ref.read(localCacheServiceProvider).remove('user_profile_cache');
+        ref.invalidate(homeControllerProvider);
+        ref.invalidate(profileControllerProvider);
       },
       failure: (_) {
         // Leave current state as is
