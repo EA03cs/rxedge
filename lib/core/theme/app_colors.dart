@@ -52,52 +52,52 @@ class RxColors extends ThemeExtension<RxColors> {
     required this.infoSoft,
   });
 
-  /// Light Color Tokens (Primary Palette)
+  /// Light Color Tokens (Precision Clinical Palette)
   static const light = RxColors(
-    background: Color(0xFFFFFFFF),
-    surface: Color(0xFFFFFFFF),
-    surfaceMuted: Color(0xFFF6F7F9),
-    border: Color(0xFFE7E9EE),
-    textPrimary: Color(0xFF0F172A),
-    textSecondary: Color(0xFF5B6475),
-    textTertiary: Color(0xFF8A93A3),
-    primary: Color(0xFF0E6B6B),
-    primaryPressed: Color(0xFF0A5555),
-    primarySoft: Color(0xFFE7F2F2),
-    accent: Color(0xFFD9930D),
-    accentSoft: Color(0xFFFBF1DC),
-    success: Color(0xFF168A4A),
-    successSoft: Color(0xFFE5F4EB),
+    background: Color(0xFFF8FAFC), // Slate 50 clean clinical canvas
+    surface: Color(0xFFFFFFFF), // Pure White card/list surfaces
+    surfaceMuted: Color(0xFFF1F5F9), // Slate 100 grouped headers & chips
+    border: Color(0xFFE2E8F0), // Slate 200 crisp 1px separation
+    textPrimary: Color(0xFF0F172A), // Slate 900 high contrast clinical text
+    textSecondary: Color(0xFF475569), // Slate 600 clinical metadata
+    textTertiary: Color(0xFF94A3B8), // Slate 400 captions & subtle hints
+    primary: Color(0xFF0C6264), // Precision Medical Deep Teal
+    primaryPressed: Color(0xFF094E50),
+    primarySoft: Color(0xFFE6F4F4),
+    accent: Color(0xFFB45309), // Amber 700 - strictly for points, streaks, badges
+    accentSoft: Color(0xFFFEF3C7),
+    success: Color(0xFF15803D), // Emerald 700
+    successSoft: Color(0xFFDCFCE7),
     warning: Color(0xFFC26A0A),
-    warningSoft: Color(0xFFFBEBD9),
-    error: Color(0xFFC93A3A),
-    errorSoft: Color(0xFFFBE7E7),
-    info: Color(0xFF2F5FD0),
-    infoSoft: Color(0xFFE8EEFB),
+    warningSoft: Color(0xFFFEF3C7),
+    error: Color(0xFFBE123C), // Rose 700
+    errorSoft: Color(0xFFFFE4E6),
+    info: Color(0xFF1D4ED8), // Blue 700
+    infoSoft: Color(0xFFDBEAFE),
   );
 
-  /// Dark Color Tokens
+  /// Dark Color Tokens (Clinical Night Palette)
   static const dark = RxColors(
-    background: Color(0xFF0C1117),
-    surface: Color(0xFF131A22),
-    surfaceMuted: Color(0xFF19212B),
-    border: Color(0xFF243040),
-    textPrimary: Color(0xFFEAEEF3),
-    textSecondary: Color(0xFFA3ADBB),
-    textTertiary: Color(0xFF6E7B8E),
-    primary: Color(0xFF3FB5B0),
-    primaryPressed: Color(0xFF2E9C97),
-    primarySoft: Color(0xFF173235),
-    accent: Color(0xFFF2AC34),
-    accentSoft: Color(0xFF362916),
-    success: Color(0xFF34C77B),
-    successSoft: Color(0xFF132E22),
-    warning: Color(0xFFE58E2E),
-    warningSoft: Color(0xFF352516),
-    error: Color(0xFFE05353),
-    errorSoft: Color(0xFF351C1C),
-    info: Color(0xFF5487F5),
-    infoSoft: Color(0xFF192942),
+    background: Color(0xFF0B0F17),
+    surface: Color(0xFF111827),
+    surfaceMuted: Color(0xFF1E293B),
+    border: Color(0xFF2E3D52),
+    textPrimary: Color(0xFFF1F5F9),
+    textSecondary: Color(0xFF94A3B8),
+    textTertiary: Color(0xFF64748B),
+    primary: Color(0xFF2DD4BF),
+    primaryPressed: Color(0xFF14B8A6),
+    primarySoft: Color(0xFF132E2E),
+    accent: Color(0xFFFBBF24),
+    accentSoft: Color(0xFF3B2D14),
+    success: Color(0xFF34D399),
+    successSoft: Color(0xFF133827),
+    warning: Color(0xFFF59E0B),
+    warningSoft: Color(0xFF3A2B14),
+    error: Color(0xFFFB7185),
+    errorSoft: Color(0xFF3B181E),
+    info: Color(0xFF60A5FA),
+    infoSoft: Color(0xFF172B4D),
   );
 
   @override

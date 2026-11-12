@@ -73,86 +73,95 @@ class WhatsNewSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: RxSpacing.s10),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: materials.length,
-            separatorBuilder: (context, index) => const SizedBox(height: RxSpacing.s8),
-            itemBuilder: (context, index) {
-              final item = materials[index];
-              final isNew = item.badgeType == MaterialBadgeType.newRelease;
+          AppCard(
+            padding: EdgeInsetsDirectional.zero,
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: materials.length,
+              separatorBuilder: (context, index) => Divider(
+                height: 1.0,
+                thickness: RxShadows.hairlineBorderWidth,
+                color: colors.border,
+              ),
+              itemBuilder: (context, index) {
+                final item = materials[index];
+                final isNew = item.badgeType == MaterialBadgeType.newRelease;
 
-              return AppCard(
-                padding: const EdgeInsetsDirectional.symmetric(
-                  horizontal: RxSpacing.s12,
-                  vertical: RxSpacing.s10,
-                ),
-                onTap: () => context.go(AppRoutes.library),
-                child: Row(
-                  children: [
-                    if (item.thumbnailUrl?.trim().isNotEmpty == true)
-                      RxNetworkImage(
-                        imageUrl: item.thumbnailUrl,
-                        width: 40.0,
-                        height: 40.0,
-                        borderRadius: RxRadii.borderBadge,
-                        fallbackIcon: LucideIcons.fileText,
-                      )
-                    else
-                      Container(
-                        width: 40.0,
-                        height: 40.0,
-                        decoration: BoxDecoration(
-                          color: colors.surfaceMuted,
-                          borderRadius: RxRadii.borderBadge,
-                          border: Border.all(
-                            color: colors.border,
-                            width: RxShadows.hairlineBorderWidth,
-                          ),
-                        ),
-                        alignment: Alignment.center,
-                        child: Icon(
-                          LucideIcons.fileText,
-                          size: 18.0,
-                          color: colors.primary,
-                        ),
-                      ),
-                    const SizedBox(width: RxSpacing.s12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item.title,
-                            style: textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: colors.textPrimary,
-                              height: 1.25,
-                              fontSize: 13.5,
+                return InkWell(
+                  onTap: () => context.go(AppRoutes.library),
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.symmetric(
+                      horizontal: RxSpacing.s12,
+                      vertical: RxSpacing.s10,
+                    ),
+                    child: Row(
+                      children: [
+                        if (item.thumbnailUrl?.trim().isNotEmpty == true)
+                          RxNetworkImage(
+                            imageUrl: item.thumbnailUrl,
+                            width: 38.0,
+                            height: 38.0,
+                            borderRadius: RxRadii.borderBadge,
+                            fallbackIcon: LucideIcons.fileText,
+                          )
+                        else
+                          Container(
+                            width: 38.0,
+                            height: 38.0,
+                            decoration: BoxDecoration(
+                              color: colors.surfaceMuted,
+                              borderRadius: RxRadii.borderBadge,
+                              border: Border.all(
+                                color: colors.border,
+                                width: RxShadows.hairlineBorderWidth,
+                              ),
                             ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: RxSpacing.s2),
-                          Text(
-                            item.specialty,
-                            style: textTheme.bodySmall?.copyWith(
-                              color: colors.textSecondary,
-                              fontSize: 11.5,
+                            alignment: Alignment.center,
+                            child: Icon(
+                              LucideIcons.fileText,
+                              size: 18.0,
+                              color: colors.primary,
                             ),
                           ),
-                        ],
-                      ),
+                        const SizedBox(width: RxSpacing.s12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.title,
+                                style: textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: colors.textPrimary,
+                                  height: 1.25,
+                                  fontSize: 13.5,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: RxSpacing.s2),
+                              Text(
+                                item.specialty,
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: colors.textSecondary,
+                                  fontSize: 11.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: RxSpacing.s8),
+                        StatusBadge(
+                          label: isNew ? l10n.badgeNew : l10n.badgeUpdated,
+                          variant: isNew ? StatusBadgeVariant.info : StatusBadgeVariant.neutral,
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: RxSpacing.s8),
-                    StatusBadge(
-                      label: isNew ? l10n.badgeNew : l10n.badgeUpdated,
-                      variant: isNew ? StatusBadgeVariant.info : StatusBadgeVariant.neutral,
-                    ),
-                  ],
-                ),
-              );
-            },
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),

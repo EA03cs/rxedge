@@ -140,12 +140,48 @@ class _BookmarkedLessonCard extends ConsumerWidget {
                   color: colors.textSecondary,
                 ),
               ),
-              const SizedBox(width: RxSpacing.s12),
+              const Spacer(),
               if (lesson.isCompleted)
                 StatusBadge(
                   label: l10n.completedBadge,
                   variant: StatusBadgeVariant.success,
                   showDot: true,
+                )
+              else
+                InkWell(
+                  onTap: () {
+                    ref.read(learnControllerProvider.notifier).markLessonCompleted(lesson.id);
+                  },
+                  borderRadius: RxRadii.borderBadge,
+                  child: Container(
+                    padding: const EdgeInsetsDirectional.symmetric(
+                      horizontal: RxSpacing.s8,
+                      vertical: RxSpacing.s4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colors.primarySoft,
+                      borderRadius: RxRadii.borderBadge,
+                      border: Border.all(
+                        color: colors.primary.withValues(alpha: 0.25),
+                        width: RxShadows.hairlineBorderWidth,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(LucideIcons.check, size: 12.0, color: colors.primary),
+                        const SizedBox(width: RxSpacing.s4),
+                        Text(
+                          l10n.markAsComplete,
+                          style: textTheme.labelSmall?.copyWith(
+                            color: colors.primary,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 10.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
             ],
           ),

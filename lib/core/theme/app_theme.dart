@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'app_colors.dart';
 import 'app_radii.dart';
+import 'app_shadows.dart';
 import 'app_spacing.dart';
 import 'app_typography.dart';
 
@@ -73,19 +74,19 @@ abstract final class RxTheme {
         color: colors.surface,
         elevation: 0,
         margin: EdgeInsets.zero,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: RxRadii.borderCard,
           side: BorderSide(
-            color: Color(0xFFE7E9EE),
-            width: 1.0,
+            color: colors.border,
+            width: RxShadows.hairlineBorderWidth,
           ),
         ),
       ),
 
-      dividerTheme: const DividerThemeData(
-        color: Color(0xFFE7E9EE),
-        thickness: 1.0,
-        space: 1.0,
+      dividerTheme: DividerThemeData(
+        color: colors.border,
+        thickness: RxShadows.hairlineBorderWidth,
+        space: RxShadows.hairlineBorderWidth,
       ),
 
       inputDecorationTheme: InputDecorationTheme(
@@ -101,9 +102,9 @@ abstract final class RxTheme {
         labelStyle: textTheme.bodyMedium?.copyWith(
           color: colors.textSecondary,
         ),
-        enabledBorder: const OutlineInputBorder(
+        enabledBorder: OutlineInputBorder(
           borderRadius: RxRadii.borderInput,
-          borderSide: BorderSide(color: Color(0xFFE7E9EE), width: 1.0),
+          borderSide: BorderSide(color: colors.border, width: RxShadows.hairlineBorderWidth),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: RxRadii.borderInput,
@@ -111,7 +112,7 @@ abstract final class RxTheme {
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: RxRadii.borderInput,
-          borderSide: BorderSide(color: colors.error, width: 1.0),
+          borderSide: BorderSide(color: colors.error, width: RxShadows.hairlineBorderWidth),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: RxRadii.borderInput,
@@ -195,19 +196,19 @@ abstract final class RxTheme {
         color: colors.surface,
         elevation: 0,
         margin: EdgeInsets.zero,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: RxRadii.borderCard,
           side: BorderSide(
-            color: Color(0xFF243040),
-            width: 1.0,
+            color: colors.border,
+            width: RxShadows.hairlineBorderWidth,
           ),
         ),
       ),
 
-      dividerTheme: const DividerThemeData(
-        color: Color(0xFF243040),
-        thickness: 1.0,
-        space: 1.0,
+      dividerTheme: DividerThemeData(
+        color: colors.border,
+        thickness: RxShadows.hairlineBorderWidth,
+        space: RxShadows.hairlineBorderWidth,
       ),
 
       inputDecorationTheme: InputDecorationTheme(
@@ -223,9 +224,9 @@ abstract final class RxTheme {
         labelStyle: textTheme.bodyMedium?.copyWith(
           color: colors.textSecondary,
         ),
-        enabledBorder: const OutlineInputBorder(
+        enabledBorder: OutlineInputBorder(
           borderRadius: RxRadii.borderInput,
-          borderSide: BorderSide(color: Color(0xFF243040), width: 1.0),
+          borderSide: BorderSide(color: colors.border, width: RxShadows.hairlineBorderWidth),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: RxRadii.borderInput,
@@ -233,7 +234,7 @@ abstract final class RxTheme {
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: RxRadii.borderInput,
-          borderSide: BorderSide(color: colors.error, width: 1.0),
+          borderSide: BorderSide(color: colors.error, width: RxShadows.hairlineBorderWidth),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: RxRadii.borderInput,

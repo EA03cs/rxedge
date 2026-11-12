@@ -202,135 +202,202 @@ class ProductLearningScreen extends ConsumerWidget {
       shape: const RoundedRectangleBorder(borderRadius: RxRadii.borderSheet),
       backgroundColor: colors.surface,
       builder: (ctx) {
-        return FractionallySizedBox(
-          heightFactor: 0.7,
-          child: Padding(
-            padding: const EdgeInsetsDirectional.all(RxSpacing.s20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40.0,
-                    height: 4.0,
-                    decoration: BoxDecoration(
-                      color: colors.border,
-                      borderRadius: BorderRadius.circular(2.0),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: RxSpacing.s16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.lessonModulesLabel,
-                          style: textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: colors.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 2.0),
-                        Text(
-                          l10n.lessonsCompleted(
-                            product.completedLessonsCount,
-                            product.totalLessonsCount,
-                          ),
-                          style: textTheme.bodySmall?.copyWith(
-                            color: colors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    IconButton(
-                      icon: const Icon(LucideIcons.x, size: 20.0),
-                      onPressed: () => Navigator.of(ctx).pop(),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: RxSpacing.s16),
-                Expanded(
-                  child: ListView.separated(
-                    itemCount: product.lessons.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: RxSpacing.s8),
-                    itemBuilder: (context, index) {
-                      final lesson = product.lessons[index];
-                      final isDone = lesson.isCompleted;
+        return Consumer(
+          builder: (context, ref, _) {
+            final liveProduct = ref.watch(productLearningDetailProvider(product.id)) ?? product;
 
-                      return AppCard(
-                        padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
-                        onTap: () {
-                          Navigator.of(ctx).pop();
-                          Navigator.of(context, rootNavigator: true).push<void>(
-                            MaterialPageRoute(
-                              builder: (_) => LessonScreen(lesson: lesson),
-                            ),
-                          );
-                        },
-                        child: Row(
+            return FractionallySizedBox(
+              heightFactor: 0.75,
+              child: Padding(
+                padding: const EdgeInsetsDirectional.all(RxSpacing.s20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40.0,
+                        height: 4.0,
+                        decoration: BoxDecoration(
+                          color: colors.border,
+                          borderRadius: BorderRadius.circular(2.0),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: RxSpacing.s16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              width: 32.0,
-                              height: 32.0,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: isDone ? colors.primarySoft : colors.surfaceMuted,
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              child: isDone
-                                  ? Icon(
-                                      LucideIcons.check,
-                                      size: 16.0,
-                                      color: colors.primary,
-                                    )
-                                  : Text(
-                                      '${lesson.order}',
-                                      style: textTheme.labelMedium?.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                        color: colors.textSecondary,
-                                      ),
-                                    ),
-                            ),
-                            const SizedBox(width: RxSpacing.s12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    lesson.title,
-                                    style: textTheme.labelMedium?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: colors.textPrimary,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2.0),
-                                  Text(
-                                    '${lesson.durationMinutes} min read',
-                                    style: textTheme.bodySmall?.copyWith(
-                                      color: colors.textTertiary,
-                                      fontSize: 12.0,
-                                    ),
-                                  ),
-                                ],
+                            Text(
+                              l10n.lessonModulesLabel,
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                color: colors.textPrimary,
                               ),
                             ),
-                            Icon(
-                              context.chevronForward,
-                              size: 18.0,
-                              color: colors.textTertiary,
+                            const SizedBox(height: 2.0),
+                            Text(
+                              l10n.lessonsCompleted(
+                                liveProduct.completedLessonsCount,
+                                liveProduct.totalLessonsCount,
+                              ),
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colors.textSecondary,
+                              ),
                             ),
                           ],
                         ),
-                      );
-                    },
-                  ),
+                        IconButton(
+                          icon: const Icon(LucideIcons.x, size: 20.0),
+                          onPressed: () => Navigator.of(ctx).pop(),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: RxSpacing.s16),
+                    Expanded(
+                      child: ListView.separated(
+                        itemCount: liveProduct.lessons.length,
+                        separatorBuilder: (context, index) => const SizedBox(height: RxSpacing.s8),
+                        itemBuilder: (context, index) {
+                          final lesson = liveProduct.lessons[index];
+                          final isDone = lesson.isCompleted;
+
+                          return AppCard(
+                            padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: RxSpacing.s12,
+                              vertical: RxSpacing.s8,
+                            ),
+                            onTap: () {
+                              Navigator.of(ctx).pop();
+                              Navigator.of(context, rootNavigator: true).push<void>(
+                                MaterialPageRoute(
+                                  builder: (_) => LessonScreen(lesson: lesson),
+                                ),
+                              );
+                            },
+                            child: Row(
+                              children: [
+                                // Interactive leading order / check badge
+                                InkWell(
+                                  onTap: () {
+                                    if (!isDone) {
+                                      ref.read(learnControllerProvider.notifier).markLessonCompleted(lesson.id);
+                                    }
+                                  },
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Container(
+                                    width: 36.0,
+                                    height: 36.0,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: isDone ? colors.successSoft : colors.surfaceMuted,
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      border: Border.all(
+                                        color: isDone
+                                            ? colors.success.withValues(alpha: 0.3)
+                                            : colors.border,
+                                        width: RxShadows.hairlineBorderWidth,
+                                      ),
+                                    ),
+                                    child: isDone
+                                        ? Icon(
+                                            LucideIcons.check,
+                                            size: 18.0,
+                                            color: colors.success,
+                                          )
+                                        : Text(
+                                            '${lesson.order}',
+                                            style: textTheme.labelMedium?.copyWith(
+                                              fontWeight: FontWeight.w700,
+                                              color: colors.textSecondary,
+                                            ),
+                                          ),
+                                  ),
+                                ),
+                                const SizedBox(width: RxSpacing.s12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        lesson.title,
+                                        style: textTheme.labelMedium?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: colors.textPrimary,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2.0),
+                                      Text(
+                                        '${lesson.durationMinutes} min read',
+                                        style: textTheme.bodySmall?.copyWith(
+                                          color: colors.textTertiary,
+                                          fontSize: 12.0,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: RxSpacing.s8),
+                                // Quick completion pill or chevron
+                                if (!isDone)
+                                  InkWell(
+                                    onTap: () {
+                                      ref.read(learnControllerProvider.notifier).markLessonCompleted(lesson.id);
+                                    },
+                                    borderRadius: RxRadii.borderBadge,
+                                    child: Container(
+                                      padding: const EdgeInsetsDirectional.symmetric(
+                                        horizontal: RxSpacing.s8,
+                                        vertical: RxSpacing.s4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: colors.primarySoft,
+                                        borderRadius: RxRadii.borderBadge,
+                                        border: Border.all(
+                                          color: colors.primary.withValues(alpha: 0.25),
+                                          width: RxShadows.hairlineBorderWidth,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            LucideIcons.check,
+                                            size: 12.0,
+                                            color: colors.primary,
+                                          ),
+                                          const SizedBox(width: RxSpacing.s4),
+                                          Text(
+                                            l10n.markAsComplete,
+                                            style: textTheme.labelSmall?.copyWith(
+                                              color: colors.primary,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 10.5,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  StatusBadge(
+                                    label: l10n.completedBadge,
+                                    variant: StatusBadgeVariant.success,
+                                    showDot: true,
+                                  ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );

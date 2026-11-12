@@ -235,27 +235,26 @@ class _ProductCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Badges Row
-                  Row(
+                  Wrap(
+                    spacing: RxSpacing.s6,
+                    runSpacing: RxSpacing.s4,
                     children: [
-                      if (product.isRecommended) ...[
+                      if (product.isRecommended)
                         StatusBadge(
                           label: l10n.recommendedTag,
                           variant: StatusBadgeVariant.info,
                         ),
-                        const SizedBox(width: RxSpacing.s6),
-                      ],
-                      if (product.isInProgress) ...[
+                      if (product.isInProgress)
                         StatusBadge(
                           label: l10n.inProgressTag,
                           variant: StatusBadgeVariant.neutral,
-                        ),
-                      ] else if (product.isCompleted) ...[
+                        )
+                      else if (product.isCompleted)
                         StatusBadge(
                           label: l10n.completedBadge,
                           variant: StatusBadgeVariant.success,
                           showDot: true,
                         ),
-                      ],
                     ],
                   ),
                   const SizedBox(height: RxSpacing.s8),

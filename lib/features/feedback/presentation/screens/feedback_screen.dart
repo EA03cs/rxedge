@@ -160,15 +160,22 @@ class FeedbackScreen extends ConsumerWidget {
                       description: l10n.emptySubmissionsDesc,
                     ),
                   ] else ...[
-                    ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: submissions.length,
-                      separatorBuilder: (context, index) => const SizedBox(height: RxSpacing.s10),
-                      itemBuilder: (context, index) {
-                        final item = submissions[index];
-                        return _buildSubmissionCard(context, item);
-                      },
+                    AppCard(
+                      padding: EdgeInsetsDirectional.zero,
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: submissions.length,
+                        separatorBuilder: (context, index) => Divider(
+                          height: 1.0,
+                          thickness: RxShadows.hairlineBorderWidth,
+                          color: colors.border,
+                        ),
+                        itemBuilder: (context, index) {
+                          final item = submissions[index];
+                          return _buildSubmissionCard(context, item);
+                        },
+                      ),
                     ),
                   ],
                 ],
@@ -273,17 +280,8 @@ class FeedbackScreen extends ConsumerWidget {
           ),
         );
       },
-      borderRadius: RxRadii.borderCard,
-      child: Container(
+      child: Padding(
         padding: const EdgeInsetsDirectional.all(RxSpacing.s14),
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: RxRadii.borderCard,
-          border: Border.all(
-            color: isAnswered ? colors.success.withValues(alpha: 0.3) : colors.border,
-            width: RxShadows.hairlineBorderWidth,
-          ),
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

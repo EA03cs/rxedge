@@ -104,11 +104,26 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
           ],
         ),
         actions: [
+          // Quick Complete Action in AppBar (One-tap complete without scrolling)
           IconButton(
             icon: Icon(
-              isBookmarked ? LucideIcons.bookmark : LucideIcons.bookmark,
+              isCompleted ? LucideIcons.checkCircle2 : LucideIcons.check,
+              color: isCompleted ? colors.success : colors.textSecondary,
+              size: 21.0,
+            ),
+            tooltip: isCompleted ? l10n.completedBadge : l10n.markAsComplete,
+            onPressed: isCompleted
+                ? null
+                : () {
+                    ref.read(learnControllerProvider.notifier).markLessonCompleted(liveLesson.id);
+                  },
+          ),
+          const SizedBox(width: RxSpacing.s4),
+          IconButton(
+            icon: Icon(
+              LucideIcons.bookmark,
               color: isBookmarked ? colors.primary : colors.textSecondary,
-              size: 22.0,
+              size: 20.0,
             ),
             tooltip: l10n.btnBookmarks,
             onPressed: () {

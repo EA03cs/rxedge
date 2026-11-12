@@ -44,7 +44,14 @@ class HomeSkeletonLoader extends StatelessWidget {
           ),
           const SizedBox(height: RxSpacing.s4),
 
-          // 2. Search Bar Skeleton
+          // 2. Slim Stats Strip Skeleton
+          const Padding(
+            padding: EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),
+            child: SkeletonBox.card(height: 52.0),
+          ),
+          const SizedBox(height: RxSpacing.s12),
+
+          // 3. Search Bar Skeleton
           const Padding(
             padding: EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),
             child: SkeletonBox(
@@ -54,28 +61,28 @@ class HomeSkeletonLoader extends StatelessWidget {
           ),
           const SizedBox(height: RxSpacing.s16),
 
-          // 3. Continue Learning Skeleton Card
+          // 4. Continue Learning Skeleton Card
           const Padding(
             padding: EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),
             child: SkeletonBox.card(height: 160.0),
           ),
           const SizedBox(height: RxSpacing.s16),
 
-          // 4. Monthly Challenge Skeleton Card
+          // 5. Monthly Challenge Skeleton Card
           const Padding(
             padding: EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),
             child: SkeletonBox.card(height: 118.0),
           ),
           const SizedBox(height: RxSpacing.s16),
 
-          // 5. Objection Skeleton Card
+          // 6. Objection Skeleton Card
           const Padding(
             padding: EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),
             child: SkeletonBox.card(height: 130.0),
           ),
-          const SizedBox(height: RxSpacing.s16),
+          const SizedBox(height: RxSpacing.s20),
 
-          // 6. Quick Actions Row Skeleton
+          // 7. Quick Actions Row Skeleton
           Padding(
             padding: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),
             child: Column(
@@ -101,37 +108,12 @@ class HomeSkeletonLoader extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: RxSpacing.s16),
+          const SizedBox(height: RxSpacing.s20),
 
-          // 7. What's New Skeleton List
-          Padding(
-            padding: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SkeletonBox.text(width: 90.0, height: 14.0),
-                const SizedBox(height: RxSpacing.s10),
-                ...List.generate(3, (index) {
-                  return const Padding(
-                    padding: EdgeInsetsDirectional.only(bottom: RxSpacing.s8),
-                    child: SkeletonBox(
-                      height: 54.0,
-                      borderRadius: RxRadii.borderCard,
-                    ),
-                  );
-                }),
-              ],
-            ),
-          ),
-          const SizedBox(height: RxSpacing.s8),
-
-          // 8. Stats Strip Skeleton
+          // 8. What's New Skeleton List (Single Container)
           const Padding(
             padding: EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),
-            child: SkeletonBox(
-              height: 48.0,
-              borderRadius: RxRadii.borderCard,
-            ),
+            child: SkeletonBox.card(height: 150.0),
           ),
         ],
       ),

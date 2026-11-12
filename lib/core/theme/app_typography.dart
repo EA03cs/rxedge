@@ -21,9 +21,10 @@ abstract final class RxTypography {
         return GoogleFonts.ibmPlexSansArabic(
           fontSize: size,
           fontWeight: weight,
-          height: height,
+          height: (height * 1.06).clamp(1.35, 1.60), // Breathing room for Arabic ascenders/descenders
           color: primaryColor,
           letterSpacing: 0, // Arabic does not use letter spacing
+          fontFeatures: const [FontFeature.tabularFigures()],
         );
       }
       return GoogleFonts.inter(
@@ -32,6 +33,7 @@ abstract final class RxTypography {
         height: height,
         color: primaryColor,
         letterSpacing: letterSpacing,
+        fontFeatures: const [FontFeature.tabularFigures()],
       );
     }
 

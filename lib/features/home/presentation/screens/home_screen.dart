@@ -74,39 +74,39 @@ class HomeScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 1. Header
+                    // 1. Header: Greeting, Rep Profile, Quick Language, Notifications
                     const HomeHeader(),
                     const SizedBox(height: RxSpacing.s4),
 
-                    // 2. Search bar
+                    // 2. Slim Stats Strip (Points, Streak, Quizzes - Accent Amber strictly here)
+                    SlimStatsStrip(stats: dashboard.stats),
+                    const SizedBox(height: RxSpacing.s12),
+
+                    // 3. Search Bar
                     const HomeSearchBar(),
                     const SizedBox(height: RxSpacing.s16),
 
-                    // 3. Continue learning card (Single filled primary button on screen)
+                    // 4. Hero: Continue Learning Module (Single filled primary button)
                     ContinueLearningCard(
                       lesson: dashboard.continueLesson,
                       recommendedProduct: dashboard.recommendedProduct,
                     ),
                     const SizedBox(height: RxSpacing.s16),
 
-                    // 4. This month's challenge
+                    // 5. This Month's Challenge
                     MonthlyChallengeCard(challenge: dashboard.challenge),
                     const SizedBox(height: RxSpacing.s16),
 
-                    // 5. Objection of the month (Secondary outline button)
+                    // 6. Objection of the Month (Clinical guidance)
                     ObjectionQuoteCard(objection: dashboard.objection),
                     const SizedBox(height: RxSpacing.s20),
 
-                    // 6. Quick actions row (3 items)
+                    // 7. Quick Actions Row
                     const QuickActionsRow(),
                     const SizedBox(height: RxSpacing.s20),
 
-                    // 7. What's new list
+                    // 8. What's New Grouped Bulletin
                     WhatsNewSection(materials: dashboard.recentMaterials),
-                    const SizedBox(height: RxSpacing.s20),
-
-                    // 8. Slim stats strip (Accent amber ONLY here)
-                    SlimStatsStrip(stats: dashboard.stats),
                   ],
                 ),
               ),
