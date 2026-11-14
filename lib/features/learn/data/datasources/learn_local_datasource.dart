@@ -31,7 +31,7 @@ class LearnLocalDatasourceImpl implements LearnLocalDatasource {
       final rawList = _cacheService.get<List<dynamic>>(_productsCacheKey);
       if (rawList != null) {
         return rawList
-            .map((e) => ProductLearningDto.fromJson(e as Map<String, dynamic>))
+            .map((e) => ProductLearningDto.fromJson(Map<String, dynamic>.from(e as Map)))
             .toList();
       }
       return null;

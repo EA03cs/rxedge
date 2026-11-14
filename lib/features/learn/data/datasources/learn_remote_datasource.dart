@@ -46,12 +46,19 @@ class LearnRemoteDatasourceImpl implements LearnRemoteDatasource {
       final prodMap = Map<String, dynamic>.from(rawProducts[i]);
       final pid = prodMap['id']?.toString() ?? '';
 
-      if (prodMap['lessons'] == null || (prodMap['lessons'] as List).isEmpty) {
-        prodMap['lessons'] = lessonsByProduct[pid] ?? const [];
+      // Always merge enriched lessons from GET /learn/lessons (contains title, userProgress with isCompleted, isBookmarked)
+      final fullLessons = lessonsByProduct[pid];
+      if (fullLessons != null && fullLessons.isNotEmpty) {
+        prodMap['lessons'] = fullLessons;
+      } else if (prodMap['lessons'] == null) {
+        prodMap['lessons'] = const <Map<String, dynamic>>[];
       }
-      if (prodMap['competitors'] == null ||
-          (prodMap['competitors'] as List).isEmpty) {
-        prodMap['competitors'] = competitorsByProduct[pid] ?? const [];
+
+      final fullCompetitors = competitorsByProduct[pid];
+      if (fullCompetitors != null && fullCompetitors.isNotEmpty) {
+        prodMap['competitors'] = fullCompetitors;
+      } else if (prodMap['competitors'] == null) {
+        prodMap['competitors'] = const <Map<String, dynamic>>[];
       }
       if (prodMap['isRecommended'] == null && prodMap['is_recommended'] == null) {
         prodMap['isRecommended'] = i == 0;

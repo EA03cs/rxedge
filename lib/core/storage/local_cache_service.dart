@@ -107,8 +107,22 @@ class LocalCacheService {
   T? _castValue<T>(dynamic value) {
     if (value == null) return null;
     if (value is T) return value;
-    if (value is List && <String>[] is T) {
-      return value.map((e) => e.toString()).toList() as T;
+    if (value is List) {
+      // If T is List<dynamic>, preserve elements as-is
+      if (<dynamic>[] is T) {
+        return List<dynamic>.from(value) as T;
+      }
+      // If T is List<String>, map elements to String
+      if (<String>[] is T) {
+        return value.map((e) => e.toString()).toList() as T;
+      }
+      // If T is List of Maps, ensure typed maps
+      if (<Map<String, dynamic>>[] is T) {
+        return value
+            .map((e) => Map<String, dynamic>.from(e as Map))
+            .toList() as T;
+      }
+      return value as T?;
     }
     if (value is Map && <String, dynamic>{} is T) {
       return Map<String, dynamic>.from(value) as T;
