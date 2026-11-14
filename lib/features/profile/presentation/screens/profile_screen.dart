@@ -21,7 +21,6 @@ class ProfileScreen extends ConsumerWidget {
 
     final profileAsync = ref.watch(profileControllerProvider);
     final activeLocale = ref.watch(localeProvider);
-    final activeThemeMode = ref.watch(themeModeProvider);
 
     return AppScaffold(
       appBar: AppBar(
@@ -55,9 +54,9 @@ class ProfileScreen extends ConsumerWidget {
                 _buildPointsAndBadgesCard(context, profile),
                 const SizedBox(height: RxSpacing.s24),
 
-                // 3. General Settings: Language & Theme
+                // 3. General Settings: Language
                 SectionHeader(title: l10n.settingsGeneral),
-                _buildGeneralSettingsCard(context, ref, activeLocale, activeThemeMode),
+                _buildGeneralSettingsCard(context, ref, activeLocale),
                 const SizedBox(height: RxSpacing.s24),
 
                 // 4. Notification Preferences
@@ -263,126 +262,57 @@ class ProfileScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     Locale activeLocale,
-    ThemeMode activeThemeMode,
   ) {
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
     final l10n = context.l10n;
 
     return AppCard(
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Language Row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    Icon(LucideIcons.globe, size: 18.0, color: colors.textSecondary),
-                    const SizedBox(width: RxSpacing.s10),
-                    Expanded(
-                      child: Text(
-                        l10n.languagePreference,
-                        style: textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: colors.textPrimary,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: RxSpacing.s8),
-              SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(value: 'en', label: Text('English')),
-                  ButtonSegment(value: 'ar', label: Text('العربية')),
-                ],
-                selected: {activeLocale.languageCode},
-                onSelectionChanged: (newVal) {
-                  final nextLang = newVal.first;
-                  ref.read(localeProvider.notifier).state = Locale(nextLang);
-                  ref.read(profileControllerProvider.notifier).refresh();
-                  Future<void>.microtask(() async {
-                    try {
-                      await ref
-                          .read(profileRepositoryProvider)
-                          .updateLanguagePreference(nextLang);
-                    } catch (_) {}
-                  });
-                },
-                style: SegmentedButton.styleFrom(
-                  visualDensity: VisualDensity.compact,
-                  textStyle: textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: RxSpacing.s16),
-          const Divider(height: 1.0),
-          const SizedBox(height: RxSpacing.s16),
-
-          // Theme Section (Column layout with full-width SegmentedButton to avoid overflow)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(LucideIcons.sunMedium, size: 18.0, color: colors.textSecondary),
-                  const SizedBox(width: RxSpacing.s10),
-                  Text(
-                    l10n.themePreference,
+          Expanded(
+            child: Row(
+              children: [
+                Icon(LucideIcons.globe, size: 18.0, color: colors.textSecondary),
+                const SizedBox(width: RxSpacing.s10),
+                Expanded(
+                  child: Text(
+                    l10n.languagePreference,
                     style: textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: colors.textPrimary,
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: RxSpacing.s12),
-              SizedBox(
-                width: double.infinity,
-                child: SegmentedButton<ThemeMode>(
-                  segments: [
-                    ButtonSegment(
-                      value: ThemeMode.system,
-                      label: Text(
-                        l10n.themeSystem,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    ButtonSegment(
-                      value: ThemeMode.light,
-                      label: Text(
-                        l10n.themeLight,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    ButtonSegment(
-                      value: ThemeMode.dark,
-                      label: Text(
-                        l10n.themeDark,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                  selected: {activeThemeMode},
-                  onSelectionChanged: (newVal) {
-                    ref.read(themeModeProvider.notifier).state = newVal.first;
-                  },
-                  style: SegmentedButton.styleFrom(
-                    visualDensity: VisualDensity.compact,
-                    textStyle: textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-              ),
+              ],
+            ),
+          ),
+          const SizedBox(width: RxSpacing.s8),
+          SegmentedButton<String>(
+            segments: const [
+              ButtonSegment(value: 'en', label: Text('English')),
+              ButtonSegment(value: 'ar', label: Text('العربية')),
             ],
+            selected: {activeLocale.languageCode},
+            onSelectionChanged: (newVal) {
+              final nextLang = newVal.first;
+              ref.read(localeProvider.notifier).state = Locale(nextLang);
+              ref.read(profileControllerProvider.notifier).refresh();
+              Future<void>.microtask(() async {
+                try {
+                  await ref
+                      .read(profileRepositoryProvider)
+                      .updateLanguagePreference(nextLang);
+                } catch (_) {}
+              });
+            },
+            style: SegmentedButton.styleFrom(
+              visualDensity: VisualDensity.compact,
+              textStyle: textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
+            ),
           ),
         ],
       ),

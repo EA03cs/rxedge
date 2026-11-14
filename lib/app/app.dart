@@ -32,7 +32,6 @@ class RxEdgeApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activeLocale = ref.watch(localeProvider);
-    final activeThemeMode = ref.watch(themeModeProvider);
     final router = ref.watch(routerProvider);
     final isArabic = activeLocale.languageCode == 'ar';
 
@@ -76,16 +75,6 @@ class RxEdgeApp extends ConsumerWidget {
       }
     });
 
-    ref.listen<ThemeMode>(themeModeProvider, (previous, next) {
-      if (previous == null || previous == next) {
-        return;
-      }
-      StorageInitializer.writePreference(
-        StorageInitializer.prefThemeModeKey,
-        next.name,
-      );
-    });
-
     ref.listen<AsyncValue<bool>>(isOnlineStreamProvider, (previous, next) {
       final becameOnline =
           previous?.valueOrNull == false && next.valueOrNull == true;
@@ -104,9 +93,8 @@ class RxEdgeApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       routerConfig: router,
       locale: activeLocale,
-      themeMode: activeThemeMode,
+      themeMode: ThemeMode.light,
       theme: RxTheme.light(isArabic: isArabic),
-      darkTheme: RxTheme.dark(isArabic: isArabic),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
     );

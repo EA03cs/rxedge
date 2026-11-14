@@ -12,25 +12,18 @@ abstract final class RxShadows {
   /// Hairline border width (1.0 dp)
   static const double hairlineBorderWidth = 1.0;
 
-  /// Soft shadow for floating elements in Light Theme
+  /// Restrained shadow for floating elements (3% subtle navy tint)
   static const List<BoxShadow> floatingLight = [
     BoxShadow(
-      color: Color(0x0A0F172A), // 4% opacity of #0F172A
-      blurRadius: 12.0,
+      color: Color(0x08183B56),
+      blurRadius: 6.0,
       spreadRadius: 0.0,
-      offset: Offset(0, 4),
+      offset: Offset(0, 2),
     ),
   ];
 
-  /// Soft shadow for floating elements in Dark Theme
-  static const List<BoxShadow> floatingDark = [
-    BoxShadow(
-      color: Color(0x33000000), // ~20% black in dark mode
-      blurRadius: 12.0,
-      spreadRadius: 0.0,
-      offset: Offset(0, 4),
-    ),
-  ];
+  /// Fallback
+  static const List<BoxShadow> floatingDark = floatingLight;
 
   /// Strictly flat: empty list
   static const List<BoxShadow> flat = [];

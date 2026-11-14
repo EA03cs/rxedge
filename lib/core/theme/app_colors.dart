@@ -52,53 +52,32 @@ class RxColors extends ThemeExtension<RxColors> {
     required this.infoSoft,
   });
 
-  /// Light Color Tokens (Precision Clinical Palette)
+  /// Light Color Tokens (Navy & Ice Blue .2 - Corporate Clinical Palette)
   static const light = RxColors(
-    background: Color(0xFFF8FAFC), // Slate 50 clean clinical canvas
+    background: Color(0xFFF2F6F9), // Ice Light Clinical Canvas
     surface: Color(0xFFFFFFFF), // Pure White card/list surfaces
-    surfaceMuted: Color(0xFFF1F5F9), // Slate 100 grouped headers & chips
-    border: Color(0xFFE2E8F0), // Slate 200 crisp 1px separation
-    textPrimary: Color(0xFF0F172A), // Slate 900 high contrast clinical text
-    textSecondary: Color(0xFF475569), // Slate 600 clinical metadata
-    textTertiary: Color(0xFF94A3B8), // Slate 400 captions & subtle hints
-    primary: Color(0xFF0C6264), // Precision Medical Deep Teal
-    primaryPressed: Color(0xFF094E50),
-    primarySoft: Color(0xFFE6F4F4),
-    accent: Color(0xFFB45309), // Amber 700 - strictly for points, streaks, badges
+    surfaceMuted: Color(0xFFE8EFF5), // Muted Ice Blue for grouped headers & chips
+    border: Color(0xFFDCE6ED), // Crisp 1px Ice Blue separation
+    textPrimary: Color(0xFF1D2935), // Deep Charcoal Navy text
+    textSecondary: Color(0xFF4B6173), // Medium Slate Navy metadata
+    textTertiary: Color(0xFF889CAE), // Muted Ice Slate captions & subtle hints
+    primary: Color(0xFF183B56), // Deep Corporate Medical Navy
+    primaryPressed: Color(0xFF10273B),
+    primarySoft: Color(0xFFE8EEF3),
+    accent: Color(0xFFD97706), // Amber 600 - strictly for points, streaks, badges
     accentSoft: Color(0xFFFEF3C7),
-    success: Color(0xFF15803D), // Emerald 700
+    success: Color(0xFF16803D), // Emerald 700
     successSoft: Color(0xFFDCFCE7),
-    warning: Color(0xFFC26A0A),
+    warning: Color(0xFFB45309),
     warningSoft: Color(0xFFFEF3C7),
-    error: Color(0xFFBE123C), // Rose 700
-    errorSoft: Color(0xFFFFE4E6),
-    info: Color(0xFF1D4ED8), // Blue 700
-    infoSoft: Color(0xFFDBEAFE),
+    error: Color(0xFFDC2626), // Red 600
+    errorSoft: Color(0xFFFEE2E2),
+    info: Color(0xFF39789A), // Secondary Ice/Steel Blue
+    infoSoft: Color(0xFFEBF2F6),
   );
 
-  /// Dark Color Tokens (Clinical Night Palette)
-  static const dark = RxColors(
-    background: Color(0xFF0B0F17),
-    surface: Color(0xFF111827),
-    surfaceMuted: Color(0xFF1E293B),
-    border: Color(0xFF2E3D52),
-    textPrimary: Color(0xFFF1F5F9),
-    textSecondary: Color(0xFF94A3B8),
-    textTertiary: Color(0xFF64748B),
-    primary: Color(0xFF2DD4BF),
-    primaryPressed: Color(0xFF14B8A6),
-    primarySoft: Color(0xFF132E2E),
-    accent: Color(0xFFFBBF24),
-    accentSoft: Color(0xFF3B2D14),
-    success: Color(0xFF34D399),
-    successSoft: Color(0xFF133827),
-    warning: Color(0xFFF59E0B),
-    warningSoft: Color(0xFF3A2B14),
-    error: Color(0xFFFB7185),
-    errorSoft: Color(0xFF3B181E),
-    info: Color(0xFF60A5FA),
-    infoSoft: Color(0xFF172B4D),
-  );
+  /// Dark Color Tokens (Fallback / Mirrored to Light as Dark Mode is Disabled)
+  static const dark = light;
 
   @override
   ThemeExtension<RxColors> copyWith({
