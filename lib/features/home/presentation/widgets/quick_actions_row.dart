@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
-import '../../../../app/router/app_router.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../challenges/presentation/screens/challenges_screen.dart';
+import '../../../feedback/presentation/screens/feedback_screen.dart';
+import '../../../library/presentation/screens/library_screen.dart';
 
 /// Quick Actions Row (3 items)
 ///
@@ -26,17 +27,35 @@ class QuickActionsRow extends StatelessWidget {
       _QuickActionItem(
         icon: LucideIcons.helpCircle,
         label: l10n.quickActionQuiz,
-        onTap: () => context.go(AppRoutes.learn),
+        onTap: () {
+          Navigator.of(context, rootNavigator: true).push<void>(
+            MaterialPageRoute(
+              builder: (_) => const ChallengesScreen(initialTabIndex: 1),
+            ),
+          );
+        },
       ),
       _QuickActionItem(
         icon: LucideIcons.messageSquare,
         label: l10n.quickActionFeedback,
-        onTap: () => context.go(AppRoutes.feedback),
+        onTap: () {
+          Navigator.of(context, rootNavigator: true).push<void>(
+            MaterialPageRoute(
+              builder: (_) => const FeedbackScreen(),
+            ),
+          );
+        },
       ),
       _QuickActionItem(
         icon: LucideIcons.bookOpen,
         label: l10n.quickActionLibrary,
-        onTap: () => context.go(AppRoutes.library),
+        onTap: () {
+          Navigator.of(context, rootNavigator: true).push<void>(
+            MaterialPageRoute(
+              builder: (_) => const LibraryScreen(),
+            ),
+          );
+        },
       ),
     ];
 

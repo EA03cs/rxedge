@@ -21,11 +21,35 @@ import 'history_screen.dart';
 /// - Top action: History of past challenges & quiz scores
 /// - Restrained professional gamification (amber accent strictly for points & milestone badges)
 /// - Skeletons, error retry, pull-to-refresh
-class ChallengesScreen extends ConsumerWidget {
-  const ChallengesScreen({super.key});
+class ChallengesScreen extends ConsumerStatefulWidget {
+  final int? initialTabIndex;
+
+  const ChallengesScreen({
+    super.key,
+    this.initialTabIndex,
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ChallengesScreen> createState() => _ChallengesScreenState();
+}
+
+class _ChallengesScreenState extends ConsumerState<ChallengesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialTabIndex != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ref
+              .read(challengesControllerProvider.notifier)
+              .setTabIndex(widget.initialTabIndex!);
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;

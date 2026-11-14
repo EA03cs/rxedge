@@ -230,7 +230,8 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.learn,
                 name: 'learn',
-                builder: (context, state) => const LearnScreen(),
+                builder: (context, state) =>
+                    const TabBackToHomeScope(child: LearnScreen()),
               ),
             ],
           ),
@@ -240,7 +241,8 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.library,
                 name: 'library',
-                builder: (context, state) => const LibraryScreen(),
+                builder: (context, state) =>
+                    const TabBackToHomeScope(child: LibraryScreen()),
               ),
             ],
           ),
@@ -250,7 +252,8 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.challenges,
                 name: 'challenges',
-                builder: (context, state) => const ChallengesScreen(),
+                builder: (context, state) =>
+                    const TabBackToHomeScope(child: ChallengesScreen()),
               ),
             ],
           ),
@@ -260,7 +263,8 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.feedback,
                 name: 'feedback',
-                builder: (context, state) => const FeedbackScreen(),
+                builder: (context, state) =>
+                    const TabBackToHomeScope(child: FeedbackScreen()),
               ),
             ],
           ),
@@ -269,3 +273,22 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
+
+/// Intercepts Android hardware back button inside non-home tabs to switch back to Home tab.
+class TabBackToHomeScope extends StatelessWidget {
+  final Widget child;
+
+  const TabBackToHomeScope({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        context.go(AppRoutes.home);
+      },
+      child: child,
+    );
+  }
+}

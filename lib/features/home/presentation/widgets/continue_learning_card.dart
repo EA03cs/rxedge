@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
-import '../../../../app/router/app_router.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/widgets/rx_network_image.dart';
 import '../../../../core/widgets/widgets.dart';
+import '../../../learn/domain/entities/learning_entities.dart';
+import '../../../learn/presentation/controllers/learn_controller.dart';
+import '../../../learn/presentation/screens/learn_screen.dart';
+import '../../../learn/presentation/screens/lesson_screen.dart';
+import '../../../learn/presentation/screens/product_learning_screen.dart';
 import '../../domain/entities/home_dashboard_entity.dart';
 
 /// "Continue Learning" Card
@@ -16,7 +20,7 @@ import '../../domain/entities/home_dashboard_entity.dart';
 ///
 /// STRICT DESIGN RULE:
 /// This card contains the ONLY filled primary button visible on the Home Screen.
-class ContinueLearningCard extends StatelessWidget {
+class ContinueLearningCard extends ConsumerWidget {
   final ContinueLearningEntity? lesson;
   final RecommendedProductEntity? recommendedProduct;
 
@@ -26,8 +30,59 @@ class ContinueLearningCard extends StatelessWidget {
     this.recommendedProduct,
   });
 
+  void _openLearning(BuildContext context, WidgetRef ref) {
+    final products = ref.read(learnControllerProvider).valueOrNull ?? [];
+    if (products.isEmpty) {
+      Navigator.of(context, rootNavigator: true).push<void>(
+        MaterialPageRoute(builder: (_) => const LearnScreen()),
+      );
+      return;
+    }
+
+    if (lesson != null) {
+      ProductLearningEntity? matchedProduct;
+      LessonEntity? matchedLesson;
+
+      for (final p in products) {
+        if (p.name == lesson!.productName || p.id == lesson!.id) {
+          matchedProduct = p;
+          for (final l in p.lessons) {
+            if (l.title == lesson!.lessonTitle || l.id == lesson!.id) {
+              matchedLesson = l;
+              break;
+            }
+          }
+          break;
+        }
+      }
+
+      if (matchedLesson != null) {
+        Navigator.of(context, rootNavigator: true).push<void>(
+          MaterialPageRoute(builder: (_) => LessonScreen(lesson: matchedLesson!)),
+        );
+        return;
+      }
+
+      if (matchedProduct != null) {
+        Navigator.of(context, rootNavigator: true).push<void>(
+          MaterialPageRoute(builder: (_) => ProductLearningScreen(product: matchedProduct!)),
+        );
+        return;
+      }
+    }
+
+    final prod = products.firstWhere(
+      (p) => p.name == recommendedProduct?.productName || p.id == recommendedProduct?.id,
+      orElse: () => products.first,
+    );
+
+    Navigator.of(context, rootNavigator: true).push<void>(
+      MaterialPageRoute(builder: (_) => ProductLearningScreen(product: prod)),
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
     final l10n = context.l10n;
@@ -35,15 +90,17 @@ class ContinueLearningCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),
       child: AppCard(
+        onTap: () => _openLearning(context, ref),
         child: lesson != null
-            ? _buildActiveLearningState(context, colors, textTheme, l10n, lesson!)
-            : _buildNewUserEmptyState(context, colors, textTheme, l10n, recommendedProduct),
+            ? _buildActiveLearningState(context, ref, colors, textTheme, l10n, lesson!)
+            : _buildNewUserEmptyState(context, ref, colors, textTheme, l10n, recommendedProduct),
       ),
     );
   }
 
   Widget _buildActiveLearningState(
     BuildContext context,
+    WidgetRef ref,
     RxColors colors,
     TextTheme textTheme,
     AppLocalizations l10n,
@@ -123,7 +180,7 @@ class ContinueLearningCard extends StatelessWidget {
           text: l10n.btnContinue,
           variant: AppButtonVariant.primary,
           trailingIcon: context.arrowForward,
-          onPressed: () => context.go(AppRoutes.learn),
+          onPressed: () => _openLearning(context, ref),
         ),
       ],
     );
@@ -131,6 +188,7 @@ class ContinueLearningCard extends StatelessWidget {
 
   Widget _buildNewUserEmptyState(
     BuildContext context,
+    WidgetRef ref,
     RxColors colors,
     TextTheme textTheme,
     AppLocalizations l10n,
@@ -218,7 +276,7 @@ class ContinueLearningCard extends StatelessWidget {
           text: l10n.btnStartLesson,
           variant: AppButtonVariant.primary,
           trailingIcon: context.arrowForward,
-          onPressed: () => context.go(AppRoutes.learn),
+          onPressed: () => _openLearning(context, ref),
         ),
       ],
     );

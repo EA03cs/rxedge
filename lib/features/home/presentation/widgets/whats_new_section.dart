@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
-import '../../../../app/router/app_router.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/widgets/rx_network_image.dart';
 import '../../../../core/widgets/widgets.dart';
+import '../../../library/domain/entities/material_item_entity.dart';
+import '../../../library/presentation/screens/edetail_viewer_screen.dart';
+import '../../../library/presentation/screens/image_viewer_screen.dart';
+import '../../../library/presentation/screens/library_screen.dart';
+import '../../../library/presentation/screens/pdf_viewer_screen.dart';
 import '../../domain/entities/home_dashboard_entity.dart';
 
 /// "What's New" Section
@@ -21,6 +24,50 @@ class WhatsNewSection extends StatelessWidget {
     super.key,
     required this.materials,
   });
+
+  void _openItemViewer(BuildContext context, MaterialUpdateEntity item) {
+    final fileUrl = item.fileUrl?.toLowerCase() ?? '';
+    final MaterialFileType fileType;
+    if (fileUrl.endsWith('.pdf')) {
+      fileType = MaterialFileType.pdf;
+    } else if (fileUrl.endsWith('.png') ||
+        fileUrl.endsWith('.jpg') ||
+        fileUrl.endsWith('.jpeg')) {
+      fileType = MaterialFileType.image;
+    } else {
+      fileType = MaterialFileType.edetailSlides;
+    }
+
+    final material = MaterialItemEntity(
+      id: item.id,
+      title: item.title,
+      productName: item.specialty,
+      category: MaterialCategory.visualAid,
+      fileType: fileType,
+      fileSizeBytes: 150000,
+      updatedAt: item.updatedAt,
+      description: item.specialty,
+      fileUrl: item.fileUrl,
+      thumbnailUrl: item.thumbnailUrl,
+    );
+
+    Widget destination;
+    switch (fileType) {
+      case MaterialFileType.pdf:
+        destination = PdfViewerScreen(material: material);
+        break;
+      case MaterialFileType.image:
+        destination = ImageViewerScreen(material: material);
+        break;
+      case MaterialFileType.edetailSlides:
+        destination = EdetailViewerScreen(material: material);
+        break;
+    }
+
+    Navigator.of(context, rootNavigator: true).push<void>(
+      MaterialPageRoute(builder: (_) => destination),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +93,11 @@ class WhatsNewSection extends StatelessWidget {
                 ),
               ),
               InkWell(
-                onTap: () => context.go(AppRoutes.library),
+                onTap: () {
+                  Navigator.of(context, rootNavigator: true).push<void>(
+                    MaterialPageRoute(builder: (_) => const LibraryScreen()),
+                  );
+                },
                 borderRadius: RxRadii.borderBadge,
                 child: Padding(
                   padding: const EdgeInsetsDirectional.all(RxSpacing.s4),
@@ -89,7 +140,7 @@ class WhatsNewSection extends StatelessWidget {
                 final isNew = item.badgeType == MaterialBadgeType.newRelease;
 
                 return InkWell(
-                  onTap: () => context.go(AppRoutes.library),
+                  onTap: () => _openItemViewer(context, item),
                   child: Padding(
                     padding: const EdgeInsetsDirectional.symmetric(
                       horizontal: RxSpacing.s12,

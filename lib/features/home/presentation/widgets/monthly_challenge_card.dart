@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
-import '../../../../app/router/app_router.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
+import '../../../challenges/presentation/screens/challenges_screen.dart';
 import '../../domain/entities/home_dashboard_entity.dart';
 
 /// "This Month's Challenge" Card
@@ -33,7 +32,13 @@ class MonthlyChallengeCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),
       child: AppCard(
-        onTap: () => context.go(AppRoutes.challenges),
+        onTap: () {
+          Navigator.of(context, rootNavigator: true).push<void>(
+            MaterialPageRoute(
+              builder: (_) => const ChallengesScreen(initialTabIndex: 0),
+            ),
+          );
+        },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
