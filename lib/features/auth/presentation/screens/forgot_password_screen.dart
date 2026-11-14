@@ -40,7 +40,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                     height: 56.0,
                     decoration: BoxDecoration(
                       color: colors.primarySoft,
-                      borderRadius: BorderRadius.circular(16.0),
+                      borderRadius: RxRadii.borderCard,
                     ),
                     child: Icon(
                       LucideIcons.shieldAlert,

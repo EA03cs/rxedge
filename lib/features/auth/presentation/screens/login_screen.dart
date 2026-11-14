@@ -137,6 +137,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final l10n = context.l10n;
     final textTheme = Theme.of(context).textTheme;
     final authState = ref.watch(authControllerProvider);
+    final activeLocale = ref.watch(localeProvider);
+    final isArabic = activeLocale.languageCode == 'ar';
     final isLoading = authState is AuthAuthenticating;
 
     // Listen for state change to authenticated and navigate directly to home
@@ -159,232 +161,478 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsetsDirectional.all(RxSpacing.s24),
+            padding: const EdgeInsetsDirectional.all(RxSpacing.s20),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Brand Mark & Language Toggle Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        width: 48.0,
-                        height: 48.0,
-                        decoration: BoxDecoration(
-                          color: colors.primary,
-                          borderRadius: RxRadii.borderButton,
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            LucideIcons.activity,
-                            size: 24.0,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      Consumer(
-                        builder: (context, ref, _) {
-                          final activeLocale = ref.watch(localeProvider);
-                          final isArabic = activeLocale.languageCode == 'ar';
-                          return TextButton.icon(
-                            icon: const Icon(LucideIcons.globe, size: 16),
-                            label: Text(
-                              isArabic ? 'English' : 'العربية',
-                              style: const TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                            onPressed: () {
-                              final newLocale = isArabic ? const Locale('en') : const Locale('ar');
-                              ref.read(localeProvider.notifier).state = newLocale;
-                            },
-                          );
-                        },
-                      ),
-                    ],
+              constraints: const BoxConstraints(maxWidth: 420.0),
+              child: Container(
+                padding: const EdgeInsetsDirectional.all(RxSpacing.s24),
+                decoration: BoxDecoration(
+                  color: colors.surface,
+                  borderRadius: RxRadii.borderCard,
+                  border: Border.all(
+                    color: colors.border,
+                    width: RxShadows.hairlineBorderWidth,
                   ),
-                  const SizedBox(height: RxSpacing.s24),
-                  Text(
-                    l10n.loginTitle,
-                    style: textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: colors.textPrimary,
-                      letterSpacing: -0.4,
-                    ),
-                  ),
-                  const SizedBox(height: RxSpacing.s6),
-                  Text(
-                    l10n.loginSubtitle,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: RxSpacing.s24),
-
-                  // Session Expiry Notice
-                  if (sessionExpiredNotice != null) ...[
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
-                      decoration: BoxDecoration(
-                        color: colors.warningSoft,
-                        borderRadius: RxRadii.borderCard,
-                        border: Border.all(
-                          color: colors.warning.withValues(alpha: 0.3),
-                          width: RxShadows.hairlineBorderWidth,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(LucideIcons.alertTriangle, size: 18.0, color: colors.warning),
-                          const SizedBox(width: RxSpacing.s10),
-                          Expanded(
-                            child: Text(
-                              sessionExpiredNotice,
-                              style: textTheme.bodySmall?.copyWith(
-                                color: colors.warning,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: RxSpacing.s16),
-                  ],
-
-                  // General Error Notice (Wrong credentials / Offline)
-                  if (_generalError != null) ...[
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
-                      decoration: BoxDecoration(
-                        color: colors.errorSoft,
-                        borderRadius: RxRadii.borderCard,
-                        border: Border.all(
-                          color: colors.error.withValues(alpha: 0.3),
-                          width: RxShadows.hairlineBorderWidth,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(LucideIcons.alertCircle, size: 18.0, color: colors.error),
-                          const SizedBox(width: RxSpacing.s10),
-                          Expanded(
-                            child: Text(
-                              _generalError!,
-                              style: textTheme.bodySmall?.copyWith(
-                                color: colors.error,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: RxSpacing.s16),
-                  ],
-
-                  // Username / Email input
-                  AppTextField(
-                    label: l10n.usernameLabel,
-                    hint: l10n.usernameHint,
-                    controller: _usernameController,
-                    errorText: _usernameError,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    prefixIcon: Icon(LucideIcons.user, size: 18.0, color: colors.textSecondary),
-                  ),
-                  const SizedBox(height: RxSpacing.s16),
-
-                  // Password input with show/hide toggle
-                  AppTextField(
-                    label: l10n.passwordLabel,
-                    hint: l10n.passwordHint,
-                    controller: _passwordController,
-                    obscureText: true,
-                    errorText: _passwordError,
-                    textInputAction: TextInputAction.done,
-                    onSubmitted: (_) => _submitLogin(),
-                    prefixIcon: Icon(LucideIcons.lock, size: 18.0, color: colors.textSecondary),
-                  ),
-                  const SizedBox(height: RxSpacing.s12),
-
-                  // Keep me signed in + Forgot password row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(
-                        child: InkWell(
-                          onTap: () => setState(() => _keepSignedIn = !_keepSignedIn),
-                          borderRadius: BorderRadius.circular(4.0),
+                  boxShadow: RxShadows.floatingLight,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Brand Header & Language Toggle Row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
                           child: Row(
-                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              SizedBox(
-                                width: 20.0,
-                                height: 20.0,
-                                child: Checkbox(
-                                  value: _keepSignedIn,
-                                  activeColor: colors.primary,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
-                                  side: BorderSide(color: colors.border, width: 1.5),
-                                  onChanged: (val) => setState(() => _keepSignedIn = val ?? true),
+                              Container(
+                                width: 36.0,
+                                height: 36.0,
+                                decoration: BoxDecoration(
+                                  color: colors.primary,
+                                  borderRadius: RxRadii.borderButton,
+                                ),
+                                child: const Center(
+                                  child: Icon(
+                                    LucideIcons.activity,
+                                    size: 18.0,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: RxSpacing.s8),
-                              Flexible(
-                                child: Text(
-                                  l10n.keepMeSignedIn,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: textTheme.bodySmall?.copyWith(
-                                    color: colors.textSecondary,
-                                  ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'RxEdge',
+                                          style: textTheme.titleMedium?.copyWith(
+                                            fontWeight: FontWeight.w800,
+                                            color: colors.primary,
+                                            letterSpacing: -0.4,
+                                          ),
+                                        ),
+                                        const SizedBox(width: RxSpacing.s6),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 4.0,
+                                            vertical: 1.0,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: colors.primarySoft,
+                                            borderRadius: RxRadii.borderBadge,
+                                          ),
+                                          child: Text(
+                                            'ENTERPRISE',
+                                            style: textTheme.labelSmall?.copyWith(
+                                              fontWeight: FontWeight.w800,
+                                              fontSize: 8.0,
+                                              color: colors.primary,
+                                              letterSpacing: 0.5,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Text(
+                                      isArabic
+                                          ? 'منصة المندوب الطبي الميداني'
+                                          : 'Medical Field Intelligence',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: textTheme.bodySmall?.copyWith(
+                                        color: colors.textSecondary,
+                                        fontSize: 10.0,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ),
-                      TextButton(
-                        onPressed: () => context.push(AppRoutes.forgotPassword),
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: RxSpacing.s8),
-                        ),
-                        child: Text(
-                          l10n.forgotPassword,
-                          style: textTheme.bodySmall?.copyWith(
-                            color: colors.primary,
-                            fontWeight: FontWeight.w600,
+                        const SizedBox(width: RxSpacing.s8),
+
+                        // Instant Language Switcher Pill
+                        InkWell(
+                          onTap: () {
+                            final newLocale =
+                                isArabic ? const Locale('en') : const Locale('ar');
+                            ref.read(localeProvider.notifier).state = newLocale;
+                          },
+                          borderRadius: RxRadii.borderChip,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: RxSpacing.s8,
+                              vertical: RxSpacing.s4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colors.background,
+                              borderRadius: RxRadii.borderChip,
+                              border: Border.all(
+                                color: colors.border,
+                                width: RxShadows.hairlineBorderWidth,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  LucideIcons.globe,
+                                  size: 13.0,
+                                  color: colors.textSecondary,
+                                ),
+                                const SizedBox(width: RxSpacing.s4),
+                                Text(
+                                  isArabic ? 'English' : 'العربية',
+                                  style: textTheme.labelSmall?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 11.0,
+                                    color: colors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: RxSpacing.s20),
+
+                    // Titles
+                    Text(
+                      l10n.loginTitle,
+                      style: textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: colors.textPrimary,
+                        letterSpacing: -0.3,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: RxSpacing.s24),
-
-                  // Sign in Button
-                  AppButton(
-                    text: l10n.signIn,
-                    variant: AppButtonVariant.primary,
-                    isLoading: isLoading,
-                    onPressed: isLoading ? null : _submitLogin,
-                  ),
-                  const SizedBox(height: RxSpacing.s16),
-
-                  // Quiet Note
-                  Center(
-                    child: Text(
-                      l10n.companyAccountNote,
+                    ),
+                    const SizedBox(height: RxSpacing.s4),
+                    Text(
+                      l10n.loginSubtitle,
                       style: textTheme.bodySmall?.copyWith(
-                        color: colors.textTertiary,
+                        color: colors.textSecondary,
                         fontSize: 12.0,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: RxSpacing.s16),
+
+                    // Quick Demo Login Helper (Best Practice UX for App Reviewers & Clients)
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          _usernameController.text = 'rep@rxedge.com';
+                          _passwordController.text = 'RxEdge@2026!';
+                          _usernameError = null;
+                          _passwordError = null;
+                          _generalError = null;
+                        });
+                      },
+                      borderRadius: RxRadii.borderInput,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: RxSpacing.s10,
+                          vertical: RxSpacing.s8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colors.surfaceMuted,
+                          borderRadius: RxRadii.borderInput,
+                          border: Border.all(
+                            color: colors.border,
+                            width: RxShadows.hairlineBorderWidth,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              LucideIcons.sparkles,
+                              size: 14.0,
+                              color: colors.info,
+                            ),
+                            const SizedBox(width: RxSpacing.s8),
+                            Expanded(
+                              child: Text(
+                                isArabic
+                                    ? 'حساب تجريبي: rep@rxedge.com'
+                                    : 'Quick Demo: rep@rxedge.com',
+                                style: textTheme.labelSmall?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: colors.textPrimary,
+                                  fontSize: 11.0,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: RxSpacing.s6,
+                                vertical: 2.0,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colors.surface,
+                                borderRadius: RxRadii.borderBadge,
+                                border: Border.all(
+                                  color: colors.border,
+                                  width: RxShadows.hairlineBorderWidth,
+                                ),
+                              ),
+                              child: Text(
+                                isArabic ? 'تعبئة سريعة' : 'Auto Fill',
+                                style: textTheme.labelSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 10.0,
+                                  color: colors.info,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: RxSpacing.s16),
+
+                    // Session Expiry Notice
+                    if (sessionExpiredNotice != null) ...[
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsetsDirectional.all(RxSpacing.s10),
+                        decoration: BoxDecoration(
+                          color: colors.warningSoft,
+                          borderRadius: RxRadii.borderBadge,
+                          border: Border.all(
+                            color: colors.warning.withValues(alpha: 0.3),
+                            width: RxShadows.hairlineBorderWidth,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              LucideIcons.alertTriangle,
+                              size: 16.0,
+                              color: colors.warning,
+                            ),
+                            const SizedBox(width: RxSpacing.s8),
+                            Expanded(
+                              child: Text(
+                                sessionExpiredNotice,
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: colors.warning,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: RxSpacing.s12),
+                    ],
+
+                    // General Error Notice (Wrong credentials / Offline)
+                    if (_generalError != null) ...[
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsetsDirectional.all(RxSpacing.s10),
+                        decoration: BoxDecoration(
+                          color: colors.errorSoft,
+                          borderRadius: RxRadii.borderBadge,
+                          border: Border.all(
+                            color: colors.error.withValues(alpha: 0.3),
+                            width: RxShadows.hairlineBorderWidth,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              LucideIcons.alertCircle,
+                              size: 16.0,
+                              color: colors.error,
+                            ),
+                            const SizedBox(width: RxSpacing.s8),
+                            Expanded(
+                              child: Text(
+                                _generalError!,
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: colors.error,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: RxSpacing.s12),
+                    ],
+
+                    // Username / Email input
+                    AppTextField(
+                      label: l10n.usernameLabel,
+                      hint: l10n.usernameHint,
+                      controller: _usernameController,
+                      errorText: _usernameError,
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      clearable: true,
+                      onChanged: (_) {
+                        if (_usernameError != null || _generalError != null) {
+                          setState(() {
+                            _usernameError = null;
+                            _generalError = null;
+                          });
+                        }
+                      },
+                      prefixIcon: Icon(
+                        LucideIcons.user,
+                        size: 17.0,
+                        color: colors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: RxSpacing.s14),
+
+                    // Password input with show/hide toggle
+                    AppTextField(
+                      label: l10n.passwordLabel,
+                      hint: l10n.passwordHint,
+                      controller: _passwordController,
+                      obscureText: true,
+                      errorText: _passwordError,
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) => _submitLogin(),
+                      onChanged: (_) {
+                        if (_passwordError != null || _generalError != null) {
+                          setState(() {
+                            _passwordError = null;
+                            _generalError = null;
+                          });
+                        }
+                      },
+                      prefixIcon: Icon(
+                        LucideIcons.lock,
+                        size: 17.0,
+                        color: colors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: RxSpacing.s8),
+
+                    // Keep me signed in + Forgot password row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          child: InkWell(
+                            onTap: () => setState(() => _keepSignedIn = !_keepSignedIn),
+                            borderRadius: RxRadii.borderBadge,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  width: 18.0,
+                                  height: 18.0,
+                                  child: Checkbox(
+                                    value: _keepSignedIn,
+                                    activeColor: colors.primary,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(3.0),
+                                    ),
+                                    side: BorderSide(
+                                      color: colors.border,
+                                      width: 1.5,
+                                    ),
+                                    onChanged: (val) =>
+                                        setState(() => _keepSignedIn = val ?? true),
+                                  ),
+                                ),
+                                const SizedBox(width: RxSpacing.s8),
+                                Flexible(
+                                  child: Text(
+                                    l10n.keepMeSignedIn,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: textTheme.bodySmall?.copyWith(
+                                      color: colors.textSecondary,
+                                      fontSize: 12.0,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => context.push(AppRoutes.forgotPassword),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: RxSpacing.s6),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                          child: Text(
+                            l10n.forgotPassword,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colors.primary,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12.0,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: RxSpacing.s20),
+
+                    // Sign in Button
+                    AppButton(
+                      text: l10n.signIn,
+                      variant: AppButtonVariant.primary,
+                      isLoading: isLoading,
+                      onPressed: isLoading ? null : _submitLogin,
+                    ),
+                    const SizedBox(height: RxSpacing.s16),
+
+                    // Quiet Note (Required by company specifications)
+                    Center(
+                      child: Text(
+                        l10n.companyAccountNote,
+                        textAlign: TextAlign.center,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colors.textTertiary,
+                          fontSize: 11.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: RxSpacing.s8),
+
+                    // Security & Compliance Reassurance
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          LucideIcons.shieldCheck,
+                          size: 13.0,
+                          color: colors.info,
+                        ),
+                        const SizedBox(width: RxSpacing.s4),
+                        Flexible(
+                          child: Text(
+                            isArabic
+                                ? 'اتصال مشفر 256-bit • معايير الرعاية الصحية'
+                                : '256-bit SSL Encrypted • Healthcare Standard',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colors.textTertiary,
+                              fontSize: 10.5,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

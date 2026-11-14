@@ -11,10 +11,9 @@ import '../controllers/auth_controller.dart';
 /// Onboarding Screen
 ///
 /// Follows Design & UX Specifications:
-/// "2. Onboarding (first launch only, skippable): 3 slides with simple flat illustrations
-/// (geometric, single-color + tint, no gradients).
-/// Titles: 'Learn every product', 'Find any material in seconds', 'Tell marketing what you see in the field'.
-/// One-line description each. Dots indicator, Skip, and a primary Next/Get started button."
+/// - Swiss-minimalist layout, high visual hierarchy
+/// - Clean, crisp Medical Interface Preview Cards (no abstract doodles or arbitrary icons)
+/// - Dots indicator, Language switcher, Skip, and a primary Next / Get started button
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -40,8 +39,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   void _onNext() {
     if (_currentPage < 2) {
       _pageController.nextPage(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
       );
     } else {
       _onSkip();
@@ -53,22 +52,24 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final colors = context.rxColors;
     final l10n = context.l10n;
     final textTheme = Theme.of(context).textTheme;
+    final activeLocale = ref.watch(localeProvider);
+    final isArabic = activeLocale.languageCode == 'ar';
 
     final slides = [
       _OnboardingSlideData(
         title: l10n.onboardingTitle1,
         description: l10n.onboardingDesc1,
-        illustration: _buildSlideIllustration1(colors),
+        preview: _buildClinicalLearningPreview(context, colors, textTheme, isArabic),
       ),
       _OnboardingSlideData(
         title: l10n.onboardingTitle2,
         description: l10n.onboardingDesc2,
-        illustration: _buildSlideIllustration2(colors),
+        preview: _buildLibraryPreview(context, colors, textTheme, isArabic),
       ),
       _OnboardingSlideData(
         title: l10n.onboardingTitle3,
         description: l10n.onboardingDesc3,
-        illustration: _buildSlideIllustration3(colors),
+        preview: _buildFieldFeedbackPreview(context, colors, textTheme, isArabic),
       ),
     ];
 
@@ -76,7 +77,51 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       backgroundColor: colors.background,
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            Container(
+              width: 28.0,
+              height: 28.0,
+              decoration: BoxDecoration(
+                color: colors.primary,
+                borderRadius: RxRadii.borderBadge,
+              ),
+              child: const Center(
+                child: Icon(
+                  LucideIcons.activity,
+                  size: 16.0,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(width: RxSpacing.s8),
+            Text(
+              'RxEdge',
+              style: textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: colors.primary,
+                letterSpacing: -0.3,
+              ),
+            ),
+          ],
+        ),
         actions: [
+          // Instant Language Toggle
+          TextButton.icon(
+            icon: Icon(LucideIcons.globe, size: 15.0, color: colors.textSecondary),
+            label: Text(
+              isArabic ? 'English' : 'العربية',
+              style: textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: colors.textSecondary,
+              ),
+            ),
+            onPressed: () {
+              final newLocale = isArabic ? const Locale('en') : const Locale('ar');
+              ref.read(localeProvider.notifier).state = newLocale;
+            },
+          ),
+          // Skip Action
           TextButton(
             onPressed: _onSkip,
             child: Text(
@@ -105,27 +150,32 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Geometric, single-color + tint illustration
-                        slide.illustration,
-                        const SizedBox(height: RxSpacing.s40),
+                        // Clinical UI Preview Card
+                        slide.preview,
+                        const SizedBox(height: RxSpacing.s32),
+
+                        // Title
                         Text(
                           slide.title,
                           textAlign: TextAlign.center,
-                          style: textTheme.headlineMedium?.copyWith(
+                          style: textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.w700,
                             color: colors.textPrimary,
                             letterSpacing: -0.3,
+                            height: 1.25,
                           ),
                         ),
                         const SizedBox(height: RxSpacing.s12),
+
+                        // Description
                         ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 320.0),
+                          constraints: const BoxConstraints(maxWidth: 340.0),
                           child: Text(
                             slide.description,
                             textAlign: TextAlign.center,
-                            style: textTheme.bodyLarge?.copyWith(
+                            style: textTheme.bodyMedium?.copyWith(
                               color: colors.textSecondary,
-                              height: 1.45,
+                              height: 1.5,
                             ),
                           ),
                         ),
@@ -135,7 +185,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 },
               ),
             ),
-            // Bottom Action Area: Dots indicator + Next/Get Started Button
+
+            // Bottom Action Area: Indicator + Next/Get Started Button
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(
                 RxSpacing.s24,
@@ -146,7 +197,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Flat Dots Indicator
+                  // Minimalist Pill Dots Indicator
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(slides.length, (index) {
@@ -156,15 +207,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         curve: Curves.easeOut,
                         margin: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s4),
                         width: isActive ? 24.0 : 8.0,
-                        height: 8.0,
+                        height: 6.0,
                         decoration: BoxDecoration(
                           color: isActive ? colors.primary : colors.border,
-                          borderRadius: RxRadii.borderChip,
+                          borderRadius: BorderRadius.circular(3.0),
                         ),
                       );
                     }),
                   ),
-                  const SizedBox(height: RxSpacing.s24),
+                  const SizedBox(height: RxSpacing.s20),
+
+                  // Primary Next / Get Started Action
                   AppButton(
                     text: _currentPage == 2 ? l10n.getStarted : l10n.next,
                     variant: AppButtonVariant.primary,
@@ -180,192 +233,514 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  /// Flat Illustration 1: "Learn every product"
-  Widget _buildSlideIllustration1(RxColors colors) {
+  /// Slide 1 Hero: Clinical Product Learning Card
+  Widget _buildClinicalLearningPreview(
+    BuildContext context,
+    RxColors colors,
+    TextTheme textTheme,
+    bool isArabic,
+  ) {
     return Container(
-      width: 200.0,
-      height: 160.0,
-      decoration: BoxDecoration(
-        color: colors.primarySoft,
-        borderRadius: RxRadii.borderCard,
-        border: Border.all(color: colors.border, width: RxShadows.hairlineBorderWidth),
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            width: 140.0,
-            height: 90.0,
-            decoration: BoxDecoration(
-              color: colors.surface,
-              borderRadius: BorderRadius.circular(8.0),
-              border: Border.all(color: colors.border, width: RxShadows.hairlineBorderWidth),
-            ),
-            padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 60.0,
-                  height: 6.0,
-                  decoration: BoxDecoration(
-                    color: colors.primary,
-                    borderRadius: BorderRadius.circular(3.0),
-                  ),
-                ),
-                const SizedBox(height: RxSpacing.s8),
-                Container(
-                  width: 100.0,
-                  height: 4.0,
-                  decoration: BoxDecoration(
-                    color: colors.border,
-                    borderRadius: BorderRadius.circular(2.0),
-                  ),
-                ),
-                const SizedBox(height: RxSpacing.s4),
-                Container(
-                  width: 80.0,
-                  height: 4.0,
-                  decoration: BoxDecoration(
-                    color: colors.border,
-                    borderRadius: BorderRadius.circular(2.0),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          PositionedDirectional(
-            top: 20.0,
-            end: 24.0,
-            child: Container(
-              padding: const EdgeInsetsDirectional.all(RxSpacing.s8),
-              decoration: BoxDecoration(
-                color: colors.primary,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                LucideIcons.bookOpen,
-                size: 18.0,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Flat Illustration 2: "Find any material in seconds"
-  Widget _buildSlideIllustration2(RxColors colors) {
-    return Container(
-      width: 200.0,
-      height: 160.0,
-      decoration: BoxDecoration(
-        color: colors.surfaceMuted,
-        borderRadius: RxRadii.borderCard,
-        border: Border.all(color: colors.border, width: RxShadows.hairlineBorderWidth),
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildDocTile(colors, LucideIcons.fileText),
-              const SizedBox(width: RxSpacing.s8),
-              _buildDocTile(colors, LucideIcons.barChart2),
-              const SizedBox(width: RxSpacing.s8),
-              _buildDocTile(colors, LucideIcons.shieldCheck),
-            ],
-          ),
-          PositionedDirectional(
-            bottom: 24.0,
-            end: 32.0,
-            child: Container(
-              padding: const EdgeInsetsDirectional.all(RxSpacing.s10),
-              decoration: BoxDecoration(
-                color: colors.primary,
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: const Icon(
-                LucideIcons.search,
-                size: 20.0,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDocTile(RxColors colors, IconData icon) {
-    return Container(
-      width: 44.0,
-      height: 58.0,
+      width: double.infinity,
+      constraints: const BoxConstraints(maxWidth: 340.0),
+      padding: const EdgeInsetsDirectional.all(RxSpacing.s16),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(6.0),
-        border: Border.all(color: colors.border, width: RxShadows.hairlineBorderWidth),
-      ),
-      child: Center(
-        child: Icon(icon, size: 20.0, color: colors.textSecondary),
-      ),
-    );
-  }
-
-  /// Flat Illustration 3: "Tell marketing what you see in the field"
-  Widget _buildSlideIllustration3(RxColors colors) {
-    return Container(
-      width: 200.0,
-      height: 160.0,
-      decoration: BoxDecoration(
-        color: colors.primarySoft,
         borderRadius: RxRadii.borderCard,
         border: Border.all(color: colors.border, width: RxShadows.hairlineBorderWidth),
+        boxShadow: RxShadows.floatingLight,
       ),
-      child: Stack(
-        alignment: Alignment.center,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 140.0,
-            height: 70.0,
-            decoration: BoxDecoration(
-              color: colors.surface,
-              borderRadius: BorderRadius.circular(8.0),
-              border: Border.all(color: colors.border, width: RxShadows.hairlineBorderWidth),
+          // Category Tag & Monograph Status
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: RxSpacing.s6,
+                    vertical: 2.0,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.primarySoft,
+                    borderRadius: RxRadii.borderBadge,
+                  ),
+                  child: Text(
+                    isArabic ? 'القلب والشرايين' : 'CARDIOLOGY',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: textTheme.labelSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 9.5,
+                      color: colors.primary,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: RxSpacing.s6),
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 6.0,
+                      height: 6.0,
+                      decoration: BoxDecoration(
+                        color: colors.success,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: RxSpacing.s4),
+                    Flexible(
+                      child: Text(
+                        isArabic ? 'دراسة معتمدة' : 'Approved',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.labelSmall?.copyWith(
+                          color: colors.textSecondary,
+                          fontSize: 10.0,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: RxSpacing.s12),
+
+          // Product Name & Active Molecule
+          Text(
+            'LipidCare® 20mg',
+            style: textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: colors.textPrimary,
             ),
-            padding: const EdgeInsetsDirectional.all(RxSpacing.s10),
-            child: Row(
-              children: [
-                Icon(LucideIcons.messageSquare, size: 18.0, color: colors.primary),
-                const SizedBox(width: RxSpacing.s8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+          ),
+          const SizedBox(height: RxSpacing.s2),
+          Text(
+            isArabic ? 'أتورفاستاتين كالسيوم • ملخص الجرعات السريرية' : 'Atorvastatin Calcium • Clinical Dosing Guide',
+            style: textTheme.bodySmall?.copyWith(
+              color: colors.textSecondary,
+              fontSize: 11.5,
+            ),
+          ),
+          const SizedBox(height: RxSpacing.s14),
+
+          // Metrics Row
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: RxSpacing.s8, vertical: RxSpacing.s6),
+                  decoration: BoxDecoration(
+                    color: colors.surfaceMuted,
+                    borderRadius: RxRadii.borderBadge,
+                    border: Border.all(color: colors.border, width: RxShadows.hairlineBorderWidth),
+                  ),
+                  child: Row(
                     children: [
-                      Container(width: 50, height: 4, color: colors.primary),
-                      const SizedBox(height: 4),
-                      Container(width: 70, height: 4, color: colors.border),
+                      Icon(LucideIcons.bookOpen, size: 14.0, color: colors.primary),
+                      const SizedBox(width: RxSpacing.s6),
+                      Expanded(
+                        child: Text(
+                          isArabic ? '3 وحدات تدريبية' : '3 Core Modules',
+                          style: textTheme.labelSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: colors.textPrimary,
+                            fontSize: 10.5,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ],
                   ),
                 ),
+              ),
+              const SizedBox(width: RxSpacing.s8),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: RxSpacing.s8, vertical: RxSpacing.s6),
+                  decoration: BoxDecoration(
+                    color: colors.accentSoft,
+                    borderRadius: RxRadii.borderBadge,
+                    border: Border.all(
+                      color: colors.accent.withValues(alpha: 0.3),
+                      width: RxShadows.hairlineBorderWidth,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(LucideIcons.award, size: 14.0, color: colors.accent),
+                      const SizedBox(width: RxSpacing.s6),
+                      Expanded(
+                        child: Text(
+                          isArabic ? 'إتقان 98% في الكويز' : '98% Quiz Mastery',
+                          style: textTheme.labelSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: colors.accent,
+                            fontSize: 10.5,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: RxSpacing.s12),
+
+          // Learning progress track
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                isArabic ? 'مستوى الإنجاز المعرفي' : 'Learning Completion',
+                style: textTheme.labelSmall?.copyWith(
+                  color: colors.textSecondary,
+                  fontSize: 10.5,
+                ),
+              ),
+              Text(
+                '100%',
+                style: textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: colors.primary,
+                  fontSize: 10.5,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: RxSpacing.s6),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3.0),
+            child: LinearProgressIndicator(
+              value: 1.0,
+              minHeight: 5.0,
+              backgroundColor: colors.surfaceMuted,
+              valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Slide 2 Hero: Medical Library & Digital Detailing Preview
+  Widget _buildLibraryPreview(
+    BuildContext context,
+    RxColors colors,
+    TextTheme textTheme,
+    bool isArabic,
+  ) {
+    return Container(
+      width: double.infinity,
+      constraints: const BoxConstraints(maxWidth: 340.0),
+      padding: const EdgeInsetsDirectional.all(RxSpacing.s16),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: RxRadii.borderCard,
+        border: Border.all(color: colors.border, width: RxShadows.hairlineBorderWidth),
+        boxShadow: RxShadows.floatingLight,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Simulated Search Bar
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: RxSpacing.s10, vertical: RxSpacing.s8),
+            decoration: BoxDecoration(
+              color: colors.background,
+              borderRadius: RxRadii.borderInput,
+              border: Border.all(color: colors.border, width: RxShadows.hairlineBorderWidth),
+            ),
+            child: Row(
+              children: [
+                Icon(LucideIcons.search, size: 14.0, color: colors.textTertiary),
+                const SizedBox(width: RxSpacing.s8),
+                Expanded(
+                  child: Text(
+                    isArabic ? 'بحث في الدراسات والكتيبات المعتمدة...' : 'Search clinical trials, detailing decks...',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colors.textTertiary,
+                      fontSize: 11.0,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: RxSpacing.s6, vertical: 2.0),
+                  decoration: BoxDecoration(
+                    color: colors.surfaceMuted,
+                    borderRadius: RxRadii.borderBadge,
+                  ),
+                  child: Text(
+                    'PDF',
+                    style: textTheme.labelSmall?.copyWith(
+                      fontSize: 9.0,
+                      fontWeight: FontWeight.w700,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-          PositionedDirectional(
-            top: 20.0,
-            start: 24.0,
-            child: Container(
-              padding: const EdgeInsetsDirectional.all(RxSpacing.s6),
-              decoration: BoxDecoration(
-                color: colors.accent,
-                borderRadius: BorderRadius.circular(6.0),
-              ),
-              child: const Icon(LucideIcons.send, size: 14.0, color: Colors.white),
+          const SizedBox(height: RxSpacing.s12),
+
+          // Approved Document 1
+          _buildDocumentRow(
+            colors: colors,
+            textTheme: textTheme,
+            icon: LucideIcons.fileText,
+            title: isArabic ? 'دراسة الفعالية السريرية Phase III' : 'Phase III Clinical Efficacy Study',
+            meta: isArabic ? 'كتيب العرض العلمي المعتمد • 2.4 MB' : 'Approved Visual Aid • PDF • 2.4 MB',
+            badgeText: isArabic ? 'معتمد' : 'Verified',
+            badgeColor: colors.success,
+            badgeBg: colors.successSoft,
+          ),
+          const SizedBox(height: RxSpacing.s8),
+
+          // Approved Document 2
+          _buildDocumentRow(
+            colors: colors,
+            textTheme: textTheme,
+            icon: LucideIcons.barChart2,
+            title: isArabic ? 'ملف الأمان وسلامة المرضى' : 'Cardiovascular Safety Profile',
+            meta: isArabic ? '14 شريحة تفصيلية • الفريق الطبي' : '14 Detailing Slides • Medical Affairs',
+            badgeText: isArabic ? 'محدث' : 'Updated',
+            badgeColor: colors.info,
+            badgeBg: colors.infoSoft,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDocumentRow({
+    required RxColors colors,
+    required TextTheme textTheme,
+    required IconData icon,
+    required String title,
+    required String meta,
+    required String badgeText,
+    required Color badgeColor,
+    required Color badgeBg,
+  }) {
+    return Container(
+      padding: const EdgeInsetsDirectional.all(RxSpacing.s8),
+      decoration: BoxDecoration(
+        color: colors.surfaceMuted,
+        borderRadius: RxRadii.borderInput,
+        border: Border.all(color: colors.border, width: RxShadows.hairlineBorderWidth),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 32.0,
+            height: 32.0,
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: RxRadii.borderBadge,
+              border: Border.all(color: colors.border, width: RxShadows.hairlineBorderWidth),
             ),
+            child: Center(
+              child: Icon(icon, size: 16.0, color: colors.primary),
+            ),
+          ),
+          const SizedBox(width: RxSpacing.s10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: colors.textPrimary,
+                    fontSize: 11.5,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 1.0),
+                Text(
+                  meta,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colors.textSecondary,
+                    fontSize: 10.0,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: RxSpacing.s6, vertical: 2.0),
+            decoration: BoxDecoration(
+              color: badgeBg,
+              borderRadius: RxRadii.borderBadge,
+            ),
+            child: Text(
+              badgeText,
+              style: textTheme.labelSmall?.copyWith(
+                fontSize: 9.5,
+                fontWeight: FontWeight.w700,
+                color: badgeColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Slide 3 Hero: Field Intelligence & Doctor Insights Preview
+  Widget _buildFieldFeedbackPreview(
+    BuildContext context,
+    RxColors colors,
+    TextTheme textTheme,
+    bool isArabic,
+  ) {
+    return Container(
+      width: double.infinity,
+      constraints: const BoxConstraints(maxWidth: 340.0),
+      padding: const EdgeInsetsDirectional.all(RxSpacing.s16),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: RxRadii.borderCard,
+        border: Border.all(color: colors.border, width: RxShadows.hairlineBorderWidth),
+        boxShadow: RxShadows.floatingLight,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Header Row: Field Tag & Timestamp
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 22.0,
+                      height: 22.0,
+                      decoration: BoxDecoration(
+                        color: colors.primarySoft,
+                        borderRadius: RxRadii.borderBadge,
+                      ),
+                      child: Center(
+                        child: Icon(LucideIcons.stethoscope, size: 12.0, color: colors.primary),
+                      ),
+                    ),
+                    const SizedBox(width: RxSpacing.s6),
+                    Expanded(
+                      child: Text(
+                        isArabic ? 'عيادات القاهرة - وسط البلد' : 'Cairo Clinics • Region North',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: colors.textPrimary,
+                          fontSize: 10.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: RxSpacing.s6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: RxSpacing.s6, vertical: 2.0),
+                decoration: BoxDecoration(
+                  color: colors.surfaceMuted,
+                  borderRadius: RxRadii.borderBadge,
+                ),
+                child: Text(
+                  isArabic ? 'اليوم' : 'Today',
+                  style: textTheme.labelSmall?.copyWith(
+                    fontSize: 9.5,
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: RxSpacing.s12),
+
+          // Doctor Quote / Insight Bubble
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsetsDirectional.all(RxSpacing.s10),
+            decoration: BoxDecoration(
+              color: colors.background,
+              borderRadius: RxRadii.borderInput,
+              border: Border.all(color: colors.border, width: RxShadows.hairlineBorderWidth),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(LucideIcons.messageSquare, size: 14.0, color: colors.primary),
+                    const SizedBox(width: RxSpacing.s6),
+                    Text(
+                      isArabic ? 'ملاحظة الطبيب على العينة' : 'Doctor Objection / Feedback',
+                      style: textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: colors.primary,
+                        fontSize: 10.5,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: RxSpacing.s6),
+                Text(
+                  isArabic
+                      ? '«استجابة ممتازة من المرضى لفاعلية الجرعة، ونحتاج عينات إضافية لمرضى السكري.»'
+                      : '"Favorable patient response to daily efficacy; requested additional clinical samples."',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colors.textPrimary,
+                    fontStyle: FontStyle.italic,
+                    fontSize: 11.0,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: RxSpacing.s12),
+
+          // Marketing sync status
+          Row(
+            children: [
+              Icon(LucideIcons.checkCheck, size: 14.0, color: colors.success),
+              const SizedBox(width: RxSpacing.s6),
+              Expanded(
+                child: Text(
+                  isArabic ? 'وصلت الملاحظة فوراً لمدير المنتج وفريق التسويق' : 'Delivered directly to Brand Marketing team',
+                  style: textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: colors.success,
+                    fontSize: 10.5,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -376,11 +751,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 class _OnboardingSlideData {
   final String title;
   final String description;
-  final Widget illustration;
+  final Widget preview;
 
   const _OnboardingSlideData({
     required this.title,
     required this.description,
-    required this.illustration,
+    required this.preview,
   });
 }
+
