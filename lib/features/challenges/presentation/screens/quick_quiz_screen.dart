@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/error/failure_message_mapper.dart';
 import '../../../../core/widgets/widgets.dart';
+import '../../../learn/presentation/controllers/learn_controller.dart';
 import '../../data/repositories/challenges_repository_impl.dart';
 import '../../domain/entities/challenges_entities.dart';
 import '../controllers/challenges_controller.dart';
@@ -111,6 +113,8 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
     if (!currentQuestion.isServerEvaluated && _isAnswerSubmitted) return;
     if (_isSubmitting) return;
 
+    HapticFeedback.selectionClick();
+
     setState(() {
       _selectedOptionIndex = optionIndex;
       _userAnswers[_currentIndex] = optionIndex;
@@ -177,6 +181,18 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
             );
           }).toList();
 
+          if (evalResult.isPassed) {
+            unawaited(HapticFeedback.mediumImpact());
+            final lid = _quiz.lessonId;
+            if (lid != null && lid.isNotEmpty) {
+              unawaited(
+                ref
+                    .read(learnControllerProvider.notifier)
+                    .markLessonCompleted(lid),
+              );
+            }
+          }
+
           setState(() {
             _quiz = _quiz.copyWith(questions: updatedQuestions);
             _serverResult = evalResult;
@@ -203,6 +219,19 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
     final score = _calculateScore();
     final total = _quiz.questions.length;
     final elapsedSec = _stopwatch.elapsed.inSeconds;
+    final isPassed = total > 0 && (score / total) >= 0.7;
+
+    if (isPassed) {
+      unawaited(HapticFeedback.mediumImpact());
+      final lid = _quiz.lessonId;
+      if (lid != null && lid.isNotEmpty) {
+        unawaited(
+          ref
+              .read(learnControllerProvider.notifier)
+              .markLessonCompleted(lid),
+        );
+      }
+    }
 
     unawaited(
       ref.read(challengesControllerProvider.notifier).onQuizCompleted(
@@ -741,6 +770,39 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                                 color: colors.textSecondary,
                                 fontSize: 11.5,
                                 height: 1.4,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  if (percent >= 0.7 && _quiz.lessonId != null && _quiz.lessonId!.isNotEmpty) ...[
+                    const SizedBox(height: RxSpacing.s12),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsetsDirectional.all(RxSpacing.s10),
+                      decoration: BoxDecoration(
+                        color: colors.successSoft,
+                        borderRadius: RxRadii.borderCard,
+                        border: Border.all(
+                          color: colors.success.withValues(alpha: 0.35),
+                          width: RxShadows.hairlineBorderWidth,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(LucideIcons.checkCheck, size: 16.0, color: colors.success),
+                          const SizedBox(width: RxSpacing.s8),
+                          Expanded(
+                            child: Text(
+                              isArabic
+                                  ? 'تم اجتياز الاختبار بنجاح واعتماد الدرس المقترن به كمكتمل تلقائياً!'
+                                  : 'Quiz passed! The associated lesson has been automatically marked as complete.',
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colors.textPrimary,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12.0,
                               ),
                             ),
                           ),

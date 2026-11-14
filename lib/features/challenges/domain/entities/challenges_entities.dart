@@ -164,6 +164,7 @@ class QuizQuestionEntity {
 
 class QuickQuizEntity {
   final String id;
+  final String? lessonId;
   final String title;
   final String category;
   final int durationMinutes;
@@ -176,6 +177,7 @@ class QuickQuizEntity {
 
   const QuickQuizEntity({
     required this.id,
+    this.lessonId,
     required this.title,
     required this.category,
     required this.durationMinutes,
@@ -192,6 +194,7 @@ class QuickQuizEntity {
 
   QuickQuizEntity copyWith({
     String? id,
+    String? lessonId,
     String? title,
     String? category,
     int? durationMinutes,
@@ -204,6 +207,7 @@ class QuickQuizEntity {
   }) {
     return QuickQuizEntity(
       id: id ?? this.id,
+      lessonId: lessonId ?? this.lessonId,
       title: title ?? this.title,
       category: category ?? this.category,
       durationMinutes: durationMinutes ?? this.durationMinutes,

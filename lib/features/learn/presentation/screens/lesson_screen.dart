@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -115,6 +116,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
             onPressed: isCompleted
                 ? null
                 : () {
+                    HapticFeedback.mediumImpact();
                     ref.read(learnControllerProvider.notifier).markLessonCompleted(liveLesson.id);
                   },
           ),
@@ -295,6 +297,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                       leadingIcon: LucideIcons.checkCircle2,
                       variant: AppButtonVariant.primary,
                       onPressed: () {
+                        HapticFeedback.mediumImpact();
                         ref
                             .read(learnControllerProvider.notifier)
                             .markLessonCompleted(liveLesson.id);
@@ -429,16 +432,24 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                       ref.read(challengesControllerProvider).valueOrNull?.quizzes ??
                           const <QuickQuizEntity>[];
                   QuickQuizEntity? matchedQuiz;
-                  final lessonTitleLower = lesson.title.toLowerCase();
-                  final prodLower = lesson.productName.toLowerCase();
                   for (final q in quizzes) {
-                    final qTitle = q.title.toLowerCase();
-                    final qCat = q.category.toLowerCase();
-                    if (qTitle.contains(lessonTitleLower) ||
-                        qCat.contains(prodLower) ||
-                        qTitle.contains(prodLower)) {
+                    if (q.lessonId == lesson.id) {
                       matchedQuiz = q;
                       break;
+                    }
+                  }
+                  if (matchedQuiz == null) {
+                    final lessonTitleLower = lesson.title.toLowerCase();
+                    final prodLower = lesson.productName.toLowerCase();
+                    for (final q in quizzes) {
+                      final qTitle = q.title.toLowerCase();
+                      final qCat = q.category.toLowerCase();
+                      if (qTitle.contains(lessonTitleLower) ||
+                          qCat.contains(prodLower) ||
+                          qTitle.contains(prodLower)) {
+                        matchedQuiz = q;
+                        break;
+                      }
                     }
                   }
                   matchedQuiz ??= quizzes.isNotEmpty ? quizzes.first : null;

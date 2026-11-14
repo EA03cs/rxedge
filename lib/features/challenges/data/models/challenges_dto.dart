@@ -242,6 +242,7 @@ class QuizQuestionDto {
 /// DTO for Quick Quiz
 class QuickQuizDto {
   final String id;
+  final String? lessonId;
   final String title;
   final String category;
   final int durationMinutes;
@@ -254,6 +255,7 @@ class QuickQuizDto {
 
   const QuickQuizDto({
     required this.id,
+    this.lessonId,
     required this.title,
     required this.category,
     required this.durationMinutes,
@@ -276,6 +278,7 @@ class QuickQuizDto {
 
     return QuickQuizDto(
       id: json['id'] as String? ?? '',
+      lessonId: json['lessonId'] as String?,
       title: json['title'] as String? ?? '',
       category: (json['category'] as String?) ??
           (json['productName'] as String?) ??
@@ -297,6 +300,7 @@ class QuickQuizDto {
 
   Map<String, dynamic> toJson() => {
         'id': id,
+        if (lessonId != null) 'lessonId': lessonId,
         'title': title,
         'category': category,
         'durationMinutes': durationMinutes,
@@ -310,6 +314,7 @@ class QuickQuizDto {
 
   QuickQuizEntity toDomain() => QuickQuizEntity(
         id: id,
+        lessonId: lessonId,
         title: title,
         category: category,
         durationMinutes: durationMinutes,
