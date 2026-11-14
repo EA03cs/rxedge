@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -32,11 +33,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   void _onSkip() {
+    HapticFeedback.lightImpact();
     ref.read(authControllerProvider.notifier).completeOnboarding();
     context.go(AppRoutes.login);
   }
 
   void _onNext() {
+    HapticFeedback.selectionClick();
     if (_currentPage < 2) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 250),
@@ -142,7 +145,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               child: PageView.builder(
                 controller: _pageController,
                 itemCount: slides.length,
-                onPageChanged: (index) => setState(() => _currentPage = index),
+                onPageChanged: (index) {
+                  HapticFeedback.selectionClick();
+                  setState(() => _currentPage = index);
+                },
                 itemBuilder: (context, index) {
                   final slide = slides[index];
                   return Padding(
@@ -269,7 +275,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     borderRadius: RxRadii.borderBadge,
                   ),
                   child: Text(
-                    isArabic ? 'القلب والشرايين' : 'CARDIOLOGY',
+                    isArabic ? 'القلب والمسالك' : 'CARDIO & UROLOGY',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: textTheme.labelSmall?.copyWith(
@@ -315,7 +321,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
           // Product Name & Active Molecule
           Text(
-            'LipidCare® 20mg',
+            isArabic ? 'كارديورا إكس إل® 4 مجم' : 'Cardura XL® GITS 4mg',
             style: textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
               color: colors.textPrimary,
@@ -323,7 +329,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           ),
           const SizedBox(height: RxSpacing.s2),
           Text(
-            isArabic ? 'أتورفاستاتين كالسيوم • ملخص الجرعات السريرية' : 'Atorvastatin Calcium • Clinical Dosing Guide',
+            isArabic ? 'دوكسازوسين جي آي تي إس • تحكم مستمر 24 ساعة' : 'Doxazosin GITS • 24h Zero-Order Delivery',
             style: textTheme.bodySmall?.copyWith(
               color: colors.textSecondary,
               fontSize: 11.5,
@@ -503,8 +509,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             colors: colors,
             textTheme: textTheme,
             icon: LucideIcons.fileText,
-            title: isArabic ? 'دراسة الفعالية السريرية Phase III' : 'Phase III Clinical Efficacy Study',
-            meta: isArabic ? 'كتيب العرض العلمي المعتمد • 2.4 MB' : 'Approved Visual Aid • PDF • 2.4 MB',
+            title: isArabic ? 'ملف العرض الطبي المعتمد لكارديورا' : 'Cardura XL Detailing Aid',
+            meta: isArabic ? 'كتيب العرض التفاعلي • PDF • 4.2 MB' : 'Approved Visual Aid • PDF • 4.2 MB',
             badgeText: isArabic ? 'معتمد' : 'Verified',
             badgeColor: colors.success,
             badgeBg: colors.successSoft,
@@ -516,8 +522,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             colors: colors,
             textTheme: textTheme,
             icon: LucideIcons.barChart2,
-            title: isArabic ? 'ملف الأمان وسلامة المرضى' : 'Cardiovascular Safety Profile',
-            meta: isArabic ? '14 شريحة تفصيلية • الفريق الطبي' : '14 Detailing Slides • Medical Affairs',
+            title: isArabic ? 'دراسة قياس ضغط الدم 24 ساعة (ABPM)' : '24h ABPM Clinical Trial Analysis',
+            meta: isArabic ? '18 شريحة إكلينيكية • الشؤون الطبية' : '18 Detailing Slides • Medical Affairs',
             badgeText: isArabic ? 'محدث' : 'Updated',
             badgeColor: colors.info,
             badgeBg: colors.infoSoft,
@@ -697,9 +703,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     Icon(LucideIcons.messageSquare, size: 14.0, color: colors.primary),
                     const SizedBox(width: RxSpacing.s6),
                     Text(
-                      isArabic ? 'ملاحظة الطبيب على العينة' : 'Doctor Objection / Feedback',
+                      isArabic ? 'اعتراض الطبيب الميداني' : 'Field Physician Objection',
                       style: textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                         color: colors.primary,
                         fontSize: 10.5,
                       ),
@@ -709,8 +715,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 const SizedBox(height: RxSpacing.s6),
                 Text(
                   isArabic
-                      ? '«استجابة ممتازة من المرضى لفاعلية الجرعة، ونحتاج عينات إضافية لمرضى السكري.»'
-                      : '"Favorable patient response to daily efficacy; requested additional clinical samples."',
+                      ? '«هل يضمن نظام GITS تجنب هبوط الضغط الحاد في الصباح الباكر؟»'
+                      : '"How does the GITS zero-order delivery eliminate morning hypotension spikes?"',
                   style: textTheme.bodySmall?.copyWith(
                     color: colors.textPrimary,
                     fontStyle: FontStyle.italic,
@@ -730,7 +736,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               const SizedBox(width: RxSpacing.s6),
               Expanded(
                 child: Text(
-                  isArabic ? 'وصلت الملاحظة فوراً لمدير المنتج وفريق التسويق' : 'Delivered directly to Brand Marketing team',
+                  isArabic ? 'معتمد ومُجاب عنه من الإدارة الطبية والتسويق ✓' : 'Answered & verified by Medical Affairs ✓',
                   style: textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: colors.success,
