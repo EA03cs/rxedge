@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -204,6 +205,25 @@ class FeedbackDetailScreen extends ConsumerWidget {
                               color: colors.primary,
                             ),
                           ),
+                        ),
+                        IconButton(
+                          icon: Icon(LucideIcons.copy, size: 16.0, color: colors.primary),
+                          tooltip: locale == 'ar' ? 'نسخ نص الرد' : 'Copy reply',
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                          onPressed: () {
+                            Clipboard.setData(ClipboardData(text: item.marketingReply!));
+                            HapticFeedback.lightImpact();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  locale == 'ar' ? 'تم نسخ الرد للحافظة' : 'Reply copied to clipboard',
+                                ),
+                                duration: const Duration(seconds: 2),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),

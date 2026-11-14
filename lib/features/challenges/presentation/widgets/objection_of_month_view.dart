@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
@@ -37,6 +38,7 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
     final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return SingleChildScrollView(
       padding: const EdgeInsetsDirectional.all(RxSpacing.s16),
@@ -212,12 +214,33 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                     children: [
                       Icon(LucideIcons.checkCircle2, size: 18.0, color: colors.primary),
                       const SizedBox(width: RxSpacing.s8),
-                      Text(
-                        l10n.recommendedClinicalResponseLabel,
-                        style: textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: colors.primary,
+                      Expanded(
+                        child: Text(
+                          l10n.recommendedClinicalResponseLabel,
+                          style: textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: colors.primary,
+                          ),
                         ),
+                      ),
+                      IconButton(
+                        icon: Icon(LucideIcons.copy, size: 16.0, color: colors.textSecondary),
+                        tooltip: isArabic ? 'نسخ الرد العلمي' : 'Copy response',
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                        onPressed: () {
+                          Clipboard.setData(ClipboardData(text: widget.objection.recommendedResponse));
+                          HapticFeedback.lightImpact();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                isArabic ? 'تم نسخ الرد العلمي للحافظة' : 'Response copied to clipboard',
+                              ),
+                              duration: const Duration(seconds: 2),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -314,140 +337,172 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                             ),
                           ),
                           const SizedBox(height: RxSpacing.s8),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: OutlinedButton.icon(
-                                  onPressed: userFeedback == null
-                                      ? () {
-                                          setState(() {
-                                            _localFeedback = 'helpful';
-                                            _helpfulDelta = 1;
-                                          });
-                                          ref
-                                              .read(challengesControllerProvider.notifier)
-                                              .submitObjectionFeedback('helpful');
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(
-                                              content: Row(
-                                                children: [
-                                                  Icon(
-                                                    LucideIcons.checkCircle2,
-                                                    color: colors.success,
-                                                    size: 18.0,
-                                                  ),
-                                                  const SizedBox(width: RxSpacing.s8),
-                                                  Expanded(
-                                                    child: Text(
-                                                      isArabic
-                                                          ? 'شكراً لتقييمك! تم تسجيل رأيك في الرد الإكلينيكي.'
-                                                          : 'Thank you! Your feedback has been recorded.',
-                                                      style: const TextStyle(fontWeight: FontWeight.w600),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              behavior: SnackBarBehavior.floating,
-                                              duration: const Duration(seconds: 2),
-                                            ),
-                                          );
-                                        }
-                                      : null,
-                                  style: OutlinedButton.styleFrom(
-                                    backgroundColor: userFeedback == 'helpful'
-                                        ? colors.primarySoft
-                                        : colors.surface,
-                                    side: BorderSide(
-                                      color: userFeedback == 'helpful'
-                                          ? colors.primary
-                                          : colors.border,
-                                    ),
-                                    shape: const RoundedRectangleBorder(
-                                      borderRadius: RxRadii.borderButton,
-                                    ),
-                                  ),
-                                  icon: Icon(
-                                    LucideIcons.thumbsUp,
-                                    size: 15.0,
+                          if (userFeedback != null) ...[
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
+                              decoration: BoxDecoration(
+                                color: userFeedback == 'helpful'
+                                    ? colors.successSoft
+                                    : colors.surfaceMuted,
+                                borderRadius: RxRadii.borderCard,
+                                border: Border.all(
+                                  color: userFeedback == 'helpful'
+                                      ? colors.success.withValues(alpha: 0.35)
+                                      : colors.border,
+                                  width: RxShadows.hairlineBorderWidth,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    userFeedback == 'helpful'
+                                        ? LucideIcons.checkCheck
+                                        : LucideIcons.info,
+                                    size: 16.0,
                                     color: userFeedback == 'helpful'
-                                        ? colors.primary
+                                        ? colors.success
                                         : colors.textSecondary,
                                   ),
-                                  label: Text(
-                                    l10n.btnHelpfulYes,
-                                    style: textTheme.labelSmall?.copyWith(
-                                      color: userFeedback == 'helpful'
-                                          ? colors.primary
-                                          : colors.textPrimary,
-                                      fontWeight: FontWeight.w600,
+                                  const SizedBox(width: RxSpacing.s8),
+                                  Expanded(
+                                    child: Text(
+                                      userFeedback == 'helpful'
+                                          ? (isArabic
+                                              ? 'تم تسجيل تقييمك (مفيد ✓) — يُفيد باقي الزملاء في الزيارات الميدانية.'
+                                              : 'Your feedback (Helpful ✓) has been recorded to support your peers.')
+                                          : (isArabic
+                                              ? 'شكراً لملاحظتك — تم إرسال طلب تحسين الرد للفريق الطبي والتسويق.'
+                                              : 'Thank you — note forwarded to Medical Affairs to refine the response.'),
+                                      style: textTheme.bodySmall?.copyWith(
+                                        color: colors.textPrimary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
-                              const SizedBox(width: RxSpacing.s12),
-                              Expanded(
-                                child: OutlinedButton.icon(
-                                  onPressed: userFeedback == null
-                                      ? () {
-                                          setState(() {
-                                            _localFeedback = 'needs_improvement';
-                                          });
-                                          ref
-                                              .read(challengesControllerProvider.notifier)
-                                              .submitObjectionFeedback('needs_improvement');
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(
-                                              content: Row(
-                                                children: [
-                                                  Icon(
-                                                    LucideIcons.info,
-                                                    color: colors.info,
-                                                    size: 18.0,
-                                                  ),
-                                                  const SizedBox(width: RxSpacing.s8),
-                                                  Expanded(
-                                                    child: Text(
-                                                      isArabic
-                                                          ? 'شكراً لملاحظتك! سنعمل على تطوير هذا الرد مع الفريق العلمي.'
-                                                          : 'Thank you! We will refine this response with Medical Affairs.',
-                                                      style: const TextStyle(fontWeight: FontWeight.w600),
-                                                    ),
-                                                  ),
-                                                ],
+                            ),
+                          ] else ...[
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton.icon(
+                                    onPressed: () {
+                                      HapticFeedback.selectionClick();
+                                      setState(() {
+                                        _localFeedback = 'helpful';
+                                        _helpfulDelta = 1;
+                                      });
+                                      ref
+                                          .read(challengesControllerProvider.notifier)
+                                          .submitObjectionFeedback('helpful');
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Row(
+                                            children: [
+                                              Icon(
+                                                LucideIcons.checkCircle2,
+                                                color: colors.success,
+                                                size: 18.0,
                                               ),
-                                              behavior: SnackBarBehavior.floating,
-                                              duration: const Duration(seconds: 2),
-                                            ),
-                                          );
-                                        }
-                                      : null,
-                                  style: OutlinedButton.styleFrom(
-                                    backgroundColor: userFeedback == 'needs_improvement'
-                                        ? colors.surfaceMuted
-                                        : colors.surface,
-                                    side: BorderSide(
-                                      color: colors.border,
+                                              const SizedBox(width: RxSpacing.s8),
+                                              Expanded(
+                                                child: Text(
+                                                  isArabic
+                                                      ? 'شكراً لتقييمك! تم تسجيل رأيك في الرد الإكلينيكي.'
+                                                      : 'Thank you! Your feedback has been recorded.',
+                                                  style: const TextStyle(fontWeight: FontWeight.w600),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          behavior: SnackBarBehavior.floating,
+                                          duration: const Duration(seconds: 2),
+                                        ),
+                                      );
+                                    },
+                                    style: OutlinedButton.styleFrom(
+                                      backgroundColor: colors.surface,
+                                      side: BorderSide(color: colors.border),
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: RxRadii.borderButton,
+                                      ),
                                     ),
-                                    shape: const RoundedRectangleBorder(
-                                      borderRadius: RxRadii.borderButton,
-                                    ),
-                                  ),
-                                  icon: Icon(
-                                    LucideIcons.thumbsDown,
-                                    size: 15.0,
-                                    color: colors.textSecondary,
-                                  ),
-                                  label: Text(
-                                    l10n.btnHelpfulNo,
-                                    style: textTheme.labelSmall?.copyWith(
+                                    icon: Icon(
+                                      LucideIcons.thumbsUp,
+                                      size: 15.0,
                                       color: colors.textSecondary,
-                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    label: Text(
+                                      l10n.btnHelpfulYes,
+                                      style: textTheme.labelSmall?.copyWith(
+                                        color: colors.textPrimary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
+                                const SizedBox(width: RxSpacing.s12),
+                                Expanded(
+                                  child: OutlinedButton.icon(
+                                    onPressed: () {
+                                      HapticFeedback.selectionClick();
+                                      setState(() {
+                                        _localFeedback = 'needs_improvement';
+                                      });
+                                      ref
+                                          .read(challengesControllerProvider.notifier)
+                                          .submitObjectionFeedback('needs_improvement');
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Row(
+                                            children: [
+                                              Icon(
+                                                LucideIcons.info,
+                                                color: colors.info,
+                                                size: 18.0,
+                                              ),
+                                              const SizedBox(width: RxSpacing.s8),
+                                              Expanded(
+                                                child: Text(
+                                                  isArabic
+                                                      ? 'شكراً لملاحظتك! سنعمل على تطوير هذا الرد مع الفريق العلمي.'
+                                                      : 'Thank you! We will refine this response with Medical Affairs.',
+                                                  style: const TextStyle(fontWeight: FontWeight.w600),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          behavior: SnackBarBehavior.floating,
+                                          duration: const Duration(seconds: 2),
+                                        ),
+                                      );
+                                    },
+                                    style: OutlinedButton.styleFrom(
+                                      backgroundColor: colors.surface,
+                                      side: BorderSide(color: colors.border),
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: RxRadii.borderButton,
+                                      ),
+                                    ),
+                                    icon: Icon(
+                                      LucideIcons.thumbsDown,
+                                      size: 15.0,
+                                      color: colors.textSecondary,
+                                    ),
+                                    label: Text(
+                                      l10n.btnHelpfulNo,
+                                      style: textTheme.labelSmall?.copyWith(
+                                        color: colors.textSecondary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ],
                       );
                     },
