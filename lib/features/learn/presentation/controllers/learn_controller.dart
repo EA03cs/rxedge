@@ -49,10 +49,10 @@ class LearnController extends AutoDisposeAsyncNotifier<List<ProductLearningEntit
           updated.sort(_compareProducts);
           return updated;
         });
-        ref.read(localCacheServiceProvider).remove('home_dashboard_cache');
+        ref.read(localCacheServiceProvider).remove('rxedge_home_dashboard');
         ref.read(localCacheServiceProvider).remove('user_profile_cache');
-        ref.invalidate(homeControllerProvider);
-        ref.invalidate(profileControllerProvider);
+        ref.read(homeControllerProvider.notifier).refresh();
+        ref.read(profileControllerProvider.notifier).refresh();
       },
       failure: (_) {
         // Leave current state as is

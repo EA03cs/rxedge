@@ -127,7 +127,31 @@ class QuickQuizzesView extends StatelessWidget {
                   ],
                 ],
               ),
-              const SizedBox(height: RxSpacing.s14),
+              if (isDone) ...[
+                const SizedBox(height: RxSpacing.s8),
+                Row(
+                  children: [
+                    Icon(
+                      LucideIcons.info,
+                      size: 13.0,
+                      color: colors.textTertiary,
+                    ),
+                    const SizedBox(width: RxSpacing.s4),
+                    Expanded(
+                      child: Text(
+                        Localizations.localeOf(context).languageCode == 'ar'
+                            ? 'تم احتساب نقاط هذا الاختبار عند أول اجتياز. الإعادة للمراجعة.'
+                            : 'Points claimed on first pass. Retaking is for practice.',
+                        style: textTheme.labelSmall?.copyWith(
+                          color: colors.textTertiary,
+                          fontSize: 10.0,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: RxSpacing.s12),
 
               // Action button
               Row(

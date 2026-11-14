@@ -28,6 +28,9 @@ class ObjectionOfMonthView extends StatefulWidget {
 
 class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
   bool _isResponseRevealed = false;
+  String? _localFeedback;
+  int _helpfulDelta = 0;
+  int _communityDelta = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +73,7 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                         Icon(LucideIcons.thumbsUp, size: 13.0, color: colors.textSecondary),
                         const SizedBox(width: RxSpacing.s4),
                         Text(
-                          l10n.helpfulVotesCount(widget.objection.helpfulCount),
+                          l10n.helpfulVotesCount(widget.objection.helpfulCount + _helpfulDelta),
                           style: textTheme.labelSmall?.copyWith(
                             color: colors.textSecondary,
                             fontSize: 11.0,
@@ -297,7 +300,8 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                   // "Was this helpful?" Section
                   Consumer(
                     builder: (context, ref, _) {
-                      final userFeedback = widget.objection.userFeedback;
+                      final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+                      final userFeedback = _localFeedback ?? widget.objection.userFeedback;
 
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -315,9 +319,39 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                               Expanded(
                                 child: OutlinedButton.icon(
                                   onPressed: userFeedback == null
-                                      ? () => ref
-                                          .read(challengesControllerProvider.notifier)
-                                          .submitObjectionFeedback('helpful')
+                                      ? () {
+                                          setState(() {
+                                            _localFeedback = 'helpful';
+                                            _helpfulDelta = 1;
+                                          });
+                                          ref
+                                              .read(challengesControllerProvider.notifier)
+                                              .submitObjectionFeedback('helpful');
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Row(
+                                                children: [
+                                                  Icon(
+                                                    LucideIcons.checkCircle2,
+                                                    color: colors.success,
+                                                    size: 18.0,
+                                                  ),
+                                                  const SizedBox(width: RxSpacing.s8),
+                                                  Expanded(
+                                                    child: Text(
+                                                      isArabic
+                                                          ? 'شكراً لتقييمك! تم تسجيل رأيك في الرد الإكلينيكي.'
+                                                          : 'Thank you! Your feedback has been recorded.',
+                                                      style: const TextStyle(fontWeight: FontWeight.w600),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              behavior: SnackBarBehavior.floating,
+                                              duration: const Duration(seconds: 2),
+                                            ),
+                                          );
+                                        }
                                       : null,
                                   style: OutlinedButton.styleFrom(
                                     backgroundColor: userFeedback == 'helpful'
@@ -354,9 +388,38 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                               Expanded(
                                 child: OutlinedButton.icon(
                                   onPressed: userFeedback == null
-                                      ? () => ref
-                                          .read(challengesControllerProvider.notifier)
-                                          .submitObjectionFeedback('needs_improvement')
+                                      ? () {
+                                          setState(() {
+                                            _localFeedback = 'needs_improvement';
+                                          });
+                                          ref
+                                              .read(challengesControllerProvider.notifier)
+                                              .submitObjectionFeedback('needs_improvement');
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Row(
+                                                children: [
+                                                  Icon(
+                                                    LucideIcons.info,
+                                                    color: colors.info,
+                                                    size: 18.0,
+                                                  ),
+                                                  const SizedBox(width: RxSpacing.s8),
+                                                  Expanded(
+                                                    child: Text(
+                                                      isArabic
+                                                          ? 'شكراً لملاحظتك! سنعمل على تطوير هذا الرد مع الفريق العلمي.'
+                                                          : 'Thank you! We will refine this response with Medical Affairs.',
+                                                      style: const TextStyle(fontWeight: FontWeight.w600),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              behavior: SnackBarBehavior.floating,
+                                              duration: const Duration(seconds: 2),
+                                            ),
+                                          );
+                                        }
                                       : null,
                                   style: OutlinedButton.styleFrom(
                                     backgroundColor: userFeedback == 'needs_improvement'
@@ -397,6 +460,7 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
             // "Share your own response" CTA
             AppCard(
               variant: AppCardVariant.muted,
+              onTap: () => _openShareResponseSheet(context),
               child: Row(
                 children: [
                   Container(
@@ -421,7 +485,7 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                         ),
                         Text(
                           l10n.peersContributedCount(
-                            widget.objection.communityResponseCount,
+                            widget.objection.communityResponseCount + _communityDelta,
                           ),
                           style: textTheme.bodySmall?.copyWith(color: colors.textSecondary),
                         ),
@@ -509,16 +573,38 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                       final text = controller.text.trim();
                       if (text.isEmpty) return;
 
+                      setState(() {
+                        _communityDelta++;
+                      });
+
                       ref
                           .read(challengesControllerProvider.notifier)
                           .submitDoctorObjectionResponse(text);
 
+                      final isAr = Localizations.localeOf(context).languageCode == 'ar';
                       Navigator.of(ctx).pop();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(l10n.responseSubmitted),
-                          backgroundColor: colors.textPrimary,
+                          content: Row(
+                            children: [
+                              Icon(
+                                LucideIcons.checkCircle2,
+                                color: colors.success,
+                                size: 18.0,
+                              ),
+                              const SizedBox(width: RxSpacing.s8),
+                              Expanded(
+                                child: Text(
+                                  isAr
+                                      ? 'تم إرسال ردك بنجاح ومشاركته مع الزملاء وفريق التسويق!'
+                                      : l10n.responseSubmitted,
+                                  style: const TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                            ],
+                          ),
                           behavior: SnackBarBehavior.floating,
+                          duration: const Duration(seconds: 3),
                         ),
                       );
                     },

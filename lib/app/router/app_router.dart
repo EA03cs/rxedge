@@ -184,21 +184,30 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, ref, _) {
               ref.watch(localeProvider);
               final l10n = context.l10n;
-              return AppScaffold(
-                body: ConnectivityBanner(child: navigationShell),
-                bottomNavigationBar: AppBottomNav(
-                  currentIndex: navigationShell.currentIndex,
-                  onTap: (index) => navigationShell.goBranch(
-                    index,
-                    initialLocation: index == 0 || index == navigationShell.currentIndex,
+              return PopScope(
+                canPop: navigationShell.currentIndex == 0,
+                onPopInvokedWithResult: (didPop, result) {
+                  if (didPop) return;
+                  if (navigationShell.currentIndex != 0) {
+                    navigationShell.goBranch(0);
+                  }
+                },
+                child: AppScaffold(
+                  body: ConnectivityBanner(child: navigationShell),
+                  bottomNavigationBar: AppBottomNav(
+                    currentIndex: navigationShell.currentIndex,
+                    onTap: (index) => navigationShell.goBranch(
+                      index,
+                      initialLocation: index == 0 || index == navigationShell.currentIndex,
+                    ),
+                    items: [
+                      NavItemData(icon: LucideIcons.home, label: l10n.tabHome),
+                      NavItemData(icon: LucideIcons.graduationCap, label: l10n.tabLearn),
+                      NavItemData(icon: LucideIcons.bookOpen, label: l10n.tabLibrary),
+                      NavItemData(icon: LucideIcons.award, label: l10n.tabChallenges),
+                      NavItemData(icon: LucideIcons.messageSquare, label: l10n.tabFeedback),
+                    ],
                   ),
-                  items: [
-                    NavItemData(icon: LucideIcons.home, label: l10n.tabHome),
-                    NavItemData(icon: LucideIcons.graduationCap, label: l10n.tabLearn),
-                    NavItemData(icon: LucideIcons.bookOpen, label: l10n.tabLibrary),
-                    NavItemData(icon: LucideIcons.award, label: l10n.tabChallenges),
-                    NavItemData(icon: LucideIcons.messageSquare, label: l10n.tabFeedback),
-                  ],
                 ),
               );
             },

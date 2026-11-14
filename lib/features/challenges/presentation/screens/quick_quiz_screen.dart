@@ -583,6 +583,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
     final isHighScore = _serverResult?.isPassed ?? (percent >= 0.8);
     final pointsEarned = _serverResult?.pointsAwarded ??
         ((score * 10) + (score == total ? 10 : 0));
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return AppScaffold(
       appBar: AppBar(
@@ -681,8 +682,12 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                           ),
                           const SizedBox(height: 4.0),
                           StatusBadge(
-                            label: l10n.pointsPlusValue(pointsEarned),
-                            variant: StatusBadgeVariant.accent,
+                            label: pointsEarned > 0
+                                ? l10n.pointsPlusValue(pointsEarned)
+                                : (isArabic ? 'سُجلت مسبقاً' : 'Claimed'),
+                            variant: pointsEarned > 0
+                                ? StatusBadgeVariant.accent
+                                : StatusBadgeVariant.neutral,
                           ),
                         ],
                       ),
@@ -709,6 +714,40 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                       ),
                     ],
                   ),
+                  if (pointsEarned == 0 || _quiz.isCompleted) ...[
+                    const SizedBox(height: RxSpacing.s16),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsetsDirectional.all(RxSpacing.s10),
+                      decoration: BoxDecoration(
+                        color: colors.surfaceMuted,
+                        borderRadius: RxRadii.borderCard,
+                        border: Border.all(
+                          color: colors.border,
+                          width: RxShadows.hairlineBorderWidth,
+                        ),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(LucideIcons.info, size: 15.0, color: colors.textSecondary),
+                          const SizedBox(width: RxSpacing.s8),
+                          Expanded(
+                            child: Text(
+                              isArabic
+                                  ? 'تنبيه النقاط: تُمنح نقاط هذا الاختبار (+${_quiz.rewardPoints > 0 ? _quiz.rewardPoints : 30} نقطة) عند أول اجتياز ناجح فقط منعاً للتكرار، والمحاولات الإضافية تُسجل كمراجعة وتثبيت للمعلومات الإكلينيكية.'
+                                  : 'Points Note: Quiz reward points (+${_quiz.rewardPoints > 0 ? _quiz.rewardPoints : 30} pts) are awarded once upon first pass. Additional attempts serve as clinical refresher and practice.',
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colors.textSecondary,
+                                fontSize: 11.5,
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
