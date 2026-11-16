@@ -58,50 +58,87 @@ class FeedbackItemDto {
   });
 
   factory FeedbackItemDto.fromJson(Map<String, dynamic> json) {
-    final category = json['category'] as String?;
+    final category = json['category']?.toString();
     final resolvedTypeString =
-        json['typeString'] as String? ?? _typeFromCategory(category);
-    final rawStatus = (json['statusString'] ?? json['status']) as String? ?? 'sent';
-    final replies = json['replies'] as List<dynamic>?;
+        json['typeString']?.toString() ?? _typeFromCategory(category);
+    final rawStatus = (json['statusString'] ?? json['status'])?.toString() ?? 'sent';
+    final dynamic rawReplies = json['replies'];
+    final replies = rawReplies is List ? rawReplies : null;
     Map<String, dynamic>? latestReply;
     if (replies != null && replies.isNotEmpty && replies.last is Map) {
       latestReply = Map<String, dynamic>.from(replies.last as Map);
     }
-    final repliedByUser = latestReply?['repliedBy'] as Map<String, dynamic>?;
+    final rawRepliedBy = latestReply?['repliedBy'];
+    Map<String, dynamic>? repliedByUser;
+    if (rawRepliedBy is Map) {
+      repliedByUser = Map<String, dynamic>.from(rawRepliedBy);
+    }
 
-    final details = json['details'] as String?;
-    final attachmentUrl = json['attachmentUrl'] as String?;
+    String? resolvedRepliedBy;
+    if (json['repliedBy'] is String) {
+      resolvedRepliedBy = json['repliedBy'] as String;
+    } else if (repliedByUser?['name'] != null) {
+      resolvedRepliedBy = repliedByUser!['name'].toString();
+    } else if (rawRepliedBy is String) {
+      resolvedRepliedBy = rawRepliedBy;
+    }
+
+    String? resolvedProduct;
+    if (json['productName'] is String && (json['productName'] as String).isNotEmpty) {
+      resolvedProduct = json['productName'] as String;
+    } else if (json['product'] is String) {
+      resolvedProduct = json['product'] as String;
+    } else if (json['product'] is Map) {
+      final pMap = json['product'] as Map;
+      String? translationName;
+      if (pMap['translations'] is List && (pMap['translations'] as List).isNotEmpty) {
+        final firstT = (pMap['translations'] as List).first;
+        if (firstT is Map && firstT['name'] != null) {
+          translationName = firstT['name']?.toString();
+        }
+      }
+      resolvedProduct = (pMap['name'] ?? translationName ?? pMap['brandCode'])?.toString();
+    }
+
+    final details = json['details']?.toString();
+    final attachmentUrl = json['attachmentUrl']?.toString();
+
+    final rawSubmittedAt = json['submittedAtIso'] ?? json['createdAt'];
+    final resolvedSubmittedAt = rawSubmittedAt is String
+        ? rawSubmittedAt
+        : (rawSubmittedAt != null ? rawSubmittedAt.toString() : DateTime.now().toIso8601String());
+
+    final rawRepliedAt = json['repliedAtIso'] ?? latestReply?['createdAt'];
+    final resolvedRepliedAt = rawRepliedAt is String
+        ? rawRepliedAt
+        : rawRepliedAt?.toString();
 
     return FeedbackItemDto(
-      id: json['id'] as String? ?? '',
-      clientSubmissionId: json['clientSubmissionId'] as String?,
-      productId: json['productId'] as String?,
+      id: json['id']?.toString() ?? '',
+      clientSubmissionId: json['clientSubmissionId']?.toString(),
+      productId: json['productId']?.toString(),
       typeString: resolvedTypeString,
-      title: json['title'] as String? ?? '',
-      submittedAtIso: json['submittedAtIso'] as String? ??
-          json['createdAt'] as String? ??
-          DateTime.now().toIso8601String(),
+      title: json['title']?.toString() ?? '',
+      submittedAtIso: resolvedSubmittedAt,
       statusString: rawStatus.toLowerCase(),
-      product: json['product'] as String? ?? json['productName'] as String?,
-      objection: json['objection'] as String? ??
+      product: resolvedProduct,
+      objection: json['objection']?.toString() ??
           (resolvedTypeString == 'doctorObjection' ? details : null),
-      doctorSpecialty: json['doctorSpecialty'] as String?,
-      howResponded: json['howResponded'] as String? ??
-          json['representativeResponse'] as String?,
-      competitorName: json['competitorName'] as String?,
-      claim: json['claim'] as String? ?? json['competitorClaim'] as String?,
-      whereHeard: json['whereHeard'] as String?,
-      photoUrl: json['photoUrl'] as String? ?? attachmentUrl,
-      topic: json['topic'] as String? ??
-          (resolvedTypeString == 'fieldFeedback' ? json['title'] as String? : null),
+      doctorSpecialty: json['doctorSpecialty']?.toString(),
+      howResponded: json['howResponded']?.toString() ??
+          json['representativeResponse']?.toString(),
+      competitorName: json['competitorName']?.toString(),
+      claim: json['claim']?.toString() ?? json['competitorClaim']?.toString(),
+      whereHeard: json['whereHeard']?.toString(),
+      photoUrl: json['photoUrl']?.toString() ?? attachmentUrl,
+      topic: json['topic']?.toString() ??
+          (resolvedTypeString == 'fieldFeedback' ? json['title']?.toString() : null),
       details: details,
-      voiceNoteUrl: json['voiceNoteUrl'] as String?,
-      marketingReply: json['marketingReply'] as String? ??
-          latestReply?['message'] as String?,
-      repliedBy: json['repliedBy'] as String? ??
-          repliedByUser?['name'] as String?,
-      repliedAtIso: json['repliedAtIso'] as String? ??
-          latestReply?['createdAt'] as String?,
+      voiceNoteUrl: json['voiceNoteUrl']?.toString(),
+      marketingReply: json['marketingReply']?.toString() ??
+          latestReply?['message']?.toString(),
+      repliedBy: resolvedRepliedBy,
+      repliedAtIso: resolvedRepliedAt,
     );
   }
 
@@ -315,17 +352,34 @@ class FeedbackDraftDto {
   });
 
   factory FeedbackDraftDto.fromJson(Map<String, dynamic> json) {
+    String? resolvedProduct;
+    if (json['productName'] is String && (json['productName'] as String).isNotEmpty) {
+      resolvedProduct = json['productName'] as String;
+    } else if (json['product'] is String) {
+      resolvedProduct = json['product'] as String;
+    } else if (json['product'] is Map) {
+      final pMap = json['product'] as Map;
+      String? translationName;
+      if (pMap['translations'] is List && (pMap['translations'] as List).isNotEmpty) {
+        final firstT = (pMap['translations'] as List).first;
+        if (firstT is Map && firstT['name'] != null) {
+          translationName = firstT['name']?.toString();
+        }
+      }
+      resolvedProduct = (pMap['name'] ?? translationName ?? pMap['brandCode'])?.toString();
+    }
+
     return FeedbackDraftDto(
-      typeString: json['typeString'] as String,
-      product: json['product'] as String?,
-      objection: json['objection'] as String?,
-      doctorSpecialty: json['doctorSpecialty'] as String?,
-      howResponded: json['howResponded'] as String?,
-      competitorName: json['competitorName'] as String?,
-      claim: json['claim'] as String?,
-      whereHeard: json['whereHeard'] as String?,
-      topic: json['topic'] as String?,
-      details: json['details'] as String?,
+      typeString: json['typeString']?.toString() ?? 'doctorObjection',
+      product: resolvedProduct,
+      objection: json['objection']?.toString(),
+      doctorSpecialty: json['doctorSpecialty']?.toString(),
+      howResponded: json['howResponded']?.toString(),
+      competitorName: json['competitorName']?.toString(),
+      claim: json['claim']?.toString(),
+      whereHeard: json['whereHeard']?.toString(),
+      topic: json['topic']?.toString(),
+      details: json['details']?.toString(),
       hasAttachment: json['hasAttachment'] as bool? ?? false,
     );
   }
