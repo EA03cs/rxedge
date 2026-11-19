@@ -369,8 +369,8 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                                     child: Text(
                                       userFeedback == 'helpful'
                                           ? (isArabic
-                                              ? 'تم تسجيل تقييمك (مفيد ✓) — يُفيد باقي الزملاء في الزيارات الميدانية.'
-                                              : 'Your feedback (Helpful ✓) has been recorded to support your peers.')
+                                              ? 'تم تسجيل تقييمك (مفيد) — يُفيد باقي الزملاء في الزيارات الميدانية.'
+                                              : 'Your feedback (Helpful) has been recorded to support your peers.')
                                           : (isArabic
                                               ? 'شكراً لملاحظتك — تم إرسال طلب تحسين الرد للفريق الطبي والتسويق.'
                                               : 'Thank you — note forwarded to Medical Affairs to refine the response.'),

@@ -736,7 +736,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               const SizedBox(width: RxSpacing.s6),
               Expanded(
                 child: Text(
-                  isArabic ? 'معتمد ومُجاب عنه من الإدارة الطبية والتسويق ✓' : 'Answered & verified by Medical Affairs ✓',
+                  isArabic ? 'معتمد ومُجاب عنه من الإدارة الطبية والتسويق' : 'Answered & verified by Medical Affairs',
                   style: textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: colors.success,

@@ -327,7 +327,7 @@ void main() {
                   showDot: true,
                 ),
                 StatusBadge(
-                  label: 'Streak: 7 Days 🔥 (350 Pts)',
+                  label: 'Streak: 7 Days (350 Pts)',
                   variant: StatusBadgeVariant.accent,
                 ),
               ],
@@ -337,7 +337,7 @@ void main() {
       );
 
       expect(find.text('Approved (Phase III)'), findsOneWidget);
-      expect(find.text('Streak: 7 Days 🔥 (350 Pts)'), findsOneWidget);
+      expect(find.text('Streak: 7 Days (350 Pts)'), findsOneWidget);
     });
   });
 

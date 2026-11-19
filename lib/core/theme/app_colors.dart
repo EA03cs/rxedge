@@ -20,6 +20,8 @@ class RxColors extends ThemeExtension<RxColors> {
   final Color primarySoft;
   final Color accent;
   final Color accentSoft;
+  final Color brandRed;
+  final Color brandRedSoft;
   final Color success;
   final Color successSoft;
   final Color warning;
@@ -42,6 +44,8 @@ class RxColors extends ThemeExtension<RxColors> {
     required this.primarySoft,
     required this.accent,
     required this.accentSoft,
+    this.brandRed = const Color(0xFFE62134),
+    this.brandRedSoft = const Color(0xFFFDE9EB),
     required this.success,
     required this.successSoft,
     required this.warning,
@@ -52,28 +56,30 @@ class RxColors extends ThemeExtension<RxColors> {
     required this.infoSoft,
   });
 
-  /// Light Color Tokens (Navy & Ice Blue .2 - Corporate Clinical Palette)
+  /// Light Color Tokens (Official Mentholatum Corporate Palette: #005CA8 Blue & #E62134 Red)
   static const light = RxColors(
-    background: Color(0xFFF2F6F9), // Ice Light Clinical Canvas
+    background: Color(0xFFF4F7FA), // Ice Light Clinical Canvas
     surface: Color(0xFFFFFFFF), // Pure White card/list surfaces
-    surfaceMuted: Color(0xFFE8EFF5), // Muted Ice Blue for grouped headers & chips
-    border: Color(0xFFDCE6ED), // Crisp 1px Ice Blue separation
-    textPrimary: Color(0xFF1D2935), // Deep Charcoal Navy text
-    textSecondary: Color(0xFF4B6173), // Medium Slate Navy metadata
-    textTertiary: Color(0xFF889CAE), // Muted Ice Slate captions & subtle hints
-    primary: Color(0xFF183B56), // Deep Corporate Medical Navy
-    primaryPressed: Color(0xFF10273B),
-    primarySoft: Color(0xFFE8EEF3),
-    accent: Color(0xFFD97706), // Amber 600 - strictly for points, streaks, badges
+    surfaceMuted: Color(0xFFEAF1F7), // Muted Ice Blue for grouped headers & chips
+    border: Color(0xFFD4E2EE), // Crisp 1px Ice Blue separation
+    textPrimary: Color(0xFF142433), // Deep Charcoal Navy text
+    textSecondary: Color(0xFF455C72), // Medium Slate Navy metadata
+    textTertiary: Color(0xFF859CB0), // Muted Ice Slate captions & subtle hints
+    primary: Color(0xFF005CA8), // Official Mentholatum Corporate Blue (#005CA8)
+    primaryPressed: Color(0xFF004987),
+    primarySoft: Color(0xFFE6F0F8),
+    accent: Color(0xFFD97706), // Amber 600 - strictly for awards, streaks, badges
     accentSoft: Color(0xFFFEF3C7),
+    brandRed: Color(0xFFE62134), // Official Mentholatum Red (#E62134 from logo)
+    brandRedSoft: Color(0xFFFDE9EB),
     success: Color(0xFF16803D), // Emerald 700
     successSoft: Color(0xFFDCFCE7),
     warning: Color(0xFFB45309),
     warningSoft: Color(0xFFFEF3C7),
-    error: Color(0xFFDC2626), // Red 600
-    errorSoft: Color(0xFFFEE2E2),
-    info: Color(0xFF39789A), // Secondary Ice/Steel Blue
-    infoSoft: Color(0xFFEBF2F6),
+    error: Color(0xFFE62134), // Mentholatum Red for critical alerts
+    errorSoft: Color(0xFFFDE9EB),
+    info: Color(0xFF005CA8), // Corporate Brand Blue
+    infoSoft: Color(0xFFE6F0F8),
   );
 
   /// Dark Color Tokens (Fallback / Mirrored to Light as Dark Mode is Disabled)
@@ -93,6 +99,8 @@ class RxColors extends ThemeExtension<RxColors> {
     Color? primarySoft,
     Color? accent,
     Color? accentSoft,
+    Color? brandRed,
+    Color? brandRedSoft,
     Color? success,
     Color? successSoft,
     Color? warning,
@@ -115,6 +123,8 @@ class RxColors extends ThemeExtension<RxColors> {
       primarySoft: primarySoft ?? this.primarySoft,
       accent: accent ?? this.accent,
       accentSoft: accentSoft ?? this.accentSoft,
+      brandRed: brandRed ?? this.brandRed,
+      brandRedSoft: brandRedSoft ?? this.brandRedSoft,
       success: success ?? this.success,
       successSoft: successSoft ?? this.successSoft,
       warning: warning ?? this.warning,
@@ -145,6 +155,8 @@ class RxColors extends ThemeExtension<RxColors> {
       primarySoft: Color.lerp(primarySoft, other.primarySoft, t)!,
       accent: Color.lerp(accent, other.accent, t)!,
       accentSoft: Color.lerp(accentSoft, other.accentSoft, t)!,
+      brandRed: Color.lerp(brandRed, other.brandRed, t)!,
+      brandRedSoft: Color.lerp(brandRedSoft, other.brandRedSoft, t)!,
       success: Color.lerp(success, other.success, t)!,
       successSoft: Color.lerp(successSoft, other.successSoft, t)!,
       warning: Color.lerp(warning, other.warning, t)!,

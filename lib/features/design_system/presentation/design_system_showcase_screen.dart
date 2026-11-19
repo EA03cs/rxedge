@@ -656,7 +656,7 @@ class _DesignSystemShowcaseScreenState extends ConsumerState<DesignSystemShowcas
           variant: StatusBadgeVariant.neutral,
         ),
         StatusBadge(
-          label: 'Streak: 7 Days 🔥 (350 Pts)',
+          label: 'Streak: 7 Days (350 Pts)',
           variant: StatusBadgeVariant.accent,
           icon: LucideIcons.award,
         ),
