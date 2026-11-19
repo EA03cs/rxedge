@@ -61,7 +61,7 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
       if (currentUser is Map && currentUser['rank'] != null) {
         merged['userRank'] = currentUser['rank'];
       }
-      if (merged['id'] == null || (merged['id'] as String).isEmpty) {
+      if (merged['id'] == null || merged['id'].toString().isEmpty) {
         return MonthlyChallengeDto(
           id: 'none',
           title: '',

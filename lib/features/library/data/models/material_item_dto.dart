@@ -24,18 +24,18 @@ class MaterialSlideDto {
     return MaterialSlideDto(
       slideNumber:
           ((json['slide_number'] ?? json['slideOrder']) as num?)?.toInt() ?? 1,
-      title: json['title'] as String? ?? '',
-      headline: json['headline'] as String? ?? '',
+      title: json['title']?.toString() ?? '',
+      headline: json['headline']?.toString() ?? '',
       clinicalKeyPoints: (json['clinical_key_points'] as List<dynamic>? ?? [])
           .map((e) => e.toString())
           .toList(),
       bulletEvidence: (json['bullet_evidence'] as List<dynamic>? ?? [])
           .map((e) => e.toString())
           .toList(),
-      chartCaption: json['chart_caption'] as String?,
-      imageUrl: json['image_url'] as String? ??
-          json['imageUrl'] as String? ??
-          json['fileUrl'] as String?,
+      chartCaption: json['chart_caption']?.toString(),
+      imageUrl: json['image_url']?.toString() ??
+          json['imageUrl']?.toString() ??
+          json['fileUrl']?.toString(),
     );
   }
 
@@ -154,7 +154,8 @@ class MaterialItemDto {
       pageCount: (json['page_count'] as num?)?.toInt() ??
           (rawSlides.isNotEmpty ? rawSlides.length : 1),
       slides: rawSlides
-          .map((e) => MaterialSlideDto.fromJson(e as Map<String, dynamic>))
+          .whereType<Map<dynamic, dynamic>>()
+          .map((e) => MaterialSlideDto.fromJson(Map<String, dynamic>.from(e)))
           .toList(),
       fileUrl: fileUrl,
       thumbnailUrl: thumbnailUrl ??

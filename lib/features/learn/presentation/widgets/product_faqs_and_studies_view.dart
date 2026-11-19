@@ -338,8 +338,27 @@ class _ProductFaqsAndStudiesViewState extends State<ProductFaqsAndStudiesView> {
 
   Future<void> _openLink(String url) async {
     final uri = Uri.tryParse(url);
-    if (uri != null && await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (uri != null) {
+      try {
+        final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+        if (!launched && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('تعذر فتح الرابط. يرجى التأكد من توفر متصفح يدعم فتحه.'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } catch (_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('تعذر فتح الرابط.'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      }
     }
   }
 }

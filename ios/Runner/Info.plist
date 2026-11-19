@@ -45,5 +45,16 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>RxEdge needs camera access to attach photos of competitor activities and clinical materials.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>RxEdge needs photo library access to upload flyers and objection evidence.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>RxEdge needs microphone access to record voice feedback and objections.</string>
 </dict>
 </plist>
