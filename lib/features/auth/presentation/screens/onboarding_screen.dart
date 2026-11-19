@@ -702,12 +702,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   children: [
                     Icon(LucideIcons.messageSquare, size: 14.0, color: colors.primary),
                     const SizedBox(width: RxSpacing.s6),
-                    Text(
-                      isArabic ? 'اعتراض الطبيب الميداني' : 'Field Physician Objection',
-                      style: textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: colors.primary,
-                        fontSize: 10.5,
+                    Expanded(
+                      child: Text(
+                        isArabic ? 'اعتراض الطبيب الميداني' : 'Field Physician Objection',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: colors.primary,
+                          fontSize: 10.5,
+                        ),
                       ),
                     ),
                   ],

@@ -155,7 +155,7 @@ void main() {
   });
 
   group('LanguageInterceptor', () {
-    test('defaults Accept-Language to ar and follows localeProvider updates', () async {
+    test('defaults Accept-Language to en and follows localeProvider updates', () async {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
@@ -174,11 +174,11 @@ void main() {
       dio.interceptors.add(container.read(provider));
 
       await dio.get<dynamic>('/home/dashboard');
-      expect(capturedHeader, 'ar');
-
-      container.read(localeProvider.notifier).state = const Locale('en');
-      await dio.get<dynamic>('/home/dashboard');
       expect(capturedHeader, 'en');
+
+      container.read(localeProvider.notifier).state = const Locale('ar');
+      await dio.get<dynamic>('/home/dashboard');
+      expect(capturedHeader, 'ar');
     });
   });
 

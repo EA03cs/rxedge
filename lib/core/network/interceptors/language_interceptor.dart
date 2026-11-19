@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../config/app_constants.dart';
 import '../../localization/app_locale_provider.dart';
 
-/// Injects `Accept-Language: ar|en` on every outgoing API request based on
-/// the active [localeProvider] (Arabic `'ar'` by default).
+/// Injects `Accept-Language: en|ar` on every outgoing API request based on
+/// the active [localeProvider] (English `'en'` by default).
 class LanguageInterceptor extends Interceptor {
   final Ref _ref;
 
