@@ -33,8 +33,8 @@ void main() {
     ),
     const MaterialItemDto(
       id: 'mat_02',
-      title: 'AtorvaCare SAMS Management Clinical Presentation',
-      productName: 'AtorvaCare 20mg',
+      title: 'Rohto Cool Instant Relief Presentation',
+      productName: 'Rohto Cool',
       category: 'edetail',
       fileType: 'edetail',
       fileSizeBytes: 12000000,
@@ -44,7 +44,7 @@ void main() {
       isDownloaded: true,
       viewCount: 88,
       pageCount: 6,
-      description: 'Detailing deck on statin adherence.',
+      description: 'Detailing deck on cooling eye hydration.',
     ),
   ];
 

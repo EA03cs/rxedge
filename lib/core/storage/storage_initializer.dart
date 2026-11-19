@@ -28,9 +28,9 @@ abstract final class StorageInitializer {
       ]);
       final prefBox = Hive.box<String>(preferencesBoxName);
       final cacheVersion = prefBox.get('cache_version');
-      if (cacheVersion != 'v3_rohto_en_branding') {
+      if (cacheVersion != 'v4_rohto_purified') {
         await Hive.box<String>(cacheBoxName).clear();
-        await prefBox.put('cache_version', 'v3_rohto_en_branding');
+        await prefBox.put('cache_version', 'v4_rohto_purified');
         await prefBox.put(prefLocaleKey, 'en');
         AppLogger.i('Stale cache cleared and default language set to English (EN)', tag: 'Storage');
       }

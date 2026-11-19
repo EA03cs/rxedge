@@ -261,9 +261,14 @@ class LearnRepositoryImpl implements LearnRepository {
   }
 
   List<ProductLearningDto> _ensureRohtoIncluded(List<ProductLearningDto> dtos) {
-    final hasRohto = dtos.any((p) => p.name.toLowerCase().contains('rohto'));
-    if (hasRohto) return dtos;
-    return [...RohtoSeedData.products, ...dtos];
+    final filtered = dtos.where((p) {
+      final n = p.name.toLowerCase();
+      return !n.contains('cardura') && !n.contains('atorva') && !n.contains('gluco');
+    }).toList();
+
+    final hasRohto = filtered.any((p) => p.name.toLowerCase().contains('rohto'));
+    if (hasRohto) return filtered;
+    return [...RohtoSeedData.products, ...filtered];
   }
 
   Future<List<ProductLearningEntity>> _mergeWithOverrides(

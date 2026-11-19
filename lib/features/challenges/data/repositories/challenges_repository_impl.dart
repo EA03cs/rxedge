@@ -136,9 +136,20 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
   );
 
   List<QuickQuizDto> _ensureRohtoQuizzes(List<QuickQuizDto> dtos) {
-    final hasRohto = dtos.any((q) => q.title.toLowerCase().contains('rohto'));
-    if (hasRohto) return dtos;
-    return [rohtoDryAidQuiz, ...dtos];
+    final filtered = dtos.where((q) {
+      final t = q.title.toLowerCase();
+      final c = q.category.toLowerCase();
+      return !t.contains('cardura') &&
+          !t.contains('atorva') &&
+          !t.contains('gluco') &&
+          !c.contains('cardura') &&
+          !c.contains('atorva') &&
+          !c.contains('gluco');
+    }).toList();
+
+    final hasRohto = filtered.any((q) => q.title.toLowerCase().contains('rohto'));
+    if (hasRohto) return filtered;
+    return [rohtoDryAidQuiz, ...filtered];
   }
 
   ChallengesRepositoryImpl({

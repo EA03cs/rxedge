@@ -79,9 +79,22 @@ class LibraryRepositoryImpl implements LibraryRepository {
   ];
 
   List<MaterialItemDto> _ensureRohtoMaterials(List<MaterialItemDto> dtos) {
-    final hasRohto = dtos.any((m) => m.productName.toLowerCase().contains('rohto'));
-    if (hasRohto) return dtos;
-    return [...rohtoMaterials, ...dtos];
+    final filtered = dtos.where((m) {
+      final p = m.productName.toLowerCase();
+      final t = m.title.toLowerCase();
+      return !p.contains('cardura') &&
+          !p.contains('atorva') &&
+          !p.contains('gluco') &&
+          !t.contains('cardura') &&
+          !t.contains('atorva') &&
+          !t.contains('gluco');
+    }).toList();
+
+    final hasRohto = filtered.any((m) =>
+        m.productName.toLowerCase().contains('rohto') ||
+        m.title.toLowerCase().contains('rohto'));
+    if (hasRohto) return filtered;
+    return [...rohtoMaterials, ...filtered];
   }
 
   LibraryRepositoryImpl({
