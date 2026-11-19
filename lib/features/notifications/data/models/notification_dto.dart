@@ -34,20 +34,20 @@ class NotificationDto {
 
   factory NotificationDto.fromJson(Map<String, dynamic> json) {
     final rawType =
-        (json['typeString'] as String?) ?? (json['type'] as String?) ?? '';
+        json['typeString']?.toString() ?? json['type']?.toString() ?? '';
     final rawTargetScreen =
-        (json['targetRoute'] as String?) ?? (json['targetScreen'] as String?);
+        json['targetRoute']?.toString() ?? json['targetScreen']?.toString();
     return NotificationDto(
-      id: json['id'] as String? ?? '',
+      id: json['id']?.toString() ?? '',
       typeString: _normalizeType(rawType),
-      title: json['title'] as String? ?? '',
-      body: json['body'] as String? ?? '',
-      timestampIso: (json['timestampIso'] as String?) ??
-          (json['createdAt'] as String?) ??
+      title: json['title']?.toString() ?? '',
+      body: json['body']?.toString() ?? '',
+      timestampIso: json['timestampIso']?.toString() ??
+          json['createdAt']?.toString() ??
           DateTime.now().toIso8601String(),
       isRead: json['isRead'] as bool? ?? false,
       targetRoute: _normalizeRoute(rawTargetScreen, rawType),
-      targetId: json['targetId'] as String?,
+      targetId: json['targetId']?.toString(),
     );
   }
 

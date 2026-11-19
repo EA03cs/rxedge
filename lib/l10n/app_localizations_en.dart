@@ -532,6 +532,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabCompetitive => 'Competitive Handling';
 
   @override
+  String get tabFaqs => 'FAQs & Studies';
+
+  @override
+  String get targetPatient => 'Target Patient';
+
+  @override
+  String get faqsTitle => 'Frequently Asked Questions';
+
+  @override
+  String get supportingStudiesTitle => 'Supporting Clinical Studies';
+
+  @override
+  String get packShotsTitle => 'Pack Shots';
+
+  @override
+  String get noFaqsAvailable => 'No FAQs available for this product yet.';
+
+  @override
+  String get openStudy => 'Open Study';
+
+  @override
   String lessonsCompleted(int completed, int total) {
     return '$completed/$total lessons completed';
   }

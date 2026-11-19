@@ -534,6 +534,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tabCompetitive => 'التعامل التنافسي';
 
   @override
+  String get tabFaqs => 'الأسئلة الشائعة والدراسات';
+
+  @override
+  String get targetPatient => 'المريض المستهدف';
+
+  @override
+  String get faqsTitle => 'الأسئلة الشائعة';
+
+  @override
+  String get supportingStudiesTitle => 'الدراسات السريرية الداعمة';
+
+  @override
+  String get packShotsTitle => 'صور العبوة';
+
+  @override
+  String get noFaqsAvailable => 'لا توجد أسئلة شائعة لهذا المنتج حالياً.';
+
+  @override
+  String get openStudy => 'فتح الدراسة';
+
+  @override
   String lessonsCompleted(int completed, int total) {
     return 'تم إكمال $completed من $total دروس';
   }

@@ -202,9 +202,19 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
         },
         failure: (failure) {
           setState(() => _isSubmitting = false);
+          final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+          final errorText = FailureMessageMapper.map(context, failure);
+          final isConflict = failure.toString().contains('409') ||
+              failure.toString().contains('ATTEMPT_ALREADY_EXISTS');
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(FailureMessageMapper.map(context, failure)),
+              content: Text(
+                isConflict
+                    ? (isArabic
+                        ? 'عفواً، تم تسجيل محاولتك لهذا الاختبار مسبقاً بنجاح. لا يُسمح بإعادة الاختبار وفقاً لقواعد التحديات.'
+                        : 'You have already attempted this quiz. Retakes are not permitted per challenge policy.')
+                    : errorText,
+              ),
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -833,13 +843,15 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
               },
             ),
             const SizedBox(height: RxSpacing.s10),
-            AppButton(
-              text: l10n.btnRetryQuiz,
-              leadingIcon: LucideIcons.rotateCw,
-              variant: AppButtonVariant.secondary,
-              onPressed: _restartQuiz,
-            ),
-            const SizedBox(height: RxSpacing.s10),
+            if (!_quiz.isCompleted && _serverResult == null) ...[
+              AppButton(
+                text: l10n.btnRetryQuiz,
+                leadingIcon: LucideIcons.rotateCw,
+                variant: AppButtonVariant.secondary,
+                onPressed: _restartQuiz,
+              ),
+              const SizedBox(height: RxSpacing.s10),
+            ],
             AppButton(
               text: l10n.btnBackToLearning,
               leadingIcon: context.arrowBack,

@@ -1046,6 +1046,48 @@ abstract class AppLocalizations {
   /// **'Competitive Handling'**
   String get tabCompetitive;
 
+  /// No description provided for @tabFaqs.
+  ///
+  /// In en, this message translates to:
+  /// **'FAQs & Studies'**
+  String get tabFaqs;
+
+  /// No description provided for @targetPatient.
+  ///
+  /// In en, this message translates to:
+  /// **'Target Patient'**
+  String get targetPatient;
+
+  /// No description provided for @faqsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequently Asked Questions'**
+  String get faqsTitle;
+
+  /// No description provided for @supportingStudiesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Supporting Clinical Studies'**
+  String get supportingStudiesTitle;
+
+  /// No description provided for @packShotsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pack Shots'**
+  String get packShotsTitle;
+
+  /// No description provided for @noFaqsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No FAQs available for this product yet.'**
+  String get noFaqsAvailable;
+
+  /// No description provided for @openStudy.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Study'**
+  String get openStudy;
+
   /// No description provided for @lessonsCompleted.
   ///
   /// In en, this message translates to:

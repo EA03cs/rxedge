@@ -95,6 +95,7 @@ class LessonEntity {
 class ProductPositioningEntity {
   final String keyMessage;
   final List<String> targetDoctors;
+  final String? targetPatient;
   final List<String> keyBenefits;
   final List<String> dosageHighlights;
   final List<String> proofPoints;
@@ -102,6 +103,7 @@ class ProductPositioningEntity {
   const ProductPositioningEntity({
     required this.keyMessage,
     required this.targetDoctors,
+    this.targetPatient,
     required this.keyBenefits,
     required this.dosageHighlights,
     required this.proofPoints,
@@ -145,12 +147,59 @@ class CompetitorComparisonEntity {
   int get hashCode => id.hashCode ^ competitorName.hashCode;
 }
 
+class ProductPackShotEntity {
+  final String id;
+  final String imageUrl;
+  final String? title;
+  final int orderIndex;
+
+  const ProductPackShotEntity({
+    required this.id,
+    required this.imageUrl,
+    this.title,
+    this.orderIndex = 0,
+  });
+}
+
+class SupportingStudyEntity {
+  final String id;
+  final String title;
+  final String fileUrl;
+  final String studyType;
+  final int orderIndex;
+
+  const SupportingStudyEntity({
+    required this.id,
+    required this.title,
+    required this.fileUrl,
+    this.studyType = 'e_detailed_slides',
+    this.orderIndex = 0,
+  });
+}
+
+class ProductFaqEntity {
+  final String id;
+  final String question;
+  final String answer;
+  final int orderIndex;
+
+  const ProductFaqEntity({
+    required this.id,
+    required this.question,
+    required this.answer,
+    this.orderIndex = 0,
+  });
+}
+
 class ProductLearningEntity {
   final String id;
   final String name;
   final String therapeuticArea;
   final bool isRecommended;
   final String? boxImageUrl;
+  final List<ProductPackShotEntity> packShots;
+  final List<SupportingStudyEntity> supportingStudies;
+  final List<ProductFaqEntity> faqs;
   final ProductPositioningEntity positioning;
   final List<CompetitorComparisonEntity> competitors;
   final List<LessonEntity> lessons;
@@ -161,6 +210,9 @@ class ProductLearningEntity {
     required this.therapeuticArea,
     this.isRecommended = false,
     this.boxImageUrl,
+    this.packShots = const [],
+    this.supportingStudies = const [],
+    this.faqs = const [],
     required this.positioning,
     required this.competitors,
     required this.lessons,
@@ -184,6 +236,9 @@ class ProductLearningEntity {
     String? therapeuticArea,
     bool? isRecommended,
     String? boxImageUrl,
+    List<ProductPackShotEntity>? packShots,
+    List<SupportingStudyEntity>? supportingStudies,
+    List<ProductFaqEntity>? faqs,
     ProductPositioningEntity? positioning,
     List<CompetitorComparisonEntity>? competitors,
     List<LessonEntity>? lessons,
@@ -194,6 +249,9 @@ class ProductLearningEntity {
       therapeuticArea: therapeuticArea ?? this.therapeuticArea,
       isRecommended: isRecommended ?? this.isRecommended,
       boxImageUrl: boxImageUrl ?? this.boxImageUrl,
+      packShots: packShots ?? this.packShots,
+      supportingStudies: supportingStudies ?? this.supportingStudies,
+      faqs: faqs ?? this.faqs,
       positioning: positioning ?? this.positioning,
       competitors: competitors ?? this.competitors,
       lessons: lessons ?? this.lessons,

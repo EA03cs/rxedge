@@ -261,18 +261,18 @@ class _QuickQuizzesViewState extends State<QuickQuizzesView> {
                             Row(
                               children: [
                                 Icon(
-                                  LucideIcons.info,
+                                  LucideIcons.shieldCheck,
                                   size: 13.0,
-                                  color: colors.textTertiary,
+                                  color: colors.success,
                                 ),
                                 const SizedBox(width: RxSpacing.s4),
                                 Expanded(
                                   child: Text(
                                     isArabic
-                                        ? 'تم احتساب نقاط هذا الاختبار عند أول اجتياز. الإعادة للمراجعة.'
-                                        : 'Points claimed on first pass. Retaking is for practice.',
+                                        ? 'سياسة التحدي: محاولة واحدة فقط معتمدة لكل مشارك، ولا يُسمح بالإعادة.'
+                                        : 'Challenge policy: exactly one attempt permitted per participant, no retakes.',
                                     style: textTheme.labelSmall?.copyWith(
-                                      color: colors.textTertiary,
+                                      color: colors.textSecondary,
                                       fontSize: 10.0,
                                     ),
                                   ),
@@ -287,21 +287,34 @@ class _QuickQuizzesViewState extends State<QuickQuizzesView> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               OutlinedButton.icon(
-                                onPressed: () {
-                                  HapticFeedback.selectionClick();
-                                  Navigator.of(context, rootNavigator: true)
-                                      .push<void>(
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          QuickQuizScreen(quiz: quiz),
-                                    ),
-                                  );
-                                },
+                                onPressed: isDone
+                                    ? () {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              isArabic
+                                                  ? 'تم تسجيل محاولتك لهذا الاختبار مسبقاً بنجاح. لا يُسمح بإعادة الاختبار وفقاً لقواعد التحديات.'
+                                                  : 'This quiz has already been attempted. Retakes are not permitted per challenge policy.',
+                                            ),
+                                            behavior: SnackBarBehavior.floating,
+                                          ),
+                                        );
+                                      }
+                                    : () {
+                                        HapticFeedback.selectionClick();
+                                        Navigator.of(context, rootNavigator: true)
+                                            .push<void>(
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                QuickQuizScreen(quiz: quiz),
+                                          ),
+                                        );
+                                      },
                                 style: OutlinedButton.styleFrom(
                                   backgroundColor:
-                                      isDone ? colors.surface : colors.primary,
+                                      isDone ? colors.surfaceMuted : colors.primary,
                                   foregroundColor:
-                                      isDone ? colors.primary : Colors.white,
+                                      isDone ? colors.textSecondary : Colors.white,
                                   side: BorderSide(
                                     color: isDone
                                         ? colors.border
@@ -319,18 +332,20 @@ class _QuickQuizzesViewState extends State<QuickQuizzesView> {
                                 ),
                                 icon: Icon(
                                   isDone
-                                      ? LucideIcons.rotateCw
+                                      ? LucideIcons.checkCheck
                                       : LucideIcons.play,
                                   size: 14.0,
                                 ),
                                 label: Text(
                                   isDone
-                                      ? l10n.btnRetakeQuiz
+                                      ? (isArabic
+                                          ? 'مكتمل (محاولة واحدة)'
+                                          : 'Completed (Single Attempt)')
                                       : l10n.btnStartQuiz,
                                   style: textTheme.labelSmall?.copyWith(
                                     fontWeight: FontWeight.w700,
                                     color:
-                                        isDone ? colors.primary : Colors.white,
+                                        isDone ? colors.textSecondary : Colors.white,
                                   ),
                                 ),
                               ),

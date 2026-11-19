@@ -231,6 +231,13 @@
   "learnSubtitle": "Master product science and competitive detailing",
   "tabPositioning": "Product Positioning",
   "tabCompetitive": "Competitive Handling",
+  "tabFaqs": "FAQs & Studies",
+  "targetPatient": "Target Patient",
+  "faqsTitle": "Frequently Asked Questions",
+  "supportingStudiesTitle": "Supporting Clinical Studies",
+  "packShotsTitle": "Pack Shots",
+  "noFaqsAvailable": "No FAQs available for this product yet.",
+  "openStudy": "Open Study",
   "lessonsCompleted": "{completed}/{total} lessons completed",
   "@lessonsCompleted": {
     "placeholders": {

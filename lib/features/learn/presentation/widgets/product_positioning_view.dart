@@ -59,6 +59,58 @@ class ProductPositioningView extends StatelessWidget {
           ),
           const SizedBox(height: RxSpacing.s20),
 
+          // 1.5. Target Patient Block (Excel Module 1 Specification)
+          if (positioning.targetPatient != null &&
+              positioning.targetPatient!.trim().isNotEmpty) ...[
+            _BlockHeader(
+              icon: LucideIcons.heartHandshake,
+              title: l10n.targetPatient,
+              iconColor: colors.primary,
+            ),
+            const SizedBox(height: RxSpacing.s8),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsetsDirectional.all(RxSpacing.s14),
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: RxRadii.borderCard,
+                border: Border.all(
+                  color: colors.border,
+                  width: RxShadows.hairlineBorderWidth,
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsetsDirectional.all(RxSpacing.s6),
+                    decoration: BoxDecoration(
+                      color: colors.primarySoft,
+                      borderRadius: BorderRadius.circular(6.0),
+                    ),
+                    child: Icon(
+                      LucideIcons.users,
+                      size: 16.0,
+                      color: colors.primary,
+                    ),
+                  ),
+                  const SizedBox(width: RxSpacing.s12),
+                  Expanded(
+                    child: Text(
+                      positioning.targetPatient!.trim(),
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colors.textPrimary,
+                        fontWeight: FontWeight.w600,
+                        height: 1.45,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: RxSpacing.s20),
+          ],
+
           // 2. Target Doctors Block
           _BlockHeader(
             icon: LucideIcons.stethoscope,

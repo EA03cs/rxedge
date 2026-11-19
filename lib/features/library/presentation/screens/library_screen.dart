@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
@@ -32,6 +34,17 @@ class LibraryScreen extends ConsumerWidget {
   const LibraryScreen({super.key});
 
   void _openViewer(BuildContext context, MaterialItemEntity item) {
+    // If it's a Google Drive or external web link, launch safely in external application
+    if (item.fileUrl != null &&
+        (item.fileUrl!.contains('drive.google.com') ||
+            item.fileUrl!.contains('docs.google.com'))) {
+      final uri = Uri.tryParse(item.fileUrl!);
+      if (uri != null) {
+        unawaited(launchUrl(uri, mode: LaunchMode.externalApplication));
+        return;
+      }
+    }
+
     Widget destination;
     switch (item.fileType) {
       case MaterialFileType.pdf:

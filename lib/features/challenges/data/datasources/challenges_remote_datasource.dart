@@ -516,9 +516,9 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
           .where((item) => item['type'] == 'challenge_reward')
           .map((item) {
             return PastChallengeHistoryDto(
-              id: item['id'] as String? ?? '',
-              title: item['description'] as String? ?? '',
-              completedAtIso: item['createdAt'] as String? ??
+              id: item['id']?.toString() ?? '',
+              title: item['description']?.toString() ?? '',
+              completedAtIso: item['createdAt']?.toString() ??
                   DateTime.now().toIso8601String(),
               finalRank: 0,
               totalParticipants: 0,
@@ -564,14 +564,14 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
           .where((item) => item['type'] == 'quiz_completion')
           .map((item) {
             return QuizResultHistoryDto(
-              id: item['id'] as String? ?? '',
-              quizId: item['referenceId'] as String? ?? '',
-              quizTitle: item['description'] as String? ?? '',
+              id: item['id']?.toString() ?? '',
+              quizId: item['referenceId']?.toString() ?? '',
+              quizTitle: item['description']?.toString() ?? '',
               score: 0,
               totalQuestions: 0,
               pointsEarned: (item['amount'] as num?)?.toInt() ?? 0,
               timeTakenSeconds: 0,
-              completedAtIso: item['createdAt'] as String? ??
+              completedAtIso: item['createdAt']?.toString() ??
                   DateTime.now().toIso8601String(),
             );
           })

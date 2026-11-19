@@ -70,11 +70,27 @@ class BadgeDto {
       };
 
   factory BadgeDto.fromJson(Map<String, dynamic> json) {
+    final badgeObj = json['badge'] is Map ? json['badge'] as Map : json;
+    final resolvedTitle = (badgeObj['title'] ??
+            badgeObj['name'] ??
+            json['name'] ??
+            json['title'])
+        ?.toString() ??
+        '';
+    final resolvedDesc =
+        (badgeObj['description'] ?? json['description'])?.toString() ?? '';
+    final resolvedDate = (json['awardedAt'] ??
+            json['earnedAtIso'] ??
+            json['createdAt'] ??
+            badgeObj['createdAt'])
+        ?.toString() ??
+        DateTime.now().toIso8601String();
+
     return BadgeDto(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String,
-      earnedAtIso: json['earnedAtIso'] as String,
+      id: (badgeObj['id'] ?? json['id'])?.toString() ?? '',
+      name: resolvedTitle,
+      description: resolvedDesc,
+      earnedAtIso: resolvedDate,
     );
   }
 
@@ -135,32 +151,35 @@ class UserProfileDto {
         : json;
     final territoryRaw = userObj['territory'];
     final territoryStr = territoryRaw is Map
-        ? (territoryRaw['name'] as String? ?? '')
-        : (territoryRaw as String? ?? '');
+        ? (territoryRaw['name']?.toString() ?? '')
+        : (territoryRaw?.toString() ?? '');
 
     return UserProfileDto(
-      id: userObj['id'] as String? ?? '',
-      displayName: (userObj['displayName'] as String?) ??
-          (userObj['name'] as String?) ??
+      id: userObj['id']?.toString() ?? '',
+      displayName: userObj['displayName']?.toString() ??
+          userObj['name']?.toString() ??
           '',
-      email: userObj['email'] as String? ?? '',
-      employeeId: (userObj['employeeId'] as String?) ??
-          (userObj['employeeCode'] as String?) ??
+      email: userObj['email']?.toString() ?? '',
+      employeeId: userObj['employeeId']?.toString() ??
+          userObj['employeeCode']?.toString() ??
           '',
       territory: territoryStr,
-      role: userObj['role'] as String? ?? 'MEDICAL_REP',
+      role: userObj['role']?.toString() ?? 'MEDICAL_REP',
       points: ((userObj['points'] ?? userObj['totalPoints']) as num?)?.toInt() ?? 0,
       streakDays:
           ((userObj['streakDays'] ?? userObj['currentStreak']) as num?)?.toInt() ??
               0,
       badges: (userObj['badges'] as List<dynamic>? ?? [])
-          .map((e) => BadgeDto.fromJson(e as Map<String, dynamic>))
+          .whereType<Map<dynamic, dynamic>>()
+          .map((e) => BadgeDto.fromJson(Map<String, dynamic>.from(e)))
           .toList(),
       notificationPreferences: NotificationPreferencesDto.fromJson(
-        userObj['notificationPreferences'] as Map<String, dynamic>? ?? {},
+        userObj['notificationPreferences'] is Map
+            ? Map<String, dynamic>.from(userObj['notificationPreferences'] as Map)
+            : {},
       ),
       storageUsageBytes:
-          (userObj['storageUsageBytes'] as num?)?.toInt() ?? 0,
+          ((userObj['storageUsageBytes'] ?? userObj['storageUsage']) as num?)?.toInt() ?? 0,
     );
   }
 

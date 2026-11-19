@@ -268,6 +268,16 @@ class MaterialCardGrid extends StatelessWidget {
                         StatusBadge(
                           label: l10n.badgeUpdated,
                           variant: StatusBadgeVariant.neutral,
+                        )
+                      else if (item.quarter != null)
+                        StatusBadge(
+                          label: 'Q${item.quarter} ${item.year ?? ''}'.trim(),
+                          variant: StatusBadgeVariant.neutral,
+                        )
+                      else if (item.fileUrl == null || item.fileUrl!.isEmpty)
+                        const StatusBadge(
+                          label: 'قريباً',
+                          variant: StatusBadgeVariant.warning,
                         ),
                     ],
                   ),

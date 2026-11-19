@@ -104,6 +104,8 @@ class MaterialItemEntity {
   final String? fileUrl;
   final String? thumbnailUrl;
   final String? localFilePath;
+  final int? quarter;
+  final int? year;
 
   const MaterialItemEntity({
     required this.id,
@@ -123,6 +125,8 @@ class MaterialItemEntity {
     this.fileUrl,
     this.thumbnailUrl,
     this.localFilePath,
+    this.quarter,
+    this.year,
   });
 
   bool get isDownloaded => downloadState is Downloaded;
@@ -159,6 +163,8 @@ class MaterialItemEntity {
     String? fileUrl,
     String? thumbnailUrl,
     String? localFilePath,
+    int? quarter,
+    int? year,
   }) {
     return MaterialItemEntity(
       id: id ?? this.id,
@@ -178,6 +184,8 @@ class MaterialItemEntity {
       fileUrl: fileUrl ?? this.fileUrl,
       thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
       localFilePath: localFilePath ?? this.localFilePath,
+      quarter: quarter ?? this.quarter,
+      year: year ?? this.year,
     );
   }
 

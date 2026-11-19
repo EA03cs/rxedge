@@ -59,4 +59,21 @@ abstract final class ApiEndpoints {
   // Sync & Search
   static const String syncManifest = '/sync/manifest';
   static const String search = '/search';
+
+  // App Settings (Dynamic multilingual & system config)
+  static const String appSettings = '/app-settings';
+
+  // Product Navigator (Module 1 additions)
+  static String productFaqs(String id) => '/products/$id/faqs';
+  static String productFaqById(String productId, String faqId) =>
+      '/products/$productId/faqs/$faqId';
+
+  // Marketing Hub (Module 2 additions)
+  static const String marketingMaterials = '/marketing/materials';
+  static String productMarketingMaterials(String productId) =>
+      '/marketing/products/$productId/materials';
+
+  // Gamification (Module 3 additions: Quarterly Badges)
+  static const String badges = '/gamification/badges';
+  static const String myBadges = '/gamification/badges/my-badges';
 }

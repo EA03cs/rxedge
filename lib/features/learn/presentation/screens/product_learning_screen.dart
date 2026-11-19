@@ -7,6 +7,7 @@ import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/learning_entities.dart';
 import '../controllers/learn_controller.dart';
 import '../widgets/competitive_handling_view.dart';
+import '../widgets/product_faqs_and_studies_view.dart';
 import '../widgets/product_positioning_view.dart';
 import 'lesson_screen.dart';
 
@@ -36,7 +37,7 @@ class ProductLearningScreen extends ConsumerWidget {
     final liveProduct = ref.watch(productLearningDetailProvider(product.id)) ?? product;
 
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: AppScaffold(
         appBar: AppBar(
           title: Text(
@@ -79,6 +80,7 @@ class ProductLearningScreen extends ConsumerWidget {
                 tabs: [
                   Tab(text: l10n.tabPositioning),
                   Tab(text: l10n.tabCompetitive),
+                  Tab(text: l10n.tabFaqs),
                 ],
               ),
             ),
@@ -182,6 +184,9 @@ class ProductLearningScreen extends ConsumerWidget {
 
                   // Tab 2: Competitive Handling
                   CompetitiveHandlingView(competitors: liveProduct.competitors),
+
+                  // Tab 3: FAQs & Supporting Studies (Module 1 Specification)
+                  ProductFaqsAndStudiesView(product: liveProduct),
                 ],
               ),
             ),

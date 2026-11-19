@@ -122,7 +122,7 @@ class LocalCacheService {
             .map((e) => Map<String, dynamic>.from(e as Map))
             .toList() as T;
       }
-      return value as T?;
+      return null;
     }
     if (value is Map && <String, dynamic>{} is T) {
       return Map<String, dynamic>.from(value) as T;

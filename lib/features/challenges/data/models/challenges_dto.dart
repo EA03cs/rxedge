@@ -20,18 +20,18 @@ class LeaderboardEntryDto {
 
   factory LeaderboardEntryDto.fromJson(Map<String, dynamic> json) {
     final name =
-        (json['repName'] as String?) ?? (json['name'] as String?) ?? '';
+        json['repName']?.toString() ?? json['name']?.toString() ?? '';
     return LeaderboardEntryDto(
       rank: (json['rank'] as num?)?.toInt() ?? 0,
       repName: name,
       territory: (json['territory'] is Map
-              ? (json['territory'] as Map)['name'] as String?
-              : json['territory'] as String?) ??
+              ? (json['territory'] as Map)['name']?.toString()
+              : json['territory']?.toString()) ??
           '',
       points: ((json['points'] ?? json['totalPoints']) as num?)?.toInt() ?? 0,
       isCurrentUser: json['isCurrentUser'] as bool? ?? false,
       avatarInitials:
-          json['avatarInitials'] as String? ?? _initialsFromName(name),
+          json['avatarInitials']?.toString() ?? _initialsFromName(name),
     );
   }
 
@@ -123,10 +123,10 @@ class MonthlyChallengeDto {
             : const <String>[]);
 
     return MonthlyChallengeDto(
-      id: json['id'] as String? ?? '',
-      title: json['title'] as String? ?? '',
-      deadlineIso: json['deadlineIso'] as String? ??
-          json['endDate'] as String? ??
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      deadlineIso: json['deadlineIso']?.toString() ??
+          json['endDate']?.toString() ??
           DateTime.now().add(const Duration(days: 7)).toIso8601String(),
       rules: rules,
       currentProgress: currentProgress,
@@ -210,13 +210,13 @@ class QuizQuestionDto {
         optionIds;
 
     return QuizQuestionDto(
-      id: json['id'] as String? ?? '',
+      id: json['id']?.toString() ?? '',
       question:
-          (json['question'] as String?) ?? (json['questionText'] as String?) ?? '',
+          json['question']?.toString() ?? json['questionText']?.toString() ?? '',
       options: optionTexts,
       optionIds: savedOptionIds,
       correctOptionIndex: (json['correctOptionIndex'] as num?)?.toInt() ?? -1,
-      explanation: json['explanation'] as String? ?? '',
+      explanation: json['explanation']?.toString() ?? '',
     );
   }
 
@@ -277,19 +277,20 @@ class QuickQuizDto {
         rawQuestions.length;
 
     return QuickQuizDto(
-      id: json['id'] as String? ?? '',
-      lessonId: json['lessonId'] as String?,
-      title: json['title'] as String? ?? '',
-      category: (json['category'] as String?) ??
-          (json['productName'] as String?) ??
-          (json['lessonTitle'] as String?) ??
+      id: json['id']?.toString() ?? '',
+      lessonId: json['lessonId']?.toString(),
+      title: json['title']?.toString() ?? '',
+      category: json['category']?.toString() ??
+          json['productName']?.toString() ??
+          json['lessonTitle']?.toString() ??
           '',
       durationMinutes: derivedMinutes,
       rewardPoints: (json['rewardPoints'] as num?)?.toInt() ??
           (json['pointsReward'] as num?)?.toInt() ??
           0,
       questions: rawQuestions
-          .map((e) => QuizQuestionDto.fromJson(e as Map<String, dynamic>))
+          .whereType<Map<dynamic, dynamic>>()
+          .map((e) => QuizQuestionDto.fromJson(Map<String, dynamic>.from(e)))
           .toList(),
       questionCount: qCount,
       isCompleted: json['isCompleted'] as bool? ?? false,
@@ -356,7 +357,7 @@ class ObjectionOfTheMonthDto {
   });
 
   factory ObjectionOfTheMonthDto.fromJson(Map<String, dynamic> json) {
-    final recommended = json['recommendedResponse'] as String? ?? '';
+    final recommended = json['recommendedResponse']?.toString() ?? '';
     final rawPoints = json['talkingPoints'];
     final talkingPoints = rawPoints is List
         ? rawPoints.map((e) => e.toString()).toList()
@@ -367,20 +368,20 @@ class ObjectionOfTheMonthDto {
             .toList();
 
     return ObjectionOfTheMonthDto(
-      id: json['id'] as String? ?? '',
-      doctorQuote: json['doctorQuote'] as String? ?? '',
-      doctorName: json['doctorName'] as String? ?? '',
-      doctorSpecialty: json['doctorSpecialty'] as String? ?? '',
-      productConcerned: (json['productConcerned'] as String?) ??
-          (json['productName'] as String?) ??
+      id: json['id']?.toString() ?? '',
+      doctorQuote: json['doctorQuote']?.toString() ?? '',
+      doctorName: json['doctorName']?.toString() ?? '',
+      doctorSpecialty: json['doctorSpecialty']?.toString() ?? '',
+      productConcerned: json['productConcerned']?.toString() ??
+          json['productName']?.toString() ??
           '',
       recommendedResponse: recommended,
       talkingPoints: talkingPoints,
-      studyReference: (json['studyReference'] as String?) ??
-          (json['supportingReferences'] as String?) ??
+      studyReference: json['studyReference']?.toString() ??
+          json['supportingReferences']?.toString() ??
           '',
       helpfulCount: (json['helpfulCount'] as num?)?.toInt() ?? 0,
-      userFeedback: json['userFeedback'] as String?,
+      userFeedback: json['userFeedback']?.toString(),
       communityResponseCount:
           (json['communityResponseCount'] as num?)?.toInt() ?? 0,
     );
@@ -437,13 +438,13 @@ class PastChallengeHistoryDto {
 
   factory PastChallengeHistoryDto.fromJson(Map<String, dynamic> json) {
     return PastChallengeHistoryDto(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      completedAtIso: json['completedAtIso'] as String,
-      finalRank: json['finalRank'] as int,
-      totalParticipants: json['totalParticipants'] as int,
-      pointsEarned: json['pointsEarned'] as int,
-      badgeEarned: json['badgeEarned'] as String?,
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      completedAtIso: json['completedAtIso']?.toString() ?? json['createdAt']?.toString() ?? '',
+      finalRank: (json['finalRank'] as num?)?.toInt() ?? 0,
+      totalParticipants: (json['totalParticipants'] as num?)?.toInt() ?? 0,
+      pointsEarned: (json['pointsEarned'] as num?)?.toInt() ?? 0,
+      badgeEarned: json['badgeEarned']?.toString(),
     );
   }
 
@@ -492,14 +493,14 @@ class QuizResultHistoryDto {
 
   factory QuizResultHistoryDto.fromJson(Map<String, dynamic> json) {
     return QuizResultHistoryDto(
-      id: json['id'] as String,
-      quizId: json['quizId'] as String,
-      quizTitle: json['quizTitle'] as String,
-      score: json['score'] as int,
-      totalQuestions: json['totalQuestions'] as int,
-      pointsEarned: json['pointsEarned'] as int,
-      timeTakenSeconds: json['timeTakenSeconds'] as int,
-      completedAtIso: json['completedAtIso'] as String,
+      id: json['id']?.toString() ?? '',
+      quizId: json['quizId']?.toString() ?? json['referenceId']?.toString() ?? '',
+      quizTitle: json['quizTitle']?.toString() ?? json['title']?.toString() ?? '',
+      score: (json['score'] as num?)?.toInt() ?? 0,
+      totalQuestions: (json['totalQuestions'] as num?)?.toInt() ?? 0,
+      pointsEarned: (json['pointsEarned'] as num?)?.toInt() ?? 0,
+      timeTakenSeconds: (json['timeTakenSeconds'] as num?)?.toInt() ?? 0,
+      completedAtIso: json['completedAtIso']?.toString() ?? json['createdAt']?.toString() ?? '',
     );
   }
 
@@ -545,12 +546,12 @@ class QuizAnswerEvaluationDto {
 
   factory QuizAnswerEvaluationDto.fromJson(Map<String, dynamic> json) {
     return QuizAnswerEvaluationDto(
-      questionId: json['questionId'] as String? ?? '',
-      selectedOptionId: json['selectedOptionId'] as String?,
+      questionId: json['questionId']?.toString() ?? '',
+      selectedOptionId: json['selectedOptionId']?.toString(),
       isCorrect: json['isCorrect'] as bool? ?? false,
-      explanation: json['explanation'] as String?,
-      correctOptionId: json['correctOptionId'] as String?,
-      correctOptionText: json['correctOptionText'] as String?,
+      explanation: json['explanation']?.toString(),
+      correctOptionId: json['correctOptionId']?.toString(),
+      correctOptionText: json['correctOptionText']?.toString(),
     );
   }
 
@@ -583,13 +584,14 @@ class QuizSubmissionResultDto {
 
   factory QuizSubmissionResultDto.fromJson(Map<String, dynamic> json) {
     return QuizSubmissionResultDto(
-      attemptId: json['attemptId'] as String? ?? '',
+      attemptId: json['attemptId']?.toString() ?? '',
       score: (json['score'] as num?)?.toInt() ?? 0,
       isPassed: json['isPassed'] as bool? ?? false,
       passingScore: (json['passingScore'] as num?)?.toInt() ?? 70,
       pointsAwarded: (json['pointsAwarded'] as num?)?.toInt() ?? 0,
       answers: (json['answers'] as List<dynamic>? ?? const [])
-          .map((e) => QuizAnswerEvaluationDto.fromJson(e as Map<String, dynamic>))
+          .whereType<Map<dynamic, dynamic>>()
+          .map((e) => QuizAnswerEvaluationDto.fromJson(Map<String, dynamic>.from(e)))
           .toList(),
     );
   }

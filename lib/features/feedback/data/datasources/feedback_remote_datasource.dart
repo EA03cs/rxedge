@@ -157,7 +157,7 @@ class FeedbackRemoteDatasourceImpl implements FeedbackRemoteDatasource {
         data: formData,
       );
       final map = ApiResponseParser.unwrapMap(response.data);
-      final rawUrl = map['url'] as String? ?? '';
+      final rawUrl = map['url']?.toString() ?? '';
       final resolved = UrlResolver.resolve(
         rawUrl,
         apiBaseUrl: dio!.options.baseUrl,

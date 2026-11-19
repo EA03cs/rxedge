@@ -32,21 +32,21 @@ class AppInfoDto {
     final rawTs = json['server_timestamp'] ?? json['timestamp'];
 
     return AppInfoDto(
-      appName: json['app_name'] as String? ??
-          json['appName'] as String? ??
+      appName: json['app_name']?.toString() ??
+          json['appName']?.toString() ??
           'RxEdge',
-      version: json['version'] as String? ?? '1.0.0',
-      buildNumber: json['build_number'] as String? ??
-          json['buildNumber'] as String? ??
+      version: json['version']?.toString() ?? '1.0.0',
+      buildNumber: json['build_number']?.toString() ??
+          json['buildNumber']?.toString() ??
           '1',
-      environment: json['environment'] as String? ??
-          json['env'] as String? ??
+      environment: json['environment']?.toString() ??
+          json['env']?.toString() ??
           defaultEnv,
-      apiEndpoint: json['api_endpoint'] as String? ??
-          json['apiEndpoint'] as String? ??
+      apiEndpoint: json['api_endpoint']?.toString() ??
+          json['apiEndpoint']?.toString() ??
           EnvConfig.baseUrl,
-      minSupportedVersion: json['min_supported_version'] as String? ??
-          json['minSupportedVersion'] as String? ??
+      minSupportedVersion: json['min_supported_version']?.toString() ??
+          json['minSupportedVersion']?.toString() ??
           '1.0.0',
       maintenanceMode: json['maintenance_mode'] as bool? ??
           json['maintenanceMode'] as bool? ??

@@ -96,8 +96,8 @@ class SyncService {
 
   Future<void> _replayItem(OfflineQueueItem item) async {
     final payload = Map<String, dynamic>.from(item.payload);
-    final localAttachmentPath = payload.remove('localAttachmentPath') as String?;
-    final localVoiceNotePath = payload.remove('localVoiceNotePath') as String?;
+    final localAttachmentPath = payload.remove('localAttachmentPath')?.toString();
+    final localVoiceNotePath = payload.remove('localVoiceNotePath')?.toString();
     payload.remove('localItemId');
 
     final pathsToDelete = <String>[];
@@ -155,7 +155,7 @@ class SyncService {
       data: formData,
     );
     final map = ApiResponseParser.unwrapMap(uploadResp.data);
-    final rawUrl = map['url'] as String? ?? '';
+    final rawUrl = map['url']?.toString() ?? '';
     final resolvedUrl = UrlResolver.resolve(
       rawUrl,
       apiBaseUrl: _dio.options.baseUrl,

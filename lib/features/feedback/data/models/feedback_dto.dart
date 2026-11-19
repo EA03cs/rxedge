@@ -75,17 +75,22 @@ class FeedbackItemDto {
     }
 
     String? resolvedRepliedBy;
-    if (json['repliedBy'] is String) {
-      resolvedRepliedBy = json['repliedBy'] as String;
+    final dynamic rawJsonRepliedBy = json['repliedBy'];
+    if (rawJsonRepliedBy is String) {
+      resolvedRepliedBy = rawJsonRepliedBy;
+    } else if (rawJsonRepliedBy is Map) {
+      resolvedRepliedBy = (rawJsonRepliedBy['name'] ?? rawJsonRepliedBy['displayName'])?.toString();
     } else if (repliedByUser?['name'] != null) {
       resolvedRepliedBy = repliedByUser!['name'].toString();
     } else if (rawRepliedBy is String) {
       resolvedRepliedBy = rawRepliedBy;
+    } else if (rawRepliedBy is Map) {
+      resolvedRepliedBy = (rawRepliedBy['name'] ?? rawRepliedBy['displayName'])?.toString();
     }
 
     String? resolvedProduct;
-    if (json['productName'] is String && (json['productName'] as String).isNotEmpty) {
-      resolvedProduct = json['productName'] as String;
+    if (json['productName'] != null && json['productName'] is! Map) {
+      resolvedProduct = json['productName'].toString();
     } else if (json['product'] is String) {
       resolvedProduct = json['product'] as String;
     } else if (json['product'] is Map) {
@@ -145,8 +150,12 @@ class FeedbackItemDto {
   static String _typeFromCategory(String? category) {
     switch (category) {
       case 'doctor_objection':
+      case 'drs_objection':
+      case 'Drs. Objection':
         return 'doctorObjection';
       case 'competitor_claim':
+      case 'competitors_activities':
+      case 'Competitors Activities':
         return 'competitorClaim';
       case 'general_field_feedback':
       default:
@@ -353,8 +362,8 @@ class FeedbackDraftDto {
 
   factory FeedbackDraftDto.fromJson(Map<String, dynamic> json) {
     String? resolvedProduct;
-    if (json['productName'] is String && (json['productName'] as String).isNotEmpty) {
-      resolvedProduct = json['productName'] as String;
+    if (json['productName'] != null && json['productName'] is! Map) {
+      resolvedProduct = json['productName'].toString();
     } else if (json['product'] is String) {
       resolvedProduct = json['product'] as String;
     } else if (json['product'] is Map) {
@@ -380,7 +389,7 @@ class FeedbackDraftDto {
       whereHeard: json['whereHeard']?.toString(),
       topic: json['topic']?.toString(),
       details: json['details']?.toString(),
-      hasAttachment: json['hasAttachment'] as bool? ?? false,
+      hasAttachment: json['hasAttachment'] == true,
     );
   }
 

@@ -79,6 +79,8 @@ class MaterialItemDto {
   final String? fileUrl;
   final String? thumbnailUrl;
   final int? slideOrder;
+  final int? quarter;
+  final int? year;
 
   const MaterialItemDto({
     required this.id,
@@ -98,32 +100,44 @@ class MaterialItemDto {
     this.fileUrl,
     this.thumbnailUrl,
     this.slideOrder,
+    this.quarter,
+    this.year,
   });
 
   factory MaterialItemDto.fromJson(Map<String, dynamic> json) {
-    final backendType = (json['type'] as String?)?.toLowerCase();
-    final mappedCategory = json['category'] as String? ??
+    final backendType = json['type']?.toString().toLowerCase();
+    final mappedCategory = json['category']?.toString() ??
         _categoryFromBackendType(backendType);
-    final mappedFileType = json['file_type'] as String? ??
+    final mappedFileType = json['file_type']?.toString() ??
         _fileTypeFromBackendType(backendType);
-    final updatedRaw = json['updated_at'] as String? ??
-        json['updatedAt'] as String? ??
-        json['createdAt'] as String? ??
+    final updatedRaw = json['updated_at']?.toString() ??
+        json['updatedAt']?.toString() ??
+        json['createdAt']?.toString() ??
         DateTime.now().toIso8601String();
     final version = (json['version'] as num?)?.toInt() ?? 1;
-    final resolvedBadge = json['badge'] as String? ??
-        _deriveBadge(version: version, createdAtRaw: json['createdAt'] as String?);
-    final fileUrl = json['file_url'] as String? ?? json['fileUrl'] as String?;
+    final resolvedBadge = json['badge']?.toString() ??
+        _deriveBadge(version: version, createdAtRaw: json['createdAt']?.toString());
+    final fileUrl = json['file_url']?.toString() ?? json['fileUrl']?.toString();
     final thumbnailUrl =
-        json['thumbnail_url'] as String? ?? json['thumbnailUrl'] as String?;
+        json['thumbnail_url']?.toString() ?? json['thumbnailUrl']?.toString();
     final rawSlides = json['slides'] as List<dynamic>? ?? const [];
 
+    String? resolvedProductName;
+    if (json['productName'] != null && json['productName'] is! Map) {
+      resolvedProductName = json['productName'].toString();
+    } else if (json['product_name'] != null && json['product_name'] is! Map) {
+      resolvedProductName = json['product_name'].toString();
+    } else if (json['product'] is Map) {
+      final pMap = json['product'] as Map;
+      resolvedProductName = (pMap['name'] ?? pMap['brandCode'])?.toString();
+    } else if (json['product'] != null) {
+      resolvedProductName = json['product'].toString();
+    }
+
     return MaterialItemDto(
-      id: json['id'] as String? ?? '',
-      title: json['title'] as String? ?? '',
-      productName: json['product_name'] as String? ??
-          json['productName'] as String? ??
-          '',
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      productName: resolvedProductName ?? '',
       category: mappedCategory,
       fileType: mappedFileType,
       fileSizeBytes: ((json['file_size_bytes'] ??
@@ -136,7 +150,7 @@ class MaterialItemDto {
       isFavorite: json['is_favorite'] as bool? ?? false,
       isDownloaded: json['is_downloaded'] as bool? ?? false,
       viewCount: (json['view_count'] as num?)?.toInt() ?? 0,
-      description: json['description'] as String? ?? '',
+      description: json['description']?.toString() ?? '',
       pageCount: (json['page_count'] as num?)?.toInt() ??
           (rawSlides.isNotEmpty ? rawSlides.length : 1),
       slides: rawSlides
@@ -146,18 +160,24 @@ class MaterialItemDto {
       thumbnailUrl: thumbnailUrl ??
           (mappedFileType == 'image' ? fileUrl : null),
       slideOrder: (json['slideOrder'] as num?)?.toInt(),
+      quarter: (json['quarter'] as num?)?.toInt(),
+      year: (json['year'] as num?)?.toInt(),
     );
   }
 
   static String _categoryFromBackendType(String? backendType) {
     switch (backendType) {
       case 'e_detailing':
+      case 'e_detailed_slides':
         return 'edetail';
-      case 'research_document':
-        return 'marketing';
+      case 'brochure':
+        return 'brochure';
+      case 'visual_aid':
       case 'product_packshot':
       case 'diagram':
         return 'visual_aid';
+      case 'research_document':
+        return 'marketing';
       case 'clinical_pdf':
       default:
         return 'brochure';
@@ -167,10 +187,14 @@ class MaterialItemDto {
   static String _fileTypeFromBackendType(String? backendType) {
     switch (backendType) {
       case 'e_detailing':
+      case 'e_detailed_slides':
         return 'edetail';
       case 'product_packshot':
       case 'diagram':
+      case 'image':
         return 'image';
+      case 'brochure':
+      case 'visual_aid':
       case 'clinical_pdf':
       case 'research_document':
       default:
@@ -272,6 +296,8 @@ class MaterialItemDto {
       slides: mappedSlides,
       fileUrl: fileUrl,
       thumbnailUrl: thumbnailUrl,
+      quarter: quarter,
+      year: year,
     );
   }
 }

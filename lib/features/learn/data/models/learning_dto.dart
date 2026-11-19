@@ -115,9 +115,9 @@ class LessonSectionDto {
 
   factory LessonSectionDto.fromJson(Map<String, dynamic> json) {
     return LessonSectionDto(
-      title: json['title'] as String? ?? '',
-      content: json['content'] as String? ?? '',
-      keyTakeaway: json['key_takeaway'] as String? ?? json['keyTakeaway'] as String?,
+      title: json['title']?.toString() ?? '',
+      content: json['content']?.toString() ?? '',
+      keyTakeaway: json['key_takeaway']?.toString() ?? json['keyTakeaway']?.toString(),
     );
   }
 
@@ -223,6 +223,7 @@ class LessonDto {
 class ProductPositioningDto {
   final String keyMessage;
   final List<String> targetDoctors;
+  final String? targetPatient;
   final List<String> keyBenefits;
   final List<String> dosageHighlights;
   final List<String> proofPoints;
@@ -230,6 +231,7 @@ class ProductPositioningDto {
   const ProductPositioningDto({
     required this.keyMessage,
     required this.targetDoctors,
+    this.targetPatient,
     required this.keyBenefits,
     required this.dosageHighlights,
     required this.proofPoints,
@@ -239,12 +241,17 @@ class ProductPositioningDto {
     return ProductPositioningDto(
       keyMessage: json['key_message']?.toString() ??
           json['keyMessage']?.toString() ??
+          json['keyPositioning']?.toString() ??
           '',
       targetDoctors: parseClinicalBulletList(
         json['target_doctors'] ?? json['targetDoctorSpecialties'],
       ),
+      targetPatient: json['target_patient']?.toString() ??
+          json['targetPatient']?.toString(),
       keyBenefits: parseClinicalBulletList(
-        json['key_benefits'] ?? json['keyBenefits'],
+        json['key_benefits'] ??
+            json['keyBenefits'] ??
+            json['keyProductBenefits'],
       ),
       dosageHighlights: parseClinicalBulletList(
         json['dosage_highlights'] ?? json['dosageHighlights'],
@@ -258,6 +265,7 @@ class ProductPositioningDto {
   Map<String, dynamic> toJson() => {
         'key_message': keyMessage,
         'target_doctors': targetDoctors,
+        if (targetPatient != null) 'target_patient': targetPatient,
         'key_benefits': keyBenefits,
         'dosage_highlights': dosageHighlights,
         'proof_points': proofPoints,
@@ -266,6 +274,7 @@ class ProductPositioningDto {
   ProductPositioningEntity toDomain() => ProductPositioningEntity(
         keyMessage: keyMessage,
         targetDoctors: targetDoctors,
+        targetPatient: targetPatient,
         keyBenefits: keyBenefits,
         dosageHighlights: dosageHighlights,
         proofPoints: proofPoints,
@@ -326,12 +335,157 @@ class CompetitorComparisonDto {
       );
 }
 
+class ProductPackShotDto {
+  final String id;
+  final String imageUrl;
+  final String? title;
+  final int orderIndex;
+
+  const ProductPackShotDto({
+    required this.id,
+    required this.imageUrl,
+    this.title,
+    this.orderIndex = 0,
+  });
+
+  factory ProductPackShotDto.fromJson(Map<String, dynamic> json) {
+    return ProductPackShotDto(
+      id: json['id']?.toString() ?? '',
+      imageUrl: json['imageUrl']?.toString() ??
+          json['image_url']?.toString() ??
+          json['url']?.toString() ??
+          '',
+      title: json['title']?.toString(),
+      orderIndex: (json['orderIndex'] as num?)?.toInt() ??
+          (json['order_index'] as num?)?.toInt() ??
+          0,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'imageUrl': imageUrl,
+        if (title != null) 'title': title,
+        'orderIndex': orderIndex,
+      };
+
+  ProductPackShotEntity toDomain() => ProductPackShotEntity(
+        id: id,
+        imageUrl: imageUrl,
+        title: title,
+        orderIndex: orderIndex,
+      );
+}
+
+class SupportingStudyDto {
+  final String id;
+  final String title;
+  final String fileUrl;
+  final String studyType;
+  final int orderIndex;
+
+  const SupportingStudyDto({
+    required this.id,
+    required this.title,
+    required this.fileUrl,
+    this.studyType = 'e_detailed_slides',
+    this.orderIndex = 0,
+  });
+
+  factory SupportingStudyDto.fromJson(Map<String, dynamic> json) {
+    return SupportingStudyDto(
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      fileUrl: json['fileUrl']?.toString() ??
+          json['file_url']?.toString() ??
+          json['url']?.toString() ??
+          '',
+      studyType: json['studyType']?.toString() ??
+          json['study_type']?.toString() ??
+          'e_detailed_slides',
+      orderIndex: (json['orderIndex'] as num?)?.toInt() ??
+          (json['order_index'] as num?)?.toInt() ??
+          0,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'fileUrl': fileUrl,
+        'studyType': studyType,
+        'orderIndex': orderIndex,
+      };
+
+  SupportingStudyEntity toDomain() => SupportingStudyEntity(
+        id: id,
+        title: title,
+        fileUrl: fileUrl,
+        studyType: studyType,
+        orderIndex: orderIndex,
+      );
+}
+
+class ProductFaqDto {
+  final String id;
+  final String question;
+  final String answer;
+  final int orderIndex;
+
+  const ProductFaqDto({
+    required this.id,
+    required this.question,
+    required this.answer,
+    this.orderIndex = 0,
+  });
+
+  factory ProductFaqDto.fromJson(Map<String, dynamic> json) {
+    String q = json['question']?.toString() ?? '';
+    String a = json['answer']?.toString() ?? '';
+
+    final trans = json['translations'] as List<dynamic>?;
+    if ((q.isEmpty || a.isEmpty) && trans != null && trans.isNotEmpty) {
+      final first = trans.first;
+      if (first is Map) {
+        q = first['question']?.toString() ?? q;
+        a = first['answer']?.toString() ?? a;
+      }
+    }
+
+    return ProductFaqDto(
+      id: json['id']?.toString() ?? '',
+      question: q,
+      answer: a,
+      orderIndex: (json['orderIndex'] as num?)?.toInt() ??
+          (json['order_index'] as num?)?.toInt() ??
+          0,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'question': question,
+        'answer': answer,
+        'orderIndex': orderIndex,
+      };
+
+  ProductFaqEntity toDomain() => ProductFaqEntity(
+        id: id,
+        question: question,
+        answer: answer,
+        orderIndex: orderIndex,
+      );
+}
+
 class ProductLearningDto {
   final String id;
   final String name;
   final String therapeuticArea;
   final bool isRecommended;
   final String? boxImageUrl;
+  final List<ProductPackShotDto> packShots;
+  final List<SupportingStudyDto> supportingStudies;
+  final List<ProductFaqDto> faqs;
   final ProductPositioningDto positioning;
   final List<CompetitorComparisonDto> competitors;
   final List<LessonDto> lessons;
@@ -342,6 +496,9 @@ class ProductLearningDto {
     required this.therapeuticArea,
     required this.isRecommended,
     this.boxImageUrl,
+    this.packShots = const [],
+    this.supportingStudies = const [],
+    this.faqs = const [],
     required this.positioning,
     required this.competitors,
     required this.lessons,
@@ -351,6 +508,24 @@ class ProductLearningDto {
     final positioningSource = json['positioning'] is Map
         ? Map<String, dynamic>.from(json['positioning'] as Map)
         : json;
+
+    final rawPackShots = json['packShots'] ?? json['pack_shots'];
+    final packShots = (rawPackShots as List<dynamic>? ?? [])
+        .whereType<Map<dynamic, dynamic>>()
+        .map((e) => ProductPackShotDto.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
+
+    final rawStudies = json['supportingStudies'] ?? json['supporting_studies'];
+    final supportingStudies = (rawStudies as List<dynamic>? ?? [])
+        .whereType<Map<dynamic, dynamic>>()
+        .map((e) => SupportingStudyDto.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
+
+    final rawFaqs = json['faqs'] ?? json['faq'];
+    final faqs = (rawFaqs as List<dynamic>? ?? [])
+        .whereType<Map<dynamic, dynamic>>()
+        .map((e) => ProductFaqDto.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
 
     return ProductLearningDto(
       id: json['id']?.toString() ?? '',
@@ -363,6 +538,9 @@ class ProductLearningDto {
           json['is_recommended'] as bool? ?? json['isRecommended'] as bool? ?? false,
       boxImageUrl:
           json['box_image_url']?.toString() ?? json['boxImageUrl']?.toString(),
+      packShots: packShots,
+      supportingStudies: supportingStudies,
+      faqs: faqs,
       positioning: ProductPositioningDto.fromJson(positioningSource),
       competitors: (json['competitors'] as List<dynamic>? ?? [])
           .whereType<Map<dynamic, dynamic>>()
@@ -381,6 +559,9 @@ class ProductLearningDto {
         'therapeutic_area': therapeuticArea,
         'is_recommended': isRecommended,
         if (boxImageUrl != null) 'box_image_url': boxImageUrl,
+        'pack_shots': packShots.map((e) => e.toJson()).toList(),
+        'supporting_studies': supportingStudies.map((e) => e.toJson()).toList(),
+        'faqs': faqs.map((e) => e.toJson()).toList(),
         'positioning': positioning.toJson(),
         'competitors': competitors.map((e) => e.toJson()).toList(),
         'lessons': lessons.map((e) => e.toJson()).toList(),
@@ -392,6 +573,9 @@ class ProductLearningDto {
         therapeuticArea: therapeuticArea,
         isRecommended: isRecommended,
         boxImageUrl: boxImageUrl,
+        packShots: packShots.map((e) => e.toDomain()).toList(),
+        supportingStudies: supportingStudies.map((e) => e.toDomain()).toList(),
+        faqs: faqs.map((e) => e.toDomain()).toList(),
         positioning: positioning.toDomain(),
         competitors: competitors.map((e) => e.toDomain()).toList(),
         lessons: lessons.map((e) => e.toDomain()).toList(),
