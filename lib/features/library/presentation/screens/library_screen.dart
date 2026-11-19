@@ -34,6 +34,15 @@ class LibraryScreen extends ConsumerWidget {
   const LibraryScreen({super.key});
 
   void _openViewer(BuildContext context, MaterialItemEntity item) {
+    if (item.fileUrl == null || item.fileUrl!.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('هذه المادة قيد الإعداد والمراجعة الطبية وستتوفر قريباً.'),
+        ),
+      );
+      return;
+    }
+
     // If it's a Google Drive or external web link, launch safely in external application
     if (item.fileUrl != null &&
         (item.fileUrl!.contains('drive.google.com') ||

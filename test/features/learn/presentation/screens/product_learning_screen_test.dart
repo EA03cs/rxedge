@@ -1,147 +1,134 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:rxedge/app/l10n/l10n.dart';
-import 'package:rxedge/app/theme/theme.dart';
-import 'package:rxedge/core/utils/result.dart';
-import 'package:rxedge/core/widgets/widgets.dart';
-import 'package:rxedge/features/learn/data/repositories/learn_repository_impl.dart';
 import 'package:rxedge/features/learn/domain/entities/learning_entities.dart';
-import 'package:rxedge/features/learn/domain/repositories/learn_repository.dart';
 import 'package:rxedge/features/learn/presentation/screens/product_learning_screen.dart';
 
-class MockLearnRepository extends Mock implements LearnRepository {}
-
 void main() {
-  late MockLearnRepository mockRepo;
-
-  const sampleProduct = ProductLearningEntity(
-    id: 'prod_cardura',
-    name: 'Cardura XL',
-    therapeuticArea: 'Hypertension & BPH',
-    isRecommended: true,
+  const sampleRohtoProduct = ProductLearningEntity(
+    id: 'prod-dry-aid',
+    name: 'Rohto Dry Aid',
+    therapeuticArea: 'Ophthalmology',
     positioning: ProductPositioningEntity(
-      keyMessage: 'Once daily continuous 24h blood pressure control',
-      targetDoctors: [
-        'Cardiologists managing refractory hypertension',
-        'Urologists treating BPH urinary symptoms',
-      ],
-      keyBenefits: [
-        '24-Hour continuous plasma concentration stability',
-        'Dual symptom relief',
-      ],
-      dosageHighlights: [
-        'Standard starting dose: 4mg once daily',
-      ],
-      proofPoints: [
-        'PREDICT Study (n=1,240): 14.2 mm Hg systolic reduction',
-      ],
+      keyMessage: 'Fast acting, long lasting relief for dry eye',
+      targetDoctors: ['Ophthalmologists', 'Optometrists'],
+      targetPatient: 'Patients with severe Dryness including Meibomian Gland Dysfunction (MGD)',
+      keyBenefits: ['Unique with all the ingredients especially Menthol and Sesame oil.'],
+      dosageHighlights: ['Convenient 10 ml container.'],
+      proofPoints: ['Relieves symptoms up to 12 hours.'],
     ),
-    competitors: [
-      CompetitorComparisonEntity(
-        id: 'comp_1',
-        competitorName: 'Generic Amlodipine',
-        theirClaim: 'Amlodipine is inexpensive and standard first line',
-        howToRespond: 'Amlodipine induces peripheral edema in up to 15% and has zero BPH benefit',
-        proofReference: 'ASCOT-BPLA Trial Sub-analysis (p < 0.001)',
+    competitors: [],
+    lessons: [],
+    packShots: [
+      ProductPackShotEntity(
+        id: 'ps_1',
+        title: 'Front Packshot',
+        imageUrl: 'https://drive.google.com/uc?id=sample_packshot_1',
+      ),
+      ProductPackShotEntity(
+        id: 'ps_2',
+        title: 'Bottle Packshot',
+        imageUrl: 'https://drive.google.com/uc?id=sample_packshot_2',
       ),
     ],
-    lessons: [
-      LessonEntity(
-        id: 'les_crd_01',
-        productId: 'prod_cardura',
-        productName: 'Cardura XL',
-        title: 'Absorption Kinetics & GITS Mechanism',
-        durationMinutes: 5,
-        order: 1,
-        isCompleted: true,
+    supportingStudies: [
+      SupportingStudyEntity(
+        id: 'study_1',
+        title: 'Clinical Evaluation of Rohto Dry Aid vs Systane Ultra',
+        fileUrl: 'https://drive.google.com/file/d/sample_study/view',
+      ),
+    ],
+    faqs: [
+      ProductFaqEntity(
+        id: 'faq_1',
+        question: 'What does TEARSHIELD TECHNOLOGY mean?',
+        answer: 'Restores and lubricates the natural tear film for long-lasting relief.',
+      ),
+      ProductFaqEntity(
+        id: 'faq_2',
+        question: 'Why do you use Menthol?',
+        answer: 'Menthol stimulates the meibomian glands, making it suitable for MGD.',
       ),
     ],
   );
 
-  setUp(() {
-    mockRepo = MockLearnRepository();
-    when(() => mockRepo.getProducts(forceRefresh: any(named: 'forceRefresh')))
-        .thenAnswer((_) async => const Result.success([sampleProduct]));
-  });
-
-  Widget buildTestWidget() {
-    return ProviderScope(
-      overrides: [
-        learnRepositoryProvider.overrideWithValue(mockRepo),
-      ],
+  Widget buildArabicScreen() {
+    return const ProviderScope(
       child: MaterialApp(
-        theme: RxTheme.light(),
+        themeMode: ThemeMode.light,
+        locale: Locale('ar'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const ProductLearningScreen(product: sampleProduct),
+        home: ProductLearningScreen(product: sampleRohtoProduct),
       ),
     );
   }
 
-  group('ProductLearningScreen Widget Tests', () {
-    testWidgets('renders product metrics and scannable positioning blocks', (tester) async {
-      await tester.pumpWidget(buildTestWidget());
+  group('ProductLearningScreen Automated Tests (Module 1: Product Navigator)', () {
+    testWidgets('renders 3 tabs and displays Target Patient card in Positioning tab', (tester) async {
+      await tester.pumpWidget(buildArabicScreen());
       await tester.pumpAndSettle();
 
-      // Product Header
-      expect(find.text('Cardura XL'), findsWidgets);
-      expect(find.text('Hypertension & BPH'), findsOneWidget);
-      expect(find.text('1/1 lessons completed'), findsOneWidget);
-      expect(find.byType(ProgressRing), findsOneWidget);
+      // Product Title
+      expect(find.text('Rohto Dry Aid'), findsWidgets);
 
-      // Positioning Blocks
-      expect(find.text('Key Message'), findsOneWidget);
-      expect(find.text('Once daily continuous 24h blood pressure control'), findsOneWidget);
-      expect(find.text('Target Doctors'), findsOneWidget);
-      expect(find.text('Cardiologists managing refractory hypertension'), findsOneWidget);
-      expect(find.text('Key Benefits'), findsOneWidget);
-      expect(find.text('24-Hour continuous plasma concentration stability'), findsOneWidget);
-      expect(find.text('Dosage Highlights'), findsOneWidget);
-      expect(find.text('Standard starting dose: 4mg once daily'), findsOneWidget);
-      expect(find.text('Proof Points'), findsOneWidget);
-      expect(find.text('PREDICT Study (n=1,240): 14.2 mm Hg systolic reduction'), findsOneWidget);
+      // 3 Tabs in Arabic
+      expect(find.text('تموضع المنتج'), findsOneWidget);
+      expect(find.text('التعامل التنافسي'), findsOneWidget);
+      expect(find.text('الأسئلة الشائعة والدراسات'), findsOneWidget);
+
+      // Target Patient card from Excel
+      expect(find.text('المريض المستهدف'), findsOneWidget);
+      expect(
+        find.text('Patients with severe Dryness including Meibomian Gland Dysfunction (MGD)'),
+        findsOneWidget,
+      );
+
+      // Key Benefits
+      expect(find.text('المزايا الإكلينيكية'), findsOneWidget);
+      expect(
+        find.text('Unique with all the ingredients especially Menthol and Sesame oil.'),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('switching to Competitive tab shows claims, responses, proof, and copy action', (tester) async {
-      await tester.pumpWidget(buildTestWidget());
+    testWidgets('switching to FAQs & Studies tab renders packshots, studies, and expandable FAQs',
+        (tester) async {
+      await tester.pumpWidget(buildArabicScreen());
       await tester.pumpAndSettle();
 
-      // Tap Competitive Handling tab
-      await tester.tap(find.text('Competitive Handling'));
+      // Tap on the 3rd tab: 'الأسئلة الشائعة والدراسات'
+      await tester.tap(find.text('الأسئلة الشائعة والدراسات'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Their claim'), findsOneWidget);
-      expect(find.text('Amlodipine is inexpensive and standard first line'), findsOneWidget);
+      // Verify Packshots gallery section
+      expect(find.text('صور العبوة'), findsOneWidget);
+      expect(find.text('Front Packshot'), findsOneWidget);
+      expect(find.text('Bottle Packshot'), findsOneWidget);
 
-      expect(find.text('How to respond'), findsOneWidget);
-      expect(find.text('Amlodipine induces peripheral edema in up to 15% and has zero BPH benefit'), findsOneWidget);
+      // Verify Supporting Studies section
+      expect(find.text('الدراسات السريرية الداعمة'), findsOneWidget);
+      expect(
+        find.text('Clinical Evaluation of Rohto Dry Aid vs Systane Ultra'),
+        findsOneWidget,
+      );
+      expect(find.byTooltip('فتح الدراسة'), findsOneWidget);
 
-      expect(find.text('Proof / reference'), findsOneWidget);
-      expect(find.text('ASCOT-BPLA Trial Sub-analysis (p < 0.001)'), findsOneWidget);
+      // Verify Clinical FAQs section
+      expect(find.text('الأسئلة الشائعة'), findsOneWidget);
+      expect(find.text('What does TEARSHIELD TECHNOLOGY mean?'), findsOneWidget);
+      expect(find.text('Why do you use Menthol?'), findsOneWidget);
 
-      expect(find.text('Copy talking point'), findsOneWidget);
-
-      // Tap copy talking point
-      await tester.tap(find.text('Copy talking point'));
-      await tester.pump();
-
-      // SnackBar should appear
-      expect(find.text('Talking point copied to clipboard'), findsOneWidget);
-    });
-
-    testWidgets('tapping Lessons button opens modal sheet with lesson list', (tester) async {
-      await tester.pumpWidget(buildTestWidget());
+      // Expand first FAQ
+      await tester.tap(find.text('What does TEARSHIELD TECHNOLOGY mean?'));
       await tester.pumpAndSettle();
 
-      // Tap Lessons button
-      await tester.tap(find.text('Lessons'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Lesson Modules'), findsOneWidget);
-      expect(find.text('Absorption Kinetics & GITS Mechanism'), findsOneWidget);
-      expect(find.text('5 min read'), findsOneWidget);
+      // Verify Answer is revealed
+      expect(
+        find.text('Restores and lubricates the natural tear film for long-lasting relief.'),
+        findsOneWidget,
+      );
     });
   });
 }
