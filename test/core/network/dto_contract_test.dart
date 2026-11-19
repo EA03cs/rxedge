@@ -240,11 +240,35 @@ void main() {
         'targetScreen': 'feedback_detail',
         'targetId': 'fb-456',
       });
+      final fromGamification = NotificationDto.fromJson(<String, dynamic>{
+        'id': 'notif-3',
+        'type': 'new_challenge',
+        'title': 'تحدي جديد',
+        'body': 'انطلق تحدي الإتقان الميداني',
+        'targetScreen': 'gamification',
+      });
+      final fromMedia = NotificationDto.fromJson(<String, dynamic>{
+        'id': 'notif-4',
+        'type': 'new_material',
+        'title': 'مادة جديدة',
+        'body': 'شرائح جديدة',
+        'targetScreen': 'media',
+      });
+      final fromHome = NotificationDto.fromJson(<String, dynamic>{
+        'id': 'notif-5',
+        'type': 'quiz_reminder',
+        'title': 'تنبيه',
+        'body': 'مرحبا بك',
+        'targetScreen': 'HOME',
+      });
 
       expect(fromSlash.targetRoute, '/feedback/detail');
       expect(fromSlash.targetId, 'fb-123');
       expect(fromSnake.targetRoute, '/feedback/detail');
       expect(fromSnake.targetId, 'fb-456');
+      expect(fromGamification.targetRoute, '/challenges');
+      expect(fromMedia.targetRoute, '/library');
+      expect(fromHome.targetRoute, isNull);
     });
 
     test('FeedbackLocalDatasourceImpl queues localAttachmentPath for offline photo replay', () async {

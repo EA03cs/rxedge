@@ -95,28 +95,32 @@ class NotificationsScreen extends ConsumerWidget {
         if (!item.isRead) {
           ref.read(notificationsControllerProvider.notifier).markAsRead(item.id);
         }
-        if (item.targetRoute != null && context.mounted) {
-          final route = item.targetRoute!;
-          if (route == AppRoutes.feedbackDetail) {
-            final targetId = item.targetId?.trim();
-            if (targetId != null && targetId.isNotEmpty) {
-              context.push(
-                '${AppRoutes.feedbackDetail}?id=${Uri.encodeQueryComponent(targetId)}',
-              );
-            } else {
-              context.go(AppRoutes.feedback);
-            }
-          } else if (route == '/home' ||
-              route == '/learn' ||
-              route == '/library' ||
-              route == '/challenges' ||
-              route == '/feedback' ||
-              route == '/profile') {
-            context.go(route);
-          } else {
-            context.push(route);
-          }
+        final route = item.targetRoute?.trim();
+        // Skip navigation if target is empty, null, or points to Home
+        if (route == null || route.isEmpty || route == '/home' || route == 'home') {
+          return;
         }
+
+        if (!context.mounted) return;
+
+        if (route == AppRoutes.feedbackDetail) {
+          final targetId = item.targetId?.trim();
+          if (targetId != null && targetId.isNotEmpty) {
+            context.push(
+              '${AppRoutes.feedbackDetail}?id=${Uri.encodeQueryComponent(targetId)}',
+            );
+          } else {
+            context.go(AppRoutes.feedback);
+          }
+        } else if (route == AppRoutes.learn ||
+            route == AppRoutes.library ||
+            route == AppRoutes.challenges ||
+            route == AppRoutes.feedback) {
+          context.go(route);
+        } else if (route == AppRoutes.profile || route == AppRoutes.search) {
+          context.push(route);
+        }
+        // Any other unrecognized route is safely ignored, preventing GoException crashes
       },
       borderRadius: RxRadii.borderCard,
       child: Container(

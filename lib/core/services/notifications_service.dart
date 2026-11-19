@@ -22,8 +22,20 @@ class NotificationPayload {
 class NotificationsService {
   void handleNotificationTap(NotificationPayload payload, {void Function(String route)? navigateTo}) {
     AppLogger.i('Notification tapped: ${payload.title} -> target: ${payload.targetRoute}');
-    if (payload.targetRoute != null && navigateTo != null) {
-      navigateTo(payload.targetRoute!);
+    final route = payload.targetRoute?.trim();
+    if (route == null || route.isEmpty || route == '/home' || route == 'home') {
+      return;
+    }
+    if (navigateTo != null) {
+      if (route == '/learn' ||
+          route == '/library' ||
+          route == '/challenges' ||
+          route == '/feedback' ||
+          route == '/feedback/detail' ||
+          route == '/profile' ||
+          route == '/search') {
+        navigateTo(route);
+      }
     }
   }
 }

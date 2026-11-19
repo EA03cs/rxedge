@@ -70,48 +70,65 @@ class NotificationDto {
   }
 
   static String? _normalizeRoute(String? rawScreen, String rawType) {
-    if (rawScreen == null || rawScreen.trim().isEmpty) {
-      switch (_normalizeType(rawType)) {
-        case 'feedbackReply':
-          return '/feedback';
-        case 'newMaterial':
-          return '/library';
-        case 'newChallenge':
-        case 'quizReminder':
-          return '/challenges';
-      }
+    final cleaned = rawScreen?.trim() ?? '';
+    final normalized = cleaned.toLowerCase().replaceAll(RegExp(r'^/+'), '');
+
+    // 1. Home / Dashboard: do NOT navigate away (informative notification)
+    if (normalized == 'home' || normalized == 'dashboard') {
       return null;
     }
-    final cleaned = rawScreen.trim();
-    if (cleaned.startsWith('/')) {
-      if (cleaned == '/feedback/detail' || cleaned == '/feedback_detail') {
-        return '/feedback/detail';
-      }
-      return cleaned;
-    }
-    switch (cleaned.toLowerCase()) {
-      case 'feedback':
-        return '/feedback';
-      case 'feedback_detail':
-      case 'feedback/detail':
-        return '/feedback/detail';
-      case 'library':
-      case 'materials':
-      case 'material_detail':
-        return '/library';
+
+    // 2. Specific feature mapping to valid app routes
+    switch (normalized) {
+      case 'gamification':
+      case 'gamification/challenges':
       case 'challenges':
       case 'quizzes':
       case 'quiz':
         return '/challenges';
+
+      case 'media':
+      case 'library':
+      case 'materials':
+      case 'material_detail':
+      case 'marketing_hub':
+        return '/library';
+
+      case 'feedback':
+      case 'rep_voice':
+      case 'objection':
+      case 'objections':
+        return '/feedback';
+
+      case 'feedback/detail':
+      case 'feedback_detail':
+        return '/feedback/detail';
+
       case 'learn':
       case 'lesson':
+      case 'product':
+      case 'products':
+      case 'product_navigator':
         return '/learn';
-      case 'home':
-        return '/home';
+
       case 'profile':
         return '/profile';
+
+      case 'search':
+        return '/search';
+    }
+
+    // 3. Fallback based on notification type if screen was not directly matched
+    switch (_normalizeType(rawType)) {
+      case 'feedbackReply':
+        return '/feedback';
+      case 'newMaterial':
+        return '/library';
+      case 'newChallenge':
+      case 'quizReminder':
+        return '/challenges';
       default:
-        return '/$cleaned';
+        return null;
     }
   }
 

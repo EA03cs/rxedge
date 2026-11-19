@@ -365,8 +365,16 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       child: InkWell(
         onTap: () {
           ref.read(recentSearchesProvider.notifier).addSearch(_activeQuery);
-          if (item.targetRoute != null && context.mounted) {
-            context.push(item.targetRoute!);
+          final route = item.targetRoute?.trim();
+          if (route != null && route.isNotEmpty && context.mounted) {
+            if (route == '/learn' ||
+                route == '/library' ||
+                route == '/challenges' ||
+                route == '/feedback') {
+              context.go(route);
+            } else if (route == '/profile' || route == '/search' || route == '/feedback/detail') {
+              context.push(route);
+            }
           }
         },
         borderRadius: RxRadii.borderCard,

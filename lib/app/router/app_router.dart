@@ -20,6 +20,7 @@ import '../../features/library/presentation/screens/library_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/search/presentation/screens/search_screen.dart';
+import '../../core/services/logger_service.dart';
 import '../l10n/l10n.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -70,6 +71,10 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: AppRoutes.splash,
     refreshListenable: routerListenable,
     debugLogDiagnostics: false,
+    errorBuilder: (context, state) {
+      AppLogger.w('Unrecognized route accessed: ${state.uri}', tag: 'Router');
+      return const HomeScreen();
+    },
     redirect: (context, state) {
       final authState = ref.read(authControllerProvider);
       final location = state.matchedLocation;
