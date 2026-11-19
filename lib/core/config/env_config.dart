@@ -35,9 +35,9 @@ abstract final class EnvConfig {
   /// Base server origin without `/api/v1`, used to resolve relative `/uploads/...` URLs.
   static String get serverOrigin => UrlResolver.originFromApiBaseUrl(baseUrl);
   static String get appName =>
-      FlavorConfig.isInitialized ? FlavorConfig.instance.appName : 'RxEdge (Test)';
+      FlavorConfig.isInitialized ? FlavorConfig.instance.appName : 'RxEdge';
   static bool get enableLogging =>
-      FlavorConfig.isInitialized ? FlavorConfig.instance.enableLogging : true;
+      FlavorConfig.isInitialized ? FlavorConfig.instance.enableLogging : kDebugMode;
   static Duration get connectTimeout =>
       FlavorConfig.isInitialized ? FlavorConfig.instance.connectTimeout : const Duration(seconds: 15);
   static Duration get receiveTimeout =>

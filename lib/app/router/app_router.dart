@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -73,8 +74,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       final authState = ref.read(authControllerProvider);
       final location = state.matchedLocation;
 
-      // Allow direct access to Design System Showcase and Diagnostics in dev
-      if (location == AppRoutes.showcase || location == AppRoutes.appInfo) {
+      // Allow direct access to Design System Showcase only in debug mode
+      if ((kDebugMode && location == AppRoutes.showcase) || location == AppRoutes.appInfo) {
         return null;
       }
 

@@ -16,7 +16,7 @@ void main() async {
     flavor: AppFlavor.prod,
     appName: 'RxEdge',
     apiBaseUrl: EnvConfig.defaultLiveBaseUrl,
-    enableLogging: true,
+    enableLogging: false,
   );
 
   SystemChrome.setSystemUIOverlayStyle(
