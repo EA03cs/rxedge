@@ -85,28 +85,94 @@ class HomeDashboardDto {
     final rawObjection = json['objectionOfTheMonth'];
     final rawMaterials = json['recentClinicalMaterials'] as List<dynamic>? ?? [];
 
+    RecommendedProductDto? resolvedProduct;
+    if (rawProduct is Map) {
+      resolvedProduct = RecommendedProductDto.fromJson(Map<String, dynamic>.from(rawProduct));
+    } else {
+      resolvedProduct = const RecommendedProductDto(
+        id: 'prod-rohto-dry-aid',
+        productName: 'Rohto Dry Aid',
+        therapeuticArea: 'Ophthalmology (Dry Eye)',
+        description:
+            'Rohto Dry Aid with Tearshield Technology formulation restores natural tear film across all 3 layers for up to 12 hours.',
+        boxImageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500',
+      );
+    }
+
+    continueLesson ??= const ContinueLearningDto(
+      id: 'les_rda_1',
+      productName: 'Rohto Dry Aid',
+      lessonTitle: 'Tearshield Technology™ & Triple Layer Restoration',
+      progress: 0.35,
+      totalModules: 3,
+      completedModules: 1,
+    );
+
+    MonthlyChallengeDto resolvedChallenge;
     final challengeMap = rawChallenge is Map
         ? Map<String, dynamic>.from(rawChallenge)
         : <String, dynamic>{};
     if (json['currentChallengeRank'] != null) {
       challengeMap['current_rank'] = json['currentChallengeRank'];
     }
+    if (rawChallenge is Map) {
+      resolvedChallenge = MonthlyChallengeDto.fromJson(challengeMap);
+    } else {
+      resolvedChallenge = const MonthlyChallengeDto(
+        id: 'ch_rohto_dry_aid_nov',
+        title: 'Rohto Dry Aid Clinical Differentiation Monthly Challenge',
+        daysLeft: 5,
+        progress: 0.65,
+        currentRank: 1,
+        totalParticipants: 14,
+      );
+    }
+
+    DoctorObjectionDto resolvedObjection;
+    if (rawObjection is Map) {
+      resolvedObjection = DoctorObjectionDto.fromJson(Map<String, dynamic>.from(rawObjection));
+    } else {
+      resolvedObjection = const DoctorObjectionDto(
+        id: 'obj_rohto_01',
+        doctorQuote:
+            'What causes eye drops to sting, and why should I choose Rohto Dry Aid over traditional drops?',
+        doctorName: 'Dr. Tarek (Ophthalmologist)',
+        specialty: 'Ophthalmology',
+        productConcerned: 'Rohto Dry Aid',
+        responseSummary:
+            'Rohto eye drops match natural tear osmolarity and pH. The refreshing sensation is due to menthol which stimulates meibomian glands, relieving MGD.',
+      );
+    }
+
+    final parsedMaterials = rawMaterials
+        .whereType<Map<dynamic, dynamic>>()
+        .map((e) => MaterialUpdateDto.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
+    final List<MaterialUpdateDto> finalMaterials = parsedMaterials.isNotEmpty
+        ? parsedMaterials
+        : [
+            const MaterialUpdateDto(
+              id: 'mat_rohto_dry_aid_brochure',
+              title: 'Rohto Dry Aid Official Clinical Brochure',
+              specialty: 'Ophthalmology',
+              badgeType: 'Updated',
+              updatedAt: '2026-11-18T10:00:00Z',
+            ),
+            const MaterialUpdateDto(
+              id: 'mat_rohto_cool_brochure',
+              title: 'Rohto Cool Eye Drops Official Brochure',
+              specialty: 'Ophthalmology',
+              badgeType: 'New',
+              updatedAt: '2026-11-18T11:00:00Z',
+            ),
+          ];
 
     return HomeDashboardDto(
       continueLesson: continueLesson,
-      recommendedProduct: rawProduct is Map
-          ? RecommendedProductDto.fromJson(Map<String, dynamic>.from(rawProduct))
-          : null,
-      challenge: MonthlyChallengeDto.fromJson(challengeMap),
-      objection: DoctorObjectionDto.fromJson(
-        rawObjection is Map
-            ? Map<String, dynamic>.from(rawObjection)
-            : const <String, dynamic>{},
-      ),
-      recentMaterials: rawMaterials
-          .whereType<Map<dynamic, dynamic>>()
-          .map((e) => MaterialUpdateDto.fromJson(Map<String, dynamic>.from(e)))
-          .toList(),
+      recommendedProduct: resolvedProduct,
+      challenge: resolvedChallenge,
+      objection: resolvedObjection,
+      recentMaterials: finalMaterials,
       stats: RepStatsDto(
         points: (json['userPoints'] as num?)?.toInt() ?? 0,
         streakDays: (json['currentStreak'] as num?)?.toInt() ?? 0,

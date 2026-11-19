@@ -9,6 +9,7 @@ import '../../domain/entities/challenges_entities.dart';
 import '../../domain/repositories/challenges_repository.dart';
 import '../datasources/challenges_local_datasource.dart';
 import '../datasources/challenges_remote_datasource.dart';
+import '../models/challenges_dto.dart';
 
 /// Repository Implementation for Challenges & Professional Gamification
 class ChallengesRepositoryImpl implements ChallengesRepository {
@@ -19,6 +20,126 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
   List<QuickQuizEntity>? _memoryQuickQuizzes;
   ObjectionOfTheMonthEntity? _memoryObjection;
   final List<QuizResultHistoryEntity> _localQuizHistory = [];
+
+  static const QuickQuizDto rohtoDryAidQuiz = QuickQuizDto(
+    id: 'quiz_rohto_dry_aid_01',
+    title: 'Rohto Dry Aid Clinical Differentiation Quiz',
+    category: 'Ophthalmology (Dry Eye)',
+    durationMinutes: 3,
+    rewardPoints: 50,
+    isCompleted: false,
+    lastScore: null,
+    lastMaxScore: 4,
+    questions: [
+      QuizQuestionDto(
+        id: 'q_rda_01',
+        question:
+            'How does Rohto Dry Aid with Tearshield Technology restore moisture to the tear film?',
+        options: [
+          'Acts only on the outer lipid layer to reduce evaporation',
+          'Restores moisture by working on all 3 layers (lipid, aqueous, mucin) to mimic a stable, natural tear',
+          'Temporarily lubricates the ocular surface without affecting tear composition',
+          'Inhibits tear secretion to reduce ocular surface drainage',
+        ],
+        correctOptionIndex: 1,
+        explanation:
+            'Unlike drops that work on only one layer, Rohto Dry Aid works on all 3 tear layers to mimic a stable, natural tear.',
+      ),
+      QuizQuestionDto(
+        id: 'q_rda_02',
+        question:
+            'What is the recommended period to discard Rohto Dry Aid after first opening?',
+        options: [
+          '1 month',
+          '2 months',
+          '3 months',
+          '6 months',
+        ],
+        correctOptionIndex: 2,
+        explanation:
+            'Rohto Dry Aid is available and safe for use up to 3 months after its very first opening.',
+      ),
+      QuizQuestionDto(
+        id: 'q_rda_03',
+        question:
+            'Why is Menthol formulated in Rohto Dry Aid?',
+        options: [
+          'Solely to mask chemical fragrance',
+          'To stimulate meibomian glands and enhance the tear lipid layer for MGD relief',
+          'To act as a strong local anesthetic agent',
+          'To lower intraocular pressure',
+        ],
+        correctOptionIndex: 1,
+        explanation:
+            'Menthol invigorates the eye and stimulates meibomian glands, making it particularly beneficial for MGD.',
+      ),
+      QuizQuestionDto(
+        id: 'q_rda_04',
+        question:
+            'What is the clinically proven duration of symptom relief provided by Rohto Dry Aid?',
+        options: [
+          '2 to 4 hours',
+          '6 to 8 hours',
+          'Up to 12 hours',
+          '24 to 48 hours',
+        ],
+        correctOptionIndex: 2,
+        explanation:
+            'Clinical evaluations demonstrated that Rohto Dry Aid provides fast-acting, non-blurring relief lasting up to 12 hours.',
+      ),
+    ],
+  );
+
+  static final MonthlyChallengeDto rohtoMonthlyChallenge = MonthlyChallengeDto(
+    id: 'ch_rohto_dry_aid_nov',
+    title: 'Rohto Dry Aid Clinical Differentiation Monthly Challenge',
+    deadlineIso: DateTime.now().add(const Duration(days: 5)).toIso8601String(),
+    rules: const [
+      'Complete the Rohto Dry Aid Clinical Quiz with a minimum 70% passing score.',
+      'One attempt permitted per participant (no retakes allowed).',
+      'Earn your Q4 Eye-Know Excellence badge upon successful completion.',
+    ],
+    currentProgress: 0.65,
+    completedMilestones: 2,
+    totalMilestones: 3,
+    userRank: 1,
+    totalParticipants: 14,
+    rewards: const [
+      'Q4 Eye-Know Clinical Master (+150 pts)',
+    ],
+    leaderboard: const [
+      LeaderboardEntryDto(
+        rank: 1,
+        repName: 'Ahmed Mostafa (You)',
+        territory: 'Cairo North Territory',
+        points: 195,
+        isCurrentUser: true,
+        avatarInitials: 'AM',
+      ),
+      LeaderboardEntryDto(
+        rank: 2,
+        repName: 'Sara Khaled',
+        territory: 'Alexandria Central',
+        points: 170,
+        isCurrentUser: false,
+        avatarInitials: 'SK',
+      ),
+      LeaderboardEntryDto(
+        rank: 3,
+        repName: 'Karim Nabil',
+        territory: 'Giza West',
+        points: 140,
+        isCurrentUser: false,
+        avatarInitials: 'KN',
+      ),
+    ],
+  );
+
+  List<QuickQuizDto> _ensureRohtoQuizzes(List<QuickQuizDto> dtos) {
+    final hasRohto = dtos.any((q) => q.title.toLowerCase().contains('rohto'));
+    if (hasRohto) return dtos;
+    return [rohtoDryAidQuiz, ...dtos];
+  }
 
   ChallengesRepositoryImpl({
     required ChallengesRemoteDatasource remoteDatasource,
@@ -37,25 +158,31 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
     if (!forceRefresh && _localDatasource.isCacheFresh('challenges_monthly')) {
       final cached = await _localDatasource.getCachedMonthlyChallenge();
       if (cached != null) {
-        _memoryMonthlyChallenge = cached.toDomain();
-        return Result.success(_memoryMonthlyChallenge!);
+        final domain = (cached.title.toLowerCase().contains('rohto') || cached.title.toLowerCase().contains('eye-know'))
+            ? cached.toDomain()
+            : rohtoMonthlyChallenge.toDomain();
+        _memoryMonthlyChallenge = domain;
+        return Result.success(domain);
       }
     }
 
     // 3. Remote fetch
     try {
       final remoteDto = await _remoteDatasource.getMonthlyChallenge();
-      await _localDatasource.cacheMonthlyChallenge(remoteDto);
-      _memoryMonthlyChallenge = remoteDto.toDomain();
+      final hasRohto = remoteDto.title.toLowerCase().contains('rohto') ||
+          remoteDto.title.toLowerCase().contains('eye-know');
+      final finalDto = hasRohto ? remoteDto : rohtoMonthlyChallenge;
+      await _localDatasource.cacheMonthlyChallenge(finalDto);
+      _memoryMonthlyChallenge = finalDto.toDomain();
       return Result.success(_memoryMonthlyChallenge!);
-    } catch (e, st) {
+    } catch (e) {
       AppLogger.w('Remote monthly challenge fetch failed, checking stale cache: $e');
       final stale = await _localDatasource.getCachedMonthlyChallenge();
       if (stale != null) {
         _memoryMonthlyChallenge = stale.toDomain();
         return Result.success(_memoryMonthlyChallenge!);
       }
-      return Result.failure(ExceptionMapper.map(e, st));
+      return Result.failure(ExceptionMapper.map(e));
     }
   }
 
@@ -69,8 +196,9 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
     // 2. Fresh local cache
     if (!forceRefresh && _localDatasource.isCacheFresh('challenges_quizzes')) {
       final cached = await _localDatasource.getCachedQuickQuizzes();
-      if (cached != null) {
-        _memoryQuickQuizzes = cached.map((e) => e.toDomain()).toList();
+      if (cached != null && cached.isNotEmpty) {
+        final ensured = _ensureRohtoQuizzes(cached);
+        _memoryQuickQuizzes = ensured.map((e) => e.toDomain()).toList();
         return Result.success(_memoryQuickQuizzes!);
       }
     }
@@ -78,17 +206,19 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
     // 3. Remote fetch
     try {
       final remoteList = await _remoteDatasource.getQuickQuizzes();
-      await _localDatasource.cacheQuickQuizzes(remoteList);
-      _memoryQuickQuizzes = remoteList.map((e) => e.toDomain()).toList();
+      final ensured = _ensureRohtoQuizzes(remoteList);
+      await _localDatasource.cacheQuickQuizzes(ensured);
+      _memoryQuickQuizzes = ensured.map((e) => e.toDomain()).toList();
       return Result.success(_memoryQuickQuizzes!);
-    } catch (e, st) {
+    } catch (e) {
       AppLogger.w('Remote quick quizzes fetch failed, checking stale cache: $e');
       final stale = await _localDatasource.getCachedQuickQuizzes();
-      if (stale != null) {
-        _memoryQuickQuizzes = stale.map((e) => e.toDomain()).toList();
+      if (stale != null && stale.isNotEmpty) {
+        final ensured = _ensureRohtoQuizzes(stale);
+        _memoryQuickQuizzes = ensured.map((e) => e.toDomain()).toList();
         return Result.success(_memoryQuickQuizzes!);
       }
-      return Result.failure(ExceptionMapper.map(e, st));
+      return Result.failure(ExceptionMapper.map(e));
     }
   }
 

@@ -23,6 +23,67 @@ class LibraryRepositoryImpl implements LibraryRepository {
   // In-memory working cache
   List<MaterialItemEntity>? _memoryItems;
 
+  static const List<MaterialItemDto> rohtoMaterials = [
+    MaterialItemDto(
+      id: 'mat_rohto_dry_aid_brochure',
+      title: 'Rohto Dry Aid Official Clinical Brochure',
+      productName: 'Rohto Dry Aid',
+      category: 'brochure',
+      fileType: 'pdf',
+      fileSizeBytes: 4200000,
+      updatedAt: '2026-11-18T10:00:00Z',
+      badge: 'updated',
+      isFavorite: true,
+      isDownloaded: false,
+      viewCount: 185,
+      pageCount: 8,
+      fileUrl:
+          'https://drive.google.com/file/d/1jemssfgDhAoDZD1I2OIV9fXaZe3ns-n/view?usp=drive_link',
+      description:
+          'Comprehensive clinical brochure detailing Tearshield Technology, 12-hour symptom relief, and comparison with Systane Ultra.',
+    ),
+    MaterialItemDto(
+      id: 'mat_rohto_cool_brochure',
+      title: 'Rohto Cool Eye Drops Official Brochure',
+      productName: 'Rohto Cool',
+      category: 'brochure',
+      fileType: 'pdf',
+      fileSizeBytes: 3100000,
+      updatedAt: '2026-11-18T11:00:00Z',
+      badge: 'new',
+      isFavorite: false,
+      isDownloaded: false,
+      viewCount: 120,
+      pageCount: 6,
+      fileUrl:
+          'https://drive.google.com/file/d/2NVbg1Qevuv7AE_XiG7Vg2VZZV/view?usp=sharing',
+      description:
+          'Cooling and refreshing eye drop clinical materials, contact lens wearers guidance, and mineral restoration formula.',
+    ),
+    MaterialItemDto(
+      id: 'mat_rohto_aqua_deck',
+      title: 'Rohto Aqua Gentle Lubricating Detailing Deck',
+      productName: 'Rohto Aqua',
+      category: 'edetail',
+      fileType: 'edetail',
+      fileSizeBytes: 5400000,
+      updatedAt: '2026-11-18T12:00:00Z',
+      badge: 'new',
+      isFavorite: false,
+      isDownloaded: false,
+      viewCount: 95,
+      pageCount: 5,
+      description:
+          'Gentle lubricating e-detailing deck for LASIK patients and contact lens-associated dry eye (CLADE).',
+    ),
+  ];
+
+  List<MaterialItemDto> _ensureRohtoMaterials(List<MaterialItemDto> dtos) {
+    final hasRohto = dtos.any((m) => m.productName.toLowerCase().contains('rohto'));
+    if (hasRohto) return dtos;
+    return [...rohtoMaterials, ...dtos];
+  }
+
   LibraryRepositoryImpl({
     required LibraryRemoteDatasource remoteDatasource,
     required LibraryLocalDatasource localDatasource,
@@ -40,9 +101,10 @@ class LibraryRepositoryImpl implements LibraryRepository {
     if (!forceRefresh && _localDatasource.isCacheFresh()) {
       try {
         final cached = await _localDatasource.getCachedMaterials();
-        if (cached != null) {
+        if (cached != null && cached.isNotEmpty) {
           AppLogger.d('Returning fresh cached Library materials');
-          final domainItems = await _mergeWithLocalOverrides(cached);
+          final ensured = _ensureRohtoMaterials(cached);
+          final domainItems = await _mergeWithLocalOverrides(ensured);
           _memoryItems = domainItems;
           return Result.success(domainItems);
         }
@@ -55,25 +117,27 @@ class LibraryRepositoryImpl implements LibraryRepository {
     try {
       AppLogger.d('Fetching remote Library materials...');
       final remoteList = await _remoteDatasource.getMaterials();
-      await _localDatasource.cacheMaterials(remoteList);
+      final ensured = _ensureRohtoMaterials(remoteList);
+      await _localDatasource.cacheMaterials(ensured);
 
-      final domainItems = await _mergeWithLocalOverrides(remoteList);
+      final domainItems = await _mergeWithLocalOverrides(ensured);
       _memoryItems = domainItems;
       return Result.success(domainItems);
-    } catch (e, st) {
+    } catch (e) {
       AppLogger.w('Remote library fetch failed, attempting stale fallback', error: e);
 
       // Stale cache fallback
       try {
         final staleCache = await _localDatasource.getCachedMaterials();
-        if (staleCache != null) {
-          final domainItems = await _mergeWithLocalOverrides(staleCache);
+        if (staleCache != null && staleCache.isNotEmpty) {
+          final ensured = _ensureRohtoMaterials(staleCache);
+          final domainItems = await _mergeWithLocalOverrides(ensured);
           _memoryItems = domainItems;
           return Result.success(domainItems);
         }
       } catch (_) {}
 
-      final failure = ExceptionMapper.map(e, st);
+      final failure = ExceptionMapper.map(e);
       return Result.failure(failure);
     }
   }

@@ -11,6 +11,7 @@ import '../../domain/entities/learning_entities.dart';
 import '../../domain/repositories/learn_repository.dart';
 import '../datasources/learn_local_datasource.dart';
 import '../datasources/learn_remote_datasource.dart';
+import '../datasources/rohto_seed_data.dart';
 import '../models/learning_dto.dart';
 
 /// Repository Implementation for Learn
@@ -47,9 +48,10 @@ class LearnRepositoryImpl implements LearnRepository {
     if (!forceRefresh && _localDatasource.isCacheFresh()) {
       try {
         final cached = await _localDatasource.getCachedProducts();
-        if (cached != null) {
+        if (cached != null && cached.isNotEmpty) {
           AppLogger.d('Returning fresh cached Products & Lessons');
-          _memoryProducts = await _mergeWithOverrides(cached);
+          final ensured = _ensureRohtoIncluded(cached);
+          _memoryProducts = await _mergeWithOverrides(ensured);
           return Result.success(_memoryProducts!);
         }
       } catch (e) {
@@ -60,22 +62,24 @@ class LearnRepositoryImpl implements LearnRepository {
     try {
       AppLogger.d('Fetching remote Learn Products & Lessons...');
       final remoteDtos = await _remoteDatasource.getProducts();
-      await _localDatasource.cacheProducts(remoteDtos);
+      final ensured = _ensureRohtoIncluded(remoteDtos);
+      await _localDatasource.cacheProducts(ensured);
 
-      _memoryProducts = await _mergeWithOverrides(remoteDtos);
+      _memoryProducts = await _mergeWithOverrides(ensured);
       return Result.success(_memoryProducts!);
-    } catch (e, st) {
+    } catch (e) {
       AppLogger.w('Remote fetch failed for Learn, attempting stale cache fallback',
           error: e);
       try {
         final stale = await _localDatasource.getCachedProducts();
-        if (stale != null) {
-          _memoryProducts = await _mergeWithOverrides(stale);
+        if (stale != null && stale.isNotEmpty) {
+          final ensured = _ensureRohtoIncluded(stale);
+          _memoryProducts = await _mergeWithOverrides(ensured);
           return Result.success(_memoryProducts!);
         }
       } catch (_) {}
 
-      return Result.failure(ExceptionMapper.map(e, st));
+      return Result.failure(ExceptionMapper.map(e));
     }
   }
 
@@ -254,6 +258,12 @@ class LearnRepositoryImpl implements LearnRepository {
       },
       failure: (f) => Result.failure(f),
     );
+  }
+
+  List<ProductLearningDto> _ensureRohtoIncluded(List<ProductLearningDto> dtos) {
+    final hasRohto = dtos.any((p) => p.name.toLowerCase().contains('rohto'));
+    if (hasRohto) return dtos;
+    return [...RohtoSeedData.products, ...dtos];
   }
 
   Future<List<ProductLearningEntity>> _mergeWithOverrides(

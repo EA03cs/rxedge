@@ -26,6 +26,13 @@ abstract final class StorageInitializer {
         Hive.openBox<String>(offlineQueueBoxName),
         Hive.openBox<String>(preferencesBoxName),
       ]);
+      final prefBox = Hive.box<String>(preferencesBoxName);
+      final cacheVersion = prefBox.get('cache_version');
+      if (cacheVersion != 'v2_rohto_branding') {
+        await Hive.box<String>(cacheBoxName).clear();
+        await prefBox.put('cache_version', 'v2_rohto_branding');
+        AppLogger.i('Stale cache cleared for v2 Rohto branding release', tag: 'Storage');
+      }
       _initialized = true;
       AppLogger.i('Hive storage boxes initialized', tag: 'Storage');
     } catch (e, st) {

@@ -84,16 +84,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tabHome => 'الرئيسية';
 
   @override
-  String get tabLearn => 'التعلم';
+  String get tabLearn => 'مستعرض المنتجات';
 
   @override
-  String get tabLibrary => 'المكتبة';
+  String get tabLibrary => 'المركز التسويقي';
 
   @override
-  String get tabChallenges => 'التحديات';
+  String get tabChallenges => 'تحديات Eye-Know';
 
   @override
-  String get tabFeedback => 'الملاحظات';
+  String get tabFeedback => 'صوت المندوب';
 
   @override
   String get statusCompleted => 'معتمد';
@@ -380,7 +380,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get statQuizzesLabel => 'المكتمل';
 
   @override
-  String get libraryTitle => 'مكتبة المواد العلمية';
+  String get libraryTitle => 'المركز التسويقي (Marketing Hub)';
 
   @override
   String get librarySearchHint => 'ابحث في الدراسات والكتيبات والملفات...';
@@ -522,10 +522,11 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get learnTitle => 'مركز التعلم الذكي';
+  String get learnTitle => 'مستعرض المنتجات (Product Navigator)';
 
   @override
-  String get learnSubtitle => 'أتقن العلوم الطبية للمنتجات والتعامل التنافسي';
+  String get learnSubtitle =>
+      'أتقن العلوم الطبية لمنتجات Rohto والتعامل التنافسي';
 
   @override
   String get tabPositioning => 'تموضع المنتج';
@@ -624,7 +625,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get inProgressTag => 'قيد التقدم';
 
   @override
-  String get challengesTitle => 'تحديات الميدان';
+  String get challengesTitle => 'تحديات Eye-Know';
 
   @override
   String get tabMonthlyChallenge => 'تحدي الشهر';
@@ -734,7 +735,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'ستظهر هنا التحديات والاختبارات التي تم إكمالها.';
 
   @override
-  String get feedbackTitle => 'ملاحظات التسويق الميداني';
+  String get feedbackTitle => 'صوت المندوب (Rep Voice)';
 
   @override
   String get feedbackSubtitle =>

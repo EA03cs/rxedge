@@ -18,7 +18,7 @@ void main() {
   final testProducts = [
     const ProductLearningDto(
       id: 'prod_1',
-      name: 'Cardura XL',
+      name: 'Rohto Dry Aid',
       therapeuticArea: 'Hypertension & BPH',
       isRecommended: true,
       positioning: ProductPositioningDto(
@@ -41,7 +41,7 @@ void main() {
         LessonDto(
           id: 'les_1',
           productId: 'prod_1',
-          productName: 'Cardura XL',
+          productName: 'Rohto Dry Aid',
           title: 'Lesson 1',
           durationMinutes: 5,
           order: 1,
@@ -76,7 +76,7 @@ void main() {
       result.when(
         success: (products) {
           expect(products.length, 1);
-          expect(products.first.name, 'Cardura XL');
+          expect(products.first.name, 'Rohto Dry Aid');
         },
         failure: (_) => fail('Expected success'),
       );

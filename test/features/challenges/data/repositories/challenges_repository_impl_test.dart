@@ -16,7 +16,7 @@ void main() {
 
   final sampleChallengeDto = MonthlyChallengeDto(
     id: 'ch_test',
-    title: 'Q4 Cardiology Sprint',
+    title: 'Rohto Eye-Know Monthly Challenge',
     deadlineIso: DateTime.now().add(const Duration(days: 4)).toIso8601String(),
     rules: const ['Rule 1', 'Rule 2', 'Rule 3'],
     currentProgress: 0.72,
@@ -45,7 +45,7 @@ void main() {
   final sampleQuizzesDto = [
     const QuickQuizDto(
       id: 'quiz_1',
-      title: 'Cardura XL Study',
+      title: 'Rohto Dry Aid Study',
       category: 'Cardio',
       durationMinutes: 3,
       rewardPoints: 50,
@@ -90,7 +90,7 @@ void main() {
       final result = await repository.getMonthlyChallenge(forceRefresh: true);
 
       expect(result.isSuccess, isTrue);
-      expect(result.dataOrNull?.title, 'Q4 Cardiology Sprint');
+      expect(result.dataOrNull?.title, 'Rohto Eye-Know Monthly Challenge');
       verify(() => mockRemote.getMonthlyChallenge()).called(1);
       verify(() => mockLocal.cacheMonthlyChallenge(sampleChallengeDto)).called(1);
     });

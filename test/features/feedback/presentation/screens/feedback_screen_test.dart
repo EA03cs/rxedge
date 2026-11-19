@@ -71,7 +71,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Title & Subtitle
-      expect(find.text('Marketing Feedback'), findsOneWidget);
+      expect(find.text('Rep Voice'), findsOneWidget);
       expect(find.text('Share real clinic insights directly with medical affairs'), findsOneWidget);
 
       // 3 Type Cards

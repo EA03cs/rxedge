@@ -245,25 +245,25 @@ abstract class AppLocalizations {
   /// No description provided for @tabLearn.
   ///
   /// In en, this message translates to:
-  /// **'Learn'**
+  /// **'Product Navigator'**
   String get tabLearn;
 
   /// No description provided for @tabLibrary.
   ///
   /// In en, this message translates to:
-  /// **'Library'**
+  /// **'Marketing Hub'**
   String get tabLibrary;
 
   /// No description provided for @tabChallenges.
   ///
   /// In en, this message translates to:
-  /// **'Challenges'**
+  /// **'Eye-Know Challenges'**
   String get tabChallenges;
 
   /// No description provided for @tabFeedback.
   ///
   /// In en, this message translates to:
-  /// **'Feedback'**
+  /// **'Rep Voice'**
   String get tabFeedback;
 
   /// No description provided for @statusCompleted.
@@ -785,7 +785,7 @@ abstract class AppLocalizations {
   /// No description provided for @libraryTitle.
   ///
   /// In en, this message translates to:
-  /// **'Resource Library'**
+  /// **'Marketing Hub'**
   String get libraryTitle;
 
   /// No description provided for @librarySearchHint.
@@ -1025,7 +1025,7 @@ abstract class AppLocalizations {
   /// No description provided for @learnTitle.
   ///
   /// In en, this message translates to:
-  /// **'Smart Learning Hub'**
+  /// **'Product Navigator'**
   String get learnTitle;
 
   /// No description provided for @learnSubtitle.
@@ -1223,7 +1223,7 @@ abstract class AppLocalizations {
   /// No description provided for @challengesTitle.
   ///
   /// In en, this message translates to:
-  /// **'Field Challenges'**
+  /// **'Eye-Know Challenges'**
   String get challengesTitle;
 
   /// No description provided for @tabMonthlyChallenge.
@@ -1433,7 +1433,7 @@ abstract class AppLocalizations {
   /// No description provided for @feedbackTitle.
   ///
   /// In en, this message translates to:
-  /// **'Marketing Feedback'**
+  /// **'Rep Voice'**
   String get feedbackTitle;
 
   /// No description provided for @feedbackSubtitle.

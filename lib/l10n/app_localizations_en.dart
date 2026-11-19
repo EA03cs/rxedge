@@ -85,16 +85,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabHome => 'Home';
 
   @override
-  String get tabLearn => 'Learn';
+  String get tabLearn => 'Product Navigator';
 
   @override
-  String get tabLibrary => 'Library';
+  String get tabLibrary => 'Marketing Hub';
 
   @override
-  String get tabChallenges => 'Challenges';
+  String get tabChallenges => 'Eye-Know Challenges';
 
   @override
-  String get tabFeedback => 'Feedback';
+  String get tabFeedback => 'Rep Voice';
 
   @override
   String get statusCompleted => 'Approved';
@@ -380,7 +380,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statQuizzesLabel => 'Completed';
 
   @override
-  String get libraryTitle => 'Resource Library';
+  String get libraryTitle => 'Marketing Hub';
 
   @override
   String get librarySearchHint => 'Search materials, monographs, trials...';
@@ -519,7 +519,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get learnTitle => 'Smart Learning Hub';
+  String get learnTitle => 'Product Navigator';
 
   @override
   String get learnSubtitle =>
@@ -622,7 +622,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inProgressTag => 'In Progress';
 
   @override
-  String get challengesTitle => 'Field Challenges';
+  String get challengesTitle => 'Eye-Know Challenges';
 
   @override
   String get tabMonthlyChallenge => 'Monthly Challenge';
@@ -733,7 +733,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Completed challenges and quizzes will appear here.';
 
   @override
-  String get feedbackTitle => 'Marketing Feedback';
+  String get feedbackTitle => 'Rep Voice';
 
   @override
   String get feedbackSubtitle =>

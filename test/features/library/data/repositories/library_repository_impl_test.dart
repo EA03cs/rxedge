@@ -18,8 +18,8 @@ void main() {
   final testDtos = [
     const MaterialItemDto(
       id: 'mat_01',
-      title: 'Cardura XL Official Prescribing Monograph',
-      productName: 'Cardura XL',
+      title: 'Rohto Dry Aid Official Prescribing Monograph',
+      productName: 'Rohto Dry Aid',
       category: 'brochure',
       fileType: 'pdf',
       fileSizeBytes: 3400000,
@@ -75,7 +75,7 @@ void main() {
       expect(result.isSuccess, isTrue);
       final items = result.dataOrNull!;
       expect(items.length, 2);
-      expect(items[0].productName, 'Cardura XL');
+      expect(items[0].productName, 'Rohto Dry Aid');
       expect(items[0].isFavorite, isFalse);
       expect(items[1].isFavorite, isTrue);
       expect(items[1].isDownloaded, isTrue);
