@@ -205,7 +205,7 @@ class WhatsNewSection extends StatelessWidget {
                         const SizedBox(width: RxSpacing.s8),
                         StatusBadge(
                           label: isNew ? l10n.badgeNew : l10n.badgeUpdated,
-                          variant: isNew ? StatusBadgeVariant.info : StatusBadgeVariant.neutral,
+                          variant: isNew ? StatusBadgeVariant.brandRed : StatusBadgeVariant.neutral,
                         ),
                       ],
                     ),

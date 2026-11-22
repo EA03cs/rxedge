@@ -194,7 +194,7 @@ class ContinueLearningCard extends ConsumerWidget {
     AppLocalizations l10n,
     RecommendedProductEntity? product,
   ) {
-    final prodName = product?.productName ?? 'Cardura XL';
+    final prodName = product?.productName ?? 'Rohto Dry Aid';
     final rationale =
         product?.description ?? l10n.recommendedDetailingSubtitle;
     final boxImageUrl = product?.boxImageUrl;

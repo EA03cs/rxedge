@@ -156,11 +156,12 @@ void main() {
       expect(find.text('“Why switch patients to Cardura XL?”'), findsOneWidget);
       expect(find.text('See how to respond'), findsOneWidget);
 
-      // 6. Quick actions row
-      expect(find.text('Quick Actions'), findsOneWidget);
-      expect(find.text('Quick quiz'), findsOneWidget);
-      expect(find.text('Send feedback'), findsOneWidget);
-      expect(find.text('Search library'), findsOneWidget);
+      // 6. Core portfolio modules
+      expect(find.text('Core Portfolio Modules'), findsOneWidget);
+      expect(find.text('Product Navigator'), findsOneWidget);
+      expect(find.text('Marketing Hub'), findsWidgets);
+      expect(find.text('Eye-Know Challenges'), findsOneWidget);
+      expect(find.text('Rep Voice'), findsOneWidget);
 
       // 7. What's new section
       expect(find.text("What's New"), findsOneWidget);

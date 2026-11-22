@@ -146,14 +146,14 @@ class ObjectionQuoteCard extends StatelessWidget {
                 Icon(
                   LucideIcons.messageCircle,
                   size: 16.0,
-                  color: colors.primary,
+                  color: colors.brandRed,
                 ),
                 const SizedBox(width: RxSpacing.s6),
                 Text(
                   l10n.objectionOfTheMonth,
                   style: textTheme.labelSmall?.copyWith(
-                    color: colors.textSecondary,
-                    fontWeight: FontWeight.w600,
+                    color: colors.brandRed,
+                    fontWeight: FontWeight.w700,
                     letterSpacing: 0.3,
                   ),
                 ),
@@ -171,7 +171,7 @@ class ObjectionQuoteCard extends StatelessWidget {
               decoration: BoxDecoration(
                 border: BorderDirectional(
                   start: BorderSide(
-                    color: colors.primary,
+                    color: colors.brandRed,
                     width: 3.0,
                   ),
                 ),

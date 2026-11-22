@@ -6,6 +6,7 @@ import '../../../../app/l10n/l10n.dart';
 import '../../../../app/router/app_router.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/localization/app_locale_provider.dart';
+import '../../../../core/widgets/mentholatum_logo.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../notifications/presentation/controllers/notifications_controller.dart';
 import '../controllers/home_controller.dart';
@@ -57,163 +58,153 @@ class HomeHeader extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsetsDirectional.symmetric(
         horizontal: RxSpacing.s16,
-        vertical: RxSpacing.s12,
+        vertical: RxSpacing.s8,
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Avatar circle (Tapping opens Profile/Diagnostics)
-          Semantics(
-            button: true,
-            label: l10n.profileTooltip,
-            child: InkWell(
-              onTap: () => context.push(AppRoutes.profile),
-              borderRadius: BorderRadius.circular(RxSpacing.s20),
-              child: Container(
-                width: 40.0,
-                height: 40.0,
-                decoration: BoxDecoration(
-                  color: colors.primarySoft,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: colors.primary.withValues(alpha: 0.25),
-                    width: RxShadows.hairlineBorderWidth,
-                  ),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  _getInitials(displayName),
-                  style: textTheme.labelLarge?.copyWith(
-                    color: colors.primary,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.5,
+          // 1. Corporate Brand Bar (Mentholatum Logo + Actions)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const MentholatumLogo(height: 24.0),
+              const Spacer(),
+
+              // Quick Language Switcher
+              Consumer(
+                builder: (context, ref, _) {
+                  final activeLocale = ref.watch(localeProvider);
+                  final isArabic = activeLocale.languageCode == 'ar';
+                  return InkWell(
+                    onTap: () {
+                      final newLocale = isArabic ? const Locale('en') : const Locale('ar');
+                      ref.read(localeProvider.notifier).state = newLocale;
+                      ref.read(homeControllerProvider.notifier).refresh();
+                    },
+                    borderRadius: RxRadii.borderBadge,
+                    child: Container(
+                      padding: const EdgeInsetsDirectional.symmetric(
+                        horizontal: RxSpacing.s8,
+                        vertical: RxSpacing.s4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colors.surfaceMuted,
+                        borderRadius: RxRadii.borderBadge,
+                        border: Border.all(
+                          color: colors.border,
+                          width: RxShadows.hairlineBorderWidth,
+                        ),
+                      ),
+                      child: Text(
+                        isArabic ? 'EN' : 'عربي',
+                        style: textTheme.labelSmall?.copyWith(
+                          color: colors.primary,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 11.0,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(width: RxSpacing.s4),
+
+              // Notification Bell with vibrant Mentholatum Red unread dot
+              Consumer(
+                builder: (context, ref, _) {
+                  final unreadCount = ref.watch(unreadNotificationsCountProvider);
+                  return Semantics(
+                    button: true,
+                    label: l10n.notificationsTooltip,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            LucideIcons.bell,
+                            size: 20.0,
+                            color: colors.textPrimary,
+                          ),
+                          tooltip: l10n.notificationsTooltip,
+                          onPressed: () => context.push(AppRoutes.notifications),
+                        ),
+                        if (unreadCount > 0)
+                          PositionedDirectional(
+                            top: 10.0,
+                            end: 10.0,
+                            child: Container(
+                              width: 8.0,
+                              height: 8.0,
+                              decoration: BoxDecoration(
+                                color: colors.brandRed,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: colors.surface,
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+
+              // Profile Avatar circle (opens Profile)
+              Semantics(
+                button: true,
+                label: l10n.profileTooltip,
+                child: InkWell(
+                  onTap: () => context.push(AppRoutes.profile),
+                  borderRadius: BorderRadius.circular(RxSpacing.s20),
+                  child: Container(
+                    width: 36.0,
+                    height: 36.0,
+                    decoration: BoxDecoration(
+                      color: colors.primarySoft,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: colors.primary.withValues(alpha: 0.25),
+                        width: RxShadows.hairlineBorderWidth,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      _getInitials(displayName),
+                      style: textTheme.labelMedium?.copyWith(
+                        color: colors.primary,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
-          const SizedBox(width: RxSpacing.s12),
+          const SizedBox(height: RxSpacing.s12),
 
-          // 2. Greeting & Territory subtitle
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  greeting,
-                  style: textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: colors.textPrimary,
-                    letterSpacing: -0.2,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: RxSpacing.s2),
-                Text(
-                  territory,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colors.textSecondary,
-                    fontSize: 12.0,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-
-          // 3. Quick Language Switcher & Actions
-          Consumer(
-            builder: (context, ref, _) {
-              final activeLocale = ref.watch(localeProvider);
-              final isArabic = activeLocale.languageCode == 'ar';
-              return InkWell(
-                onTap: () {
-                  final newLocale = isArabic ? const Locale('en') : const Locale('ar');
-                  ref.read(localeProvider.notifier).state = newLocale;
-                  ref.read(homeControllerProvider.notifier).refresh();
-                },
-                borderRadius: RxRadii.borderBadge,
-                child: Container(
-                  padding: const EdgeInsetsDirectional.symmetric(
-                    horizontal: RxSpacing.s8,
-                    vertical: RxSpacing.s4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colors.surfaceMuted,
-                    borderRadius: RxRadii.borderBadge,
-                    border: Border.all(
-                      color: colors.border,
-                      width: RxShadows.hairlineBorderWidth,
-                    ),
-                  ),
-                  child: Text(
-                    isArabic ? 'EN' : 'عربي',
-                    style: textTheme.labelSmall?.copyWith(
-                      color: colors.primary,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 11.0,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-          const SizedBox(width: RxSpacing.s4),
-
-          // 4. Notification Bell with unread dot
-          Consumer(
-            builder: (context, ref, _) {
-              final unreadCount = ref.watch(unreadNotificationsCountProvider);
-              return Semantics(
-                button: true,
-                label: l10n.notificationsTooltip,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                        LucideIcons.bell,
-                        size: 20.0,
-                        color: colors.textPrimary,
-                      ),
-                      tooltip: l10n.notificationsTooltip,
-                      onPressed: () => context.push(AppRoutes.notifications),
-                    ),
-                    if (unreadCount > 0)
-                      PositionedDirectional(
-                        top: 10.0,
-                        end: 10.0,
-                        child: Container(
-                          width: 7.0,
-                          height: 7.0,
-                          decoration: BoxDecoration(
-                            color: colors.primary,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: colors.surface,
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              );
-            },
-          ),
-
-          // 5. Dedicated Profile / Settings Button
-          IconButton(
-            icon: Icon(
-              LucideIcons.user,
-              size: 20.0,
+          // 2. Greeting & Rep Territory / Status Subtitle
+          Text(
+            greeting,
+            style: textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w800,
               color: colors.textPrimary,
+              letterSpacing: -0.3,
             ),
-            tooltip: l10n.profileTitle,
-            onPressed: () => context.push(AppRoutes.profile),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: RxSpacing.s2),
+          Text(
+            territory,
+            style: textTheme.bodySmall?.copyWith(
+              color: colors.textSecondary,
+              fontSize: 12.5,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

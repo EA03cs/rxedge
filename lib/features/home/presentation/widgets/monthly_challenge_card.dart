@@ -68,7 +68,7 @@ class MonthlyChallengeCard extends StatelessWidget {
                 ),
                 StatusBadge(
                   label: l10n.daysLeft(challenge.daysLeft),
-                  variant: StatusBadgeVariant.neutral,
+                  variant: StatusBadgeVariant.brandRed,
                 ),
               ],
             ),

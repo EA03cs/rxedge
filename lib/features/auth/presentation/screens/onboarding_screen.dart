@@ -80,34 +80,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       backgroundColor: colors.background,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Row(
-          children: [
-            Container(
-              width: 28.0,
-              height: 28.0,
-              decoration: BoxDecoration(
-                color: colors.primary,
-                borderRadius: RxRadii.borderBadge,
-              ),
-              child: const Center(
-                child: Icon(
-                  LucideIcons.activity,
-                  size: 16.0,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            const SizedBox(width: RxSpacing.s8),
-            Text(
-              'RxEdge',
-              style: textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: colors.primary,
-                letterSpacing: -0.3,
-              ),
-            ),
-          ],
-        ),
+        title: const MentholatumLogo(height: 24.0),
         actions: [
           // Instant Language Toggle
           TextButton.icon(

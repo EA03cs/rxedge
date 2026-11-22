@@ -710,6 +710,72 @@ abstract class AppLocalizations {
   /// **'Quick Actions'**
   String get quickActions;
 
+  /// No description provided for @homeSectionQuickAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Core Portfolio Modules'**
+  String get homeSectionQuickAccess;
+
+  /// No description provided for @homeSectionClinicalFocus.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Clinical Focus & Performance'**
+  String get homeSectionClinicalFocus;
+
+  /// No description provided for @homeSectionFieldIntel.
+  ///
+  /// In en, this message translates to:
+  /// **'Field Intelligence & Updates'**
+  String get homeSectionFieldIntel;
+
+  /// No description provided for @moduleProductNavigator.
+  ///
+  /// In en, this message translates to:
+  /// **'Product Navigator'**
+  String get moduleProductNavigator;
+
+  /// No description provided for @moduleProductNavigatorSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Portfolio Science & Dosing'**
+  String get moduleProductNavigatorSub;
+
+  /// No description provided for @moduleMarketingHub.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketing Hub'**
+  String get moduleMarketingHub;
+
+  /// No description provided for @moduleMarketingHubSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Visual Aids & E-Detailing'**
+  String get moduleMarketingHubSub;
+
+  /// No description provided for @moduleEyeKnowChallenges.
+  ///
+  /// In en, this message translates to:
+  /// **'Eye-Know Challenges'**
+  String get moduleEyeKnowChallenges;
+
+  /// No description provided for @moduleEyeKnowChallengesSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Quizzes & District Rank'**
+  String get moduleEyeKnowChallengesSub;
+
+  /// No description provided for @moduleRepVoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Rep Voice'**
+  String get moduleRepVoice;
+
+  /// No description provided for @moduleRepVoiceSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Field Insights & Objections'**
+  String get moduleRepVoiceSub;
+
   /// No description provided for @quickActionQuiz.
   ///
   /// In en, this message translates to:

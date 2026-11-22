@@ -338,6 +338,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quickActions => 'Quick Actions';
 
   @override
+  String get homeSectionQuickAccess => 'Core Portfolio Modules';
+
+  @override
+  String get homeSectionClinicalFocus => 'Daily Clinical Focus & Performance';
+
+  @override
+  String get homeSectionFieldIntel => 'Field Intelligence & Updates';
+
+  @override
+  String get moduleProductNavigator => 'Product Navigator';
+
+  @override
+  String get moduleProductNavigatorSub => 'Portfolio Science & Dosing';
+
+  @override
+  String get moduleMarketingHub => 'Marketing Hub';
+
+  @override
+  String get moduleMarketingHubSub => 'Visual Aids & E-Detailing';
+
+  @override
+  String get moduleEyeKnowChallenges => 'Eye-Know Challenges';
+
+  @override
+  String get moduleEyeKnowChallengesSub => 'Quizzes & District Rank';
+
+  @override
+  String get moduleRepVoice => 'Rep Voice';
+
+  @override
+  String get moduleRepVoiceSub => 'Field Insights & Objections';
+
+  @override
   String get quickActionQuiz => 'Quick quiz';
 
   @override

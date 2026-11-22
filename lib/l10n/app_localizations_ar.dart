@@ -338,6 +338,39 @@ class AppLocalizationsAr extends AppLocalizations {
   String get quickActions => 'إجراءات سريعة';
 
   @override
+  String get homeSectionQuickAccess => 'الوحدات الأساسية للمنظومة';
+
+  @override
+  String get homeSectionClinicalFocus => 'الأداء والتركيز الإكلينيكي اليومي';
+
+  @override
+  String get homeSectionFieldIntel => 'معلومات الميدان وآخر التحديثات';
+
+  @override
+  String get moduleProductNavigator => 'دليل المنتجات';
+
+  @override
+  String get moduleProductNavigatorSub => 'العلوم الدوائية والجرعات';
+
+  @override
+  String get moduleMarketingHub => 'مركز التسويق';
+
+  @override
+  String get moduleMarketingHubSub => 'المواد الدعائية والعروض التقديمية';
+
+  @override
+  String get moduleEyeKnowChallenges => 'تحديات المعرفة';
+
+  @override
+  String get moduleEyeKnowChallengesSub => 'الاختبارات وترتيب المنطقة';
+
+  @override
+  String get moduleRepVoice => 'صوت المندوب';
+
+  @override
+  String get moduleRepVoiceSub => 'ملاحظات الميدان والاعتراضات';
+
+  @override
   String get quickActionQuiz => 'اختبار سريع';
 
   @override

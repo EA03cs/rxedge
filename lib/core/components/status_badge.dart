@@ -8,6 +8,7 @@ enum StatusBadgeVariant {
   info,
   neutral,
   accent, // Strictly for points, streaks, badges
+  brandRed, // Mentholatum Red accent for urgency/deadlines/special flags
 }
 
 /// RxEdge Status Badge
@@ -70,6 +71,11 @@ class StatusBadge extends StatelessWidget {
         bg = colors.surfaceMuted;
         fg = colors.textSecondary;
         border = colors.border;
+        break;
+      case StatusBadgeVariant.brandRed:
+        bg = colors.brandRedSoft;
+        fg = colors.brandRed;
+        border = colors.brandRed.withValues(alpha: 0.25);
         break;
     }
 

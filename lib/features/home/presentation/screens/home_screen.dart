@@ -42,10 +42,6 @@ class HomeScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final dashboardAsync = ref.watch(homeControllerProvider);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      CoachMarksSheet.showIfFirstUse(context, ref);
-    });
-
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
@@ -74,38 +70,53 @@ class HomeScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 1. Header: Greeting, Rep Profile, Quick Language, Notifications
+                    // 1. Corporate Brand Header & Rep Greeting
                     const HomeHeader(),
-                    const SizedBox(height: RxSpacing.s4),
+                    const SizedBox(height: RxSpacing.s8),
 
-                    // 2. Slim Stats Strip (Points, Streak, Quizzes - Accent Amber strictly here)
-                    SlimStatsStrip(stats: dashboard.stats),
+                    // Global Search Bar
+                    const HomeSearchBar(),
                     const SizedBox(height: RxSpacing.s12),
 
-                    // 3. Search Bar
-                    const HomeSearchBar(),
-                    const SizedBox(height: RxSpacing.s16),
+                    // SECTION 1: Core Portfolio Modules (2x2 Grid)
+                    Padding(
+                      padding: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),
+                      child: SectionHeader(
+                        title: l10n.homeSectionQuickAccess,
+                        padding: const EdgeInsetsDirectional.only(bottom: RxSpacing.s8, top: RxSpacing.s4),
+                      ),
+                    ),
+                    const QuickActionsRow(),
+                    const SizedBox(height: RxSpacing.s20),
 
-                    // 4. Hero: Continue Learning Module (Single filled primary button)
+                    // SECTION 2: Daily Clinical Focus & Rep Performance
+                    Padding(
+                      padding: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),
+                      child: SectionHeader(
+                        title: l10n.homeSectionClinicalFocus,
+                        padding: const EdgeInsetsDirectional.only(bottom: RxSpacing.s8),
+                      ),
+                    ),
                     ContinueLearningCard(
                       lesson: dashboard.continueLesson,
                       recommendedProduct: dashboard.recommendedProduct,
                     ),
-                    const SizedBox(height: RxSpacing.s16),
-
-                    // 5. This Month's Challenge
+                    const SizedBox(height: RxSpacing.s12),
+                    SlimStatsStrip(stats: dashboard.stats),
+                    const SizedBox(height: RxSpacing.s12),
                     MonthlyChallengeCard(challenge: dashboard.challenge),
-                    const SizedBox(height: RxSpacing.s16),
+                    const SizedBox(height: RxSpacing.s20),
 
-                    // 6. Objection of the Month (Clinical guidance)
+                    // SECTION 3: Field Intelligence & Marketing Updates
+                    Padding(
+                      padding: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),
+                      child: SectionHeader(
+                        title: l10n.homeSectionFieldIntel,
+                        padding: const EdgeInsetsDirectional.only(bottom: RxSpacing.s8),
+                      ),
+                    ),
                     ObjectionQuoteCard(objection: dashboard.objection),
-                    const SizedBox(height: RxSpacing.s20),
-
-                    // 7. Quick Actions Row
-                    const QuickActionsRow(),
-                    const SizedBox(height: RxSpacing.s20),
-
-                    // 8. What's New Grouped Bulletin
+                    const SizedBox(height: RxSpacing.s16),
                     WhatsNewSection(materials: dashboard.recentMaterials),
                   ],
                 ),
