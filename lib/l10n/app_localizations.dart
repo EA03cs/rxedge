@@ -3020,6 +3020,7 @@ abstract class AppLocalizations {
   /// **'An unexpected error occurred. Please try again.'**
   String get errUnknown;
 
+<<<<<<< HEAD
   /// No description provided for @quizOfflineSubmitError.
   ///
   /// In en, this message translates to:
@@ -3043,6 +3044,259 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Still unable to sync. Please check your connection or submission details.'**
   String get syncRetryFailed;
+=======
+  /// No description provided for @minReadCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min read'**
+  String minReadCount(int minutes);
+
+  /// No description provided for @reviewQuizAnswers.
+  ///
+  /// In en, this message translates to:
+  /// **'Review Quiz Answers'**
+  String get reviewQuizAnswers;
+
+  /// No description provided for @quizAlreadyAttemptedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You have already attempted this quiz. Retakes are not permitted per challenge policy.'**
+  String get quizAlreadyAttemptedError;
+
+  /// No description provided for @marksClaimedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Claimed'**
+  String get marksClaimedLabel;
+
+  /// No description provided for @quizMarksNoteWithReward.
+  ///
+  /// In en, this message translates to:
+  /// **'Marks Note: Quiz challenge marks (+{points} Marks) are awarded once upon first pass. Additional attempts serve as clinical refresher and practice.'**
+  String quizMarksNoteWithReward(int points);
+
+  /// No description provided for @quizMarksNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Marks Note: Quiz challenge marks are awarded once upon first pass. Additional attempts serve as clinical refresher and practice.'**
+  String get quizMarksNote;
+
+  /// No description provided for @quizPassedLessonCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiz passed! The associated lesson has been automatically marked as complete.'**
+  String get quizPassedLessonCompleted;
+
+  /// No description provided for @durationMinutesSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m {seconds}s'**
+  String durationMinutesSeconds(int minutes, int seconds);
+
+  /// No description provided for @layoutAndSortOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Layout & Sort Options'**
+  String get layoutAndSortOptions;
+
+  /// No description provided for @switchToListView.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to List View'**
+  String get switchToListView;
+
+  /// No description provided for @switchToGridView.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to Grid View'**
+  String get switchToGridView;
+
+  /// No description provided for @sortOrderLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Order'**
+  String get sortOrderLabel;
+
+  /// No description provided for @sortNewestFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest First'**
+  String get sortNewestFirst;
+
+  /// No description provided for @sortMostUsedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Most Used'**
+  String get sortMostUsedLabel;
+
+  /// No description provided for @sortAlphabeticalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Alphabetical (A-Z)'**
+  String get sortAlphabeticalLabel;
+
+  /// No description provided for @tooltipOnlineMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Online Mode'**
+  String get tooltipOnlineMode;
+
+  /// No description provided for @tooltipSimulateOfflineMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulate Offline Mode'**
+  String get tooltipSimulateOfflineMode;
+
+  /// No description provided for @filterOptionsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter options'**
+  String get filterOptionsTooltip;
+
+  /// No description provided for @filterByProductTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by Pharmaceutical Product'**
+  String get filterByProductTitle;
+
+  /// No description provided for @sortMaterialsByTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Materials By'**
+  String get sortMaterialsByTitle;
+
+  /// No description provided for @materialShareLinkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved sharing link copied to clipboard for: {title}'**
+  String materialShareLinkCopied(String title);
+
+  /// No description provided for @storeOfflineSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Store {size} on device for offline detailing'**
+  String storeOfflineSize(String size);
+
+  /// No description provided for @freesOfflineSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Frees {size} of local storage'**
+  String freesOfflineSize(String size);
+
+  /// No description provided for @takePhotoWithCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Take Photo with Camera'**
+  String get takePhotoWithCamera;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from Gallery'**
+  String get chooseFromGallery;
+
+  /// No description provided for @photoSavedLocallyOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo saved locally and will upload when back online.'**
+  String get photoSavedLocallyOffline;
+
+  /// No description provided for @failedToUploadImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload image. Please check connection.'**
+  String get failedToUploadImage;
+
+  /// No description provided for @voiceNoteSavedLocallyOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice note saved locally and will upload when back online.'**
+  String get voiceNoteSavedLocallyOffline;
+
+  /// No description provided for @microphonePermissionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone permission is required to record a voice note.'**
+  String get microphonePermissionRequired;
+
+  /// No description provided for @voiceRecordingMobileOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice recording is available on mobile devices.'**
+  String get voiceRecordingMobileOnly;
+
+  /// No description provided for @unableToRecordAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to record audio on this device.'**
+  String get unableToRecordAudio;
+
+  /// No description provided for @uploadingVoiceNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading voice note...'**
+  String get uploadingVoiceNote;
+
+  /// No description provided for @recordingTapToStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording... Tap to stop ({duration})'**
+  String recordingTapToStop(String duration);
+
+  /// No description provided for @unableToPlayVoiceNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to play voice note right now.'**
+  String get unableToPlayVoiceNote;
+
+  /// No description provided for @playingVoiceNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Playing voice note...'**
+  String get playingVoiceNote;
+
+  /// No description provided for @defaultScopeCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'Company'**
+  String get defaultScopeCompany;
+
+  /// No description provided for @rankInScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Rank #{rank} of {total} in {scope}'**
+  String rankInScope(int rank, int total, String scope);
+
+  /// No description provided for @unrankedInScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Unranked in {scope}'**
+  String unrankedInScope(String scope);
+
+  /// No description provided for @sprintRankNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Sprint Rank #{rank}'**
+  String sprintRankNumber(int rank);
+
+  /// No description provided for @unrankedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unranked'**
+  String get unrankedLabel;
+
+  /// No description provided for @challengesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Compete in monthly sprints, test clinical recall, and climb the ranks'**
+  String get challengesSubtitle;
+
+  /// No description provided for @unableToLoadQuizReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load quiz review.'**
+  String get unableToLoadQuizReview;
+>>>>>>> fix/M7-remove-hardcoded-strings
 }
 
 class _AppLocalizationsDelegate

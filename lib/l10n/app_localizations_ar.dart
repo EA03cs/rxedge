@@ -1642,6 +1642,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get errUnknown => 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.';
 
   @override
+<<<<<<< HEAD
   String get quizOfflineSubmitError => 'يرجى الاتصال بالإنترنت لإرسال إجاباتك.';
 
   @override
@@ -1654,4 +1655,158 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get syncRetryFailed =>
       'تعذرت المزامنة. يرجى التحقق من الاتصال أو تفاصيل المشاركة.';
+=======
+  String minReadCount(int minutes) {
+    return '$minutes د قراءة';
+  }
+
+  @override
+  String get reviewQuizAnswers => 'مراجعة إجابات الاختبار';
+
+  @override
+  String get quizAlreadyAttemptedError =>
+      'لقد أجبت على هذا الاختبار مسبقاً. لا يُسمح بإعادة المحاولة وفق سياسة التحدي.';
+
+  @override
+  String get marksClaimedLabel => 'تم الاحتساب';
+
+  @override
+  String quizMarksNoteWithReward(int points) {
+    return 'ملاحظة العلامات: تُمنح علامات التحدي (+$points علامة) مرة واحدة عند أول اجتياز. المحاولات الإضافية للمراجعة والتدريب السريري.';
+  }
+
+  @override
+  String get quizMarksNote =>
+      'ملاحظة العلامات: تُمنح علامات التحدي مرة واحدة عند أول اجتياز. المحاولات الإضافية للمراجعة والتدريب السريري.';
+
+  @override
+  String get quizPassedLessonCompleted =>
+      'تم اجتياز الاختبار! تم تحديد الدرس المرتبط كمكتمل تلقائياً.';
+
+  @override
+  String durationMinutesSeconds(int minutes, int seconds) {
+    return '$minutesد $secondsث';
+  }
+
+  @override
+  String get layoutAndSortOptions => 'خيارات العرض والترتيب';
+
+  @override
+  String get switchToListView => 'التبديل إلى عرض القائمة';
+
+  @override
+  String get switchToGridView => 'التبديل إلى عرض الشبكة';
+
+  @override
+  String get sortOrderLabel => 'ترتيب العرض';
+
+  @override
+  String get sortNewestFirst => 'الأحدث أولاً';
+
+  @override
+  String get sortMostUsedLabel => 'الأكثر استخداماً';
+
+  @override
+  String get sortAlphabeticalLabel => 'أبجدياً (أ-ي)';
+
+  @override
+  String get tooltipOnlineMode => 'الوضع المتصل';
+
+  @override
+  String get tooltipSimulateOfflineMode => 'محاكاة وضع عدم الاتصال';
+
+  @override
+  String get filterOptionsTooltip => 'خيارات التصفية';
+
+  @override
+  String get filterByProductTitle => 'تصفية حسب المنتج الدوائي';
+
+  @override
+  String get sortMaterialsByTitle => 'ترتيب المواد حسب';
+
+  @override
+  String materialShareLinkCopied(String title) {
+    return 'تم نسخ رابط المشاركة المعتمد إلى الحافظة لـ: $title';
+  }
+
+  @override
+  String storeOfflineSize(String size) {
+    return 'تخزين $size على الجهاز للعرض دون اتصال';
+  }
+
+  @override
+  String freesOfflineSize(String size) {
+    return 'يوفر $size من مساحة التخزين المحلية';
+  }
+
+  @override
+  String get takePhotoWithCamera => 'التقاط صورة بالكاميرا';
+
+  @override
+  String get chooseFromGallery => 'الاختيار من المعرض';
+
+  @override
+  String get photoSavedLocallyOffline =>
+      'تم حفظ الصورة محلياً وسيتم رفعها عند عودة الاتصال.';
+
+  @override
+  String get failedToUploadImage => 'تعذر رفع الصورة. يرجى التحقق من الاتصال.';
+
+  @override
+  String get voiceNoteSavedLocallyOffline =>
+      'تم حفظ الملاحظة الصوتية محلياً وسيتم رفعها عند عودة الاتصال.';
+
+  @override
+  String get microphonePermissionRequired =>
+      'مطلوب إذن الميكروفون لتسجيل ملاحظة صوتية.';
+
+  @override
+  String get voiceRecordingMobileOnly =>
+      'التسجيل الصوتي متاح على الأجهزة المحمولة فقط.';
+
+  @override
+  String get unableToRecordAudio => 'تعذر تسجيل الصوت على هذا الجهاز.';
+
+  @override
+  String get uploadingVoiceNote => 'جارٍ رفع الملاحظة الصوتية...';
+
+  @override
+  String recordingTapToStop(String duration) {
+    return 'جارٍ التسجيل... اضغط للإيقاف ($duration)';
+  }
+
+  @override
+  String get unableToPlayVoiceNote => 'تعذر تشغيل الملاحظة الصوتية حالياً.';
+
+  @override
+  String get playingVoiceNote => 'جارٍ تشغيل الملاحظة الصوتية...';
+
+  @override
+  String get defaultScopeCompany => 'الشركة';
+
+  @override
+  String rankInScope(int rank, int total, String scope) {
+    return 'الترتيب #$rank من أصل $total في $scope';
+  }
+
+  @override
+  String unrankedInScope(String scope) {
+    return 'غير مصنف في $scope';
+  }
+
+  @override
+  String sprintRankNumber(int rank) {
+    return 'ترتيب التحدي #$rank';
+  }
+
+  @override
+  String get unrankedLabel => 'غير مصنف';
+
+  @override
+  String get challengesSubtitle =>
+      'نافس في التحديات الشهرية، واختبر استيعابك السريري، وتقدّم في الترتيب';
+
+  @override
+  String get unableToLoadQuizReview => 'تعذر تحميل مراجعة الاختبار.';
+>>>>>>> fix/M7-remove-hardcoded-strings
 }

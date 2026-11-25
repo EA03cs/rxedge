@@ -154,7 +154,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                   Row(
                     children: [
                       StatusBadge(
-                        label: '${liveLesson.durationMinutes} min read',
+                        label: l10n.minReadCount(liveLesson.durationMinutes),
                         variant: StatusBadgeVariant.neutral,
                         icon: LucideIcons.clock4,
                       ),
@@ -355,7 +355,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                               final isQuizDone = matchedQuiz?.isCompleted ?? false;
                               return AppButton(
                                 text: isQuizDone
-                                    ? 'Review Quiz Answers'
+                                    ? l10n.reviewQuizAnswers
                                     : l10n.takeQuickQuiz,
                                 leadingIcon: isQuizDone
                                     ? LucideIcons.fileSearch
@@ -466,7 +466,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
               if (matchedQuiz != null) ...[
                 if (matchedQuiz.isCompleted)
                   AppButton(
-                    text: 'Review Quiz Answers',
+                    text: l10n.reviewQuizAnswers,
                     leadingIcon: LucideIcons.fileSearch,
                     variant: AppButtonVariant.primary,
                     onPressed: () {

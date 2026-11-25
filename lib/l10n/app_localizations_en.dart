@@ -1648,6 +1648,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errUnknown => 'An unexpected error occurred. Please try again.';
 
   @override
+<<<<<<< HEAD
   String get quizOfflineSubmitError =>
       'Connect to the internet to submit your answers.';
 
@@ -1660,4 +1661,159 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get syncRetryFailed =>
       'Still unable to sync. Please check your connection or submission details.';
+=======
+  String minReadCount(int minutes) {
+    return '$minutes min read';
+  }
+
+  @override
+  String get reviewQuizAnswers => 'Review Quiz Answers';
+
+  @override
+  String get quizAlreadyAttemptedError =>
+      'You have already attempted this quiz. Retakes are not permitted per challenge policy.';
+
+  @override
+  String get marksClaimedLabel => 'Claimed';
+
+  @override
+  String quizMarksNoteWithReward(int points) {
+    return 'Marks Note: Quiz challenge marks (+$points Marks) are awarded once upon first pass. Additional attempts serve as clinical refresher and practice.';
+  }
+
+  @override
+  String get quizMarksNote =>
+      'Marks Note: Quiz challenge marks are awarded once upon first pass. Additional attempts serve as clinical refresher and practice.';
+
+  @override
+  String get quizPassedLessonCompleted =>
+      'Quiz passed! The associated lesson has been automatically marked as complete.';
+
+  @override
+  String durationMinutesSeconds(int minutes, int seconds) {
+    return '${minutes}m ${seconds}s';
+  }
+
+  @override
+  String get layoutAndSortOptions => 'Layout & Sort Options';
+
+  @override
+  String get switchToListView => 'Switch to List View';
+
+  @override
+  String get switchToGridView => 'Switch to Grid View';
+
+  @override
+  String get sortOrderLabel => 'Sort Order';
+
+  @override
+  String get sortNewestFirst => 'Newest First';
+
+  @override
+  String get sortMostUsedLabel => 'Most Used';
+
+  @override
+  String get sortAlphabeticalLabel => 'Alphabetical (A-Z)';
+
+  @override
+  String get tooltipOnlineMode => 'Online Mode';
+
+  @override
+  String get tooltipSimulateOfflineMode => 'Simulate Offline Mode';
+
+  @override
+  String get filterOptionsTooltip => 'Filter options';
+
+  @override
+  String get filterByProductTitle => 'Filter by Pharmaceutical Product';
+
+  @override
+  String get sortMaterialsByTitle => 'Sort Materials By';
+
+  @override
+  String materialShareLinkCopied(String title) {
+    return 'Approved sharing link copied to clipboard for: $title';
+  }
+
+  @override
+  String storeOfflineSize(String size) {
+    return 'Store $size on device for offline detailing';
+  }
+
+  @override
+  String freesOfflineSize(String size) {
+    return 'Frees $size of local storage';
+  }
+
+  @override
+  String get takePhotoWithCamera => 'Take Photo with Camera';
+
+  @override
+  String get chooseFromGallery => 'Choose from Gallery';
+
+  @override
+  String get photoSavedLocallyOffline =>
+      'Photo saved locally and will upload when back online.';
+
+  @override
+  String get failedToUploadImage =>
+      'Failed to upload image. Please check connection.';
+
+  @override
+  String get voiceNoteSavedLocallyOffline =>
+      'Voice note saved locally and will upload when back online.';
+
+  @override
+  String get microphonePermissionRequired =>
+      'Microphone permission is required to record a voice note.';
+
+  @override
+  String get voiceRecordingMobileOnly =>
+      'Voice recording is available on mobile devices.';
+
+  @override
+  String get unableToRecordAudio => 'Unable to record audio on this device.';
+
+  @override
+  String get uploadingVoiceNote => 'Uploading voice note...';
+
+  @override
+  String recordingTapToStop(String duration) {
+    return 'Recording... Tap to stop ($duration)';
+  }
+
+  @override
+  String get unableToPlayVoiceNote => 'Unable to play voice note right now.';
+
+  @override
+  String get playingVoiceNote => 'Playing voice note...';
+
+  @override
+  String get defaultScopeCompany => 'Company';
+
+  @override
+  String rankInScope(int rank, int total, String scope) {
+    return 'Rank #$rank of $total in $scope';
+  }
+
+  @override
+  String unrankedInScope(String scope) {
+    return 'Unranked in $scope';
+  }
+
+  @override
+  String sprintRankNumber(int rank) {
+    return 'Sprint Rank #$rank';
+  }
+
+  @override
+  String get unrankedLabel => 'Unranked';
+
+  @override
+  String get challengesSubtitle =>
+      'Compete in monthly sprints, test clinical recall, and climb the ranks';
+
+  @override
+  String get unableToLoadQuizReview => 'Unable to load quiz review.';
+>>>>>>> fix/M7-remove-hardcoded-strings
 }
