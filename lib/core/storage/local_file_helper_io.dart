@@ -69,6 +69,31 @@ Future<void> deleteLocalFile(String? path) async {
   } catch (_) {}
 }
 
+/// Writes downloaded media bytes into the system temporary directory for
+/// playback (e.g. authenticated voice notes) and returns the created file path.
+Future<String?> saveTempMediaBytes(
+  List<int> bytes, {
+  String prefix = 'rxedge_media',
+  String extension = 'm4a',
+}) async {
+  try {
+    final dir = await getTemporaryDirectory();
+    if (!await dir.exists()) {
+      await dir.create(recursive: true);
+    }
+    final safePrefix = prefix.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '_');
+    final safeExt = extension.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+    final ext = safeExt.isEmpty ? 'm4a' : safeExt;
+    final target = File(
+      '${dir.path}/${safePrefix}_${DateTime.now().microsecondsSinceEpoch}.$ext',
+    );
+    await target.writeAsBytes(bytes, flush: true);
+    return target.path;
+  } catch (_) {
+    return null;
+  }
+}
+
 /// Renders an image directly from a local file path.
 Widget buildLocalFileImage(
   String path, {

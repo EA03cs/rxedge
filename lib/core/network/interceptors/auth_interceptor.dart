@@ -25,13 +25,33 @@ class AuthInterceptor extends QueuedInterceptor {
         path.endsWith(ApiEndpoints.forgotPassword);
   }
 
+  bool _shouldAttachAuth(RequestOptions options) {
+    if (_isAuthPublicEndpoint(options.path)) return false;
+
+    final effectiveBase =
+        options.baseUrl.isNotEmpty ? options.baseUrl : (refreshBaseUrl ?? '');
+    if (effectiveBase.isEmpty) {
+      final uri = Uri.tryParse(options.path);
+      return uri == null || !uri.hasScheme;
+    }
+
+    final apiHost = Uri.tryParse(effectiveBase)?.host.toLowerCase();
+    if (apiHost == null || apiHost.isEmpty) return false;
+    return options.uri.host.toLowerCase() == apiHost;
+  }
+
   @override
   Future<void> onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    if (!_isAuthPublicEndpoint(options.path)) {
-      final token = await _storageService.read(AppConstants.keyAuthToken);
+    if (_shouldAttachAuth(options)) {
+      String? token;
+      try {
+        token = await _storageService.read(AppConstants.keyAuthToken);
+      } catch (_) {
+        token = null;
+      }
       if (token != null && token.isNotEmpty) {
         options.headers[AppConstants.headerAuthorization] =
             '${AppConstants.headerBearerPrefix}$token';
