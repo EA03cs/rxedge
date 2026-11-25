@@ -12,6 +12,13 @@ bool localFileExists(String? path) => false;
 
 Future<void> deleteLocalFile(String? path) async {}
 
+Future<String?> saveTempMediaBytes(
+  List<int> bytes, {
+  String prefix = 'rxedge_media',
+  String extension = 'm4a',
+}) async =>
+    null;
+
 Widget buildLocalFileImage(
   String path, {
   double? width,
