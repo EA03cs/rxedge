@@ -398,5 +398,36 @@ void main() {
       }).toDomain();
       expect(submission.pointsAwarded, 80);
     });
+
+    test('HomeDashboardDto does not fabricate fake progress or streak when backend omits data', () {
+      final home = HomeDashboardDto.fromJson(<String, dynamic>{
+        'challengeMarks': 0,
+        'continueLearningLesson': null,
+        'recommendedProduct': null,
+        'monthlyChallenge': null,
+        'objectionOfTheMonth': null,
+        'recentClinicalMaterials': const <dynamic>[],
+      }).toDomain();
+
+      expect(home.continueLesson, isNull);
+      expect(home.recommendedProduct, isNull);
+      expect(home.challenge.id, isEmpty);
+      expect(home.challenge.title, isEmpty);
+      expect(home.challenge.progress, 0.0);
+      expect(home.challenge.daysLeft, 0);
+      expect(home.challenge.currentRank, 0);
+      expect(home.stats.streakDays, 0);
+      expect(home.stats.points, 0);
+      expect(home.recentMaterials, isEmpty);
+
+      final partialLesson = ContinueLearningDto.fromJson(<String, dynamic>{
+        'id': 'les-1',
+        'title': 'Dry Eye Basics',
+        'productName': 'Rohto Dry Aid',
+      }).toDomain();
+      expect(partialLesson.progress, 0.0);
+      expect(partialLesson.completedModules, 0);
+      expect(partialLesson.totalModules, 0);
+    });
   });
 }

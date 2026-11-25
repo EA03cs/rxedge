@@ -76,15 +76,19 @@ class HomeDashboardDto {
   factory HomeDashboardDto._fromBackendJson(Map<String, dynamic> json) {
     final rawLesson = json['continueLearningLesson'];
     final rawProgress = json['lessonProgress'];
+    final rawIndividual = json['individualProgress'];
+    final progressSource = rawProgress is Map
+        ? rawProgress
+        : (rawIndividual is Map ? rawIndividual : null);
     ContinueLearningDto? continueLesson;
     if (rawLesson is Map) {
       final lessonMap = Map<String, dynamic>.from(rawLesson);
-      if (rawProgress is Map) {
-        lessonMap['completed_modules'] = rawProgress['completedCount'] ??
-            rawProgress['completedLessons'] ??
-            1;
+      if (progressSource is Map) {
+        lessonMap['completed_modules'] = progressSource['completedCount'] ??
+            progressSource['completedLessons'] ??
+            0;
         lessonMap['total_modules'] =
-            rawProgress['totalCount'] ?? rawProgress['totalLessons'] ?? 4;
+            progressSource['totalCount'] ?? progressSource['totalLessons'] ?? 0;
       }
       continueLesson = ContinueLearningDto.fromJson(lessonMap);
     }
@@ -97,25 +101,7 @@ class HomeDashboardDto {
     RecommendedProductDto? resolvedProduct;
     if (rawProduct is Map) {
       resolvedProduct = RecommendedProductDto.fromJson(Map<String, dynamic>.from(rawProduct));
-    } else {
-      resolvedProduct = const RecommendedProductDto(
-        id: 'prod-rohto-dry-aid',
-        productName: 'Rohto Dry Aid',
-        therapeuticArea: 'Ophthalmology (Dry Eye)',
-        description:
-            'Rohto Dry Aid with Tearshield Technology formulation restores natural tear film across all 3 layers for up to 12 hours.',
-        boxImageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500',
-      );
     }
-
-    continueLesson ??= const ContinueLearningDto(
-      id: 'les_rda_1',
-      productName: 'Rohto Dry Aid',
-      lessonTitle: 'Tearshield Technology™ & Triple Layer Restoration',
-      progress: 0.35,
-      totalModules: 3,
-      completedModules: 1,
-    );
 
     MonthlyChallengeDto resolvedChallenge;
     final challengeMap = rawChallenge is Map
@@ -128,12 +114,12 @@ class HomeDashboardDto {
       resolvedChallenge = MonthlyChallengeDto.fromJson(challengeMap);
     } else {
       resolvedChallenge = const MonthlyChallengeDto(
-        id: 'ch_rohto_dry_aid_nov',
-        title: 'Rohto Dry Aid Clinical Differentiation Monthly Challenge',
-        daysLeft: 5,
-        progress: 0.65,
-        currentRank: 1,
-        totalParticipants: 14,
+        id: '',
+        title: '',
+        daysLeft: 0,
+        progress: 0.0,
+        currentRank: 0,
+        totalParticipants: 0,
       );
     }
 
@@ -142,39 +128,19 @@ class HomeDashboardDto {
       resolvedObjection = DoctorObjectionDto.fromJson(Map<String, dynamic>.from(rawObjection));
     } else {
       resolvedObjection = const DoctorObjectionDto(
-        id: 'obj_rohto_01',
-        doctorQuote:
-            'What causes eye drops to sting, and why should I choose Rohto Dry Aid over traditional drops?',
-        doctorName: 'Dr. Tarek (Ophthalmologist)',
-        specialty: 'Ophthalmology',
-        productConcerned: 'Rohto Dry Aid',
-        responseSummary:
-            'Rohto eye drops match natural tear osmolarity and pH. The refreshing sensation is due to menthol which stimulates meibomian glands, relieving MGD.',
+        id: '',
+        doctorQuote: '',
+        doctorName: '',
+        specialty: '',
+        productConcerned: '',
+        responseSummary: '',
       );
     }
 
-    final parsedMaterials = rawMaterials
+    final List<MaterialUpdateDto> finalMaterials = rawMaterials
         .whereType<Map<dynamic, dynamic>>()
         .map((e) => MaterialUpdateDto.fromJson(Map<String, dynamic>.from(e)))
         .toList();
-    final List<MaterialUpdateDto> finalMaterials = parsedMaterials.isNotEmpty
-        ? parsedMaterials
-        : [
-            const MaterialUpdateDto(
-              id: 'mat_rohto_dry_aid_brochure',
-              title: 'Rohto Dry Aid Official Clinical Brochure',
-              specialty: 'Ophthalmology',
-              badgeType: 'Updated',
-              updatedAt: '2026-11-18T10:00:00Z',
-            ),
-            const MaterialUpdateDto(
-              id: 'mat_rohto_cool_brochure',
-              title: 'Rohto Cool Eye Drops Official Brochure',
-              specialty: 'Ophthalmology',
-              badgeType: 'New',
-              updatedAt: '2026-11-18T11:00:00Z',
-            ),
-          ];
 
     final individualProgress = json['individualProgress'] is Map
         ? Map<String, dynamic>.from(json['individualProgress'] as Map)
@@ -268,6 +234,7 @@ class ContinueLearningDto {
   final double progress;
   final int totalModules;
   final int completedModules;
+  final int? estimatedMinutes;
 
   const ContinueLearningDto({
     required this.id,
@@ -276,16 +243,15 @@ class ContinueLearningDto {
     required this.progress,
     required this.totalModules,
     required this.completedModules,
+    this.estimatedMinutes,
   });
 
   factory ContinueLearningDto.fromJson(Map<String, dynamic> json) {
     final completed = (json['completed_modules'] as num?)?.toInt() ?? 0;
-    final total = math.max(1, (json['total_modules'] as num?)?.toInt() ?? 1);
+    final total = math.max(0, (json['total_modules'] as num?)?.toInt() ?? 0);
     final rawProgress = (json['progress'] as num?)?.toDouble();
     final derivedProgress = rawProgress ??
-        (json['completed_modules'] != null
-            ? (completed / total).clamp(0.0, 1.0)
-            : 0.25);
+        (total > 0 ? (completed / total).clamp(0.0, 1.0) : 0.0);
 
     return ContinueLearningDto(
       id: json['id']?.toString() ?? '',
@@ -298,6 +264,9 @@ class ContinueLearningDto {
       progress: derivedProgress,
       totalModules: total,
       completedModules: completed,
+      estimatedMinutes:
+          (json['estimated_minutes'] as num?)?.toInt() ??
+              (json['estimatedMinutes'] as num?)?.toInt(),
     );
   }
 
@@ -308,6 +277,7 @@ class ContinueLearningDto {
         'progress': progress,
         'total_modules': totalModules,
         'completed_modules': completedModules,
+        if (estimatedMinutes != null) 'estimated_minutes': estimatedMinutes,
       };
 
   ContinueLearningEntity toDomain() => ContinueLearningEntity(
@@ -317,6 +287,7 @@ class ContinueLearningDto {
         progress: progress,
         totalModules: totalModules,
         completedModules: completedModules,
+        estimatedMinutes: estimatedMinutes,
       );
 }
 
@@ -421,7 +392,7 @@ class MonthlyChallengeDto {
       progress: parsedProgress,
       currentRank: (json['current_rank'] as num?)?.toInt() ??
           (json['currentChallengeRank'] as num?)?.toInt() ??
-          1,
+          0,
       totalParticipants: (json['total_participants'] as num?)?.toInt() ??
           (json['totalParticipants'] as num?)?.toInt() ??
           0,

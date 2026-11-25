@@ -19,6 +19,10 @@ class MonthlyChallengeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (challenge.id.isEmpty && challenge.title.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     final textTheme = Theme.of(context).textTheme;
     final l10n = context.l10n;
     final percentage = (challenge.progress * 100).toInt();

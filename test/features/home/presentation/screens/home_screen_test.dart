@@ -270,5 +270,50 @@ void main() {
       expect(find.text('AtorvaCare 20mg'), findsOneWidget);
       expect(find.text('Continue'), findsOneWidget);
     });
+
+    testWidgets('hides empty challenge, objection, and recommended product sections',
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1200, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      const allEmptyDashboard = HomeDashboardEntity(
+        continueLesson: null,
+        recommendedProduct: null,
+        challenge: MonthlyChallengeEntity(
+          id: '',
+          title: '',
+          daysLeft: 0,
+          progress: 0.0,
+          currentRank: 0,
+          totalParticipants: 0,
+        ),
+        objection: DoctorObjectionEntity(
+          id: '',
+          doctorQuote: '',
+          doctorName: '',
+          specialty: '',
+          productConcerned: '',
+          responseSummary: '',
+        ),
+        recentMaterials: [],
+        stats: RepStatsEntity(
+          points: 0,
+          streakDays: 0,
+          quizzesCompleted: 0,
+        ),
+      );
+
+      when(() => mockRepository.getHomeDashboard(forceRefresh: any(named: 'forceRefresh')))
+          .thenAnswer((_) async => Result.success(allEmptyDashboard));
+
+      await tester.pumpWidget(buildTestableScreen(child: const HomeScreen()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+
+      expect(find.text('Rohto Dry Aid'), findsNothing);
+      expect(find.text("This Month's Challenge"), findsNothing);
+      expect(find.text('Objection of the Month'), findsNothing);
+    });
   });
 }

@@ -237,38 +237,49 @@ class ContinueLearningCard extends ConsumerWidget {
                   const SizedBox(height: RxSpacing.s8),
 
                   // Micro-meta: play circle icon & module info
-                  Row(
-                    children: [
-                      Container(
-                        width: 18.0,
-                        height: 18.0,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF0D9488),
-                          shape: BoxShape.circle,
-                        ),
-                        alignment: Alignment.center,
-                        child: const Icon(
-                          LucideIcons.play,
-                          size: 9.0,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(width: RxSpacing.s6),
-                      Flexible(
-                        child: Text(
-                          '${l10n.moduleProgressCount(item.completedModules, item.totalModules)} • ${l10n.minutesCountLabel(4)}',
-                          style: textTheme.bodySmall?.copyWith(
-                            color: const Color(0xFF93C5FD),
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12.0,
+                  if (item.totalModules > 0 || (item.estimatedMinutes ?? 0) > 0) ...[
+                    Row(
+                      children: [
+                        Container(
+                          width: 18.0,
+                          height: 18.0,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF0D9488),
+                            shape: BoxShape.circle,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          alignment: Alignment.center,
+                          child: const Icon(
+                            LucideIcons.play,
+                            size: 9.0,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: RxSpacing.s14),
+                        const SizedBox(width: RxSpacing.s6),
+                        Flexible(
+                          child: Text(
+                            [
+                              if (item.totalModules > 0)
+                                l10n.moduleProgressCount(
+                                  item.completedModules,
+                                  item.totalModules,
+                                ),
+                              if ((item.estimatedMinutes ?? 0) > 0)
+                                l10n.minutesCountLabel(item.estimatedMinutes!),
+                            ].join(' • '),
+                            style: textTheme.bodySmall?.copyWith(
+                              color: const Color(0xFF93C5FD),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12.0,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: RxSpacing.s14),
+                  ] else
+                    const SizedBox(height: RxSpacing.s10),
 
                   // Mint Progress Bar + Percentage
                   Row(
@@ -337,7 +348,9 @@ class ContinueLearningCard extends ConsumerWidget {
     AppLocalizations l10n,
     RecommendedProductEntity? product,
   ) {
-    final prodName = product?.productName ?? 'Rohto Dry Aid';
+    final prodName = product?.productName.trim().isNotEmpty == true
+        ? product!.productName
+        : null;
     final rationale =
         product?.description ?? l10n.recommendedDetailingSubtitle;
 
@@ -377,33 +390,35 @@ class ContinueLearningCard extends ConsumerWidget {
                 ],
               ),
             ),
-            const SizedBox(width: RxSpacing.s8),
-            Flexible(
-              child: Container(
-                padding: const EdgeInsetsDirectional.symmetric(
-                  horizontal: RxSpacing.s10,
-                  vertical: RxSpacing.s4,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(16.0),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.25),
-                    width: 0.8,
+            if (prodName != null) ...[
+              const SizedBox(width: RxSpacing.s8),
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsetsDirectional.symmetric(
+                    horizontal: RxSpacing.s10,
+                    vertical: RxSpacing.s4,
                   ),
-                ),
-                child: Text(
-                  prodName,
-                  style: textTheme.labelSmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 11.5,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.18),
+                    borderRadius: BorderRadius.circular(16.0),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.25),
+                      width: 0.8,
+                    ),
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  child: Text(
+                    prodName,
+                    style: textTheme.labelSmall?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 11.5,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
-            ),
+            ],
           ],
         ),
         const SizedBox(height: RxSpacing.s10),
@@ -416,7 +431,9 @@ class ContinueLearningCard extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    l10n.noLessonStarted(prodName),
+                    prodName != null
+                        ? l10n.noLessonStarted(prodName)
+                        : l10n.continueLearningTitle,
                     style: textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                       color: Colors.white,

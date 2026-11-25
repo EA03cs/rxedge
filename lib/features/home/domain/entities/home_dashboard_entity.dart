@@ -15,6 +15,7 @@ class ContinueLearningEntity {
   final double progress; // 0.0 to 1.0
   final int totalModules;
   final int completedModules;
+  final int? estimatedMinutes;
 
   const ContinueLearningEntity({
     required this.id,
@@ -23,6 +24,7 @@ class ContinueLearningEntity {
     required this.progress,
     required this.totalModules,
     required this.completedModules,
+    this.estimatedMinutes,
   });
 
   @override

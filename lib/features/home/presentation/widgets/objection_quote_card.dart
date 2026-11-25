@@ -129,6 +129,10 @@ class ObjectionQuoteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (objection.doctorQuote.trim().isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
     final l10n = context.l10n;
