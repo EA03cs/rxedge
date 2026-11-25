@@ -5,6 +5,7 @@ import '../models/profile_dto.dart';
 abstract class ProfileLocalDatasource {
   Future<UserProfileDto?> getCachedProfile();
   Future<void> cacheProfile(UserProfileDto profile);
+  Future<NotificationPreferencesDto?> getSavedPreferences();
   Future<void> savePreferences(NotificationPreferencesDto preferences);
   Future<void> clearDownloads();
   int getStorageUsage();
@@ -32,14 +33,29 @@ class ProfileLocalDatasourceImpl implements ProfileLocalDatasource {
   }
 
   @override
+  Future<NotificationPreferencesDto?> getSavedPreferences() async {
+    final raw = _cacheService.get<Map<String, dynamic>>(_prefKey);
+    if (raw == null) return null;
+    return NotificationPreferencesDto.fromJson(raw);
+  }
+
+  @override
   Future<void> savePreferences(NotificationPreferencesDto preferences) async {
     _cacheService.put<Map<String, dynamic>>(_prefKey, preferences.toJson());
   }
 
   @override
   Future<void> clearDownloads() async {
+    final savedPrefs = _cacheService.get<Map<String, dynamic>>(_prefKey);
+    final cachedProfile = _cacheService.get<Map<String, dynamic>>(_profileKey);
     _cacheService.clear();
     _cacheService.put<int>(_storageKey, 0);
+    if (savedPrefs != null) {
+      _cacheService.put<Map<String, dynamic>>(_prefKey, savedPrefs);
+    }
+    if (cachedProfile != null) {
+      _cacheService.put<Map<String, dynamic>>(_profileKey, cachedProfile);
+    }
   }
 
   @override

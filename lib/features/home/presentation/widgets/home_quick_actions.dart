@@ -18,12 +18,11 @@ class HomeQuickActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     final actions = [
       _ActionData(
         icon: LucideIcons.bookOpen,
-        label: isArabic ? 'بروشور العرض' : 'Visual Aid',
+        label: 'Visual Aid',
         badgeBg: const Color(0xFFE0F2FE),
         iconColor: const Color(0xFF0284C7),
         onTap: () {
@@ -34,7 +33,7 @@ class HomeQuickActions extends StatelessWidget {
       ),
       _ActionData(
         icon: LucideIcons.zap,
-        label: isArabic ? 'كويز سريع' : 'Quick Quiz',
+        label: 'Quick Quiz',
         badgeBg: const Color(0xFFCCFBF1),
         iconColor: const Color(0xFF0D9488),
         onTap: () {
@@ -47,7 +46,7 @@ class HomeQuickActions extends StatelessWidget {
       ),
       _ActionData(
         icon: LucideIcons.target,
-        label: isArabic ? 'التحدي الشهري' : 'Challenge',
+        label: 'Challenge',
         badgeBg: const Color(0xFFEDE9FE),
         iconColor: const Color(0xFF7C3AED),
         onTap: () {
@@ -60,7 +59,7 @@ class HomeQuickActions extends StatelessWidget {
       ),
       _ActionData(
         icon: LucideIcons.fileEdit,
-        label: isArabic ? 'تسجيل اعتراض' : 'Log Voice',
+        label: 'Log Voice',
         badgeBg: const Color(0xFFCFFAFE),
         iconColor: const Color(0xFF0891B2),
         onTap: () {

@@ -138,8 +138,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final l10n = context.l10n;
     final textTheme = Theme.of(context).textTheme;
     final authState = ref.watch(authControllerProvider);
-    final activeLocale = ref.watch(localeProvider);
-    final isArabic = activeLocale.languageCode == 'ar';
     final isLoading = authState is AuthAuthenticating;
 
     // Listen for state change to authenticated and navigate directly to home
@@ -180,57 +178,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Brand Header & Language Toggle Row
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const MentholatumLogo(height: 28.0),
-                        const SizedBox(width: RxSpacing.s8),
-
-                        // Instant Language Switcher Pill
-                        InkWell(
-                          onTap: () {
-                            final newLocale =
-                                isArabic ? const Locale('en') : const Locale('ar');
-                            ref.read(localeProvider.notifier).state = newLocale;
-                          },
-                          borderRadius: RxRadii.borderChip,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: RxSpacing.s8,
-                              vertical: RxSpacing.s4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colors.background,
-                              borderRadius: RxRadii.borderChip,
-                              border: Border.all(
-                                color: colors.border,
-                                width: RxShadows.hairlineBorderWidth,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  LucideIcons.globe,
-                                  size: 13.0,
-                                  color: colors.textSecondary,
-                                ),
-                                const SizedBox(width: RxSpacing.s4),
-                                Text(
-                                  isArabic ? 'English' : 'العربية',
-                                  style: textTheme.labelSmall?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 11.0,
-                                    color: colors.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Brand Header
+                    const MentholatumLogo(height: 28.0),
                     const SizedBox(height: RxSpacing.s20),
 
                     // Titles
@@ -288,9 +237,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               const SizedBox(width: RxSpacing.s8),
                               Expanded(
                                 child: Text(
-                                  isArabic
-                                      ? 'حساب تجريبي: rep@rxedge.com'
-                                      : 'Quick Demo: rep@rxedge.com',
+                                  'Quick Demo: rep@rxedge.com',
                                   style: textTheme.labelSmall?.copyWith(
                                     fontWeight: FontWeight.w600,
                                     color: colors.textPrimary,
@@ -314,7 +261,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   ),
                                 ),
                                 child: Text(
-                                  isArabic ? 'تعبئة سريعة' : 'Auto Fill',
+                                  'Auto Fill',
                                   style: textTheme.labelSmall?.copyWith(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 10.0,
@@ -549,9 +496,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         const SizedBox(width: RxSpacing.s4),
                         Flexible(
                           child: Text(
-                            isArabic
-                                ? 'اتصال مشفر 256-bit • معايير الرعاية الصحية'
-                                : '256-bit SSL Encrypted • Healthcare Standard',
+                            '256-bit SSL Encrypted • Healthcare Standard',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: textTheme.labelSmall?.copyWith(

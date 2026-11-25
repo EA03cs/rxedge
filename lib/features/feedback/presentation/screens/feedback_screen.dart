@@ -418,8 +418,8 @@ class FeedbackScreen extends ConsumerWidget {
 
   String _sanitizeTitle(String title) {
     return title.replaceAll(
-      'آلية الضخ التناضحي لنظام GITS',
-      'تقنية Tearshield™ لترطيب العين المستمر',
+      'GITS Osmotic Pump Mechanism',
+      'Tearshield Technology Continuous Lubrication',
     );
   }
 
@@ -428,8 +428,7 @@ class FeedbackScreen extends ConsumerWidget {
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
 
-    final locale = Localizations.localeOf(context).languageCode;
-    final dateFormatted = DateFormat.yMMMd(locale).format(item.submittedAt);
+    final dateFormatted = DateFormat.yMMMd('en').format(item.submittedAt);
     final isAnswered = item.status == FeedbackStatus.answered;
 
     return InkWell(

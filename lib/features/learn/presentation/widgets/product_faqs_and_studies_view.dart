@@ -55,7 +55,7 @@ class _ProductFaqsAndStudiesViewState extends State<ProductFaqsAndStudiesView> {
             ),
             const SizedBox(height: RxSpacing.s8),
             SizedBox(
-              height: 120.0,
+              height: 124.0,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: packShots.length,
@@ -63,57 +63,120 @@ class _ProductFaqsAndStudiesViewState extends State<ProductFaqsAndStudiesView> {
                     const SizedBox(width: RxSpacing.s10),
                 itemBuilder: (context, index) {
                   final ps = packShots[index];
-                  return Container(
-                    width: 120.0,
-                    decoration: BoxDecoration(
-                      color: colors.surface,
-                      borderRadius: RxRadii.borderCard,
-                      border: Border.all(
-                        color: colors.border,
-                        width: RxShadows.hairlineBorderWidth,
-                      ),
-                    ),
+                  final label = (ps.title != null && ps.title!.isNotEmpty)
+                      ? ps.title!
+                      : 'Pack Shot ${index + 1}';
+                  final viewTag = index == 0 ? 'Front' : 'View ${index + 1}';
+                  return Material(
+                    color: colors.surface,
+                    borderRadius: RxRadii.borderCard,
                     clipBehavior: Clip.antiAlias,
-                    child: Stack(
-                      children: [
-                        Positioned.fill(
-                          child: Image.network(
-                            ps.imageUrl,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => Center(
-                              child: Icon(
-                                LucideIcons.packageCheck,
-                                size: 32.0,
-                                color: colors.textSecondary,
-                              ),
-                            ),
+                    child: InkWell(
+                      onTap: () => _showPackShotPreview(
+                        context,
+                        title: label,
+                        viewTag: viewTag,
+                        url: ps.imageUrl,
+                      ),
+                      child: Container(
+                        width: 124.0,
+                        decoration: BoxDecoration(
+                          borderRadius: RxRadii.borderCard,
+                          border: Border.all(
+                            color: colors.border,
+                            width: RxShadows.hairlineBorderWidth,
                           ),
                         ),
-                        if (ps.title != null && ps.title!.isNotEmpty)
-                          Positioned(
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            child: Container(
-                              color: Colors.black.withValues(alpha: 0.65),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4.0,
-                                vertical: 2.0,
-                              ),
-                              child: Text(
-                                ps.title!,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10.0,
-                                  fontWeight: FontWeight.w600,
+                        clipBehavior: Clip.antiAlias,
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: (widget.product.defaultAssetBanner != null)
+                                  ? Image.asset(
+                                      widget.product.defaultAssetBanner!,
+                                      fit: BoxFit.contain,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              Center(
+                                        child: Icon(
+                                          LucideIcons.packageCheck,
+                                          size: 32.0,
+                                          color: colors.textSecondary,
+                                        ),
+                                      ),
+                                    )
+                                  : Center(
+                                      child: Icon(
+                                        LucideIcons.packageCheck,
+                                        size: 32.0,
+                                        color: colors.textSecondary,
+                                      ),
+                                    ),
+                            ),
+                            Positioned(
+                              top: 6,
+                              left: 6,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.center,
+                                decoration: BoxDecoration(
+                                  color: colors.primarySoft,
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                child: Text(
+                                  viewTag,
+                                  style: TextStyle(
+                                    color: colors.primary,
+                                    fontSize: 9.5,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                      ],
+                            Positioned(
+                              top: 6,
+                              right: 6,
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.9),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  LucideIcons.maximize2,
+                                  size: 11,
+                                  color: colors.textPrimary,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              child: Container(
+                                color: Colors.black.withValues(alpha: 0.65),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4.0,
+                                  vertical: 3.0,
+                                ),
+                                child: Text(
+                                  label,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10.0,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   );
                 },
@@ -130,63 +193,70 @@ class _ProductFaqsAndStudiesViewState extends State<ProductFaqsAndStudiesView> {
               color: colors.info,
             ),
             const SizedBox(height: RxSpacing.s8),
-            ...studies.map((study) => Container(
-                  margin: const EdgeInsetsDirectional.only(bottom: RxSpacing.s8),
-                  padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
-                  decoration: BoxDecoration(
-                    color: colors.surface,
+            ...studies.map((study) => Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => _openLink(study.fileUrl),
                     borderRadius: RxRadii.borderCard,
-                    border: Border.all(
-                      color: colors.border,
-                      width: RxShadows.hairlineBorderWidth,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsetsDirectional.all(RxSpacing.s8),
-                        decoration: BoxDecoration(
-                          color: colors.infoSoft,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Icon(
-                          study.studyType == 'e_detailed_slides'
-                              ? LucideIcons.presentation
-                              : LucideIcons.fileText,
-                          size: 18.0,
-                          color: colors.info,
+                    child: Container(
+                      margin: const EdgeInsetsDirectional.only(bottom: RxSpacing.s8),
+                      padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
+                      decoration: BoxDecoration(
+                        color: colors.surface,
+                        borderRadius: RxRadii.borderCard,
+                        border: Border.all(
+                          color: colors.border,
+                          width: RxShadows.hairlineBorderWidth,
                         ),
                       ),
-                      const SizedBox(width: RxSpacing.s12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              study.title,
-                              style: textTheme.bodySmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: colors.textPrimary,
-                              ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsetsDirectional.all(RxSpacing.s8),
+                            decoration: BoxDecoration(
+                              color: colors.infoSoft,
+                              borderRadius: BorderRadius.circular(8.0),
                             ),
-                            const SizedBox(height: RxSpacing.s2),
-                            Text(
+                            child: Icon(
                               study.studyType == 'e_detailed_slides'
-                                  ? 'E-Detailed Slides'
-                                  : 'Clinical Study Paper',
-                              style: textTheme.labelSmall?.copyWith(
-                                color: colors.textTertiary,
-                              ),
+                                  ? LucideIcons.presentation
+                                  : LucideIcons.fileText,
+                              size: 18.0,
+                              color: colors.info,
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: RxSpacing.s12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  study.title,
+                                  style: textTheme.bodySmall?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: colors.textPrimary,
+                                  ),
+                                ),
+                                const SizedBox(height: RxSpacing.s2),
+                                Text(
+                                  study.studyType == 'e_detailed_slides'
+                                      ? 'E-Detailed Slides / Clinical Monograph'
+                                      : 'Clinical Study Paper',
+                                  style: textTheme.labelSmall?.copyWith(
+                                    color: colors.textTertiary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(LucideIcons.externalLink, size: 18.0),
+                            tooltip: l10n.openStudy,
+                            onPressed: () => _openLink(study.fileUrl),
+                          ),
+                        ],
                       ),
-                      IconButton(
-                        icon: const Icon(LucideIcons.externalLink, size: 18.0),
-                        tooltip: l10n.openStudy,
-                        onPressed: () => _openLink(study.fileUrl),
-                      ),
-                    ],
+                    ),
                   ),
                 )),
             const SizedBox(height: RxSpacing.s20),
@@ -202,7 +272,7 @@ class _ProductFaqsAndStudiesViewState extends State<ProductFaqsAndStudiesView> {
 
           if (faqs.length > 3) ...[
             AppTextField(
-              hint: 'ابحث في الأسئلة الشائعة...',
+              hint: 'Search FAQs...',
               prefixIcon: const Icon(LucideIcons.search, size: 18.0),
               onChanged: (val) => setState(() => _searchQuery = val),
             ),
@@ -336,6 +406,101 @@ class _ProductFaqsAndStudiesViewState extends State<ProductFaqsAndStudiesView> {
     );
   }
 
+  void _showPackShotPreview(
+    BuildContext context, {
+    required String title,
+    required String viewTag,
+    required String url,
+  }) {
+    final colors = context.rxColors;
+    final textTheme = Theme.of(context).textTheme;
+    showDialog<void>(
+      context: context,
+      builder: (dialogCtx) => Dialog(
+        shape: const RoundedRectangleBorder(borderRadius: RxRadii.borderCard),
+        child: Padding(
+          padding: const EdgeInsets.all(RxSpacing.s16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: colors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 2.0),
+                        Text(
+                          viewTag,
+                          style: textTheme.bodySmall?.copyWith(
+                            color: colors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(LucideIcons.x),
+                    onPressed: () => Navigator.of(dialogCtx).pop(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: RxSpacing.s12),
+              Container(
+                height: 220.0,
+                decoration: BoxDecoration(
+                  color: colors.surfaceMuted,
+                  borderRadius: RxRadii.borderCard,
+                ),
+                padding: const EdgeInsets.all(RxSpacing.s12),
+                child: widget.product.defaultAssetBanner != null
+                    ? Image.asset(
+                        widget.product.defaultAssetBanner!,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, _, _) => Center(
+                          child: Icon(
+                            LucideIcons.packageCheck,
+                            size: 48.0,
+                            color: colors.textSecondary,
+                          ),
+                        ),
+                      )
+                    : Center(
+                        child: Icon(
+                          LucideIcons.packageCheck,
+                          size: 48.0,
+                          color: colors.textSecondary,
+                        ),
+                      ),
+              ),
+              if (url.trim().isNotEmpty) ...[
+                const SizedBox(height: RxSpacing.s12),
+                AppButton(
+                  text: 'Open Source File',
+                  variant: AppButtonVariant.secondary,
+                  leadingIcon: LucideIcons.externalLink,
+                  onPressed: () {
+                    Navigator.of(dialogCtx).pop();
+                    _openLink(url);
+                  },
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _openLink(String url) async {
     final uri = Uri.tryParse(url);
     if (uri != null) {
@@ -344,7 +509,7 @@ class _ProductFaqsAndStudiesViewState extends State<ProductFaqsAndStudiesView> {
         if (!launched && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('تعذر فتح الرابط. يرجى التأكد من توفر متصفح يدعم فتحه.'),
+              content: Text('Unable to open link. Please ensure a browser is available.'),
               duration: Duration(seconds: 2),
             ),
           );
@@ -353,7 +518,7 @@ class _ProductFaqsAndStudiesViewState extends State<ProductFaqsAndStudiesView> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('تعذر فتح الرابط.'),
+              content: Text('Unable to open link.'),
               duration: Duration(seconds: 2),
             ),
           );

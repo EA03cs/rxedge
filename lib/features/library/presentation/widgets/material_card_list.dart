@@ -39,8 +39,7 @@ class MaterialCardList extends StatelessWidget {
   }
 
   String _formatDate(BuildContext context, DateTime dt) {
-    final locale = Localizations.localeOf(context).languageCode;
-    return DateFormat.yMMMd(locale).format(dt);
+    return DateFormat.yMMMd('en').format(dt);
   }
 
   @override

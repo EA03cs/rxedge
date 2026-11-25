@@ -52,8 +52,7 @@ class FeedbackDetailScreen extends ConsumerWidget {
       );
     }
 
-    final locale = Localizations.localeOf(context).languageCode;
-    final dateFormatted = DateFormat.yMMMd(locale).add_jm().format(item.submittedAt);
+    final dateFormatted = DateFormat.yMMMd('en').add_jm().format(item.submittedAt);
 
     return AppScaffold(
       appBar: AppBar(
@@ -75,26 +74,29 @@ class FeedbackDetailScreen extends ConsumerWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _typeName(context, item.type),
-                        style: textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: colors.textPrimary,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _typeName(context, item.type),
+                          style: textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: colors.textPrimary,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: RxSpacing.s4),
-                      Text(
-                        dateFormatted,
-                        style: textTheme.bodySmall?.copyWith(
-                          color: colors.textSecondary,
-                          fontSize: 12.0,
+                        const SizedBox(height: RxSpacing.s4),
+                        Text(
+                          dateFormatted,
+                          style: textTheme.bodySmall?.copyWith(
+                            color: colors.textSecondary,
+                            fontSize: 12.0,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
+                  const SizedBox(width: RxSpacing.s8),
                   _buildStatusBadge(context, item.status),
                 ],
               ),
@@ -207,18 +209,16 @@ class FeedbackDetailScreen extends ConsumerWidget {
                         ),
                         IconButton(
                           icon: Icon(LucideIcons.copy, size: 16.0, color: colors.primary),
-                          tooltip: locale == 'ar' ? 'نسخ نص الرد' : 'Copy reply',
+                          tooltip: 'Copy reply',
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                           onPressed: () {
                             Clipboard.setData(ClipboardData(text: item.marketingReply!));
                             HapticFeedback.lightImpact();
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  locale == 'ar' ? 'تم نسخ الرد للحافظة' : 'Reply copied to clipboard',
-                                ),
-                                duration: const Duration(seconds: 2),
+                              const SnackBar(
+                                content: Text('Reply copied to clipboard'),
+                                duration: Duration(seconds: 2),
                                 behavior: SnackBarBehavior.floating,
                               ),
                             );
@@ -254,7 +254,7 @@ class FeedbackDetailScreen extends ConsumerWidget {
                         if (item.repliedAt != null) ...[
                           const SizedBox(width: RxSpacing.s8),
                           Text(
-                            DateFormat.MMMd(locale).add_jm().format(item.repliedAt!),
+                            DateFormat.MMMd('en').add_jm().format(item.repliedAt!),
                             style: textTheme.bodySmall?.copyWith(
                               color: colors.textTertiary,
                               fontSize: 11.5,

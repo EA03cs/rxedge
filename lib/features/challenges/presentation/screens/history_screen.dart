@@ -4,8 +4,11 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
-import '../../../../core/widgets/widgets.dart';
+import 'package:rxedge/core/widgets/widgets.dart';
+import '../../data/repositories/challenges_repository_impl.dart';
+import '../../domain/entities/challenges_entities.dart';
 import '../controllers/challenges_controller.dart';
+import 'quick_quiz_screen.dart';
 
 /// History Screen for Past Challenges and Quiz Results
 ///
@@ -118,9 +121,7 @@ class _PastChallengesTab extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        DateFormat.yMMM(
-                          Localizations.localeOf(context).languageCode,
-                        ).format(item.completedAt),
+                        DateFormat.yMMM('en').format(item.completedAt),
                         style: textTheme.labelSmall?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: colors.textSecondary,
@@ -216,6 +217,44 @@ class _QuizResultsTab extends ConsumerWidget {
             final res = list[index];
 
             return AppCard(
+              onTap: res.quizId.isEmpty
+                  ? null
+                  : () async {
+                      final repo = ref.read(challengesRepositoryProvider);
+                      final reviewRes = await repo.getQuizAttemptReview(res.quizId);
+                      if (!context.mounted) return;
+                      reviewRes.when(
+                        success: (review) {
+                          final minimalQuiz = QuickQuizEntity(
+                            id: res.quizId,
+                            title: res.quizTitle,
+                            category: '',
+                            durationMinutes: 0,
+                            rewardPoints: res.pointsEarned,
+                            questions: const [],
+                            isCompleted: true,
+                          );
+                          Navigator.of(context, rootNavigator: true).push<void>(
+                            MaterialPageRoute<void>(
+                              builder: (_) => QuickQuizScreen(
+                                quiz: minimalQuiz,
+                                initialReviewResult: review,
+                              ),
+                            ),
+                          );
+                        },
+                        failure: (f) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                f.debugMessage ?? 'Unable to load quiz review.',
+                              ),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        },
+                      );
+                    },
               child: Row(
                 children: [
                   Container(

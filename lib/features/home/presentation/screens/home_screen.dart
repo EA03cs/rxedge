@@ -11,6 +11,7 @@ import '../widgets/home_search_bar.dart';
 import '../widgets/home_skeleton_loader.dart';
 import '../widgets/monthly_challenge_card.dart';
 import '../widgets/objection_quote_card.dart';
+import '../widgets/personal_dashboard_card.dart';
 import '../widgets/slim_stats_strip.dart';
 import '../widgets/whats_new_section.dart';
 
@@ -102,6 +103,10 @@ class HomeScreen extends ConsumerWidget {
 
                       // 5. Monthly Challenge (تحدي شهري)
                       MonthlyChallengeCard(challenge: dashboard.challenge),
+                      const SizedBox(height: RxSpacing.s14),
+
+                      // 6. Personal Dashboard & Quarterly Badges
+                      PersonalDashboardCard(stats: dashboard.stats),
                       const SizedBox(height: RxSpacing.s14),
 
                       // 6. Objection of the Month (اعتراض الشهر)

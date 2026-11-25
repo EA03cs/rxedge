@@ -24,7 +24,9 @@ class HomeDashboardDto {
   });
 
   factory HomeDashboardDto.fromJson(Map<String, dynamic> json) {
-    final bool isBackendPayload = json.containsKey('userPoints') ||
+    final bool isBackendPayload = json.containsKey('challengeMarks') ||
+        json.containsKey('creditsEarned') ||
+        json.containsKey('userPoints') ||
         json.containsKey('continueLearningLesson') ||
         json.containsKey('recommendedProduct') ||
         json.containsKey('monthlyChallenge') ||
@@ -174,6 +176,43 @@ class HomeDashboardDto {
             ),
           ];
 
+    final individualProgress = json['individualProgress'] is Map
+        ? Map<String, dynamic>.from(json['individualProgress'] as Map)
+        : null;
+    final lessonProgressMap = rawProgress is Map
+        ? Map<String, dynamic>.from(rawProgress)
+        : null;
+    final rawBadges = (json['quarterlyBadges'] ?? json['achievements']) as List<dynamic>? ??
+        const <dynamic>[];
+    final parsedBadges = rawBadges
+        .whereType<Map<dynamic, dynamic>>()
+        .map((raw) {
+          final bMap = Map<String, dynamic>.from(raw);
+          final nested = bMap['badge'] is Map
+              ? Map<String, dynamic>.from(bMap['badge'] as Map)
+              : bMap;
+          return QuarterlyBadgeSummaryEntity(
+            id: (bMap['badgeId'] ?? nested['id'] ?? bMap['id'])?.toString() ?? '',
+            title: (nested['title'] ?? nested['name'] ?? bMap['title'] ?? '')
+                .toString(),
+            description:
+                (nested['description'] ?? bMap['description'] ?? '').toString(),
+            achievementCriteria:
+                (nested['achievementCriteria'] ?? bMap['achievementCriteria'])
+                    ?.toString(),
+            quarter: ((nested['quarter'] ?? bMap['quarter']) as num?)?.toInt(),
+            year: ((nested['year'] ?? bMap['year']) as num?)?.toInt(),
+          );
+        })
+        .where((b) => b.title.isNotEmpty)
+        .toList();
+
+    final marksEarned = ((json['creditsEarned'] ??
+                json['challengeMarks'] ??
+                json['userPoints']) as num?)
+            ?.toInt() ??
+        0;
+
     return HomeDashboardDto(
       continueLesson: continueLesson,
       recommendedProduct: resolvedProduct,
@@ -181,9 +220,20 @@ class HomeDashboardDto {
       objection: resolvedObjection,
       recentMaterials: finalMaterials,
       stats: RepStatsDto(
-        points: (json['userPoints'] as num?)?.toInt() ?? 0,
+        points: marksEarned,
+        creditsEarned: marksEarned,
         streakDays: (json['currentStreak'] as num?)?.toInt() ?? 0,
         quizzesCompleted: (json['completedQuizzes'] as num?)?.toInt() ?? 0,
+        monthlySubmissions: (json['monthlySubmissions'] as num?)?.toInt() ?? 0,
+        completedLessons: ((individualProgress?['completedLessons'] ??
+                    lessonProgressMap?['completedLessons']) as num?)
+                ?.toInt() ??
+            0,
+        totalLessons: ((individualProgress?['totalLessons'] ??
+                    lessonProgressMap?['totalLessons']) as num?)
+                ?.toInt() ??
+            0,
+        quarterlyBadges: parsedBadges,
       ),
       unreadNotificationCount:
           (json['relevantNotificationCount'] as num?)?.toInt() ?? 0,
@@ -344,8 +394,14 @@ class MonthlyChallengeDto {
       if (pct != null) {
         parsedProgress = (pct / 100.0).clamp(0.0, 1.0);
       } else {
-        final cur = (userProgress['currentPoints'] as num?)?.toDouble() ?? 0.0;
-        final target = (userProgress['targetPoints'] as num?)?.toDouble() ?? 1.0;
+        final cur = ((userProgress['currentChallengeMarks'] ??
+                    userProgress['currentPoints']) as num?)
+                ?.toDouble() ??
+            0.0;
+        final target = ((userProgress['targetChallengeMarks'] ??
+                    userProgress['targetPoints']) as num?)
+                ?.toDouble() ??
+            1.0;
         parsedProgress = target > 0 ? (cur / target).clamp(0.0, 1.0) : 0.0;
       }
     }
@@ -519,34 +575,68 @@ class RepStatsDto {
   final int points;
   final int streakDays;
   final int quizzesCompleted;
+  final int creditsEarned;
+  final int monthlySubmissions;
+  final int completedLessons;
+  final int totalLessons;
+  final List<QuarterlyBadgeSummaryEntity> quarterlyBadges;
 
   const RepStatsDto({
     required this.points,
     required this.streakDays,
     required this.quizzesCompleted,
+    this.creditsEarned = 0,
+    this.monthlySubmissions = 0,
+    this.completedLessons = 0,
+    this.totalLessons = 0,
+    this.quarterlyBadges = const [],
   });
 
-  factory RepStatsDto.fromJson(Map<String, dynamic> json) => RepStatsDto(
-        points: (json['points'] as num?)?.toInt() ??
-            (json['userPoints'] as num?)?.toInt() ??
-            0,
-        streakDays: (json['streak_days'] as num?)?.toInt() ??
-            (json['currentStreak'] as num?)?.toInt() ??
-            0,
-        quizzesCompleted: (json['quizzes_completed'] as num?)?.toInt() ??
-            (json['completedQuizzes'] as num?)?.toInt() ??
-            0,
-      );
+  factory RepStatsDto.fromJson(Map<String, dynamic> json) {
+    final marks = ((json['challengeMarks'] ??
+                json['creditsEarned'] ??
+                json['points'] ??
+                json['userPoints']) as num?)
+            ?.toInt() ??
+        0;
+    return RepStatsDto(
+      points: marks,
+      creditsEarned: (json['creditsEarned'] as num?)?.toInt() ?? marks,
+      streakDays: (json['streak_days'] as num?)?.toInt() ??
+          (json['currentStreak'] as num?)?.toInt() ??
+          0,
+      quizzesCompleted: (json['quizzes_completed'] as num?)?.toInt() ??
+          (json['completedQuizzes'] as num?)?.toInt() ??
+          0,
+      monthlySubmissions:
+          (json['monthly_submissions'] as num?)?.toInt() ??
+              (json['monthlySubmissions'] as num?)?.toInt() ??
+              0,
+      completedLessons:
+          (json['completed_lessons'] as num?)?.toInt() ?? 0,
+      totalLessons:
+          (json['total_lessons'] as num?)?.toInt() ?? 0,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         'points': points,
+        'creditsEarned': creditsEarned,
         'streak_days': streakDays,
         'quizzes_completed': quizzesCompleted,
+        'monthly_submissions': monthlySubmissions,
+        'completed_lessons': completedLessons,
+        'total_lessons': totalLessons,
       };
 
   RepStatsEntity toDomain() => RepStatsEntity(
         points: points,
+        creditsEarned: creditsEarned,
         streakDays: streakDays,
         quizzesCompleted: quizzesCompleted,
+        monthlySubmissions: monthlySubmissions,
+        completedLessons: completedLessons,
+        totalLessons: totalLessons,
+        quarterlyBadges: quarterlyBadges,
       );
 }

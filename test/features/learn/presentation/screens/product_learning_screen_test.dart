@@ -53,13 +53,13 @@ void main() {
     ],
   );
 
-  Widget buildArabicScreen() {
+  Widget buildEnglishScreen() {
     return const ProviderScope(
       child: MaterialApp(
         themeMode: ThemeMode.light,
-        locale: Locale('ar'),
+        locale: Locale('en'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        supportedLocales: [Locale('en')],
         home: ProductLearningScreen(product: sampleRohtoProduct),
       ),
     );
@@ -67,26 +67,26 @@ void main() {
 
   group('ProductLearningScreen Automated Tests (Module 1: Product Navigator)', () {
     testWidgets('renders 3 tabs and displays Target Patient card in Positioning tab', (tester) async {
-      await tester.pumpWidget(buildArabicScreen());
+      await tester.pumpWidget(buildEnglishScreen());
       await tester.pumpAndSettle();
 
       // Product Title
       expect(find.text('Rohto Dry Aid'), findsWidgets);
 
-      // 3 Tabs in Arabic
-      expect(find.text('تموضع المنتج'), findsOneWidget);
-      expect(find.text('التعامل التنافسي'), findsOneWidget);
-      expect(find.text('الأسئلة الشائعة والدراسات'), findsOneWidget);
+      // 3 Tabs in English
+      expect(find.text('Product Positioning'), findsOneWidget);
+      expect(find.text('Competitive Handling'), findsOneWidget);
+      expect(find.text('FAQs & Studies'), findsOneWidget);
 
       // Target Patient card from Excel
-      expect(find.text('المريض المستهدف'), findsOneWidget);
+      expect(find.text('Target Patient'), findsOneWidget);
       expect(
         find.text('Patients with severe Dryness including Meibomian Gland Dysfunction (MGD)'),
         findsOneWidget,
       );
 
       // Key Benefits
-      expect(find.text('المزايا الإكلينيكية'), findsOneWidget);
+      expect(find.text('Key Benefits'), findsOneWidget);
       expect(
         find.text('Unique with all the ingredients especially Menthol and Sesame oil.'),
         findsOneWidget,
@@ -95,28 +95,28 @@ void main() {
 
     testWidgets('switching to FAQs & Studies tab renders packshots, studies, and expandable FAQs',
         (tester) async {
-      await tester.pumpWidget(buildArabicScreen());
+      await tester.pumpWidget(buildEnglishScreen());
       await tester.pumpAndSettle();
 
-      // Tap on the 3rd tab: 'الأسئلة الشائعة والدراسات'
-      await tester.tap(find.text('الأسئلة الشائعة والدراسات'));
+      // Tap on the 3rd tab: 'FAQs & Studies'
+      await tester.tap(find.text('FAQs & Studies'));
       await tester.pumpAndSettle();
 
       // Verify Packshots gallery section
-      expect(find.text('صور العبوة'), findsOneWidget);
+      expect(find.text('Pack Shots'), findsOneWidget);
       expect(find.text('Front Packshot'), findsOneWidget);
       expect(find.text('Bottle Packshot'), findsOneWidget);
 
       // Verify Supporting Studies section
-      expect(find.text('الدراسات السريرية الداعمة'), findsOneWidget);
+      expect(find.text('Supporting Clinical Studies'), findsOneWidget);
       expect(
         find.text('Clinical Evaluation of Rohto Dry Aid vs Systane Ultra'),
         findsOneWidget,
       );
-      expect(find.byTooltip('فتح الدراسة'), findsOneWidget);
+      expect(find.byTooltip('Open Study'), findsOneWidget);
 
       // Verify Clinical FAQs section
-      expect(find.text('الأسئلة الشائعة'), findsOneWidget);
+      expect(find.text('Frequently Asked Questions'), findsOneWidget);
       expect(find.text('What does TEARSHIELD TECHNOLOGY mean?'), findsOneWidget);
       expect(find.text('Why do you use Menthol?'), findsOneWidget);
 

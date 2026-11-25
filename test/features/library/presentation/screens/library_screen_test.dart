@@ -81,15 +81,16 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 200));
 
-      // 1. Search Bar
+      // 1. Search Bar & Quarterly Notice
+      expect(find.text('Materials are updated quarterly.'), findsOneWidget);
       expect(find.text('Search materials, monographs, trials...'), findsOneWidget);
 
       // 2. Filter chips & shortcuts
       expect(find.text('Favorites'), findsOneWidget);
       expect(find.text('Downloaded'), findsOneWidget);
       expect(find.text('All'), findsOneWidget);
-      expect(find.text('Brochures'), findsOneWidget);
-      expect(find.text('Visual Aids'), findsOneWidget);
+      expect(find.text('Brochures'), findsWidgets);
+      expect(find.text('Visual Aids'), findsWidgets);
       expect(find.text('E-Detail'), findsOneWidget);
 
       // 3. View Header

@@ -44,14 +44,14 @@ void main() {
     mockRepo = MockChallengesRepository();
   });
 
-  Widget buildArabicQuizzesView(List<QuickQuizEntity> quizzes) {
+  Widget buildEnglishQuizzesView(List<QuickQuizEntity> quizzes) {
     return ProviderScope(
       overrides: [
         challengesRepositoryProvider.overrideWithValue(mockRepo),
       ],
       child: MaterialApp(
         themeMode: ThemeMode.light,
-        locale: const Locale('ar'),
+        locale: const Locale('en'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
@@ -61,14 +61,14 @@ void main() {
     );
   }
 
-  Widget buildArabicQuizScreen(QuickQuizEntity quiz) {
+  Widget buildEnglishQuizScreen(QuickQuizEntity quiz) {
     return ProviderScope(
       overrides: [
         challengesRepositoryProvider.overrideWithValue(mockRepo),
       ],
       child: MaterialApp(
         themeMode: ThemeMode.light,
-        locale: const Locale('ar'),
+        locale: const Locale('en'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: QuickQuizScreen(quiz: quiz),
@@ -78,12 +78,12 @@ void main() {
 
   group('Eye-Know Challenges Automated Tests (Module 3)', () {
     testWidgets('enforces single attempt lock on completed quiz in QuickQuizzesView', (tester) async {
-      await tester.pumpWidget(buildArabicQuizzesView([sampleRohtoQuiz]));
+      await tester.pumpWidget(buildEnglishQuizzesView([sampleRohtoQuiz]));
       await tester.pumpAndSettle();
 
       // Policy banner
       expect(
-        find.text('سياسة التحدي: محاولة واحدة فقط معتمدة لكل مشارك، ولا يُسمح بالإعادة.'),
+        find.text('Challenge policy: exactly one attempt permitted per participant, no retakes.'),
         findsOneWidget,
       );
 
@@ -91,16 +91,16 @@ void main() {
       expect(find.text('Rohto Dry Aid Clinical Challenge'), findsOneWidget);
 
       // Single attempt locked button
-      expect(find.text('مكتمل (محاولة واحدة)'), findsOneWidget);
+      expect(find.text('Completed (Single Attempt)'), findsOneWidget);
 
       // Tapping the locked button should NOT open the quiz screen
-      await tester.tap(find.text('مكتمل (محاولة واحدة)'));
+      await tester.tap(find.text('Completed (Single Attempt)'));
       await tester.pumpAndSettle();
 
-      expect(find.text('السؤال 1 من 1'), findsNothing);
+      expect(find.text('Question 1 of 1'), findsNothing);
     });
 
-    testWidgets('handles 409 Conflict (ATTEMPT_ALREADY_EXISTS) with friendly Arabic snackbar',
+    testWidgets('handles 409 Conflict (ATTEMPT_ALREADY_EXISTS) with friendly snackbar',
         (tester) async {
       when(() => mockRepo.submitQuizAnswers(
             quizId: any(named: 'quizId'),
@@ -133,22 +133,22 @@ void main() {
         ],
       );
 
-      await tester.pumpWidget(buildArabicQuizScreen(activeQuiz));
+      await tester.pumpWidget(buildEnglishQuizScreen(activeQuiz));
       await tester.pumpAndSettle();
 
       // Select an option
       await tester.tap(find.text('70%'));
       await tester.pumpAndSettle();
 
-      // Tap Next / Finish
-      await tester.tap(find.text('إنهاء الاختبار'));
+      // Tap Finish
+      await tester.tap(find.text('Finish Quiz'));
       await tester.pump(); // Start submission
       await tester.pump(const Duration(milliseconds: 300)); // Complete async call
 
-      // Verify friendly 409 message appears in Arabic
+      // Verify friendly 409 message appears in English
       expect(
         find.text(
-          'عفواً، تم تسجيل محاولتك لهذا الاختبار مسبقاً بنجاح. لا يُسمح بإعادة الاختبار وفقاً لقواعد التحديات.',
+          'You have already attempted this quiz. Retakes are not permitted per challenge policy.',
         ),
         findsOneWidget,
       );

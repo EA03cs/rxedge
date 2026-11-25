@@ -221,9 +221,7 @@ class _ImageViewerScreenState extends ConsumerState<ImageViewerScreen> {
                             ),
                             const SizedBox(height: RxSpacing.s12),
                             Text(
-                              Localizations.localeOf(context).languageCode == 'ar'
-                                  ? 'لا توجد صورة مرفقة لهذه المادة العلمية حالياً'
-                                  : 'No visual media file is attached to this material yet.',
+                              'No visual media file is attached to this material yet.',
                               textAlign: TextAlign.center,
                               style: textTheme.bodySmall?.copyWith(
                                 color: colors.textSecondary,

@@ -4,9 +4,9 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:rxedge/l10n/app_localizations.dart';
 import '../storage/storage_initializer.dart';
 
-/// Active Locale Provider (defaults to English 'en', supports 'ar')
+/// Active Locale Provider (strictly English 'en')
 final localeProvider = StateProvider<Locale>((ref) {
-  return Locale(StorageInitializer.readInitialLocaleCode(fallback: 'en'));
+  return const Locale('en');
 });
 
 /// Theme Mode Provider (persisted via StorageInitializer, defaults to light)

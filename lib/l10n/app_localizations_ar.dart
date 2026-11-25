@@ -416,6 +416,62 @@ class AppLocalizationsAr extends AppLocalizations {
   String get libraryTitle => 'Marketing Hub';
 
   @override
+  String get materialsUpdatedQuarterly => 'يتم تحديث المواد ربع سنوياً.';
+
+  @override
+  String get productRohtoDryAid => 'روتو دراي إيد';
+
+  @override
+  String get productRohtoCoolAqua => 'روتو كول وأكوا';
+
+  @override
+  String get productRohtoCool => 'روتو كول';
+
+  @override
+  String get productRohtoAqua => 'روتو أكوا';
+
+  @override
+  String get sectionBrochures => 'الكتيبات';
+
+  @override
+  String get sectionVisualAids => 'الوسائل البصرية';
+
+  @override
+  String get sectionEdetail => 'عروض التفصيل الإلكتروني';
+
+  @override
+  String get sectionOtherMaterials => 'مواد أخرى';
+
+  @override
+  String get statusComingSoon => 'قريباً';
+
+  @override
+  String get statusToDevelopLater => 'سيتم تطويرها لاحقاً';
+
+  @override
+  String get visualAidsComingSoonDesc => 'سيتم تطوير الوسائل البصرية لاحقاً.';
+
+  @override
+  String get brochuresComingSoonDesc => 'لا توجد مواد متاحة بعد.';
+
+  @override
+  String get edetailComingSoonDesc => 'لا توجد مواد متاحة بعد.';
+
+  @override
+  String get noMaterialAvailableYet => 'لا توجد مواد متاحة بعد.';
+
+  @override
+  String get rohtoAquaNoMaterials => 'لا توجد مواد متاحة بعد لـ روتو أكوا.';
+
+  @override
+  String get materialCountOne => 'مادة واحدة';
+
+  @override
+  String materialCountOther(int count) {
+    return '$count مواد';
+  }
+
+  @override
   String get librarySearchHint => 'ابحث في الدراسات والكتيبات والملفات...';
 
   @override
@@ -595,6 +651,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get btnBookmarks => 'المحفوظات';
+
+  @override
+  String get productOverviewTitle => 'نظرة عامة على المنتج';
+
+  @override
+  String get keyPositioningTitle => 'التموضع الرئيسي';
+
+  @override
+  String get keyMessagingTitle => 'الرسائل الترويجية الرئيسية';
+
+  @override
+  String get packShotTitle => 'صورة العبوة الرسمية';
 
   @override
   String get keyMessage => 'الرسالة الأساسية';
@@ -1227,6 +1295,39 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get incorrectBreakdownTitle => 'تفصيل الإجابات الخاطئة';
+
+  @override
+  String get questionsBreakdownTitle => 'تفصيل الأسئلة';
+
+  @override
+  String filterAllCount(int count) {
+    return 'الكل ($count)';
+  }
+
+  @override
+  String filterIncorrectCount(int count) {
+    return 'غير الصحيحة فقط ($count)';
+  }
+
+  @override
+  String get statusCorrect => 'صحيحة';
+
+  @override
+  String get statusIncorrect => 'غير صحيحة';
+
+  @override
+  String get notAnsweredLabel => 'لم تتم الإجابة';
+
+  @override
+  String get explanationHeader => 'التفسير الإكلينيكي';
+
+  @override
+  String get btnShowAllQuestions => 'عرض كل الأسئلة';
+
+  @override
+  String questionNumber(int index) {
+    return 'السؤال $index';
+  }
 
   @override
   String yourAnswerPrefix(String answer) {

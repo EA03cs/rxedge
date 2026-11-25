@@ -40,7 +40,9 @@ abstract final class ApiEndpoints {
   static const String monthlyChallenge = '/gamification/challenges/monthly';
   static const String leaderboard = '/gamification/challenges/leaderboard';
   static const String quizzes = '/gamification/quizzes';
+  static const String myQuizAttempts = '/gamification/quizzes/attempts/my';
   static String quizById(String id) => '/gamification/quizzes/$id';
+  static String quizAttemptReview(String id) => '/gamification/quizzes/$id/attempt';
   static String submitQuiz(String id) => '/gamification/quizzes/$id/submit';
   static const String pointsHistory = '/gamification/points/history';
 

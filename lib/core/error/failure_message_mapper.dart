@@ -51,22 +51,17 @@ abstract final class FailureMessageMapper {
     final trimmed = raw.trim();
     if (trimmed.isEmpty) return l10n.errValidation;
     final upper = trimmed.toUpperCase();
-    final isAr = l10n.localeName.toLowerCase().startsWith('ar');
 
     if (upper.contains('EMAIL_INVALID') ||
         (upper.contains('EMAIL') && upper.contains('VALID'))) {
-      return isAr
-          ? 'يرجى إدخال بريد إلكتروني صحيح للعمل (مثل rep@rxedge.com)'
-          : 'Please enter a valid work email (e.g. rep@rxedge.com).';
+      return 'Please enter a valid work email (e.g. rep@rxedge.com).';
     }
     if (upper.contains('EMAIL_REQUIRED') ||
         upper == 'VALIDATION_EMAIL_EMPTY') {
       return l10n.usernameRequired;
     }
     if (upper.contains('PASSWORD_MIN')) {
-      return isAr
-          ? 'كلمة المرور يجب أن لا تقل عن 6 أحرف'
-          : 'Password must be at least 6 characters.';
+      return 'Password must be at least 6 characters.';
     }
     if (upper.contains('PASSWORD_REQUIRED') ||
         upper == 'VALIDATION_PASSWORD_EMPTY') {

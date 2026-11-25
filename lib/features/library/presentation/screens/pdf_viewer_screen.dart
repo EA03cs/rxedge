@@ -322,9 +322,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
                 CircularProgressIndicator(value: progress, color: colors.primary),
                 const SizedBox(height: RxSpacing.s12),
                 Text(
-                  Localizations.localeOf(context).languageCode == 'ar'
-                      ? 'جاري تحميل ملف الـ PDF...'
-                      : 'Loading PDF document...',
+                  'Loading PDF document...',
                   style: textTheme.bodySmall?.copyWith(color: colors.textSecondary),
                 ),
               ],
@@ -333,7 +331,6 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
         );
       },
       errorBannerBuilder: (context, error, stackTrace, documentRef) {
-        final isArabic = Localizations.localeOf(context).languageCode == 'ar';
         return SingleChildScrollView(
           padding: const EdgeInsetsDirectional.all(RxSpacing.s16),
           child: Column(
@@ -353,9 +350,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
                     Icon(LucideIcons.fileWarning, size: 28.0, color: colors.warning),
                     const SizedBox(height: RxSpacing.s8),
                     Text(
-                      isArabic
-                          ? 'تعذر تحميل ملف الـ PDF حالياً'
-                          : 'Unable to load the PDF file right now.',
+                      'Unable to load the PDF file right now.',
                       style: textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w700,
                         color: colors.textPrimary,
@@ -412,8 +407,6 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
     TextTheme textTheme,
     AppLocalizations l10n,
   ) {
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -519,9 +512,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
               const SizedBox(width: RxSpacing.s10),
               Expanded(
                 child: Text(
-                  isArabic
-                      ? 'لا يتوفر ملف PDF مرفق لهذه المادة حالياً، يمكنك الاطلاع على الملخص أعلاه.'
-                      : 'No PDF document file is attached to this material yet; summary details are displayed above.',
+                  'No PDF document file is attached to this material yet; summary details are displayed above.',
                   style: textTheme.bodySmall?.copyWith(
                     color: colors.textSecondary,
                     height: 1.4,

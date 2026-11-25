@@ -50,7 +50,7 @@ void main() {
       expect(find.text('Modules'), findsOneWidget);
     });
 
-    testWidgets('Theme and Locale toggles update state dynamically', (WidgetTester tester) async {
+    testWidgets('Theme toggle updates state dynamically and locale stays English', (WidgetTester tester) async {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
@@ -77,19 +77,12 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 
-      // Check initial LTR / English (default)
+      // Check initial LTR / English (strictly default)
       expect(container.read(localeProvider), const Locale('en'));
       expect(container.read(themeModeProvider), ThemeMode.light);
 
-      // Tap Language toggle button to switch to Arabic (RTL)
-      final langButton = find.text('العربية');
-      expect(langButton, findsOneWidget);
-      await tester.tap(langButton);
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
-
-      // Now locale is Arabic
-      expect(container.read(localeProvider), const Locale('ar'));
+      // Verify no Arabic toggle button is present
+      expect(find.text('العربية'), findsNothing);
 
       // Tap Theme toggle button to switch to Dark Mode
       final themeButton = find.byIcon(LucideIcons.moon);
@@ -100,6 +93,7 @@ void main() {
 
       // Now theme is Dark
       expect(container.read(themeModeProvider), ThemeMode.dark);
+      expect(container.read(localeProvider), const Locale('en'));
     });
   });
 
@@ -341,20 +335,20 @@ void main() {
     });
   });
 
-  group('RTL & Localization Verification', () {
-    testWidgets('RTL directionality is verified when Arabic locale is loaded', (WidgetTester tester) async {
+  group('English Directionality Verification', () {
+    testWidgets('LTR directionality is active for default English locale', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          locale: const Locale('ar'),
+          locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          theme: RxTheme.light(isArabic: true),
+          supportedLocales: const [Locale('en')],
+          theme: RxTheme.light(),
           home: Builder(
             builder: (context) {
-              final isRtl = Directionality.of(context) == TextDirection.rtl;
+              final isLtr = Directionality.of(context) == TextDirection.ltr;
               return Scaffold(
                 body: Text(
-                  isRtl ? 'RTL_CONFIRMED' : 'LTR',
+                  isLtr ? 'LTR_CONFIRMED' : 'RTL',
                 ),
               );
             },
@@ -363,7 +357,7 @@ void main() {
       );
 
       await tester.pump();
-      expect(find.text('RTL_CONFIRMED'), findsOneWidget);
+      expect(find.text('LTR_CONFIRMED'), findsOneWidget);
     });
   });
 }

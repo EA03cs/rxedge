@@ -162,16 +162,46 @@ class MaterialUpdateEntity {
   int get hashCode => id.hashCode ^ title.hashCode;
 }
 
+class QuarterlyBadgeSummaryEntity {
+  final String id;
+  final String title;
+  final String description;
+  final String? achievementCriteria;
+  final int? quarter;
+  final int? year;
+
+  const QuarterlyBadgeSummaryEntity({
+    required this.id,
+    required this.title,
+    this.description = '',
+    this.achievementCriteria,
+    this.quarter,
+    this.year,
+  });
+}
+
 class RepStatsEntity {
   final int points;
   final int streakDays;
   final int quizzesCompleted;
+  final int creditsEarned;
+  final int monthlySubmissions;
+  final int completedLessons;
+  final int totalLessons;
+  final List<QuarterlyBadgeSummaryEntity> quarterlyBadges;
 
   const RepStatsEntity({
     required this.points,
     required this.streakDays,
     required this.quizzesCompleted,
+    this.creditsEarned = 0,
+    this.monthlySubmissions = 0,
+    this.completedLessons = 0,
+    this.totalLessons = 0,
+    this.quarterlyBadges = const [],
   });
+
+  int get challengeMarks => creditsEarned > 0 ? creditsEarned : points;
 
   @override
   bool operator ==(Object other) =>
@@ -180,10 +210,17 @@ class RepStatsEntity {
           runtimeType == other.runtimeType &&
           points == other.points &&
           streakDays == other.streakDays &&
-          quizzesCompleted == other.quizzesCompleted;
+          quizzesCompleted == other.quizzesCompleted &&
+          creditsEarned == other.creditsEarned &&
+          monthlySubmissions == other.monthlySubmissions;
 
   @override
-  int get hashCode => points.hashCode ^ streakDays.hashCode ^ quizzesCompleted.hashCode;
+  int get hashCode =>
+      points.hashCode ^
+      streakDays.hashCode ^
+      quizzesCompleted.hashCode ^
+      creditsEarned.hashCode ^
+      monthlySubmissions.hashCode;
 }
 
 /// Aggregated Home Dashboard Entity

@@ -31,9 +31,7 @@ class RxEdgeApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final activeLocale = ref.watch(localeProvider);
     final router = ref.watch(routerProvider);
-    final isArabic = activeLocale.languageCode == 'ar';
 
     ref.listen<AuthState>(authControllerProvider, (previous, next) {
       if (next is AuthAuthenticated) {
@@ -92,11 +90,11 @@ class RxEdgeApp extends ConsumerWidget {
       title: 'RxEdge',
       debugShowCheckedModeBanner: false,
       routerConfig: router,
-      locale: activeLocale,
+      locale: const Locale('en'),
       themeMode: ThemeMode.light,
-      theme: RxTheme.light(isArabic: isArabic),
+      theme: RxTheme.light(),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      supportedLocales: const [Locale('en')],
     );
   }
 }

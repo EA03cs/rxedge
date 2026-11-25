@@ -22,6 +22,7 @@ abstract class ChallengesRemoteDatasource {
     required String quizId,
     required List<Map<String, String>> answers,
   });
+  Future<QuizSubmissionResultDto> getQuizAttemptReview(String quizId);
   Future<List<PastChallengeHistoryDto>> getPastChallengesHistory();
   Future<List<QuizResultHistoryDto>> getQuizResultsHistory();
 }
@@ -87,12 +88,12 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
 
     return MonthlyChallengeDto(
       id: 'ch_nov_2026',
-      title: 'Cardiovascular Knowledge Blitz: Q4 Master',
+      title: 'Ophthalmology Clinical Mastery: Q4 Challenge',
       deadlineIso: deadline.toIso8601String(),
       rules: const [
-        'Complete all 3 core clinical quick quizzes with >= 80% passing score.',
-        'Review the monthly physician objection and formulate your clinical talking points.',
-        'Top 3 district performers receive District Spotlight recognition and +500 Marks.',
+        'Complete all monthly Eye-Know quick quizzes with >= 70% passing score.',
+        'One attempt is permitted per participant per quiz (no retakes).',
+        'Top quarterly performers earn official Excellence Badges based on dashboard performance.',
       ],
       currentProgress: 0.72,
       completedMilestones: 5,
@@ -102,27 +103,27 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
       rewards: const [
         'District Honor Roll Certificate',
         '+500 Challenge Marks',
-        'Territory Excellence Spotlight Badge',
+        'Quarterly Ophthalmology Excellence Badge',
       ],
       leaderboard: const [
         LeaderboardEntryDto(
           rank: 1,
           repName: 'Sarah Jenkins',
-          territory: 'North District - Cardiology',
+          territory: 'North District - Ophthalmology',
           points: 1420,
           avatarInitials: 'SJ',
         ),
         LeaderboardEntryDto(
           rank: 2,
           repName: 'Ahmed Mansour',
-          territory: 'East District - Internal Med',
+          territory: 'East District - Ophthalmology',
           points: 1380,
           avatarInitials: 'AM',
         ),
         LeaderboardEntryDto(
           rank: 3,
-          repName: 'Alex Mercer (You)',
-          territory: 'Central District - Multispecialty',
+          repName: 'Ahmed Mostafa (You)',
+          territory: 'Cairo North & Heliopolis District',
           points: 1250,
           isCurrentUser: true,
           avatarInitials: 'AM',
@@ -151,28 +152,28 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
         LeaderboardEntryDto(
           rank: 7,
           repName: 'Fatima Al-Sayed',
-          territory: 'North District - Nephrology',
+          territory: 'North District - Ophthalmology',
           points: 1040,
           avatarInitials: 'FA',
         ),
         LeaderboardEntryDto(
           rank: 8,
           repName: 'Marcus Vance',
-          territory: 'Central District - Geriatrics',
+          territory: 'Central District - Ophthalmology',
           points: 990,
           avatarInitials: 'MV',
         ),
         LeaderboardEntryDto(
           rank: 9,
           repName: 'Layla Hassan',
-          territory: 'East District - Cardiology',
+          territory: 'East District - Ophthalmology',
           points: 960,
           avatarInitials: 'LH',
         ),
         LeaderboardEntryDto(
           rank: 10,
           repName: 'Tariq Ziyad',
-          territory: 'South District - Endocrinology',
+          territory: 'South District - Ophthalmology',
           points: 920,
           avatarInitials: 'TZ',
         ),
@@ -264,144 +265,138 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
         ],
       ),
       const QuickQuizDto(
-        id: 'quiz_atv_02',
-        title: 'AtorvaCare Statin Intolerance & Renal Safety',
-        category: 'Lipid Management',
+        id: 'quiz_cool_02',
+        title: 'Rohto Cool Contact Lens Comfort & Hydration',
+        category: 'Ophthalmology (CLADE)',
         durationMinutes: 3,
         rewardPoints: 40,
         isCompleted: false,
         questions: [
           QuizQuestionDto(
-            id: 'q_atv_01',
+            id: 'q_cool_01',
             question:
-                'What is the recommended LDL-C reduction benchmark for AtorvaCare 20mg in high-risk ASCVD patients?',
+                'How are Rohto Cool & Rohto Aqua formulated specifically for contact lens wearers?',
             options: [
-              '15% to 25% reduction',
-              '30% to 40% reduction',
-              '45% to 52% reduction from baseline',
-              'Greater than 75% reduction',
-            ],
-            correctOptionIndex: 2,
-            explanation:
-                'AtorvaCare 20mg provides intensive statin therapy achieving 45-52% mean LDL-C reduction.',
-          ),
-          QuizQuestionDto(
-            id: 'q_atv_02',
-            question:
-                'How should an MR address physician concerns regarding statin-associated muscle symptoms (SAMS)?',
-            options: [
-              'Recommend immediately switching to non-statin herbal alternatives',
-              'Highlight true myositis incidence is < 0.1% and discuss alternate-day re-challenge protocols',
-              'Advise doubling the co-enzyme Q10 dosage without physician oversight',
-              'Suggest complete discontinuation of all lipid lowering therapies',
+              'Require waiting 45 minutes before inserting lenses',
+              'Lubricate, help reduce temporary corneal hypoxia discomfort, and inhibit lens deposits',
+              'Contain high-viscosity oil ointments',
+              'Only approved for overnight orthokeratology lenses',
             ],
             correctOptionIndex: 1,
             explanation:
-                'Objective trials confirm SAMS incidence is under 0.1%; rechallenge or alternate dosing preserves cardiovascular protection.',
+                'Rohto Cool and Rohto Aqua address CLADE by moisturizing, helping reduce temporary corneal hypoxia discomfort, and helping inhibit deposit accumulation on contact lenses.',
           ),
           QuizQuestionDto(
-            id: 'q_atv_03',
-            question:
-                'In patients with Type 2 Diabetes, what trial confirmed the primary prevention efficacy of AtorvaCare?',
+            id: 'q_cool_02',
+            question: 'What gentle preservative is used in Rohto Dry Aid, Rohto Cool, and Rohto Aqua?',
             options: [
-              'CARDS Trial (Colleague Atorvastatin Diabetes Study)',
-              'ALLHAT Hypertension Registry',
-              'HOPE-3 Trial',
-              'FOURIER Monoclonal Study',
+              'Benzalkonium Chloride (BAK)',
+              'Polyhexamethylene Biguanide (PHMB)',
+              'Thimerosal',
+              'Sodium Perborate',
+            ],
+            correctOptionIndex: 1,
+            explanation:
+                'Rohto eye drops contain Polyhexamethylene Biguanide (PHMB), a gentle and safe preservative.',
+          ),
+          QuizQuestionDto(
+            id: 'q_cool_03',
+            question: 'What is the bottle size of Rohto Cool and Rohto Aqua?',
+            options: [
+              '13 mL bottle',
+              '5 mL bottle',
+              '25 mL bottle',
+              'Single-use 0.4 mL vials',
             ],
             correctOptionIndex: 0,
             explanation:
-                'The CARDS trial showed 37% relative risk reduction in major cardiovascular events in diabetic cohorts.',
+                'Both Rohto Cool and Rohto Aqua come in a convenient 13 mL bottle, whereas Rohto Dry Aid comes in a 10 mL bottle.',
           ),
         ],
       ),
       const QuickQuizDto(
-        id: 'quiz_lps_03',
-        title: 'LipiShield Duo Dual-Pathway Absorption Kinetics',
-        category: 'Atherosclerosis',
+        id: 'quiz_aqua_03',
+        title: 'Rohto Aqua Gentle Soothing & Post-Surgical Care',
+        category: 'Ophthalmology (Dry Eye)',
         durationMinutes: 2,
         rewardPoints: 30,
         isCompleted: false,
         questions: [
           QuizQuestionDto(
-            id: 'q_lps_01',
+            id: 'q_aqua_01',
             question:
-                'What dual complementary pathways are targeted by LipiShield Duo (Atorvastatin + Ezetimibe)?',
+                'Between Rohto Aqua and Rohto Cool, which option is recommended after LASIK or eye surgery?',
             options: [
-              'Hepatic cholesterol synthesis inhibition + intestinal cholesterol absorption inhibition',
-              'Renal tubular clearance + bile acid sequestration',
-              'Beta-blockade + peripheral vasodilation',
-              'ACE enzyme inhibition + calcium channel blockade',
+              'Rohto Aqua, as it gently lubricates and soothes the eyes',
+              'Rohto Cool for maximum cooling sensation',
+              'Neither option can ever be used as a lubricant',
+              'Hypertonic saline ointment only',
             ],
             correctOptionIndex: 0,
             explanation:
-                'Dual inhibition addresses both endogenous hepatic synthesis and exogenous intestinal NPC1L1 uptake.',
+                'Rohto Aqua is recommended for gentle lubrication and soothing of the eyes.',
           ),
           QuizQuestionDto(
-            id: 'q_lps_02',
-            question:
-                'What additional LDL-C lowering is achieved by adding Ezetimibe 10mg to baseline statin monotherapy?',
+            id: 'q_aqua_02',
+            question: 'How do Rohto Dry Aid and Hyaluronic Acid (HA) drops differ?',
             options: [
-              'Additional 5% reduction',
-              'Additional 18% to 24% incremental reduction',
-              'Additional 50% reduction regardless of statin dose',
-              'Zero additional reduction',
+              'HA restores the lipid layer only',
+              'Rohto Dry Aid replenishes both lipid and muco-aqueous layers, while HA benefits the aqueous layer only',
+              'Both work identically on the mucin layer only',
+              'Rohto Dry Aid has no effect on tear evaporation',
             ],
             correctOptionIndex: 1,
             explanation:
-                'Adding Ezetimibe 10mg delivers 18-24% incremental LDL-C lowering without doubling the statin dose.',
+                'Rohto Dry Aid provides replenishment to both the lipid layer and the muco-aqueous layer, whereas HA benefits the aqueous layer only.',
           ),
         ],
       ),
       const QuickQuizDto(
-        id: 'quiz_crd_01',
-        title: 'Cardura XL Clinical Pharmacology & GITS Technology',
-        category: 'Cardiovascular & Urology',
+        id: 'quiz_rda_mgd_04',
+        title: 'Rohto Dry Aid Formulation & MGD Shelf-Life Facts',
+        category: 'Ophthalmology (MGD)',
         durationMinutes: 3,
         rewardPoints: 50,
         isCompleted: false,
         questions: [
           QuizQuestionDto(
-            id: 'q_crd_01',
-            question:
-                'What distinguishes the GITS formulation of Doxazosin from standard immediate-release formulations?',
+            id: 'q_mgd_01',
+            question: 'Why does Rohto Dry Aid include Menthol in its formulation?',
             options: [
-              'Osmotic delivery providing consistent 24h plasma concentrations',
-              'Immediate absorption in the stomach within 15 minutes',
-              'Sublingual dissolution bypassing first-pass liver metabolism',
-              'Enteric coating requiring activation by pancreatic enzymes',
+              'Solely as an artificial fragrance',
+              'Refreshes and stimulates meibomian glands to enhance the lipid layer in MGD',
+              'Acts as an antibiotic against keratitis',
+              'Constricts pupil diameter',
             ],
-            correctOptionIndex: 0,
+            correctOptionIndex: 1,
             explanation:
-                'GITS uses osmotic push-pull delivery to maintain steady 24-hour plasma levels without the sharp peaks of IR.',
+                'Menthol gives a refreshing sensation and contributes to enhancing the lipid layer by stimulating meibomian glands, suiting MGD patients.',
           ),
           QuizQuestionDto(
-            id: 'q_crd_02',
-            question:
-                'How does Cardura XL address comorbid BPH with Hypertension simultaneously?',
+            id: 'q_mgd_02',
+            question: 'How long can Rohto Dry Aid be used after its very first opening?',
             options: [
-              'Selectively inhibits alpha-1 receptors relaxing prostatic stroma and vascular smooth muscle',
-              'Inhibits central sympathetic outflow from the hypothalamus',
-              'Directly reduces serum testosterone and dihydrotestosterone (DHT)',
-              'Blocks calcium channels exclusively in the renal vasculature',
+              '3 months after first opening',
+              '14 days only',
+              '12 months',
+              '24 hours single day use',
             ],
             correctOptionIndex: 0,
             explanation:
-                'Cardura XL blocks alpha-1 adrenoceptors in both prostate smooth muscle (improving IPSS) and peripheral arteries (lowering BP).',
+                'Rohto Dry Aid remains usable for up to 3 months after its very first opening.',
           ),
           QuizQuestionDto(
-            id: 'q_crd_03',
-            question:
-                'What clinical benefit is achieved by avoiding the sharp Cmax peak seen with immediate-release doxazosin?',
+            id: 'q_mgd_03',
+            question: 'How long before wearing contact lenses should Rohto Dry Aid be instilled?',
             options: [
-              'Significantly lower incidence of first-dose postural hypotension and dizziness',
-              'Allows once-weekly administration',
-              'Eliminates the need for oral fluid intake',
-              'Completely bypasses cytochrome P450 metabolism',
+              '15 to 20 minutes before wearing contact lenses',
+              'Directly over soft contact lenses',
+              'At least 6 hours prior',
+              'Only after sleeping overnight',
             ],
             correctOptionIndex: 0,
             explanation:
-                'The smooth 24-hour delivery avoids peak-related orthostatic side effects, improving patient adherence.',
+                'Remove contact lenses, apply Rohto Dry Aid, and wait 15 to 20 minutes before wearing contact lenses.',
           ),
         ],
       ),
@@ -515,9 +510,9 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
     return QuizResultHistoryDto(
       id: 'res_${DateTime.now().millisecondsSinceEpoch}',
       quizId: quizId,
-      quizTitle: quizId == 'quiz_crd_01'
-          ? 'Cardura XL Peak Efficacy & 24h ABPM Study'
-          : 'Clinical Pharmacology Knowledge Check',
+      quizTitle: quizId == 'quiz_rda_01'
+          ? 'Rohto Dry Aid Advanced Tearshield Clinical Quiz'
+          : 'Ophthalmology Clinical Knowledge Check',
       score: score,
       totalQuestions: totalQuestions,
       pointsEarned: points,
@@ -548,6 +543,49 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
       passingScore: 70,
       pointsAwarded: 30,
       answers: const [],
+    );
+  }
+
+  @override
+  Future<QuizSubmissionResultDto> getQuizAttemptReview(String quizId) async {
+    if (dio != null) {
+      final response = await dio!.get<dynamic>(
+        ApiEndpoints.quizAttemptReview(quizId),
+      );
+      final map = ApiResponseParser.unwrapMap(response.data);
+      return QuizSubmissionResultDto.fromJson(map);
+    }
+
+    final quiz = await getQuizById(quizId);
+    final evals = quiz.questions.map((q) {
+      final correctIdx = q.correctOptionIndex.clamp(0, q.options.length - 1);
+      final correctText =
+          q.options.isNotEmpty ? q.options[correctIdx] : '';
+      return QuizAnswerEvaluationDto(
+        questionId: q.id,
+        questionText: q.question,
+        selectedOptionId:
+            q.optionIds.isNotEmpty && correctIdx < q.optionIds.length
+                ? q.optionIds[correctIdx]
+                : null,
+        selectedOptionText: correctText,
+        isCorrect: true,
+        explanation: q.explanation,
+        correctOptionId:
+            q.optionIds.isNotEmpty && correctIdx < q.optionIds.length
+                ? q.optionIds[correctIdx]
+                : null,
+        correctOptionText: correctText,
+      );
+    }).toList();
+
+    return QuizSubmissionResultDto(
+      attemptId: 'review_$quizId',
+      score: 100,
+      isPassed: true,
+      passingScore: 70,
+      pointsAwarded: quiz.rewardPoints,
+      answers: evals,
     );
   }
 
@@ -602,27 +640,12 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
   @override
   Future<List<QuizResultHistoryDto>> getQuizResultsHistory() async {
     if (dio != null) {
-      final response = await dio!.get<dynamic>(ApiEndpoints.pointsHistory);
+      final response = await dio!.get<dynamic>(ApiEndpoints.myQuizAttempts);
       final list = ApiResponseParser.unwrapList(
         response.data,
-        nestedKeys: const ['items', 'transactions', 'results'],
+        nestedKeys: const ['items', 'attempts', 'results'],
       );
-      return list
-          .where((item) => item['type'] == 'quiz_completion')
-          .map((item) {
-            return QuizResultHistoryDto(
-              id: item['id']?.toString() ?? '',
-              quizId: item['referenceId']?.toString() ?? '',
-              quizTitle: item['description']?.toString() ?? '',
-              score: 0,
-              totalQuestions: 0,
-              pointsEarned: (item['amount'] as num?)?.toInt() ?? 0,
-              timeTakenSeconds: 0,
-              completedAtIso: item['createdAt']?.toString() ??
-                  DateTime.now().toIso8601String(),
-            );
-          })
-          .toList();
+      return list.map((item) => QuizResultHistoryDto.fromJson(item)).toList();
     }
 
     await Future<void>.delayed(const Duration(milliseconds: 100));
@@ -639,8 +662,8 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
       ),
       QuizResultHistoryDto(
         id: 'hist_02',
-        quizId: 'quiz_atv_02',
-        quizTitle: 'AtorvaCare Statin Intolerance & Renal Safety',
+        quizId: 'quiz_cool_02',
+        quizTitle: 'Rohto Cool Contact Lens Comfort & Hydration',
         score: 3,
         totalQuestions: 3,
         pointsEarned: 40,

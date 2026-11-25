@@ -449,6 +449,7 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
                       : null;
                   return DropdownButtonFormField<String?>(
                     initialValue: validSelected,
+                    isExpanded: true,
                     decoration: InputDecoration(
                       labelText: l10n.selectProductOptional,
                       filled: true,
@@ -464,12 +465,18 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
                     items: [
                       DropdownMenuItem<String?>(
                         value: null,
-                        child: Text(l10n.noProductSelected),
+                        child: Text(
+                          l10n.noProductSelected,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       ...products.map(
                         (p) => DropdownMenuItem<String?>(
                           value: p.id,
-                          child: Text(p.name),
+                          child: Text(
+                            p.name,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
                     ],
@@ -513,6 +520,8 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
                 maxLines: 5,
                 onChanged: (_) => _onFieldChanged(),
               ),
+              const SizedBox(height: RxSpacing.s16),
+              _buildPhotoAttachmentCard(context),
               if (_showOptionalFields) ...[
                 const SizedBox(height: RxSpacing.s16),
                 AppTextField(
@@ -530,8 +539,6 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
                   maxLines: 4,
                   onChanged: (_) => _onFieldChanged(),
                 ),
-                const SizedBox(height: RxSpacing.s16),
-                _buildPhotoAttachmentCard(context),
               ],
             ] else if (widget.type == FeedbackType.competitorClaim) ...[
               AppTextField(
@@ -551,6 +558,8 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
                 maxLines: 5,
                 onChanged: (_) => _onFieldChanged(),
               ),
+              const SizedBox(height: RxSpacing.s16),
+              _buildPhotoAttachmentCard(context),
               if (_showOptionalFields) ...[
                 const SizedBox(height: RxSpacing.s16),
                 AppTextField(
@@ -559,8 +568,6 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
                   hint: l10n.whereHeardHintExamples,
                   onChanged: (_) => _onFieldChanged(),
                 ),
-                const SizedBox(height: RxSpacing.s16),
-                _buildPhotoAttachmentCard(context),
               ],
             ] else if (widget.type == FeedbackType.fieldFeedback) ...[
               AppTextField(
@@ -580,9 +587,9 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
                 maxLines: 6,
                 onChanged: (_) => _onFieldChanged(),
               ),
+              const SizedBox(height: RxSpacing.s16),
+              _buildPhotoAttachmentCard(context),
               if (_showOptionalFields) ...[
-                const SizedBox(height: RxSpacing.s16),
-                _buildPhotoAttachmentCard(context),
                 const SizedBox(height: RxSpacing.s12),
                 _buildVoiceAttachmentCard(context),
               ],
@@ -610,7 +617,6 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
 
   Future<void> _pickAndUploadPhoto() async {
     if (_isUploadingPhoto) return;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
@@ -620,12 +626,12 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
           children: [
             ListTile(
               leading: const Icon(LucideIcons.camera),
-              title: Text(isArabic ? 'التقاط صورة بالكاميرا' : 'Take Photo with Camera'),
+              title: const Text('Take Photo with Camera'),
               onTap: () => Navigator.of(sheetCtx).pop(ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(LucideIcons.image),
-              title: Text(isArabic ? 'اختيار صورة من المعرض' : 'Choose from Gallery'),
+              title: const Text('Choose from Gallery'),
               onTap: () => Navigator.of(sheetCtx).pop(ImageSource.gallery),
             ),
           ],
@@ -683,12 +689,8 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
             });
             _onFieldChanged();
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  isArabic
-                      ? 'تم حفظ الصورة محلياً وسيتم رفعها تلقائياً عند عودة الإنترنت'
-                      : 'Photo saved locally and will upload when back online.',
-                ),
+              const SnackBar(
+                content: Text('Photo saved locally and will upload when back online.'),
               ),
             );
             return;
@@ -703,10 +705,7 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                f.debugMessage ??
-                    (isArabic
-                        ? 'تعذر رفع الصورة، تحقق من الاتصال وحاول مجدداً'
-                        : 'Failed to upload image. Please check connection.'),
+                f.debugMessage ?? 'Failed to upload image. Please check connection.',
               ),
               backgroundColor: context.rxColors.error,
             ),
@@ -813,7 +812,6 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
   }
 
   Future<void> _toggleVoiceRecording() async {
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     try {
       final recorder = _recorder ??= AudioRecorder();
 
@@ -865,12 +863,8 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
             });
             _onFieldChanged();
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  isArabic
-                      ? 'تم حفظ التسجيل الصوتي محلياً وسيتم رفعه تلقائياً عند عودة الإنترنت'
-                      : 'Voice note saved locally and will upload when back online.',
-                ),
+              const SnackBar(
+                content: Text('Voice note saved locally and will upload when back online.'),
               ),
             );
           },
@@ -883,10 +877,8 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
       if (!hasPerm) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              isArabic
-                  ? 'يرجى منح صلاحية الميكروفون لتسجيل ملاحظة صوتية'
-                  : 'Microphone permission is required to record a voice note.',
+            content: const Text(
+              'Microphone permission is required to record a voice note.',
             ),
             backgroundColor: context.rxColors.error,
           ),
@@ -898,12 +890,8 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
       if (!mounted) return;
       if (targetPath == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              isArabic
-                  ? 'التسجيل الصوتي متاح على تطبيق الهاتف حالياً'
-                  : 'Voice recording is available on mobile devices.',
-            ),
+          const SnackBar(
+            content: Text('Voice recording is available on mobile devices.'),
           ),
         );
         return;
@@ -937,11 +925,7 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            isArabic
-                ? 'تعذر بدء التسجيل الصوتي على هذا الجهاز'
-                : 'Unable to record audio on this device.',
-          ),
+          content: const Text('Unable to record audio on this device.'),
           backgroundColor: context.rxColors.error,
         ),
       );
@@ -952,7 +936,6 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
     final l10n = context.l10n;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final voiceSource = _localVoicePath ?? _uploadedVoiceNoteUrl;
 
     if (voiceSource != null && voiceSource.isNotEmpty && !_isRecordingVoice) {
@@ -1011,11 +994,9 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
             Expanded(
               child: Text(
                 _isUploadingVoice
-                    ? (isArabic ? 'جاري رفع التسجيل الصوتي...' : 'Uploading voice note...')
+                    ? 'Uploading voice note...'
                     : (_isRecordingVoice
-                        ? (isArabic
-                            ? 'جاري التسجيل... اضغط للإيقاف (${_formatRecordingDuration(_recordingSeconds)})'
-                            : 'Recording... Tap to stop (${_formatRecordingDuration(_recordingSeconds)})')
+                        ? 'Recording... Tap to stop (${_formatRecordingDuration(_recordingSeconds)})'
                         : l10n.attachVoiceOptional),
                 style: textTheme.bodySmall?.copyWith(
                   fontWeight: _isRecordingVoice ? FontWeight.w600 : FontWeight.w400,

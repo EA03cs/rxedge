@@ -165,7 +165,12 @@ class UserProfileDto {
           '',
       territory: territoryStr,
       role: userObj['role']?.toString() ?? 'MEDICAL_REP',
-      points: ((userObj['points'] ?? userObj['totalPoints']) as num?)?.toInt() ?? 0,
+      points: ((userObj['totalChallengeMarks'] ??
+                  userObj['challengeMarks'] ??
+                  userObj['points'] ??
+                  userObj['totalPoints']) as num?)
+              ?.toInt() ??
+          0,
       streakDays:
           ((userObj['streakDays'] ?? userObj['currentStreak']) as num?)?.toInt() ??
               0,

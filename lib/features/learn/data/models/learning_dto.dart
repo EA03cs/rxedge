@@ -222,6 +222,8 @@ class LessonDto {
 
 class ProductPositioningDto {
   final String keyMessage;
+  final String? keyPositioning;
+  final List<String> keyMessaging;
   final List<String> targetDoctors;
   final String? targetPatient;
   final List<String> keyBenefits;
@@ -230,6 +232,8 @@ class ProductPositioningDto {
 
   const ProductPositioningDto({
     required this.keyMessage,
+    this.keyPositioning,
+    this.keyMessaging = const [],
     required this.targetDoctors,
     this.targetPatient,
     required this.keyBenefits,
@@ -237,12 +241,27 @@ class ProductPositioningDto {
     required this.proofPoints,
   });
 
+  String get effectiveKeyPositioning =>
+      (keyPositioning != null && keyPositioning!.trim().isNotEmpty)
+          ? keyPositioning!
+          : keyMessage;
+
   factory ProductPositioningDto.fromJson(Map<String, dynamic> json) {
+    final keyMessage = json['key_message']?.toString() ??
+        json['keyMessage']?.toString() ??
+        json['keyPositioning']?.toString() ??
+        '';
+    final keyPositioning = json['key_positioning']?.toString() ??
+        json['keyPositioning']?.toString();
+    final rawMessaging = json['key_messaging'] ??
+        json['keyMessaging'] ??
+        json['messaging'];
+    final keyMessaging = parseClinicalBulletList(rawMessaging);
+
     return ProductPositioningDto(
-      keyMessage: json['key_message']?.toString() ??
-          json['keyMessage']?.toString() ??
-          json['keyPositioning']?.toString() ??
-          '',
+      keyMessage: keyMessage,
+      keyPositioning: keyPositioning,
+      keyMessaging: keyMessaging,
       targetDoctors: parseClinicalBulletList(
         json['target_doctors'] ?? json['targetDoctorSpecialties'],
       ),
@@ -264,6 +283,8 @@ class ProductPositioningDto {
 
   Map<String, dynamic> toJson() => {
         'key_message': keyMessage,
+        if (keyPositioning != null) 'key_positioning': keyPositioning,
+        if (keyMessaging.isNotEmpty) 'key_messaging': keyMessaging,
         'target_doctors': targetDoctors,
         if (targetPatient != null) 'target_patient': targetPatient,
         'key_benefits': keyBenefits,
@@ -273,6 +294,8 @@ class ProductPositioningDto {
 
   ProductPositioningEntity toDomain() => ProductPositioningEntity(
         keyMessage: keyMessage,
+        keyPositioning: keyPositioning,
+        keyMessaging: keyMessaging,
         targetDoctors: targetDoctors,
         targetPatient: targetPatient,
         keyBenefits: keyBenefits,
@@ -481,6 +504,7 @@ class ProductLearningDto {
   final String id;
   final String name;
   final String therapeuticArea;
+  final String? productOverview;
   final bool isRecommended;
   final String? boxImageUrl;
   final List<ProductPackShotDto> packShots;
@@ -494,6 +518,7 @@ class ProductLearningDto {
     required this.id,
     required this.name,
     required this.therapeuticArea,
+    this.productOverview,
     required this.isRecommended,
     this.boxImageUrl,
     this.packShots = const [],
@@ -527,6 +552,11 @@ class ProductLearningDto {
         .map((e) => ProductFaqDto.fromJson(Map<String, dynamic>.from(e)))
         .toList();
 
+    final productOverview = json['productOverview']?.toString() ??
+        json['product_overview']?.toString() ??
+        json['overview']?.toString() ??
+        json['description']?.toString();
+
     return ProductLearningDto(
       id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
@@ -534,6 +564,7 @@ class ProductLearningDto {
           json['therapeutic_area']?.toString() ??
           json['therapeuticArea']?.toString() ??
           '',
+      productOverview: productOverview,
       isRecommended:
           json['is_recommended'] as bool? ?? json['isRecommended'] as bool? ?? false,
       boxImageUrl:
@@ -557,6 +588,7 @@ class ProductLearningDto {
         'id': id,
         'name': name,
         'therapeutic_area': therapeuticArea,
+        if (productOverview != null) 'product_overview': productOverview,
         'is_recommended': isRecommended,
         if (boxImageUrl != null) 'box_image_url': boxImageUrl,
         'pack_shots': packShots.map((e) => e.toJson()).toList(),
@@ -571,6 +603,7 @@ class ProductLearningDto {
         id: id,
         name: name,
         therapeuticArea: therapeuticArea,
+        productOverview: productOverview,
         isRecommended: isRecommended,
         boxImageUrl: boxImageUrl,
         packShots: packShots.map((e) => e.toDomain()).toList(),

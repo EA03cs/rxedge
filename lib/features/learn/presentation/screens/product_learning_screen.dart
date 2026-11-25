@@ -32,7 +32,6 @@ class ProductLearningScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     // Reactively watch for lesson completion and updates
     final liveProduct = ref.watch(productLearningDetailProvider(product.id)) ?? product;
@@ -80,6 +79,7 @@ class ProductLearningScreen extends ConsumerWidget {
                 unselectedLabelStyle: textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.w500,
                 ),
+                labelPadding: const EdgeInsets.symmetric(horizontal: 6.0),
                 tabs: [
                   Tab(text: l10n.tabPositioning),
                   Tab(text: l10n.tabCompetitive),
@@ -98,7 +98,14 @@ class ProductLearningScreen extends ConsumerWidget {
                 vertical: RxSpacing.s12,
               ),
               decoration: BoxDecoration(
-                color: colors.surfaceMuted,
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    colors.primarySoft.withValues(alpha: 0.75),
+                    colors.surface,
+                  ],
+                ),
                 border: Border(
                   bottom: BorderSide(
                     color: colors.border,
@@ -145,12 +152,42 @@ class ProductLearningScreen extends ConsumerWidget {
                                   liveProduct.completedLessonsCount,
                                   liveProduct.totalLessonsCount,
                                 )
-                              : (isArabic ? 'قيد الإعداد' : 'Modules in prep'),
+                              : 'Modules in prep',
                           style: textTheme.labelMedium?.copyWith(
                             fontWeight: FontWeight.w700,
                             color: liveProduct.totalLessonsCount > 0
                                 ? colors.textPrimary
                                 : colors.textTertiary,
+                          ),
+                        ),
+                        const SizedBox(height: RxSpacing.s6),
+                        OutlinedButton.icon(
+                          onPressed: () =>
+                              _openLessonsSheet(context, liveProduct),
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: colors.surface,
+                            foregroundColor: colors.primary,
+                            side: BorderSide(
+                              color: colors.border,
+                              width: RxShadows.hairlineBorderWidth,
+                            ),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: RxRadii.borderButton,
+                            ),
+                            padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: RxSpacing.s12,
+                              vertical: RxSpacing.s6,
+                            ),
+                            minimumSize: const Size(0, 32.0),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          icon: const Icon(LucideIcons.bookOpen, size: 14.0),
+                          label: Text(
+                            l10n.lessonsTabLabel,
+                            style: textTheme.labelSmall?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: colors.primary,
+                            ),
                           ),
                         ),
                       ],
@@ -170,34 +207,6 @@ class ProductLearningScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: RxSpacing.s8),
-                  OutlinedButton.icon(
-                    onPressed: () => _openLessonsSheet(context, liveProduct),
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: colors.surface,
-                      foregroundColor: colors.primary,
-                      side: BorderSide(
-                        color: colors.border,
-                        width: RxShadows.hairlineBorderWidth,
-                      ),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: RxRadii.borderButton,
-                      ),
-                      padding: const EdgeInsetsDirectional.symmetric(
-                        horizontal: RxSpacing.s12,
-                        vertical: RxSpacing.s6,
-                      ),
-                      minimumSize: const Size(0, 32.0),
-                    ),
-                    icon: const Icon(LucideIcons.bookOpen, size: 14.0),
-                    label: Text(
-                      l10n.lessonsTabLabel,
-                      style: textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: colors.primary,
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -207,7 +216,12 @@ class ProductLearningScreen extends ConsumerWidget {
               child: TabBarView(
                 children: [
                   // Tab 1: Product Positioning
-                  ProductPositioningView(positioning: liveProduct.positioning),
+                  ProductPositioningView(
+                    positioning: liveProduct.positioning,
+                    productOverview: liveProduct.productOverview,
+                    packShotAsset: liveProduct.defaultAssetBanner,
+                    productName: liveProduct.name,
+                  ),
 
                   // Tab 2: Competitive Handling
                   CompetitiveHandlingView(competitors: liveProduct.competitors),
@@ -227,7 +241,6 @@ class ProductLearningScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     showModalBottomSheet<void>(
       context: context,
@@ -291,15 +304,12 @@ class ProductLearningScreen extends ConsumerWidget {
                     const SizedBox(height: RxSpacing.s16),
                     Expanded(
                       child: liveProduct.lessons.isEmpty
-                          ? Center(
+                          ? const Center(
                               child: SingleChildScrollView(
                                 child: EmptyState(
-                                  title: isArabic
-                                      ? 'لا توجد دروس متاحة حالياً'
-                                      : 'No lessons available yet',
-                                  description: isArabic
-                                      ? 'يتم حالياً إعداد الوحدات السريرية لهذا المنتج.'
-                                      : 'Clinical training modules for this product are currently being prepared.',
+                                  title: 'No lessons available yet',
+                                  description:
+                                      'Clinical training modules for this product are currently being prepared.',
                                 ),
                               ),
                             )

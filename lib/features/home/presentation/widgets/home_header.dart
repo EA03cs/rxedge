@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../../app/l10n/l10n.dart';
 import '../../../../app/router/app_router.dart';
 import '../../../../app/theme/theme.dart';
-import '../../../../core/localization/app_locale_provider.dart';
 import '../../../../core/widgets/mentholatum_logo.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../notifications/presentation/controllers/notifications_controller.dart';
-import '../controllers/home_controller.dart';
 
 /// Top Header of the Home Screen matching the executive clinical design:
 /// - Corporate Mentholatum Brand Bar (Logo, Language dropdown pill, Notification Bell with red dot, Teal Avatar)
@@ -19,13 +16,12 @@ class HomeHeader extends ConsumerWidget {
 
   String _getSalutation(BuildContext context) {
     final hour = DateTime.now().hour;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     if (hour < 12) {
-      return isArabic ? 'صباح الخير،' : 'Good morning,';
+      return 'Good morning,';
     } else if (hour < 17) {
-      return isArabic ? 'مساء الخير،' : 'Good afternoon,';
+      return 'Good afternoon,';
     } else {
-      return isArabic ? 'مساء الخير،' : 'Good evening,';
+      return 'Good evening,';
     }
   }
 
@@ -43,7 +39,6 @@ class HomeHeader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final authState = ref.watch(authControllerProvider);
     final user = authState is AuthAuthenticated ? authState.user : null;
 
@@ -52,7 +47,7 @@ class HomeHeader extends ConsumerWidget {
     final salutation = _getSalutation(context);
 
     return CustomPaint(
-      painter: _HeaderBackgroundPainter(isArabic: isArabic),
+      painter: const _HeaderBackgroundPainter(isArabic: false),
       child: Padding(
         padding: const EdgeInsetsDirectional.fromSTEB(
           RxSpacing.s16,
@@ -69,60 +64,6 @@ class HomeHeader extends ConsumerWidget {
             children: [
               const MentholatumLogo(height: 25.0),
               const Spacer(),
-
-              // Quick Language Switcher Dropdown Pill
-              Consumer(
-                builder: (context, ref, _) {
-                  final activeLocale = ref.watch(localeProvider);
-                  final isAr = activeLocale.languageCode == 'ar';
-                  return InkWell(
-                    onTap: () {
-                      final newLocale = isAr ? const Locale('en') : const Locale('ar');
-                      ref.read(localeProvider.notifier).state = newLocale;
-                      ref.read(homeControllerProvider.notifier).refresh();
-                    },
-                    borderRadius: BorderRadius.circular(20.0),
-                    child: Container(
-                      padding: const EdgeInsetsDirectional.fromSTEB(10.0, 4.0, 8.0, 4.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20.0),
-                        border: Border.all(
-                          color: colors.border.withValues(alpha: 0.8),
-                          width: RxShadows.hairlineBorderWidth,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.03),
-                            blurRadius: 4.0,
-                            offset: const Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            isAr ? 'عربي' : 'EN',
-                            style: textTheme.labelSmall?.copyWith(
-                              color: colors.textPrimary,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 12.0,
-                            ),
-                          ),
-                          const SizedBox(width: 4.0),
-                          Icon(
-                            LucideIcons.chevronDown,
-                            size: 14.0,
-                            color: colors.textSecondary,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(width: RxSpacing.s8),
 
               // Notification Bell with vibrant red unread dot
               Consumer(
@@ -243,7 +184,7 @@ class HomeHeader extends ConsumerWidget {
               ),
               const SizedBox(height: 4.0),
               Text(
-                isArabic ? 'استمر في التعلّم. استمر في التقدّم.' : 'Keep learning. Keep growing.',
+                'Keep learning. Keep growing.',
                 style: textTheme.bodySmall?.copyWith(
                   color: const Color(0xFF64748B),
                   fontWeight: FontWeight.w500,

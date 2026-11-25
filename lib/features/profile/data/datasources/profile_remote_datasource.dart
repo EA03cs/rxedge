@@ -36,12 +36,12 @@ class ProfileRemoteDatasourceImpl implements ProfileRemoteDatasource {
     await Future<void>.delayed(const Duration(milliseconds: 100));
 
     return UserProfileDto(
-      id: 'usr_alex_01',
-      displayName: 'Alex Mercer',
-      email: 'alex.mercer@rxedgepharma.com',
+      id: 'usr_ahmed_01',
+      displayName: 'Ahmed Mostafa',
+      email: 'ahmed.mostafa@rxedgepharma.com',
       employeeId: 'MR-7842',
       territory: 'Cairo North & Heliopolis District',
-      role: 'Senior Medical Representative (Cardiology)',
+      role: 'Senior Medical Representative (Ophthalmology)',
       points: 1250,
       streakDays: 4,
       badges: [

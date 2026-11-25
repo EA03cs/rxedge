@@ -27,6 +27,7 @@ abstract class ChallengesRepository {
     required String quizId,
     required List<Map<String, String>> answers,
   });
+  Future<Result<QuizSubmissionResultEntity>> getQuizAttemptReview(String quizId);
   Future<Result<List<PastChallengeHistoryEntity>>> getPastChallengesHistory();
   Future<Result<List<QuizResultHistoryEntity>>> getQuizResultsHistory();
 }

@@ -27,21 +27,28 @@ class ProfileRepositoryImpl implements ProfileRepository {
     }
 
     try {
+      final savedPrefs = await _localDatasource.getSavedPreferences();
       if (!forceRefresh) {
         final cached = await _localDatasource.getCachedProfile();
         if (cached != null) {
-          _memoryProfile = cached.toDomain().copyWith(
-                storageUsageBytes: _localDatasource.getStorageUsage(),
-              );
+          final domain = cached.toDomain();
+          _memoryProfile = domain.copyWith(
+            storageUsageBytes: _localDatasource.getStorageUsage(),
+            notificationPreferences:
+                savedPrefs?.toDomain() ?? domain.notificationPreferences,
+          );
           return Result.success(_memoryProfile!);
         }
       }
 
       final remoteDto = await _remoteDatasource.getProfile();
       await _localDatasource.cacheProfile(remoteDto);
-      _memoryProfile = remoteDto.toDomain().copyWith(
-            storageUsageBytes: _localDatasource.getStorageUsage(),
-          );
+      final domain = remoteDto.toDomain();
+      _memoryProfile = domain.copyWith(
+        storageUsageBytes: _localDatasource.getStorageUsage(),
+        notificationPreferences:
+            savedPrefs?.toDomain() ?? domain.notificationPreferences,
+      );
       return Result.success(_memoryProfile!);
     } catch (e, st) {
       return Result.failure(ExceptionMapper.map(e, st));

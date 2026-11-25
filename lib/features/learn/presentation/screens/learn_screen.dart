@@ -35,6 +35,7 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
   final FocusNode _searchFocusNode = FocusNode();
   bool _isSearchFocused = false;
   String _searchQuery = '';
+  String _statusFilter = 'All';
 
   @override
   void initState() {
@@ -58,11 +59,76 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
     super.dispose();
   }
 
+  void _showFilterSheet(BuildContext context) {
+    final colors = context.rxColors;
+    final textTheme = Theme.of(context).textTheme;
+    const options = ['All', 'In Progress', 'Completed', 'Not Started'];
+
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+      ),
+      builder: (sheetCtx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20.0, 16.0, 20.0, 20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Filter by Progress',
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                  if (_statusFilter != 'All')
+                    TextButton(
+                      onPressed: () {
+                        setState(() => _statusFilter = 'All');
+                        Navigator.of(sheetCtx).pop();
+                      },
+                      child: const Text('Reset'),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 12.0),
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: options.map((opt) {
+                  final selected = _statusFilter == opt;
+                  return ChoiceChip(
+                    label: Text(opt),
+                    selected: selected,
+                    selectedColor: colors.primarySoft,
+                    labelStyle: TextStyle(
+                      color: selected ? colors.primary : colors.textSecondary,
+                      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    ),
+                    onSelected: (_) {
+                      setState(() => _statusFilter = opt);
+                      Navigator.of(sheetCtx).pop();
+                    },
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final textTheme = Theme.of(context).textTheme;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     final learnAsync = ref.watch(learnControllerProvider);
 
@@ -115,15 +181,25 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
               }
 
               final query = _searchQuery.trim().toLowerCase();
-              final filteredProducts = query.isEmpty
-                  ? products
-                  : products.where((p) {
-                      return p.name.toLowerCase().contains(query) ||
-                          p.therapeuticArea.toLowerCase().contains(query);
-                    }).toList();
+              final filteredProducts = products.where((p) {
+                final matchesQuery = query.isEmpty ||
+                    p.name.toLowerCase().contains(query) ||
+                    p.therapeuticArea.toLowerCase().contains(query);
+                if (!matchesQuery) return false;
+                switch (_statusFilter) {
+                  case 'Completed':
+                    return p.isCompleted;
+                  case 'In Progress':
+                    return p.isInProgress;
+                  case 'Not Started':
+                    return p.completedLessonsCount == 0;
+                  default:
+                    return true;
+                }
+              }).toList();
 
               return RefreshIndicator(
-                color: const Color(0xFF0284C7),
+                color: const Color(0xFF005CA8),
                 backgroundColor: Colors.white,
                 onRefresh: () => ref.read(learnControllerProvider.notifier).refresh(),
                 child: Column(
@@ -167,11 +243,9 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 5.0),
-                                Text(
-                                  isArabic
-                                      ? 'استكشف مسارات تعلّم المنتجات وعزّز خبرتك السريرية.'
-                                      : 'Explore our product learning journey and grow your expertise.',
-                                  style: const TextStyle(
+                                const Text(
+                                  'Explore our product learning journey and grow your expertise.',
+                                  style: TextStyle(
                                     fontSize: 13.0,
                                     color: Color(0xFF64748B),
                                     height: 1.35,
@@ -244,7 +318,7 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
                                   color: Color(0xFF0F172A),
                                   fontWeight: FontWeight.w500,
                                 ),
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   border: InputBorder.none,
                                   enabledBorder: InputBorder.none,
                                   focusedBorder: InputBorder.none,
@@ -253,10 +327,8 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
                                   focusedErrorBorder: InputBorder.none,
                                   isDense: true,
                                   contentPadding: EdgeInsets.zero,
-                                  hintText: isArabic
-                                      ? 'ابحث عن منتج أو تخصص طبي...'
-                                      : 'Search products, monographs, trials...',
-                                  hintStyle: const TextStyle(
+                                  hintText: 'Search products, monographs, trials...',
+                                  hintStyle: TextStyle(
                                     color: Color(0xFF94A3B8),
                                     fontSize: 13.5,
                                     fontWeight: FontWeight.w400,
@@ -281,28 +353,34 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
                                   ),
                                 ),
                               ),
-                            Container(
-                              width: 36.0,
-                              height: 36.0,
-                              decoration: BoxDecoration(
-                                color: _isSearchFocused
-                                    ? const Color(0xFF005A9C)
-                                    : const Color(0xFFF1F5F9),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: _isSearchFocused
+                            GestureDetector(
+                              onTap: () => _showFilterSheet(context),
+                              child: Container(
+                                width: 36.0,
+                                height: 36.0,
+                                decoration: BoxDecoration(
+                                  color: (_isSearchFocused ||
+                                          _statusFilter != 'All')
                                       ? const Color(0xFF005A9C)
-                                      : const Color(0xFFE2E8F0),
-                                  width: 1.0,
+                                      : const Color(0xFFF1F5F9),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: (_isSearchFocused ||
+                                            _statusFilter != 'All')
+                                        ? const Color(0xFF005A9C)
+                                        : const Color(0xFFE2E8F0),
+                                    width: 1.0,
+                                  ),
                                 ),
-                              ),
-                              alignment: Alignment.center,
-                              child: Icon(
-                                LucideIcons.slidersHorizontal,
-                                size: 16.0,
-                                color: _isSearchFocused
-                                    ? Colors.white
-                                    : const Color(0xFF005A9C),
+                                alignment: Alignment.center,
+                                child: Icon(
+                                  LucideIcons.slidersHorizontal,
+                                  size: 16.0,
+                                  color: (_isSearchFocused ||
+                                          _statusFilter != 'All')
+                                      ? Colors.white
+                                      : const Color(0xFF005A9C),
+                                ),
                               ),
                             ),
                           ],
@@ -326,17 +404,51 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                isArabic
-                                    ? 'المنتجات الدوائية المتاحة (${filteredProducts.length})'
-                                    : 'Detailing Modules (${filteredProducts.length})',
-                                style: const TextStyle(
-                                  color: Color(0xFF64748B),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 12.5,
-                                  letterSpacing: 0.3,
+                              Flexible(
+                                child: Text(
+                                  'Detailing Modules (${filteredProducts.length})',
+                                  style: const TextStyle(
+                                    color: Color(0xFF64748B),
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 12.5,
+                                    letterSpacing: 0.3,
+                                  ),
                                 ),
                               ),
+                              if (_statusFilter != 'All')
+                                GestureDetector(
+                                  onTap: () =>
+                                      setState(() => _statusFilter = 'All'),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0,
+                                      vertical: 4.0,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFE6F0FA),
+                                      borderRadius: BorderRadius.circular(999.0),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          _statusFilter,
+                                          style: const TextStyle(
+                                            color: Color(0xFF005CA8),
+                                            fontSize: 11.5,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4.0),
+                                        const Icon(
+                                          LucideIcons.x,
+                                          size: 12.0,
+                                          color: Color(0xFF005CA8),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                             ],
                           ),
                           const SizedBox(height: 10.0),
@@ -354,9 +466,9 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
                                     ),
                                     const SizedBox(height: 12.0),
                                     Text(
-                                      isArabic
-                                          ? 'لا توجد نتائج مطابقة لـ "$_searchQuery"'
-                                          : 'No products match "$_searchQuery"',
+                                      _searchQuery.isNotEmpty
+                                          ? 'No products match "$_searchQuery"'
+                                          : 'No products in "$_statusFilter"',
                                       style: textTheme.bodyMedium?.copyWith(
                                         color: const Color(0xFF64748B),
                                         fontWeight: FontWeight.w600,
@@ -368,12 +480,15 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
                                         _searchController.clear();
                                         setState(() {
                                           _searchQuery = '';
+                                          _statusFilter = 'All';
                                         });
                                       },
                                       child: Text(
-                                        isArabic ? 'مسح البحث' : 'Clear search',
+                                        _searchQuery.isNotEmpty
+                                            ? 'Clear search'
+                                            : 'Reset filter',
                                         style: const TextStyle(
-                                          color: Color(0xFF0284C7),
+                                          color: Color(0xFF005CA8),
                                           fontWeight: FontWeight.w700,
                                         ),
                                       ),
@@ -481,26 +596,22 @@ class _ProductCard extends StatelessWidget {
 
   Color _getCategoryWaveColor(String name) {
     final lower = name.toLowerCase();
-    if (lower.contains('aqua') || lower.contains('cool') || lower.contains('dry aid') || lower.contains('ophthal')) {
-      return const Color(0xFF38BDF8); // Cyan / Blue for eye drops
+    if (lower.contains('dry aid') || lower.contains('dry-aid')) {
+      return const Color(0xFF005CA8); // Mentholatum Cobalt for Dry Aid
     }
-    if (lower.contains('atorva') || lower.contains('lipid')) {
-      return const Color(0xFF10B981); // Emerald Green for AtorvaCare
+    if (lower.contains('cool')) {
+      return const Color(0xFF0EA5E9); // Crisp Icy Blue for Rohto Cool
     }
-    if (lower.contains('cardura') || lower.contains('cardio') || lower.contains('urology')) {
-      return const Color(0xFFF43F5E); // Coral / Red for Cardura
+    if (lower.contains('aqua')) {
+      return const Color(0xFF10B981); // Gentle Emerald for Rohto Aqua
     }
-    if (lower.contains('gluco') || lower.contains('endo') || lower.contains('metabolism')) {
-      return const Color(0xFFA855F7); // Purple for GlucoBalance
-    }
-    return const Color(0xFF00807D); // Signature Teal
+    return const Color(0xFF38BDF8);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final textTheme = Theme.of(context).textTheme;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final waveColor = _getCategoryWaveColor(product.name);
     final percentage = (product.progress * 100).toInt();
 
@@ -525,7 +636,7 @@ class _ProductCard extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20.0),
           child: CustomPaint(
-            painter: _CardWavePainter(waveColor: waveColor, isRtl: isArabic),
+            painter: _CardWavePainter(waveColor: waveColor, isRtl: false),
             child: Material(
               color: Colors.transparent,
               borderRadius: BorderRadius.circular(20.0),
@@ -659,7 +770,7 @@ class _ProductCard extends StatelessWidget {
                                             width: 4.5,
                                             height: 4.5,
                                             decoration: const BoxDecoration(
-                                              color: Color(0xFF0284C7),
+                                              color: Color(0xFF005CA8),
                                               shape: BoxShape.circle,
                                             ),
                                           ),
@@ -732,7 +843,7 @@ class _ProductCard extends StatelessWidget {
                                             product.completedLessonsCount,
                                             product.totalLessonsCount,
                                           )
-                                        : (isArabic ? 'قيد الإعداد' : 'Modules in prep'),
+                                        : 'Modules in prep',
                                     style: textTheme.labelSmall?.copyWith(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 11.0,
@@ -768,10 +879,10 @@ class _ProductCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 4.0),
-                      Icon(
-                        isArabic ? LucideIcons.chevronLeft : LucideIcons.chevronRight,
+                      const Icon(
+                        LucideIcons.chevronRight,
                         size: 16.0,
-                        color: const Color(0xFF94A3B8),
+                        color: Color(0xFF94A3B8),
                       ),
                     ],
                   ),

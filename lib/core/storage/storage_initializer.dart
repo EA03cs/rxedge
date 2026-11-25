@@ -57,11 +57,7 @@ abstract final class StorageInitializer {
   }
 
   static String readInitialLocaleCode({String fallback = 'en'}) {
-    final stored = readPreference(prefLocaleKey);
-    if (stored == 'ar' || stored == 'en') {
-      return stored!;
-    }
-    return fallback;
+    return 'en';
   }
 
   static ThemeMode readInitialThemeMode({ThemeMode fallback = ThemeMode.light}) {

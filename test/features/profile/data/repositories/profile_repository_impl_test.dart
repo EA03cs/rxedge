@@ -42,6 +42,7 @@ void main() {
   setUp(() {
     mockRemote = MockProfileRemoteDatasource();
     mockLocal = MockProfileLocalDatasource();
+    when(() => mockLocal.getSavedPreferences()).thenAnswer((_) async => null);
     repository = ProfileRepositoryImpl(
       remoteDatasource: mockRemote,
       localDatasource: mockLocal,
@@ -104,6 +105,31 @@ void main() {
 
       expect(result.isSuccess, isTrue);
       verify(() => mockLocal.clearDownloads()).called(1);
+    });
+
+    test('getProfile preserves locally saved notification preferences', () async {
+      const savedPrefs = NotificationPreferencesDto(
+        newMaterials: false,
+        monthlyChallenges: false,
+        feedbackReplies: true,
+        quizReminders: false,
+      );
+      when(() => mockLocal.getSavedPreferences()).thenAnswer((_) async => savedPrefs);
+      when(() => mockLocal.getCachedProfile()).thenAnswer((_) async => sampleProfileDto);
+      when(() => mockLocal.getStorageUsage()).thenReturn(25800000);
+
+      final result = await repository.getProfile();
+
+      expect(result.isSuccess, isTrue);
+      result.when(
+        success: (profile) {
+          expect(profile.notificationPreferences.newMaterials, isFalse);
+          expect(profile.notificationPreferences.monthlyChallenges, isFalse);
+          expect(profile.notificationPreferences.feedbackReplies, isTrue);
+          expect(profile.notificationPreferences.quizReminders, isFalse);
+        },
+        failure: (_) => fail('Expected success'),
+      );
     });
   });
 }

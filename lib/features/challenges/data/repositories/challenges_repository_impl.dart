@@ -412,7 +412,7 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
           if (q.id == quizId) {
             quizTitle = q.title;
             return q.copyWith(
-              isCompleted: domain.isPassed,
+              isCompleted: true,
               lastScore: correctCount,
               lastMaxScore: totalQuestions,
             );
@@ -436,6 +436,16 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
       );
 
       return Result.success(domain);
+    } catch (e, st) {
+      return Result.failure(ExceptionMapper.map(e, st));
+    }
+  }
+
+  @override
+  Future<Result<QuizSubmissionResultEntity>> getQuizAttemptReview(String quizId) async {
+    try {
+      final dto = await _remoteDatasource.getQuizAttemptReview(quizId);
+      return Result.success(dto.toDomain());
     } catch (e, st) {
       return Result.failure(ExceptionMapper.map(e, st));
     }

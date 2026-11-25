@@ -317,7 +317,7 @@ class LibraryFilterChips extends StatelessWidget {
           height: 38.0,
           padding: const EdgeInsets.symmetric(horizontal: 14.0),
           decoration: BoxDecoration(
-            color: isActive ? const Color(0xFF0284C7) : Colors.white,
+            color: isActive ? const Color(0xFF005CA8) : Colors.white,
             borderRadius: BorderRadius.circular(22.0),
             border: isActive
                 ? null
@@ -328,7 +328,7 @@ class LibraryFilterChips extends StatelessWidget {
             boxShadow: [
               if (isActive)
                 BoxShadow(
-                  color: const Color(0xFF0284C7).withValues(alpha: 0.28),
+                  color: const Color(0xFF005CA8).withValues(alpha: 0.28),
                   blurRadius: 8.0,
                   offset: const Offset(0, 2),
                 )
@@ -381,10 +381,10 @@ class LibraryFilterChips extends StatelessWidget {
           height: 38.0,
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           decoration: BoxDecoration(
-            color: isActive ? const Color(0xFFE0F2FE) : Colors.white,
+            color: isActive ? const Color(0xFFE6F0FA) : Colors.white,
             borderRadius: BorderRadius.circular(22.0),
             border: Border.all(
-              color: isActive ? const Color(0xFF0284C7) : const Color(0xFFE2E8F0),
+              color: isActive ? const Color(0xFF005CA8) : const Color(0xFFE2E8F0),
               width: 1.2,
             ),
           ),
@@ -394,13 +394,13 @@ class LibraryFilterChips extends StatelessWidget {
               Icon(
                 icon,
                 size: 14.0,
-                color: isActive ? const Color(0xFF0284C7) : const Color(0xFF64748B),
+                color: isActive ? const Color(0xFF005CA8) : const Color(0xFF64748B),
               ),
               const SizedBox(width: 6.0),
               Text(
                 label,
                 style: TextStyle(
-                  color: isActive ? const Color(0xFF0284C7) : const Color(0xFF334155),
+                  color: isActive ? const Color(0xFF005CA8) : const Color(0xFF334155),
                   fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
                   fontSize: 12.5,
                 ),
@@ -409,7 +409,7 @@ class LibraryFilterChips extends StatelessWidget {
               Icon(
                 LucideIcons.chevronDown,
                 size: 13.0,
-                color: isActive ? const Color(0xFF0284C7) : const Color(0xFF64748B),
+                color: isActive ? const Color(0xFF005CA8) : const Color(0xFF64748B),
               ),
             ],
           ),

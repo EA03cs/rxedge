@@ -56,7 +56,20 @@ class LibraryState {
 
     // 3. Product filter
     if (selectedProduct != null && selectedProduct!.isNotEmpty) {
-      items = items.where((item) => item.productName == selectedProduct).toList();
+      if (selectedProduct == 'Rohto Cool & Aqua' ||
+          selectedProduct == 'Rohto Cool / Rohto Aqua') {
+        items = items.where((item) {
+          final p = item.productName.toLowerCase();
+          return p.contains('cool') || p.contains('aqua');
+        }).toList();
+      } else if (selectedProduct == 'Rohto Dry Aid') {
+        items = items.where((item) {
+          final p = item.productName.toLowerCase();
+          return p.contains('dry aid') || p == 'rohto dry aid';
+        }).toList();
+      } else {
+        items = items.where((item) => item.productName == selectedProduct).toList();
+      }
     }
 
     // 4. Shortcuts
@@ -118,7 +131,15 @@ class LibraryController extends AutoDisposeAsyncNotifier<LibraryState> {
     final result = await repository.getMaterials();
 
     return result.when(
-      success: (items) => LibraryState(allMaterials: items),
+      success: (items) {
+        final hasRohto = items.any(
+          (item) => item.productName.toLowerCase().contains('rohto'),
+        );
+        return LibraryState(
+          allMaterials: items,
+          selectedProduct: hasRohto ? 'Rohto Dry Aid' : null,
+        );
+      },
       failure: (failure) => throw failure,
     );
   }

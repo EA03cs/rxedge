@@ -45,7 +45,7 @@
   "progressSection": "Progress Indicators",
   "feedbackSection": "States & Feedback",
   "toggleTheme": "Switch Theme",
-  "toggleLocale": "العربية / English",
+  "toggleLocale": "English",
   "btnPrimary": "Primary Action",
   "btnSecondary": "Secondary Action",
   "btnGhost": "Ghost Action",
@@ -172,6 +172,29 @@
   "statStreakLabel": "Streak",
   "statQuizzesLabel": "Completed",
   "libraryTitle": "Marketing Hub",
+  "materialsUpdatedQuarterly": "Materials are updated quarterly.",
+  "productRohtoDryAid": "Rohto Dry Aid",
+  "productRohtoCoolAqua": "Rohto Cool & Aqua",
+  "productRohtoCool": "Rohto Cool",
+  "productRohtoAqua": "Rohto Aqua",
+  "sectionBrochures": "Brochures",
+  "sectionVisualAids": "Visual Aids",
+  "sectionEdetail": "E-detailed Slides",
+  "sectionOtherMaterials": "Other Materials",
+  "statusComingSoon": "Coming Soon",
+  "statusToDevelopLater": "To be developed later",
+  "visualAidsComingSoonDesc": "Visual aids will be developed later.",
+  "brochuresComingSoonDesc": "No material available yet.",
+  "edetailComingSoonDesc": "No material available yet.",
+  "noMaterialAvailableYet": "No material available yet.",
+  "rohtoAquaNoMaterials": "No materials available yet for Rohto Aqua.",
+  "materialCountOne": "1 material",
+  "materialCountOther": "{count} materials",
+  "@materialCountOther": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "librarySearchHint": "Search materials, monographs, trials...",
   "filterAll": "All",
   "filterBrochures": "Brochures",
@@ -257,6 +280,10 @@
     }
   },
   "btnBookmarks": "Bookmarks",
+  "productOverviewTitle": "Product Overview",
+  "keyPositioningTitle": "Key Positioning",
+  "keyMessagingTitle": "Key Messaging",
+  "packShotTitle": "Pack Shot",
   "keyMessage": "Key Message",
   "targetDoctors": "Target Doctors",
   "keyBenefits": "Key Benefits",
@@ -381,7 +408,7 @@
   "contactMarketingPhone": "+20 2 2795 4000",
   "logoutTitle": "Sign Out",
   "logoutConfirm": "Are you sure you want to sign out? You will need your employee credentials to sign back in.",
-  "appVersionLabel": "RxEdge v1.0.0 (Build 24) • Clean Architecture",
+  "appVersionLabel": "RxEdge v1.0.0 (Build 24)",
   "notificationsTitle": "Notifications",
   "btnMarkAllRead": "Mark all as read",
   "emptyNotificationsTitle": "All Caught Up",
@@ -482,6 +509,30 @@
   "btnHideMistakes": "Hide Mistakes",
   "flawlessAnswersMsg": "Flawless! Zero incorrect answers to review.",
   "incorrectBreakdownTitle": "Incorrect Answers Breakdown",
+  "questionsBreakdownTitle": "Questions Breakdown",
+  "filterAllCount": "All ({count})",
+  "@filterAllCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "filterIncorrectCount": "Incorrect only ({count})",
+  "@filterIncorrectCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "statusCorrect": "Correct",
+  "statusIncorrect": "Incorrect",
+  "notAnsweredLabel": "Not answered",
+  "explanationHeader": "Clinical Explanation",
+  "btnShowAllQuestions": "Show All Questions",
+  "questionNumber": "Question {index}",
+  "@questionNumber": {
+    "placeholders": {
+      "index": { "type": "int" }
+    }
+  },
   "yourAnswerPrefix": "Your answer: {answer}",
   "quizClosesInDays": "Closes in {days} days",
   "@quizClosesInDays": { "placeholders": { "days": { "type": "int" } } },
@@ -513,14 +564,14 @@
   "labelDetails": "Details",
   "optionalFieldSuffix": "{label} (optional)",
   "@optionalFieldSuffix": { "placeholders": { "label": { "type": "String" } } },
-  "hintDoctorObjection": "What exact concern or skepticism did the doctor express?",
+  "hintDoctorObjection": "Please describe the doctor's objection...",
   "hintHowResponded": "What clinical talking point or trial data did you share?",
   "labelCompetitorProduct": "Competitor Name & Product",
-  "hintCompetitorClaim": "What promotional statement or comparison was made?",
+  "hintCompetitorClaim": "Please describe the competitor activity...",
   "labelTopicCampaign": "Topic / Campaign",
   "hintDetails": "Explain the situation or request clearly for the marketing team...",
-  "attachPhotoOptional": "Attach flyer or promotional photo (optional)",
-  "photoAttachedLabel": "Promotional photo attached",
+  "attachPhotoOptional": "Attach supporting photo (optional)",
+  "photoAttachedLabel": "Supporting photo attached",
   "attachVoiceOptional": "Attach quick voice note (optional)",
   "voiceAttachedLabel": "Voice note attached",
   "medicalAffairsDefault": "Medical Affairs",
@@ -537,9 +588,9 @@
   "offlineStorageDesc": "Downloaded brochures, e-detail decks, and monographs are available when offline.",
   "searchFailedTitle": "Search failed",
   "suggestedTopicsLabel": "Suggested Topics",
-  "suggestedTopicDosing": "Dosing",
-  "suggestedTopicHypotension": "Hypotension",
-  "suggestedTopicGits": "GITS delivery",
+  "suggestedTopicDosing": "Tearshield",
+  "suggestedTopicHypotension": "Contact Lenses",
+  "suggestedTopicGits": "MGD Relief",
   "systemDiagnosticsTitle": "System Diagnostics",
   "appMetadataTitle": "Application Metadata",
   "appMetadataSubtitle": "Active runtime environment and build specification",

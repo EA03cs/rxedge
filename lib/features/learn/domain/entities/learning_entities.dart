@@ -94,6 +94,8 @@ class LessonEntity {
 
 class ProductPositioningEntity {
   final String keyMessage;
+  final String? keyPositioning;
+  final List<String> keyMessaging;
   final List<String> targetDoctors;
   final String? targetPatient;
   final List<String> keyBenefits;
@@ -102,12 +104,19 @@ class ProductPositioningEntity {
 
   const ProductPositioningEntity({
     required this.keyMessage,
+    this.keyPositioning,
+    this.keyMessaging = const [],
     required this.targetDoctors,
     this.targetPatient,
     required this.keyBenefits,
     required this.dosageHighlights,
     required this.proofPoints,
   });
+
+  String get effectiveKeyPositioning =>
+      (keyPositioning != null && keyPositioning!.trim().isNotEmpty)
+          ? keyPositioning!
+          : keyMessage;
 
   @override
   bool operator ==(Object other) =>
@@ -195,6 +204,7 @@ class ProductLearningEntity {
   final String id;
   final String name;
   final String therapeuticArea;
+  final String? productOverview;
   final bool isRecommended;
   final String? boxImageUrl;
   final List<ProductPackShotEntity> packShots;
@@ -208,6 +218,7 @@ class ProductLearningEntity {
     required this.id,
     required this.name,
     required this.therapeuticArea,
+    this.productOverview,
     this.isRecommended = false,
     this.boxImageUrl,
     this.packShots = const [],
@@ -232,9 +243,6 @@ class ProductLearningEntity {
 
   String? get defaultAssetBanner {
     final lower = name.toLowerCase();
-    if (lower.contains('cardura')) return 'assets/images/cardura_xl.png';
-    if (lower.contains('atorva')) return 'assets/images/atorvacare.png';
-    if (lower.contains('gluco')) return 'assets/images/glucobalance.png';
     if (lower.contains('dry aid') || lower.contains('dry-aid')) {
       return 'assets/images/rohto_dry_aid.png';
     }
@@ -247,6 +255,7 @@ class ProductLearningEntity {
     String? id,
     String? name,
     String? therapeuticArea,
+    String? productOverview,
     bool? isRecommended,
     String? boxImageUrl,
     List<ProductPackShotEntity>? packShots,
@@ -260,6 +269,7 @@ class ProductLearningEntity {
       id: id ?? this.id,
       name: name ?? this.name,
       therapeuticArea: therapeuticArea ?? this.therapeuticArea,
+      productOverview: productOverview ?? this.productOverview,
       isRecommended: isRecommended ?? this.isRecommended,
       boxImageUrl: boxImageUrl ?? this.boxImageUrl,
       packShots: packShots ?? this.packShots,

@@ -45,7 +45,13 @@ void main() {
             'orderIndex': 1,
           },
         ],
+        'productOverview': 'Unlike most lubricating eye drops that only work on one layer...',
         'positioning': {
+          'key_positioning': 'Rohto Dry Aid with Tearshield Technology formulation hydrates...',
+          'key_messaging': [
+            'Provides fast-acting dry eye relief',
+            'Convenient 10 mLs bottle'
+          ],
           'key_message': 'Restores and lubricates the natural tear film for long-lasting relief.',
           'target_doctors': 'Ophthalmologists, Optometrists',
           'target_patient': 'Patients with severe Dryness including Meibomian Gland Dysfunction (MGD)',
@@ -61,6 +67,9 @@ void main() {
 
       expect(dto.id, 'prod-dry-aid-001');
       expect(dto.name, 'Rohto Dry Aid');
+      expect(dto.productOverview, contains('Unlike most lubricating'));
+      expect(dto.positioning.keyPositioning, contains('Rohto Dry Aid with Tearshield'));
+      expect(dto.positioning.keyMessaging.length, 2);
       expect(dto.packShots.length, 2);
       expect(dto.packShots[0].imageUrl, contains('1VNDLsNCR0yirkhYAkpm1GKwwPWlbLkXv'));
       expect(dto.supportingStudies.length, 1);
@@ -70,10 +79,35 @@ void main() {
       expect(dto.positioning.targetPatient, 'Patients with severe Dryness including Meibomian Gland Dysfunction (MGD)');
 
       final domain = dto.toDomain();
+      expect(domain.productOverview, contains('Unlike most lubricating'));
+      expect(domain.positioning.effectiveKeyPositioning, contains('Rohto Dry Aid with Tearshield'));
+      expect(domain.positioning.keyMessaging.length, 2);
       expect(domain.packShots.length, 2);
       expect(domain.supportingStudies.length, 1);
       expect(domain.faqs.length, 1);
       expect(domain.positioning.targetPatient, contains('Meibomian Gland Dysfunction'));
+    });
+
+    test('handles null/missing productOverview and keyMessaging gracefully', () {
+      final minimalPayload = <String, dynamic>{
+        'id': 'prod-002',
+        'name': 'Rohto Cool',
+        'therapeuticArea': 'Ophthalmology',
+        'isRecommended': false,
+        'positioning': {
+          'key_message': 'Cooling relief',
+        },
+      };
+
+      final dto = ProductLearningDto.fromJson(minimalPayload);
+      expect(dto.productOverview, isNull);
+      expect(dto.positioning.keyMessaging, isEmpty);
+      expect(dto.positioning.effectiveKeyPositioning, 'Cooling relief');
+
+      final domain = dto.toDomain();
+      expect(domain.productOverview, isNull);
+      expect(domain.positioning.keyMessaging, isEmpty);
+      expect(domain.positioning.effectiveKeyPositioning, 'Cooling relief');
     });
   });
 

@@ -38,7 +38,6 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
     final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return SingleChildScrollView(
       padding: const EdgeInsetsDirectional.all(RxSpacing.s16),
@@ -231,18 +230,16 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                       ),
                       IconButton(
                         icon: Icon(LucideIcons.copy, size: 16.0, color: colors.textSecondary),
-                        tooltip: isArabic ? 'نسخ الرد العلمي' : 'Copy response',
+                        tooltip: 'Copy response',
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                         onPressed: () {
                           Clipboard.setData(ClipboardData(text: widget.objection.recommendedResponse));
                           HapticFeedback.lightImpact();
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                isArabic ? 'تم نسخ الرد العلمي للحافظة' : 'Response copied to clipboard',
-                              ),
-                              duration: const Duration(seconds: 2),
+                            const SnackBar(
+                              content: Text('Response copied to clipboard'),
+                              duration: Duration(seconds: 2),
                               behavior: SnackBarBehavior.floating,
                             ),
                           );
@@ -329,7 +326,6 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                   // "Was this helpful?" Section
                   Consumer(
                     builder: (context, ref, _) {
-                      final isArabic = Localizations.localeOf(context).languageCode == 'ar';
                       final userFeedback = _localFeedback ?? widget.objection.userFeedback;
 
                       return Column(
@@ -374,12 +370,8 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                                   Expanded(
                                     child: Text(
                                       userFeedback == 'helpful'
-                                          ? (isArabic
-                                              ? 'تم تسجيل تقييمك (مفيد) — يُفيد باقي الزملاء في الزيارات الميدانية.'
-                                              : 'Your feedback (Helpful) has been recorded to support your peers.')
-                                          : (isArabic
-                                              ? 'شكراً لملاحظتك — تم إرسال طلب تحسين الرد للفريق الطبي والتسويق.'
-                                              : 'Thank you — note forwarded to Medical Affairs to refine the response.'),
+                                          ? 'Your feedback (Helpful) has been recorded to support your peers.'
+                                          : 'Thank you — note forwarded to Medical Affairs to refine the response.',
                                       style: textTheme.bodySmall?.copyWith(
                                         color: colors.textPrimary,
                                         fontWeight: FontWeight.w600,
@@ -413,12 +405,10 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                                                 size: 18.0,
                                               ),
                                               const SizedBox(width: RxSpacing.s8),
-                                              Expanded(
+                                              const Expanded(
                                                 child: Text(
-                                                  isArabic
-                                                      ? 'شكراً لتقييمك! تم تسجيل رأيك في الرد الإكلينيكي.'
-                                                      : 'Thank you! Your feedback has been recorded.',
-                                                  style: const TextStyle(fontWeight: FontWeight.w600),
+                                                  'Thank you! Your feedback has been recorded.',
+                                                  style: TextStyle(fontWeight: FontWeight.w600),
                                                 ),
                                               ),
                                             ],
@@ -470,12 +460,10 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                                                 size: 18.0,
                                               ),
                                               const SizedBox(width: RxSpacing.s8),
-                                              Expanded(
+                                              const Expanded(
                                                 child: Text(
-                                                  isArabic
-                                                      ? 'شكراً لملاحظتك! سنعمل على تطوير هذا الرد مع الفريق العلمي.'
-                                                      : 'Thank you! We will refine this response with Medical Affairs.',
-                                                  style: const TextStyle(fontWeight: FontWeight.w600),
+                                                  'Thank you! We will refine this response with Medical Affairs.',
+                                                  style: TextStyle(fontWeight: FontWeight.w600),
                                                 ),
                                               ),
                                             ],
@@ -642,7 +630,6 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                           .read(challengesControllerProvider.notifier)
                           .submitDoctorObjectionResponse(text);
 
-                      final isAr = Localizations.localeOf(context).languageCode == 'ar';
                       Navigator.of(ctx).pop();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -656,9 +643,7 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                               const SizedBox(width: RxSpacing.s8),
                               Expanded(
                                 child: Text(
-                                  isAr
-                                      ? 'تم إرسال ردك بنجاح ومشاركته مع الزملاء وفريق التسويق!'
-                                      : l10n.responseSubmitted,
+                                  l10n.responseSubmitted,
                                   style: const TextStyle(fontWeight: FontWeight.w600),
                                 ),
                               ),

@@ -371,7 +371,7 @@ abstract class AppLocalizations {
   /// No description provided for @toggleLocale.
   ///
   /// In en, this message translates to:
-  /// **'العربية / English'**
+  /// **'English'**
   String get toggleLocale;
 
   /// No description provided for @btnPrimary.
@@ -854,6 +854,114 @@ abstract class AppLocalizations {
   /// **'Marketing Hub'**
   String get libraryTitle;
 
+  /// No description provided for @materialsUpdatedQuarterly.
+  ///
+  /// In en, this message translates to:
+  /// **'Materials are updated quarterly.'**
+  String get materialsUpdatedQuarterly;
+
+  /// No description provided for @productRohtoDryAid.
+  ///
+  /// In en, this message translates to:
+  /// **'Rohto Dry Aid'**
+  String get productRohtoDryAid;
+
+  /// No description provided for @productRohtoCoolAqua.
+  ///
+  /// In en, this message translates to:
+  /// **'Rohto Cool & Aqua'**
+  String get productRohtoCoolAqua;
+
+  /// No description provided for @productRohtoCool.
+  ///
+  /// In en, this message translates to:
+  /// **'Rohto Cool'**
+  String get productRohtoCool;
+
+  /// No description provided for @productRohtoAqua.
+  ///
+  /// In en, this message translates to:
+  /// **'Rohto Aqua'**
+  String get productRohtoAqua;
+
+  /// No description provided for @sectionBrochures.
+  ///
+  /// In en, this message translates to:
+  /// **'Brochures'**
+  String get sectionBrochures;
+
+  /// No description provided for @sectionVisualAids.
+  ///
+  /// In en, this message translates to:
+  /// **'Visual Aids'**
+  String get sectionVisualAids;
+
+  /// No description provided for @sectionEdetail.
+  ///
+  /// In en, this message translates to:
+  /// **'E-detailed Slides'**
+  String get sectionEdetail;
+
+  /// No description provided for @sectionOtherMaterials.
+  ///
+  /// In en, this message translates to:
+  /// **'Other Materials'**
+  String get sectionOtherMaterials;
+
+  /// No description provided for @statusComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming Soon'**
+  String get statusComingSoon;
+
+  /// No description provided for @statusToDevelopLater.
+  ///
+  /// In en, this message translates to:
+  /// **'To be developed later'**
+  String get statusToDevelopLater;
+
+  /// No description provided for @visualAidsComingSoonDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Visual aids will be developed later.'**
+  String get visualAidsComingSoonDesc;
+
+  /// No description provided for @brochuresComingSoonDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'No material available yet.'**
+  String get brochuresComingSoonDesc;
+
+  /// No description provided for @edetailComingSoonDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'No material available yet.'**
+  String get edetailComingSoonDesc;
+
+  /// No description provided for @noMaterialAvailableYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No material available yet.'**
+  String get noMaterialAvailableYet;
+
+  /// No description provided for @rohtoAquaNoMaterials.
+  ///
+  /// In en, this message translates to:
+  /// **'No materials available yet for Rohto Aqua.'**
+  String get rohtoAquaNoMaterials;
+
+  /// No description provided for @materialCountOne.
+  ///
+  /// In en, this message translates to:
+  /// **'1 material'**
+  String get materialCountOne;
+
+  /// No description provided for @materialCountOther.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} materials'**
+  String materialCountOther(int count);
+
   /// No description provided for @librarySearchHint.
   ///
   /// In en, this message translates to:
@@ -1165,6 +1273,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Bookmarks'**
   String get btnBookmarks;
+
+  /// No description provided for @productOverviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Product Overview'**
+  String get productOverviewTitle;
+
+  /// No description provided for @keyPositioningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Key Positioning'**
+  String get keyPositioningTitle;
+
+  /// No description provided for @keyMessagingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Key Messaging'**
+  String get keyMessagingTitle;
+
+  /// No description provided for @packShotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pack Shot'**
+  String get packShotTitle;
 
   /// No description provided for @keyMessage.
   ///
@@ -1811,7 +1943,7 @@ abstract class AppLocalizations {
   /// No description provided for @appVersionLabel.
   ///
   /// In en, this message translates to:
-  /// **'RxEdge v1.0.0 (Build 24) • Clean Architecture'**
+  /// **'RxEdge v1.0.0 (Build 24)'**
   String get appVersionLabel;
 
   /// No description provided for @notificationsTitle.
@@ -2282,6 +2414,60 @@ abstract class AppLocalizations {
   /// **'Incorrect Answers Breakdown'**
   String get incorrectBreakdownTitle;
 
+  /// No description provided for @questionsBreakdownTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions Breakdown'**
+  String get questionsBreakdownTitle;
+
+  /// No description provided for @filterAllCount.
+  ///
+  /// In en, this message translates to:
+  /// **'All ({count})'**
+  String filterAllCount(int count);
+
+  /// No description provided for @filterIncorrectCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect only ({count})'**
+  String filterIncorrectCount(int count);
+
+  /// No description provided for @statusCorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct'**
+  String get statusCorrect;
+
+  /// No description provided for @statusIncorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect'**
+  String get statusIncorrect;
+
+  /// No description provided for @notAnsweredLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Not answered'**
+  String get notAnsweredLabel;
+
+  /// No description provided for @explanationHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical Explanation'**
+  String get explanationHeader;
+
+  /// No description provided for @btnShowAllQuestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Show All Questions'**
+  String get btnShowAllQuestions;
+
+  /// No description provided for @questionNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Question {index}'**
+  String questionNumber(int index);
+
   /// No description provided for @yourAnswerPrefix.
   ///
   /// In en, this message translates to:
@@ -2441,7 +2627,7 @@ abstract class AppLocalizations {
   /// No description provided for @hintDoctorObjection.
   ///
   /// In en, this message translates to:
-  /// **'What exact concern or skepticism did the doctor express?'**
+  /// **'Please describe the doctor\'s objection...'**
   String get hintDoctorObjection;
 
   /// No description provided for @hintHowResponded.
@@ -2459,7 +2645,7 @@ abstract class AppLocalizations {
   /// No description provided for @hintCompetitorClaim.
   ///
   /// In en, this message translates to:
-  /// **'What promotional statement or comparison was made?'**
+  /// **'Please describe the competitor activity...'**
   String get hintCompetitorClaim;
 
   /// No description provided for @labelTopicCampaign.
@@ -2477,13 +2663,13 @@ abstract class AppLocalizations {
   /// No description provided for @attachPhotoOptional.
   ///
   /// In en, this message translates to:
-  /// **'Attach flyer or promotional photo (optional)'**
+  /// **'Attach supporting photo (optional)'**
   String get attachPhotoOptional;
 
   /// No description provided for @photoAttachedLabel.
   ///
   /// In en, this message translates to:
-  /// **'Promotional photo attached'**
+  /// **'Supporting photo attached'**
   String get photoAttachedLabel;
 
   /// No description provided for @attachVoiceOptional.
@@ -2585,19 +2771,19 @@ abstract class AppLocalizations {
   /// No description provided for @suggestedTopicDosing.
   ///
   /// In en, this message translates to:
-  /// **'Dosing'**
+  /// **'Tearshield'**
   String get suggestedTopicDosing;
 
   /// No description provided for @suggestedTopicHypotension.
   ///
   /// In en, this message translates to:
-  /// **'Hypotension'**
+  /// **'Contact Lenses'**
   String get suggestedTopicHypotension;
 
   /// No description provided for @suggestedTopicGits.
   ///
   /// In en, this message translates to:
-  /// **'GITS delivery'**
+  /// **'MGD Relief'**
   String get suggestedTopicGits;
 
   /// No description provided for @systemDiagnosticsTitle.

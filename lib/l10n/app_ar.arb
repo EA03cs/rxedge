@@ -172,6 +172,29 @@
   "statStreakLabel": "التتابع",
   "statQuizzesLabel": "المكتمل",
   "libraryTitle": "Marketing Hub",
+  "materialsUpdatedQuarterly": "يتم تحديث المواد ربع سنوياً.",
+  "productRohtoDryAid": "روتو دراي إيد",
+  "productRohtoCoolAqua": "روتو كول وأكوا",
+  "productRohtoCool": "روتو كول",
+  "productRohtoAqua": "روتو أكوا",
+  "sectionBrochures": "الكتيبات",
+  "sectionVisualAids": "الوسائل البصرية",
+  "sectionEdetail": "عروض التفصيل الإلكتروني",
+  "sectionOtherMaterials": "مواد أخرى",
+  "statusComingSoon": "قريباً",
+  "statusToDevelopLater": "سيتم تطويرها لاحقاً",
+  "visualAidsComingSoonDesc": "سيتم تطوير الوسائل البصرية لاحقاً.",
+  "brochuresComingSoonDesc": "لا توجد مواد متاحة بعد.",
+  "edetailComingSoonDesc": "لا توجد مواد متاحة بعد.",
+  "noMaterialAvailableYet": "لا توجد مواد متاحة بعد.",
+  "rohtoAquaNoMaterials": "لا توجد مواد متاحة بعد لـ روتو أكوا.",
+  "materialCountOne": "مادة واحدة",
+  "materialCountOther": "{count} مواد",
+  "@materialCountOther": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "librarySearchHint": "ابحث في الدراسات والكتيبات والملفات...",
   "filterAll": "الكل",
   "filterBrochures": "كتيبات",
@@ -224,6 +247,10 @@
   "openStudy": "فتح الدراسة",
   "lessonsCompleted": "تم إكمال {completed} من {total} دروس",
   "btnBookmarks": "المحفوظات",
+  "productOverviewTitle": "نظرة عامة على المنتج",
+  "keyPositioningTitle": "التموضع الرئيسي",
+  "keyMessagingTitle": "الرسائل الترويجية الرئيسية",
+  "packShotTitle": "صورة العبوة الرسمية",
   "keyMessage": "الرسالة الأساسية",
   "targetDoctors": "الأطباء المستهدفون",
   "keyBenefits": "المزايا الإكلينيكية",
@@ -411,6 +438,30 @@
   "btnHideMistakes": "إخفاء الأخطاء",
   "flawlessAnswersMsg": "ممتاز! لا توجد إجابات خاطئة للمراجعة.",
   "incorrectBreakdownTitle": "تفصيل الإجابات الخاطئة",
+  "questionsBreakdownTitle": "تفصيل الأسئلة",
+  "filterAllCount": "الكل ({count})",
+  "@filterAllCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "filterIncorrectCount": "غير الصحيحة فقط ({count})",
+  "@filterIncorrectCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "statusCorrect": "صحيحة",
+  "statusIncorrect": "غير صحيحة",
+  "notAnsweredLabel": "لم تتم الإجابة",
+  "explanationHeader": "التفسير الإكلينيكي",
+  "btnShowAllQuestions": "عرض كل الأسئلة",
+  "questionNumber": "السؤال {index}",
+  "@questionNumber": {
+    "placeholders": {
+      "index": { "type": "int" }
+    }
+  },
   "yourAnswerPrefix": "إجابتك: {answer}",
   "correctAnswerPrefix": "الإجابة الصحيحة: {answer}",
   "quizClosesInDays": "ينتهي خلال {days} أيام",

@@ -78,10 +78,8 @@ void main() {
       expect(find.text('Spotlight Rep'), findsOneWidget);
       expect(find.text('Cardio Ace'), findsOneWidget);
 
-      // Settings sections
-      expect(find.text('General Settings'), findsOneWidget);
-      expect(find.text('English'), findsOneWidget);
-      expect(find.text('العربية'), findsOneWidget);
+      // Settings sections (English only, no language toggle)
+      expect(find.text('General Settings'), findsNothing);
       expect(find.text('Notification Preferences'), findsOneWidget);
       expect(find.text('Storage & Downloads'), findsOneWidget);
       expect(find.text('24.6 MB Cached Offline'), findsOneWidget);

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:rxedge/app/l10n/l10n.dart';
 import 'package:rxedge/app/theme/theme.dart';
@@ -174,6 +175,28 @@ void main() {
 
       // Tap clear search
       await tester.tap(find.text('Clear search'));
+      await tester.pumpAndSettle();
+      expect(find.text('Cardura XL'), findsOneWidget);
+    });
+
+    testWidgets('filter button opens progress sheet and filters list', (tester) async {
+      when(() => mockRepo.getProducts(forceRefresh: any(named: 'forceRefresh')))
+          .thenAnswer((_) async => Result.success(sampleProducts));
+
+      await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(LucideIcons.slidersHorizontal));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Filter by Progress'), findsOneWidget);
+      await tester.tap(find.text('Completed'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Cardura XL'), findsNothing);
+      expect(find.text('No products in "Completed"'), findsOneWidget);
+
+      await tester.tap(find.text('Reset filter'));
       await tester.pumpAndSettle();
       expect(find.text('Cardura XL'), findsOneWidget);
     });

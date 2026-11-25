@@ -373,7 +373,9 @@ class QuizResultHistoryEntity {
 
 class QuizAnswerEvaluationEntity {
   final String questionId;
+  final String? questionText;
   final String? selectedOptionId;
+  final String? selectedOptionText;
   final bool isCorrect;
   final String? explanation;
   final String? correctOptionId;
@@ -381,7 +383,9 @@ class QuizAnswerEvaluationEntity {
 
   const QuizAnswerEvaluationEntity({
     required this.questionId,
+    this.questionText,
     this.selectedOptionId,
+    this.selectedOptionText,
     required this.isCorrect,
     this.explanation,
     this.correctOptionId,

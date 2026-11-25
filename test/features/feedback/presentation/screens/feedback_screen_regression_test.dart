@@ -24,7 +24,7 @@ void main() {
     when(() => mockRepo.getDraft(any())).thenAnswer((_) async => const Result.success(null));
   });
 
-  Widget buildArabicFeedbackScreen(List<FeedbackItemEntity> items) {
+  Widget buildEnglishFeedbackScreen(List<FeedbackItemEntity> items) {
     when(() => mockRepo.getSubmissions(forceRefresh: any(named: 'forceRefresh')))
         .thenAnswer((_) async => Result.success(items));
 
@@ -34,9 +34,9 @@ void main() {
       ],
       child: const MaterialApp(
         themeMode: ThemeMode.light,
-        locale: Locale('ar'),
+        locale: Locale('en'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        supportedLocales: [Locale('en')],
         home: FeedbackScreen(),
       ),
     );
@@ -53,10 +53,11 @@ void main() {
         'productId': 'prod-rohto-dry-aid',
         'category': 'doctor_objection',
         'status': 'ANSWERED',
-        'title': 'اعتراض استشاري الرمد على آلية تقنية تيرشيلد',
-        'doctorSpecialty': 'استشاري جراحة العيون والقرنية',
-        'details': 'تساءل الطبيب عن كيفية عمل تقنية TEARSHIELD في استعادة طبقة الدموع الطبيعية.',
-        'representativeResponse': 'أوضحت أن تقنية TEARSHIELD تستعيد وتزيت طبقة الدموع الطبيعية وتوفر راحة طويلة الأمد.',
+        'title': 'Ophthalmologist question on Tearshield mechanism',
+        'doctorSpecialty': 'Consultant Ophthalmologist',
+        'details': 'Doctor asked how TEARSHIELD restores the natural tear film.',
+        'representativeResponse':
+            'Explained that TEARSHIELD restores and lubricates all tear film layers for long-lasting relief.',
         'competitorName': null,
         'competitorClaim': null,
         'attachmentUrl': 'https://drive.google.com/uc?id=sample_photo',
@@ -66,17 +67,17 @@ void main() {
           'brandCode': 'ROHTO-DRY',
           'name': 'Rohto Dry Aid',
           'translations': <Map<String, dynamic>>[
-            {'name': 'روهتو دراي إيد', 'lang': 'ar'}
+            {'name': 'Rohto Dry Aid', 'lang': 'en'}
           ],
         },
         'replies': <dynamic>[
           <String, dynamic>{
             'id': 'rep-reply-01',
-            'message': 'ممتاز، تم إدراج سلايد دراسة الفعالية 12 ساعة في العرض القادم.',
+            'message': 'Great point, added 12-hour efficacy slide to the deck.',
             'createdAt': '2026-11-19T10:00:00.000Z',
             'repliedBy': <String, dynamic>{
               'id': 'adm-01',
-              'name': 'د. أحمد - الإدارة الطبية',
+              'name': 'Dr. Ahmed - Medical Affairs',
               'role': 'MEDICAL_AFFAIRS',
             },
           }
@@ -89,11 +90,11 @@ void main() {
         'userId': 'usr-rep-01',
         'category': 'competitors_activities',
         'status': 'SEEN',
-        'title': 'نشاط منافس لقطرة Systane Ultra في مؤتمر الرمد',
-        'details': 'توزيع عينات مجانية لـ Systane Ultra مع منشورات مقارنة عن ترطيب العين.',
+        'title': 'Systane Ultra competitor booth activity at conference',
+        'details': 'Distributed samples and comparison leaflets at the booth.',
         'competitorName': 'Systane Ultra (Alcon)',
-        'competitorClaim': 'الادعاء بفاعلية أسرع في ترطيب العين من روهتو.',
-        'whereHeard': 'المؤتمر السنوي لجمعية الرمد المصرية',
+        'competitorClaim': 'Claimed faster soothing than Rohto drops.',
+        'whereHeard': 'Annual Ophthalmology Society Meeting',
         'attachmentUrl': null,
         'createdAt': '2026-11-18T14:30:00.000Z',
         'product': null,
@@ -104,7 +105,7 @@ void main() {
       final dto2 = FeedbackItemDto.fromJson(rawBackendItem2);
 
       expect(dto1.product, 'Rohto Dry Aid');
-      expect(dto1.repliedBy, 'د. أحمد - الإدارة الطبية');
+      expect(dto1.repliedBy, 'Dr. Ahmed - Medical Affairs');
       expect(dto1.typeString, 'doctorObjection');
 
       expect(dto2.typeString, 'competitorClaim');
@@ -112,25 +113,28 @@ void main() {
 
       final domainItems = [dto1.toDomain(), dto2.toDomain()];
 
-      await tester.pumpWidget(buildArabicFeedbackScreen(domainItems));
+      await tester.pumpWidget(buildEnglishFeedbackScreen(domainItems));
       await tester.pumpAndSettle();
 
-      // Verify Screen rendered in Arabic cleanly with NO type cast errors
+      // Verify Screen rendered in English cleanly with NO type cast errors
       expect(find.text('Rep Voice'), findsOneWidget);
-      expect(find.text('مشاركاتي السابقة'), findsOneWidget);
-      expect(find.text('اعتراض الطبيب'), findsNWidgets(2)); // Card + submission badge
-      expect(find.text('ادعاء المنافسين'), findsNWidgets(2)); // Card + submission badge
-      expect(find.text('اعتراض استشاري الرمد على آلية تقنية تيرشيلد'), findsOneWidget);
-      expect(find.text('نشاط منافس لقطرة Systane Ultra في مؤتمر الرمد'), findsOneWidget);
-      expect(find.text('تم الرد'), findsWidgets);
+      expect(find.text('My Submissions'), findsOneWidget);
+      expect(find.text('Doctor Objection'), findsNWidgets(2)); // Card + submission badge
+      expect(find.text('Competitor Claim'), findsNWidgets(2)); // Card + submission badge
+      expect(find.text('Ophthalmologist question on Tearshield mechanism'), findsOneWidget);
+      expect(find.text('Systane Ultra competitor booth activity at conference'), findsOneWidget);
+      expect(find.text('Answered'), findsWidgets);
     });
 
     testWidgets('renders empty state correctly when rep has no submissions yet', (tester) async {
-      await tester.pumpWidget(buildArabicFeedbackScreen([]));
+      await tester.pumpWidget(buildEnglishFeedbackScreen([]));
       await tester.pumpAndSettle();
 
-      expect(find.text('لم ترسل أية ملاحظات بعد'), findsOneWidget);
-      expect(find.text('تساعد ملاحظاتك الميدانية في تطوير العروض الترويجية والردود السريرية.'), findsOneWidget);
+      expect(find.text('No Feedback Submitted Yet'), findsOneWidget);
+      expect(
+        find.text('Submissions shape upcoming detailing materials and clinical rebuttal decks.'),
+        findsOneWidget,
+      );
     });
   });
 }

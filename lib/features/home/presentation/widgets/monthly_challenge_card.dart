@@ -21,7 +21,6 @@ class MonthlyChallengeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final l10n = context.l10n;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final percentage = (challenge.progress * 100).toInt();
 
     return Padding(
@@ -60,7 +59,7 @@ class MonthlyChallengeCard extends StatelessWidget {
                 children: [
                   // Left: Inspiring Dark Teal 3D Trophy Block with Organic Curved Edge
                   ClipPath(
-                    clipper: CurvedTrophyClipper(isRtl: isArabic),
+                    clipper: const CurvedTrophyClipper(isRtl: false),
                     child: Container(
                       width: 102.0,
                       decoration: const BoxDecoration(
@@ -137,7 +136,7 @@ class MonthlyChallengeCard extends StatelessWidget {
                                     const SizedBox(width: 4.0),
                                     Flexible(
                                       child: Text(
-                                        isArabic ? 'التحدي الشهري' : "This Month's Challenge",
+                                        "This Month's Challenge",
                                         style: textTheme.labelSmall?.copyWith(
                                           color: const Color(0xFF475569),
                                           fontWeight: FontWeight.w600,
@@ -228,16 +227,17 @@ class MonthlyChallengeCard extends StatelessWidget {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Text(
-                                      '🏆',
-                                      style: TextStyle(fontSize: 12.0),
+                                    const Icon(
+                                      LucideIcons.trophy,
+                                      size: 13.0,
+                                      color: Color(0xFFD97706),
                                     ),
-                                    const SizedBox(width: 4.0),
+                                    const SizedBox(width: 5.0),
                                     Flexible(
                                       child: Text(
                                         challenge.currentRank > 0
                                             ? l10n.rankInDistrict(challenge.currentRank, challenge.totalParticipants)
-                                            : (isArabic ? 'غير مصنف في الترتيب' : 'Unranked in District'),
+                                            : 'Unranked in District',
                                         style: textTheme.bodySmall?.copyWith(
                                           color: const Color(0xFF475569),
                                           fontWeight: FontWeight.w600,

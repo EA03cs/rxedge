@@ -329,5 +329,74 @@ void main() {
     test('StorageInitializer reads fallback ThemeMode when box is not opened', () {
       expect(StorageInitializer.readInitialThemeMode(), ThemeMode.light);
     });
+
+    test('HomeDashboardDto & Challenges DTOs prefer Challenge Marks & Personal Dashboard fields', () {
+      final home = HomeDashboardDto.fromJson(<String, dynamic>{
+        'creditsEarned': 640,
+        'challengeMarks': 640,
+        'userPoints': 100, // legacy lower value ignored in favor of challengeMarks
+        'monthlySubmissions': 5,
+        'currentStreak': 9,
+        'completedQuizzes': 6,
+        'individualProgress': <String, dynamic>{
+          'completedLessons': 4,
+          'totalLessons': 6,
+        },
+        'quarterlyBadges': <dynamic>[
+          <String, dynamic>{
+            'badgeId': 'b-q4',
+            'title': 'Dry Eye Specialist',
+            'quarter': 4,
+            'year': 2026,
+          },
+        ],
+        'monthlyChallenge': <String, dynamic>{
+          'id': 'ch-m',
+          'title': 'Q4 Sprint',
+          'userProgress': <String, dynamic>{
+            'currentChallengeMarks': 180,
+            'targetChallengeMarks': 250,
+          },
+          'totalParticipants': 12,
+        },
+        'objectionOfTheMonth': <String, dynamic>{
+          'id': 'obj-1',
+          'doctorQuote': 'Why Tearshield?',
+          'recommendedResponse': '3-layer relief.',
+        },
+      }).toDomain();
+
+      expect(home.stats.challengeMarks, 640);
+      expect(home.stats.monthlySubmissions, 5);
+      expect(home.stats.completedLessons, 4);
+      expect(home.stats.totalLessons, 6);
+      expect(home.stats.quarterlyBadges.single.title, 'Dry Eye Specialist');
+      expect(home.stats.quarterlyBadges.single.quarter, 4);
+      expect(home.challenge.progress, closeTo(0.72, 0.01));
+
+      final quiz = QuickQuizDto.fromJson(<String, dynamic>{
+        'id': 'q-cm',
+        'title': 'Rohto Marks Quiz',
+        'challengeMarksReward': 80,
+        'pointsReward': 30,
+        'isCompleted': true,
+        'lastScore': 3,
+        'lastMaxScore': 4,
+      }).toDomain();
+      expect(quiz.rewardPoints, 80);
+      expect(quiz.isCompleted, isTrue);
+      expect(quiz.lastScore, 3);
+      expect(quiz.lastMaxScore, 4);
+
+      final submission = QuizSubmissionResultDto.fromJson(<String, dynamic>{
+        'attemptId': 'att-cm',
+        'score': 100,
+        'isPassed': true,
+        'challengeMarksAwarded': 80,
+        'pointsAwarded': 20,
+        'answers': const <dynamic>[],
+      }).toDomain();
+      expect(submission.pointsAwarded, 80);
+    });
   });
 }

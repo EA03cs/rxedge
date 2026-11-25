@@ -75,7 +75,7 @@ class AppBottomNav extends StatelessWidget {
                 final item = items[index];
                 final isSelected = currentIndex == index;
                 final displayIcon = isSelected ? (item.activeIcon ?? item.icon) : item.icon;
-                final iconColor = isSelected ? const Color(0xFF0284C7) : const Color(0xFF64748B);
+                final iconColor = isSelected ? colors.primary : const Color(0xFF64748B);
                 final labelColor = isSelected ? const Color(0xFF0F172A) : const Color(0xFF64748B);
 
                 return Expanded(
@@ -86,7 +86,7 @@ class AppBottomNav extends StatelessWidget {
                         HapticFeedback.selectionClick();
                         onTap(index);
                       },
-                      splashColor: const Color(0xFF0284C7).withValues(alpha: 0.12),
+                      splashColor: colors.primary.withValues(alpha: 0.12),
                       highlightColor: Colors.transparent,
                       borderRadius: BorderRadius.circular(16.0),
                       child: Padding(
@@ -107,8 +107,8 @@ class AppBottomNav extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     color: isSelected
                                         ? (isDark
-                                            ? const Color(0xFF0284C7).withValues(alpha: 0.25)
-                                            : const Color(0xFFE0F2FE))
+                                            ? colors.primary.withValues(alpha: 0.25)
+                                            : colors.primarySoft)
                                         : Colors.transparent,
                                     borderRadius: BorderRadius.circular(15.0),
                                   ),

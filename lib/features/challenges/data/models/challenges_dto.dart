@@ -28,11 +28,15 @@ class LeaderboardEntryDto {
               ? (json['territory'] as Map)['name']?.toString()
               : json['territory']?.toString()) ??
           '',
-      points: ((json['points'] ?? json['totalPoints']) as num?)?.toInt() ?? 0,
+      points: ((json['totalChallengeMarks'] ??
+                  json['challengeMarks'] ??
+                  json['points'] ??
+                  json['totalPoints']) as num?)
+              ?.toInt() ??
+          0,
       isCurrentUser: json['isCurrentUser'] as bool? ??
           (name.toLowerCase().contains('ahmed') ||
-              name.toLowerCase().contains('you') ||
-              name.contains('أحمد')),
+              name.toLowerCase().contains('you')),
       avatarInitials:
           json['avatarInitials']?.toString() ?? _initialsFromName(name),
     );
@@ -95,9 +99,15 @@ class MonthlyChallengeDto {
 
   factory MonthlyChallengeDto.fromJson(Map<String, dynamic> json) {
     final userProgress = json['userProgress'] as Map<String, dynamic>?;
-    final currentPoints = (userProgress?['currentPoints'] as num?)?.toInt() ?? 0;
-    final targetPoints = (userProgress?['targetPoints'] as num?)?.toInt() ??
-        (json['targetPoints'] as num?)?.toInt() ??
+    final currentPoints = ((userProgress?['currentChallengeMarks'] ??
+                userProgress?['currentPoints']) as num?)
+            ?.toInt() ??
+        0;
+    final targetPoints = ((userProgress?['targetChallengeMarks'] ??
+                userProgress?['targetPoints'] ??
+                json['targetChallengeMarks'] ??
+                json['targetPoints']) as num?)
+            ?.toInt() ??
         100;
     final rawPercentage = (userProgress?['percentage'] as num?)?.toDouble();
     final currentProgress = (json['currentProgress'] as num?)?.toDouble() ??
@@ -123,7 +133,8 @@ class MonthlyChallengeDto {
     if (rewardsRaw is List && rewardsRaw.isNotEmpty) {
       rewards = rewardsRaw.map((e) => e.toString()).toList();
     } else {
-      final pts = (json['pointsReward'] as num?)?.toInt() ??
+      final pts = (json['challengeMarksReward'] as num?)?.toInt() ??
+          (json['pointsReward'] as num?)?.toInt() ??
           (json['rewardPoints'] as num?)?.toInt() ??
           (json['reward'] is num ? (json['reward'] as num).toInt() : null);
       final list = <String>[];
@@ -310,8 +321,10 @@ class QuickQuizDto {
           json['lessonTitle']?.toString() ??
           '',
       durationMinutes: derivedMinutes,
-      rewardPoints: (json['rewardPoints'] as num?)?.toInt() ??
-          (json['pointsReward'] as num?)?.toInt() ??
+      rewardPoints: ((json['challengeMarksReward'] ??
+                  json['rewardPoints'] ??
+                  json['pointsReward']) as num?)
+              ?.toInt() ??
           0,
       questions: rawQuestions
           .whereType<Map<dynamic, dynamic>>()
@@ -527,15 +540,23 @@ class QuizResultHistoryDto {
   });
 
   factory QuizResultHistoryDto.fromJson(Map<String, dynamic> json) {
+    final earned = (json['challengeMarksAwarded'] as num?)?.toInt() ??
+        (json['pointsEarned'] as num?)?.toInt() ??
+        (json['pointsAwarded'] as num?)?.toInt() ??
+        (json['amount'] as num?)?.toInt() ??
+        0;
     return QuizResultHistoryDto(
       id: json['id']?.toString() ?? '',
       quizId: json['quizId']?.toString() ?? json['referenceId']?.toString() ?? '',
       quizTitle: json['quizTitle']?.toString() ?? json['title']?.toString() ?? '',
       score: (json['score'] as num?)?.toInt() ?? 0,
       totalQuestions: (json['totalQuestions'] as num?)?.toInt() ?? 0,
-      pointsEarned: (json['pointsEarned'] as num?)?.toInt() ?? 0,
+      pointsEarned: earned,
       timeTakenSeconds: (json['timeTakenSeconds'] as num?)?.toInt() ?? 0,
-      completedAtIso: json['completedAtIso']?.toString() ?? json['createdAt']?.toString() ?? '',
+      completedAtIso: json['completedAtIso']?.toString() ??
+          json['completedAt']?.toString() ??
+          json['createdAt']?.toString() ??
+          '',
     );
   }
 
@@ -564,7 +585,9 @@ class QuizResultHistoryDto {
 
 class QuizAnswerEvaluationDto {
   final String questionId;
+  final String? questionText;
   final String? selectedOptionId;
+  final String? selectedOptionText;
   final bool isCorrect;
   final String? explanation;
   final String? correctOptionId;
@@ -572,7 +595,9 @@ class QuizAnswerEvaluationDto {
 
   const QuizAnswerEvaluationDto({
     required this.questionId,
+    this.questionText,
     this.selectedOptionId,
+    this.selectedOptionText,
     required this.isCorrect,
     this.explanation,
     this.correctOptionId,
@@ -582,7 +607,9 @@ class QuizAnswerEvaluationDto {
   factory QuizAnswerEvaluationDto.fromJson(Map<String, dynamic> json) {
     return QuizAnswerEvaluationDto(
       questionId: json['questionId']?.toString() ?? '',
+      questionText: json['questionText']?.toString(),
       selectedOptionId: json['selectedOptionId']?.toString(),
+      selectedOptionText: json['selectedOptionText']?.toString(),
       isCorrect: json['isCorrect'] as bool? ?? false,
       explanation: json['explanation']?.toString(),
       correctOptionId: json['correctOptionId']?.toString(),
@@ -592,7 +619,9 @@ class QuizAnswerEvaluationDto {
 
   QuizAnswerEvaluationEntity toDomain() => QuizAnswerEvaluationEntity(
         questionId: questionId,
+        questionText: questionText,
         selectedOptionId: selectedOptionId,
+        selectedOptionText: selectedOptionText,
         isCorrect: isCorrect,
         explanation: explanation,
         correctOptionId: correctOptionId,
@@ -623,7 +652,9 @@ class QuizSubmissionResultDto {
       score: (json['score'] as num?)?.toInt() ?? 0,
       isPassed: json['isPassed'] as bool? ?? false,
       passingScore: (json['passingScore'] as num?)?.toInt() ?? 70,
-      pointsAwarded: (json['pointsAwarded'] as num?)?.toInt() ?? 0,
+      pointsAwarded: (json['challengeMarksAwarded'] as num?)?.toInt() ??
+          (json['pointsAwarded'] as num?)?.toInt() ??
+          0,
       answers: (json['answers'] as List<dynamic>? ?? const [])
           .whereType<Map<dynamic, dynamic>>()
           .map((e) => QuizAnswerEvaluationDto.fromJson(Map<String, dynamic>.from(e)))

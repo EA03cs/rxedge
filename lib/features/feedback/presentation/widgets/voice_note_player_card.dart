@@ -80,14 +80,9 @@ class _VoiceNotePlayerCardState extends State<VoiceNotePlayerCard> {
       }
     } catch (_) {
       if (!mounted) return;
-      final isArabic = Localizations.localeOf(context).languageCode == 'ar';
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            isArabic
-                ? 'تعذر تشغيل التسجيل الصوتي حالياً'
-                : 'Unable to play voice note right now.',
-          ),
+        const SnackBar(
+          content: Text('Unable to play voice note right now.'),
         ),
       );
     } finally {
@@ -102,7 +97,6 @@ class _VoiceNotePlayerCardState extends State<VoiceNotePlayerCard> {
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
     final l10n = context.l10n;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return Container(
       padding: const EdgeInsetsDirectional.symmetric(
@@ -151,9 +145,7 @@ class _VoiceNotePlayerCardState extends State<VoiceNotePlayerCard> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  _isPlaying
-                      ? (isArabic ? 'جاري تشغيل التسجيل الصوتي...' : 'Playing voice note...')
-                      : l10n.voiceAttachedLabel,
+                  _isPlaying ? 'Playing voice note...' : l10n.voiceAttachedLabel,
                   style: textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: colors.primary,

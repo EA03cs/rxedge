@@ -57,7 +57,11 @@ class UserDto {
           '',
       refreshToken: json['refreshToken']?.toString(),
       avatarUrl: json['avatarUrl']?.toString(),
-      totalPoints: (json['totalPoints'] as num?)?.toInt() ?? 0,
+      totalPoints: ((json['totalChallengeMarks'] ??
+                  json['challengeMarks'] ??
+                  json['totalPoints']) as num?)
+              ?.toInt() ??
+          0,
       currentStreak: (json['currentStreak'] as num?)?.toInt() ?? 0,
     );
   }

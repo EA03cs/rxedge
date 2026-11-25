@@ -25,24 +25,6 @@ class LibraryRepositoryImpl implements LibraryRepository {
 
   static const List<MaterialItemDto> rohtoMaterials = [
     MaterialItemDto(
-      id: 'mat_rohto_aqua_brochure',
-      title: 'Rohto Aqua',
-      productName: 'Rohto Aqua',
-      category: 'brochure',
-      fileType: 'pdf',
-      fileSizeBytes: 830 * 1024,
-      updatedAt: '2026-11-19T10:00:00Z',
-      badge: 'new',
-      isFavorite: false,
-      isDownloaded: false,
-      viewCount: 140,
-      pageCount: 6,
-      thumbnailUrl: 'assets/images/rohto_aqua.png',
-      fileUrl:
-          'https://drive.google.com/file/d/1jemssfgDhAoDZD1I2OIV9fXaZe3ns-n/view?usp=drive_link',
-      description: 'Rohto Aqua Gentle Moisturizing Brochure',
-    ),
-    MaterialItemDto(
       id: 'mat_rohto_cool_brochure',
       title: 'Rohto Cool',
       productName: 'Rohto Cool',
@@ -57,15 +39,15 @@ class LibraryRepositoryImpl implements LibraryRepository {
       pageCount: 8,
       thumbnailUrl: 'assets/images/rohto_cool.png',
       fileUrl:
-          'https://drive.google.com/file/d/2NVbg1Qevuv7AE_XiG7Vg2VZZV/view?usp=sharing',
-      description: 'Rohto Cool Refreshing Hydration Visual Aid',
+          'https://drive.google.com/file/d/1MYbkjhlgiovvJe7AE_XIGPVhg2YlZZ9l/view?usp=sharing',
+      description: 'Rohto Cool Brochure',
     ),
     MaterialItemDto(
       id: 'mat_rohto_dry_aid_brochure',
       title: 'Rohto Dry Aid',
       productName: 'Rohto Dry Aid',
       category: 'brochure',
-      fileType: 'edetail',
+      fileType: 'pdf',
       fileSizeBytes: 1258291, // 1.2 MB
       updatedAt: '2026-11-19T12:00:00Z',
       badge: 'new',
@@ -75,8 +57,8 @@ class LibraryRepositoryImpl implements LibraryRepository {
       pageCount: 10,
       thumbnailUrl: 'assets/images/rohto_dry_aid.png',
       fileUrl:
-          'https://drive.google.com/file/d/1jemssfgDhAoDZD1I2OIV9fXaZe3ns-n/view?usp=drive_link',
-      description: 'Rohto Dry Aid E- Detailing Brochure & Key Messages',
+          'https://drive.google.com/file/d/1jaenvaltpOhA0x82DN2OHV39twZn9ms-/view?usp=drive_link',
+      description: 'Rohto Dry Aid Brochure & Key Messages',
     ),
   ];
 

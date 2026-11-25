@@ -134,5 +134,13 @@ void main() {
       expect(find.text('Send Another Feedback'), findsOneWidget);
       expect(find.text('Back to Feedback'), findsOneWidget);
     });
+
+    testWidgets('always shows optional supporting photo card before typing', (tester) async {
+      await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Attach supporting photo (optional)'), findsOneWidget);
+      expect(find.text("Please describe the doctor's objection..."), findsOneWidget);
+    });
   });
 }

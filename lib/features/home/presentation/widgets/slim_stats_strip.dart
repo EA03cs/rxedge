@@ -25,7 +25,6 @@ class SlimStatsStrip extends StatelessWidget {
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
     final l10n = context.l10n;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return Padding(
       padding: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),
@@ -39,7 +38,7 @@ class SlimStatsStrip extends StatelessWidget {
               badgeBg: const Color(0xFFFEE2E2),
               iconColor: const Color(0xFFE11D48),
               value: '${stats.streakDays}',
-              label: isArabic ? 'أيام متتالية' : 'Day Streak',
+              label: 'Day Streak',
               waveLineColor: const Color(0xFFF43F5E),
               waveFillColor: const Color(0xFFFEE2E2),
               colors: colors,
@@ -62,7 +61,7 @@ class SlimStatsStrip extends StatelessWidget {
               icon: LucideIcons.award,
               badgeBg: const Color(0xFFFEF3C7),
               iconColor: const Color(0xFFD97706),
-              value: '${stats.points}',
+              value: '${stats.challengeMarks}',
               label: l10n.statPointsLabel,
               waveLineColor: const Color(0xFFF59E0B),
               waveFillColor: const Color(0xFFFEF3C7),
@@ -87,7 +86,7 @@ class SlimStatsStrip extends StatelessWidget {
               badgeBg: const Color(0xFFEDE9FE),
               iconColor: const Color(0xFF7C3AED),
               value: '${stats.quizzesCompleted}',
-              label: isArabic ? 'اختبارات' : 'Quizzes',
+              label: 'Quizzes',
               waveLineColor: const Color(0xFF8B5CF6),
               waveFillColor: const Color(0xFFEDE9FE),
               colors: colors,

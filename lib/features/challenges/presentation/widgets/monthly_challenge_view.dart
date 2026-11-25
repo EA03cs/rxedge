@@ -24,7 +24,6 @@ class MonthlyChallengeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -56,18 +55,23 @@ class MonthlyChallengeView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    StatusBadge(
-                      label: l10n.activeSprintBadge,
-                      variant: StatusBadgeVariant.info,
-                      showDot: true,
-                    ),
-                    StatusBadge(
-                      label: l10n.timeLeftCountdown(
-                        challenge.daysLeft,
-                        challenge.hoursLeft,
+                    Flexible(
+                      child: StatusBadge(
+                        label: l10n.activeSprintBadge,
+                        variant: StatusBadgeVariant.info,
+                        showDot: true,
                       ),
-                      variant: StatusBadgeVariant.neutral,
-                      icon: LucideIcons.clock4,
+                    ),
+                    const SizedBox(width: 8.0),
+                    Flexible(
+                      child: StatusBadge(
+                        label: l10n.timeLeftCountdown(
+                          challenge.daysLeft,
+                          challenge.hoursLeft,
+                        ),
+                        variant: StatusBadgeVariant.neutral,
+                        icon: LucideIcons.clock4,
+                      ),
                     ),
                   ],
                 ),
@@ -101,14 +105,16 @@ class MonthlyChallengeView extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          const Icon(LucideIcons.fileText, size: 15.0, color: Color(0xFF0284C7)),
+                          const Icon(LucideIcons.fileText, size: 15.0, color: Color(0xFF005CA8)),
                           const SizedBox(width: 7.0),
-                          Text(
-                            l10n.rulesTitle,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 13.0,
-                              color: Color(0xFF0F172A),
+                          Expanded(
+                            child: Text(
+                              l10n.rulesTitle,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13.0,
+                                color: Color(0xFF0F172A),
+                              ),
                             ),
                           ),
                         ],
@@ -125,7 +131,7 @@ class MonthlyChallengeView extends StatelessWidget {
                                 child: Icon(
                                   LucideIcons.checkCircle2,
                                   size: 15.0,
-                                  color: Color(0xFF0284C7),
+                                  color: Color(0xFF005CA8),
                                 ),
                               ),
                               const SizedBox(width: 8.0),
@@ -152,53 +158,56 @@ class MonthlyChallengeView extends StatelessWidget {
                 // My Progress Section
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          l10n.myProgressTitle,
-                          style: const TextStyle(
-                            fontSize: 13.5,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF0F172A),
-                          ),
-                        ),
-                        const SizedBox(width: 8.0),
-                        Container(
-                          padding: const EdgeInsetsDirectional.symmetric(
-                            horizontal: 7.0,
-                            vertical: 2.0,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFEFF6FF),
-                            borderRadius: BorderRadius.circular(6.0),
-                            border: Border.all(
-                              color: const Color(0xFFBFDBFE),
-                              width: 0.8,
-                            ),
-                          ),
-                          child: Text(
-                            challenge.userRank > 0
-                                ? (isArabic
-                                    ? 'ترتيب التحدي #${challenge.userRank}'
-                                    : 'Sprint Rank #${challenge.userRank}')
-                                : (isArabic ? 'غير مصنف' : 'Unranked'),
+                    Expanded(
+                      child: Wrap(
+                        spacing: 8.0,
+                        runSpacing: 4.0,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            l10n.myProgressTitle,
                             style: const TextStyle(
-                              color: Color(0xFF0284C7),
-                              fontSize: 11.0,
+                              fontSize: 13.5,
                               fontWeight: FontWeight.w700,
+                              color: Color(0xFF0F172A),
                             ),
                           ),
-                        ),
-                      ],
+                          Container(
+                            padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: 7.0,
+                              vertical: 2.0,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE6F0FA),
+                              borderRadius: BorderRadius.circular(6.0),
+                              border: Border.all(
+                                color: const Color(0xFFBFDBFE),
+                                width: 0.8,
+                              ),
+                            ),
+                            child: Text(
+                              challenge.userRank > 0
+                                  ? 'Sprint Rank #${challenge.userRank}'
+                                  : 'Unranked',
+                              style: const TextStyle(
+                                color: Color(0xFF005CA8),
+                                fontSize: 11.0,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                    const SizedBox(width: 8.0),
                     Text(
                       '${challenge.completedMilestones}/${challenge.totalMilestones}',
                       style: const TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 13.5,
-                        color: Color(0xFF0284C7),
+                        color: Color(0xFF005CA8),
                       ),
                     ),
                   ],
@@ -210,7 +219,7 @@ class MonthlyChallengeView extends StatelessWidget {
                     value: challenge.currentProgress.clamp(0.0, 1.0),
                     minHeight: 7.0,
                     backgroundColor: const Color(0xFFE2E8F0),
-                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF0284C7)),
+                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF005CA8)),
                   ),
                 ),
                 const SizedBox(height: 16.0),
@@ -226,12 +235,14 @@ class MonthlyChallengeView extends StatelessWidget {
                   children: [
                     const Icon(LucideIcons.award, size: 16.0, color: Color(0xFFD97706)),
                     const SizedBox(width: 7.0),
-                    Text(
-                      l10n.rewardsTitle,
-                      style: const TextStyle(
-                        fontSize: 13.0,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF0F172A),
+                    Expanded(
+                      child: Text(
+                        l10n.rewardsTitle,
+                        style: const TextStyle(
+                          fontSize: 13.0,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF0F172A),
+                        ),
                       ),
                     ),
                   ],
@@ -245,7 +256,6 @@ class MonthlyChallengeView extends StatelessWidget {
                       final isPoints = reward.contains('Points') ||
                           reward.contains('Pts') ||
                           reward.contains('Marks') ||
-                          reward.contains('علام') ||
                           reward.startsWith('+');
                       return StatusBadge(
                         label: reward,
@@ -316,7 +326,7 @@ class MonthlyChallengeView extends StatelessWidget {
                       height: 34.0,
                       alignment: Alignment.center,
                       decoration: const BoxDecoration(
-                        color: Color(0xFF0284C7),
+                        color: Color(0xFF005CA8),
                         shape: BoxShape.circle,
                       ),
                       child: Text(
@@ -335,12 +345,16 @@ class MonthlyChallengeView extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Text(
-                                l10n.pinnedMyRank,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 13.5,
-                                  color: Color(0xFF0F172A),
+                              Flexible(
+                                child: Text(
+                                  l10n.pinnedMyRank,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 13.5,
+                                    color: Color(0xFF0F172A),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               const SizedBox(width: 6.0),
@@ -350,7 +364,7 @@ class MonthlyChallengeView extends StatelessWidget {
                                   vertical: 1.5,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF0284C7),
+                                  color: const Color(0xFF005CA8),
                                   borderRadius: BorderRadius.circular(4.0),
                                 ),
                                 child: Text(
@@ -372,7 +386,7 @@ class MonthlyChallengeView extends StatelessWidget {
                                     challenge.totalParticipants,
                                   )
                                 : (userRank <= 0
-                                    ? (isArabic ? 'غير مصنف في الترتيب' : 'Unranked in District')
+                                    ? 'Unranked in District'
                                     : l10n.statPoints(userPoints)),
                             style: const TextStyle(
                               color: Color(0xFF64748B),

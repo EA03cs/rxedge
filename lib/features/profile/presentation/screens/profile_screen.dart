@@ -5,7 +5,6 @@ import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
-import '../../data/repositories/profile_repository_impl.dart';
 import '../../domain/entities/profile_entities.dart';
 import '../controllers/profile_controller.dart';
 
@@ -20,7 +19,6 @@ class ProfileScreen extends ConsumerWidget {
     final l10n = context.l10n;
 
     final profileAsync = ref.watch(profileControllerProvider);
-    final activeLocale = ref.watch(localeProvider);
 
     return AppScaffold(
       appBar: AppBar(
@@ -54,12 +52,7 @@ class ProfileScreen extends ConsumerWidget {
                 _buildPointsAndBadgesCard(context, profile),
                 const SizedBox(height: RxSpacing.s24),
 
-                // 3. General Settings: Language
-                SectionHeader(title: l10n.settingsGeneral),
-                _buildGeneralSettingsCard(context, ref, activeLocale),
-                const SizedBox(height: RxSpacing.s24),
-
-                // 4. Notification Preferences
+                // 3. Notification Preferences
                 SectionHeader(title: l10n.notificationPreferences),
                 _buildNotificationPrefsCard(context, ref, profile.notificationPreferences),
                 const SizedBox(height: RxSpacing.s24),
@@ -166,11 +159,15 @@ class ProfileScreen extends ConsumerWidget {
                         children: [
                           Icon(LucideIcons.mapPin, size: 12.0, color: colors.textTertiary),
                           const SizedBox(width: 4.0),
-                          Text(
-                            profile.territory,
-                            style: textTheme.bodySmall?.copyWith(
-                              color: colors.textTertiary,
-                              fontSize: 11.5,
+                          Flexible(
+                            child: Text(
+                              profile.territory,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colors.textTertiary,
+                                fontSize: 11.5,
+                              ),
                             ),
                           ),
                         ],
@@ -197,13 +194,18 @@ class ProfileScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                l10n.pointsAndBadges,
-                style: textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: colors.textPrimary,
+              Expanded(
+                child: Text(
+                  l10n.pointsAndBadges,
+                  style: textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: colors.textPrimary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const SizedBox(width: RxSpacing.s8),
               StatusBadge(
                 label: l10n.streakDaysLabel(profile.streakDays),
                 variant: StatusBadgeVariant.accent,
@@ -252,67 +254,6 @@ class ProfileScreen extends ConsumerWidget {
                 icon: LucideIcons.checkCircle2,
               );
             }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildGeneralSettingsCard(
-    BuildContext context,
-    WidgetRef ref,
-    Locale activeLocale,
-  ) {
-    final colors = context.rxColors;
-    final textTheme = Theme.of(context).textTheme;
-    final l10n = context.l10n;
-
-    return AppCard(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Row(
-              children: [
-                Icon(LucideIcons.globe, size: 18.0, color: colors.textSecondary),
-                const SizedBox(width: RxSpacing.s10),
-                Expanded(
-                  child: Text(
-                    l10n.languagePreference,
-                    style: textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: colors.textPrimary,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: RxSpacing.s8),
-          SegmentedButton<String>(
-            segments: const [
-              ButtonSegment(value: 'en', label: Text('English')),
-              ButtonSegment(value: 'ar', label: Text('العربية')),
-            ],
-            selected: {activeLocale.languageCode},
-            onSelectionChanged: (newVal) {
-              final nextLang = newVal.first;
-              ref.read(localeProvider.notifier).state = Locale(nextLang);
-              ref.read(profileControllerProvider.notifier).refresh();
-              Future<void>.microtask(() async {
-                try {
-                  await ref
-                      .read(profileRepositoryProvider)
-                      .updateLanguagePreference(nextLang);
-                } catch (_) {}
-              });
-            },
-            style: SegmentedButton.styleFrom(
-              visualDensity: VisualDensity.compact,
-              textStyle: textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
-            ),
           ),
         ],
       ),
@@ -427,19 +368,26 @@ class ProfileScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(LucideIcons.hardDrive, size: 18.0, color: colors.textSecondary),
-                  const SizedBox(width: RxSpacing.s10),
-                  Text(
-                    l10n.offlineStorageUsed(profile.formattedStorageSize),
-                    style: textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: colors.textPrimary,
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(LucideIcons.hardDrive, size: 18.0, color: colors.textSecondary),
+                    const SizedBox(width: RxSpacing.s10),
+                    Expanded(
+                      child: Text(
+                        l10n.offlineStorageUsed(profile.formattedStorageSize),
+                        style: textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: colors.textPrimary,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: RxSpacing.s8),
               StatusBadge(
                 label: profile.storageUsageBytes > 0
                     ? l10n.storageStatusDownloaded

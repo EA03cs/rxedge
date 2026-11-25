@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -10,12 +11,14 @@ import '../../domain/entities/material_item_entity.dart';
 import '../controllers/library_controller.dart';
 import '../widgets/library_empty_state.dart';
 import '../widgets/library_filter_chips.dart';
+import '../widgets/library_product_selector.dart';
 import '../widgets/library_search_bar.dart';
 import '../widgets/library_skeleton_loader.dart';
 import '../widgets/library_view_header.dart';
 import '../widgets/material_actions_sheet.dart';
 import '../widgets/material_card_grid.dart';
 import '../widgets/material_card_list.dart';
+import '../widgets/material_section_coming_soon_card.dart';
 import 'edetail_viewer_screen.dart';
 import 'image_viewer_screen.dart';
 import 'pdf_viewer_screen.dart';
@@ -27,9 +30,10 @@ class LibraryScreen extends ConsumerWidget {
 
   void _openViewer(BuildContext context, MaterialItemEntity item) {
     if (item.fileUrl == null || item.fileUrl!.trim().isEmpty) {
+      final l10n = context.l10n;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('هذه المادة قيد الإعداد والمراجعة الطبية وستتوفر قريباً.'),
+        SnackBar(
+          content: Text(l10n.noMaterialAvailableYet),
         ),
       );
       return;
@@ -198,48 +202,51 @@ class LibraryScreen extends ConsumerWidget {
                 child: CustomScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   slivers: [
-                    // 1. Top Bar with Cloud Download / Offline Mode Button (No Mentholatum logo)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsetsDirectional.fromSTEB(20.0, 10.0, 20.0, 4.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Container(
-                              width: 38.0,
-                              height: 38.0,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: const Color(0xFFE2E8F0),
-                                  width: 1.0,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.04),
-                                    blurRadius: 6.0,
-                                    offset: const Offset(0, 2),
+                    // 1. Top Bar with Cloud Download / Offline Mode Button (Debug only)
+                    if (kDebugMode)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsetsDirectional.fromSTEB(20.0, 10.0, 20.0, 4.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(
+                                width: 38.0,
+                                height: 38.0,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: const Color(0xFFE2E8F0),
+                                    width: 1.0,
                                   ),
-                                ],
-                              ),
-                              child: IconButton(
-                                icon: Icon(
-                                  state.isOffline ? LucideIcons.cloudOff : LucideIcons.downloadCloud,
-                                  size: 18.0,
-                                  color: state.isOffline ? colors.warning : const Color(0xFF0F172A),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.04),
+                                      blurRadius: 6.0,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
                                 ),
-                                padding: EdgeInsets.zero,
-                                tooltip: state.isOffline ? 'Online Mode' : 'Simulate Offline Mode',
-                                onPressed: () {
-                                  controller.setOfflineMode(!state.isOffline);
-                                },
+                                child: IconButton(
+                                  icon: Icon(
+                                    state.isOffline ? LucideIcons.cloudOff : LucideIcons.downloadCloud,
+                                    size: 18.0,
+                                    color: state.isOffline ? colors.warning : const Color(0xFF0F172A),
+                                  ),
+                                  padding: EdgeInsets.zero,
+                                  tooltip: state.isOffline ? 'Online Mode' : 'Simulate Offline Mode',
+                                  onPressed: () {
+                                    controller.setOfflineMode(!state.isOffline);
+                                  },
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ),
+                      )
+                    else
+                      const SliverToBoxAdapter(child: SizedBox(height: 8.0)),
 
                     // 2. Offline Banner if offline
                     if (state.isOffline)
@@ -274,13 +281,13 @@ class LibraryScreen extends ConsumerWidget {
                                     ),
                                   ),
                                   const SizedBox(height: 5.0),
-                                  const Text(
-                                    'Access your approved marketing materials and resources',
-                                    style: TextStyle(
+                                  Text(
+                                    l10n.materialsUpdatedQuarterly,
+                                    style: const TextStyle(
                                       fontSize: 13.0,
                                       color: Color(0xFF64748B),
                                       height: 1.35,
-                                      fontWeight: FontWeight.w400,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ],
@@ -299,7 +306,22 @@ class LibraryScreen extends ConsumerWidget {
                       ),
                     ),
 
-                    // 4. Large Pill Search Bar
+                    // 4. Primary Product Selection Control (First, obvious control on screen)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(20.0, 0.0, 20.0, 14.0),
+                        child: LibraryProductSelector(
+                          selectedProduct: state.selectedProduct,
+                          availableProducts: state.availableProducts,
+                          hasAquaMaterials: state.allMaterials.any(
+                            (item) => item.productName.toLowerCase().contains('aqua'),
+                          ),
+                          onProductSelected: (prod) => controller.setProduct(prod),
+                        ),
+                      ),
+                    ),
+
+                    // 5. Secondary: Large Pill Search Bar
                     SliverToBoxAdapter(
                       child: LibrarySearchBar(
                         query: state.searchQuery,
@@ -309,7 +331,7 @@ class LibraryScreen extends ConsumerWidget {
                     ),
                     const SliverToBoxAdapter(child: SizedBox(height: 12.0)),
 
-                    // 5. Filter Chips & Shortcuts Row
+                    // 6. Secondary: Filter Chips & Shortcuts Row
                     SliverToBoxAdapter(
                       child: LibraryFilterChips(
                         selectedCategory: state.selectedCategory,
@@ -325,7 +347,7 @@ class LibraryScreen extends ConsumerWidget {
                     ),
                     const SliverToBoxAdapter(child: SizedBox(height: 10.0)),
 
-                    // 6. Section Header (Count & Sliders Filter Button)
+                    // 7. Section Header (Count & Layout Grid/List Toggle)
                     SliverToBoxAdapter(
                       child: LibraryViewHeader(
                         count: items.length,
@@ -336,100 +358,14 @@ class LibraryScreen extends ConsumerWidget {
                     ),
                     const SliverToBoxAdapter(child: SizedBox(height: 8.0)),
 
-                    // 7. Materials Content: Empty State vs Grid vs List
-                    if (items.isEmpty)
-                      SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: LibraryEmptyState(
-                          searchQuery: state.searchQuery,
-                          shortcut: state.activeShortcut,
-                          onReset: () {
-                            controller.setSearchQuery('');
-                            controller.setCategory(MaterialCategory.all);
-                            controller.setProduct(null);
-                            controller.toggleShortcut(state.activeShortcut);
-                          },
-                        ),
-                      )
-                    else if (state.isGridView)
-                      SliverPadding(
-                        padding: const EdgeInsetsDirectional.only(
-                          start: 16.0,
-                          end: 16.0,
-                          bottom: 32.0,
-                        ),
-                        sliver: SliverGrid(
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 12.0,
-                            mainAxisSpacing: 12.0,
-                            childAspectRatio: 0.76,
-                          ),
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                              final item = items[index];
-                              return MaterialCardGrid(
-                                item: item,
-                                isOffline: state.isOffline,
-                                onTap: () => _openViewer(context, item),
-                                onToggleFavorite: () => controller.toggleFavorite(item.id),
-                                onDownload: () => controller.startDownload(item.id),
-                                onCancelDownload: () => controller.cancelDownload(item.id),
-                                onMoreActions: () {
-                                  MaterialActionsSheet.show(
-                                    context,
-                                    item: item,
-                                    isOffline: state.isOffline,
-                                    onOpen: () => _openViewer(context, item),
-                                    onToggleFavorite: () => controller.toggleFavorite(item.id),
-                                    onDownload: () => controller.startDownload(item.id),
-                                    onRemoveDownload: () => controller.removeDownload(item.id),
-                                  );
-                                },
-                              );
-                            },
-                            childCount: items.length,
-                          ),
-                        ),
-                      )
-                    else
-                      SliverPadding(
-                        padding: const EdgeInsetsDirectional.only(
-                          start: 16.0,
-                          end: 16.0,
-                          bottom: 32.0,
-                        ),
-                        sliver: SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                              final item = items[index];
-                              return Padding(
-                                padding: const EdgeInsetsDirectional.only(bottom: 10.0),
-                                child: MaterialCardList(
-                                  item: item,
-                                  isOffline: state.isOffline,
-                                  onTap: () => _openViewer(context, item),
-                                  onToggleFavorite: () => controller.toggleFavorite(item.id),
-                                  onDownload: () => controller.startDownload(item.id),
-                                  onCancelDownload: () => controller.cancelDownload(item.id),
-                                  onMoreActions: () {
-                                    MaterialActionsSheet.show(
-                                      context,
-                                      item: item,
-                                      isOffline: state.isOffline,
-                                      onOpen: () => _openViewer(context, item),
-                                      onToggleFavorite: () => controller.toggleFavorite(item.id),
-                                      onDownload: () => controller.startDownload(item.id),
-                                      onRemoveDownload: () => controller.removeDownload(item.id),
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                            childCount: items.length,
-                          ),
-                        ),
-                      ),
+                    // 8. Materials Content: Grouped by Sections with "Coming Soon" for empty types
+                    ..._buildContentSlivers(
+                      context: context,
+                      ref: ref,
+                      state: state,
+                      items: items,
+                      l10n: l10n,
+                    ),
                   ],
                 ),
               );
@@ -438,5 +374,325 @@ class LibraryScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  List<Widget> _buildContentSlivers({
+    required BuildContext context,
+    required WidgetRef ref,
+    required LibraryState state,
+    required List<MaterialItemEntity> items,
+    required AppLocalizations l10n,
+  }) {
+    final controller = ref.read(libraryControllerProvider.notifier);
+
+    // Empty search or shortcut state
+    if (state.searchQuery.trim().isNotEmpty && items.isEmpty) {
+      return [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: LibraryEmptyState(
+            searchQuery: state.searchQuery,
+            shortcut: state.activeShortcut,
+            onReset: () {
+              controller.setSearchQuery('');
+              controller.setCategory(MaterialCategory.all);
+              controller.setProduct(null);
+              controller.toggleShortcut(state.activeShortcut);
+            },
+          ),
+        ),
+      ];
+    }
+
+    if (state.activeShortcut != LibraryShortcut.none && items.isEmpty) {
+      return [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: LibraryEmptyState(
+            searchQuery: state.searchQuery,
+            shortcut: state.activeShortcut,
+            onReset: () {
+              controller.setSearchQuery('');
+              controller.setCategory(MaterialCategory.all);
+              controller.setProduct(null);
+              controller.toggleShortcut(state.activeShortcut);
+            },
+          ),
+        ),
+      ];
+    }
+
+    // Partition materials into 4 core types
+    final brochures = items.where((item) {
+      final lower = item.title.toLowerCase();
+      final isOther = lower.contains('monograph') ||
+          lower.contains('clinical study') ||
+          item.category == MaterialCategory.marketing;
+      if (isOther) return false;
+      return item.category == MaterialCategory.brochure ||
+          lower.contains('brochure');
+    }).toList();
+
+    final visualAids = items.where((item) {
+      return item.category == MaterialCategory.visualAid ||
+          item.title.toLowerCase().contains('visual aid');
+    }).toList();
+
+    final edetail = items.where((item) {
+      final lower = item.title.toLowerCase();
+      return item.category == MaterialCategory.edetail ||
+          item.fileType == MaterialFileType.edetailSlides ||
+          lower.contains('e-detail') ||
+          lower.contains('slide');
+    }).toList();
+
+    final otherMaterials = items.where((item) {
+      return !brochures.contains(item) &&
+          !visualAids.contains(item) &&
+          !edetail.contains(item);
+    }).toList();
+
+    final slivers = <Widget>[];
+
+    // Informational Banner for Rohto Aqua when empty
+    if (state.selectedProduct == 'Rohto Aqua' && items.isEmpty) {
+      slivers.add(
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(16.0, 4.0, 16.0, 10.0),
+            child: Container(
+              padding: const EdgeInsets.all(12.0),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEFF6FF), // Blue 50
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(color: const Color(0xFFBFDBFE), width: 1.0),
+              ),
+              child: Row(
+                children: [
+                  const Icon(LucideIcons.info, size: 18.0, color: Color(0xFF2563EB)),
+                  const SizedBox(width: 10.0),
+                  Expanded(
+                    child: Text(
+                      l10n.rohtoAquaNoMaterials,
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF1E40AF),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final cat = state.selectedCategory;
+
+    // 1. Brochures Section
+    if (cat == MaterialCategory.all || cat == MaterialCategory.brochure) {
+      slivers.addAll(_buildSectionSlivers(
+        context: context,
+        ref: ref,
+        state: state,
+        sectionTitle: l10n.sectionBrochures,
+        sectionItems: brochures,
+        emptyBadgeText: l10n.statusComingSoon,
+        emptyMessage: l10n.brochuresComingSoonDesc,
+        emptyIcon: LucideIcons.fileText,
+        l10n: l10n,
+      ));
+    }
+
+    // 2. Visual Aids Section
+    if (cat == MaterialCategory.all || cat == MaterialCategory.visualAid) {
+      slivers.addAll(_buildSectionSlivers(
+        context: context,
+        ref: ref,
+        state: state,
+        sectionTitle: l10n.sectionVisualAids,
+        sectionItems: visualAids,
+        emptyBadgeText: l10n.statusToDevelopLater,
+        emptyMessage: l10n.visualAidsComingSoonDesc,
+        emptyIcon: LucideIcons.image,
+        l10n: l10n,
+      ));
+    }
+
+    // 3. E-detailed Slides Section
+    if (cat == MaterialCategory.all || cat == MaterialCategory.edetail) {
+      slivers.addAll(_buildSectionSlivers(
+        context: context,
+        ref: ref,
+        state: state,
+        sectionTitle: l10n.sectionEdetail,
+        sectionItems: edetail,
+        emptyBadgeText: l10n.statusComingSoon,
+        emptyMessage: l10n.edetailComingSoonDesc,
+        emptyIcon: LucideIcons.presentation,
+        l10n: l10n,
+      ));
+    }
+
+    // 4. Other Materials Section (Monographs, Clinical Studies, etc.)
+    if (otherMaterials.isNotEmpty || cat == MaterialCategory.marketing) {
+      slivers.addAll(_buildSectionSlivers(
+        context: context,
+        ref: ref,
+        state: state,
+        sectionTitle: l10n.sectionOtherMaterials,
+        sectionItems: otherMaterials,
+        emptyBadgeText: l10n.statusComingSoon,
+        emptyMessage: l10n.noMaterialAvailableYet,
+        emptyIcon: LucideIcons.folder,
+        l10n: l10n,
+      ));
+    }
+
+    slivers.add(const SliverToBoxAdapter(child: SizedBox(height: 32.0)));
+    return slivers;
+  }
+
+  List<Widget> _buildSectionSlivers({
+    required BuildContext context,
+    required WidgetRef ref,
+    required LibraryState state,
+    required String sectionTitle,
+    required List<MaterialItemEntity> sectionItems,
+    required String emptyBadgeText,
+    required String emptyMessage,
+    required IconData emptyIcon,
+    required AppLocalizations l10n,
+  }) {
+    final controller = ref.read(libraryControllerProvider.notifier);
+
+    return [
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(20.0, 14.0, 20.0, 8.0),
+          child: Row(
+            children: [
+              Text(
+                sectionTitle,
+                style: const TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF0F172A),
+                ),
+              ),
+              const SizedBox(width: 8.0),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 2.0),
+                decoration: BoxDecoration(
+                  color: sectionItems.isNotEmpty
+                      ? const Color(0xFFE0F2FE)
+                      : const Color(0xFFF1F5F9),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Text(
+                  sectionItems.isNotEmpty
+                      ? (sectionItems.length == 1
+                          ? l10n.materialCountOne
+                          : l10n.materialCountOther(sectionItems.length))
+                      : emptyBadgeText,
+                  style: TextStyle(
+                    fontSize: 11.0,
+                    fontWeight: FontWeight.w600,
+                    color: sectionItems.isNotEmpty
+                        ? const Color(0xFF0284C7)
+                        : const Color(0xFF64748B),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      if (sectionItems.isEmpty)
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 6.0),
+            child: MaterialSectionComingSoonCard(
+              title: sectionTitle,
+              message: emptyMessage,
+              badgeText: emptyBadgeText,
+              icon: emptyIcon,
+            ),
+          ),
+        )
+      else if (state.isGridView)
+        SliverPadding(
+          padding: const EdgeInsetsDirectional.symmetric(horizontal: 16.0),
+          sliver: SliverGrid(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12.0,
+              mainAxisSpacing: 12.0,
+              childAspectRatio: 0.76,
+            ),
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final item = sectionItems[index];
+                return MaterialCardGrid(
+                  item: item,
+                  isOffline: state.isOffline,
+                  onTap: () => _openViewer(context, item),
+                  onToggleFavorite: () => controller.toggleFavorite(item.id),
+                  onDownload: () => controller.startDownload(item.id),
+                  onCancelDownload: () => controller.cancelDownload(item.id),
+                  onMoreActions: () {
+                    MaterialActionsSheet.show(
+                      context,
+                      item: item,
+                      isOffline: state.isOffline,
+                      onOpen: () => _openViewer(context, item),
+                      onToggleFavorite: () => controller.toggleFavorite(item.id),
+                      onDownload: () => controller.startDownload(item.id),
+                      onRemoveDownload: () => controller.removeDownload(item.id),
+                    );
+                  },
+                );
+              },
+              childCount: sectionItems.length,
+            ),
+          ),
+        )
+      else
+        SliverPadding(
+          padding: const EdgeInsetsDirectional.symmetric(horizontal: 16.0),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final item = sectionItems[index];
+                return Padding(
+                  padding: const EdgeInsetsDirectional.only(bottom: 10.0),
+                  child: MaterialCardList(
+                    item: item,
+                    isOffline: state.isOffline,
+                    onTap: () => _openViewer(context, item),
+                    onToggleFavorite: () => controller.toggleFavorite(item.id),
+                    onDownload: () => controller.startDownload(item.id),
+                    onCancelDownload: () => controller.cancelDownload(item.id),
+                    onMoreActions: () {
+                      MaterialActionsSheet.show(
+                        context,
+                        item: item,
+                        isOffline: state.isOffline,
+                        onOpen: () => _openViewer(context, item),
+                        onToggleFavorite: () => controller.toggleFavorite(item.id),
+                        onDownload: () => controller.startDownload(item.id),
+                        onRemoveDownload: () => controller.removeDownload(item.id),
+                      );
+                    },
+                  ),
+                );
+              },
+              childCount: sectionItems.length,
+            ),
+          ),
+        ),
+    ];
   }
 }

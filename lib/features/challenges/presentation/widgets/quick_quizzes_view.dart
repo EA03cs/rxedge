@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
+import '../../data/repositories/challenges_repository_impl.dart';
 import '../../domain/entities/challenges_entities.dart';
 import '../screens/quick_quiz_screen.dart';
 
 /// Quick Quizzes View
 ///
 /// Features:
-/// - Filter chips: All, Available (+Pts), Completed (Review)
+/// - Filter chips: All, Available (+Marks), Completed (Review)
 /// - List of clinical knowledge reinforcement quizzes
-/// - Clear metadata: question count, time estimate, reward points
+/// - Clear metadata: question count, time estimate, reward marks
 /// - Completion status and previous score preview
-/// - Direct one-tap launch of Quick Quiz flow
-class QuickQuizzesView extends StatefulWidget {
+/// - Direct one-tap launch of Quick Quiz flow + Review Answers for completed quizzes
+class QuickQuizzesView extends ConsumerStatefulWidget {
   final List<QuickQuizEntity> quizzes;
 
   const QuickQuizzesView({
@@ -24,18 +26,52 @@ class QuickQuizzesView extends StatefulWidget {
   });
 
   @override
-  State<QuickQuizzesView> createState() => _QuickQuizzesViewState();
+  ConsumerState<QuickQuizzesView> createState() => _QuickQuizzesViewState();
 }
 
-class _QuickQuizzesViewState extends State<QuickQuizzesView> {
+class _QuickQuizzesViewState extends ConsumerState<QuickQuizzesView> {
   int _filterIndex = 0; // 0 = all, 1 = available, 2 = completed
+  String? _loadingReviewQuizId;
+
+  Future<void> _openQuizReview(QuickQuizEntity quiz) async {
+    if (_loadingReviewQuizId != null) return;
+    setState(() => _loadingReviewQuizId = quiz.id);
+    try {
+      final repo = ref.read(challengesRepositoryProvider);
+      final reviewRes = await repo.getQuizAttemptReview(quiz.id);
+      if (!mounted) return;
+      reviewRes.when(
+        success: (review) {
+          Navigator.of(context, rootNavigator: true).push<void>(
+            MaterialPageRoute<void>(
+              builder: (_) => QuickQuizScreen(
+                quiz: quiz,
+                initialReviewResult: review,
+              ),
+            ),
+          );
+        },
+        failure: (f) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(f.debugMessage ?? 'Unable to load quiz review.'),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        },
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _loadingReviewQuizId = null);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     if (widget.quizzes.isEmpty) {
       return Center(
@@ -85,7 +121,7 @@ class _QuickQuizzesViewState extends State<QuickQuizzesView> {
             child: Row(
               children: [
                 AppChip(
-                  label: isArabic ? 'الكل' : 'All',
+                  label: 'All',
                   isSelected: _filterIndex == 0,
                   trailing: _CountBadge(
                     count: totalCount,
@@ -98,7 +134,7 @@ class _QuickQuizzesViewState extends State<QuickQuizzesView> {
                 ),
                 const SizedBox(width: RxSpacing.s8),
                 AppChip(
-                  label: isArabic ? 'متاحة (+علامات)' : 'Available (+Marks)',
+                  label: 'Available (+Marks)',
                   isSelected: _filterIndex == 1,
                   trailing: _CountBadge(
                     count: availableCount,
@@ -111,7 +147,7 @@ class _QuickQuizzesViewState extends State<QuickQuizzesView> {
                 ),
                 const SizedBox(width: RxSpacing.s8),
                 AppChip(
-                  label: isArabic ? 'مكتملة (مراجعة)' : 'Completed',
+                  label: 'Completed',
                   isSelected: _filterIndex == 2,
                   trailing: _CountBadge(
                     count: completedCount,
@@ -138,19 +174,11 @@ class _QuickQuizzesViewState extends State<QuickQuizzesView> {
                           ? LucideIcons.award
                           : LucideIcons.checkCircle2,
                       title: _filterIndex == 2
-                          ? (isArabic
-                              ? 'لا توجد اختبارات مكتملة بعد'
-                              : 'No completed quizzes yet')
-                          : (isArabic
-                              ? 'تم اجتياز جميع الاختبارات!'
-                              : 'All quizzes completed!'),
+                          ? 'No completed quizzes yet'
+                          : 'All quizzes completed!',
                       description: _filterIndex == 2
-                          ? (isArabic
-                              ? 'ابدأ باختبار لتعزيز معلوماتك الإكلينيكية وحصد علامات التحدي.'
-                              : 'Take quick quizzes to earn Challenge Marks and reinforce clinical detailing.')
-                          : (isArabic
-                              ? 'أحسنت! يمكنك التبديل إلى تبويب "الكل" أو "مكتملة" لإعادة أي اختبار والمراجعة.'
-                              : 'Great job! Switch to "Completed" to review and retake any quiz.'),
+                          ? 'Take quick quizzes to earn Challenge Marks and reinforce clinical detailing.'
+                          : 'Great job! Switch to "Completed" to view your completed quizzes.',
                     ),
                   ),
                 )
@@ -171,11 +199,9 @@ class _QuickQuizzesViewState extends State<QuickQuizzesView> {
                         HapticFeedback.selectionClick();
                         if (isDone) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
+                            const SnackBar(
                               content: Text(
-                                isArabic
-                                    ? 'تم تسجيل محاولتك لهذا الاختبار مسبقاً بنجاح. لا يُسمح بإعادة الاختبار وفقاً لقواعد التحديات.'
-                                    : 'This quiz has already been attempted. Retakes are not permitted per challenge policy.',
+                                'This quiz has already been attempted. Retakes are not permitted per challenge policy.',
                               ),
                               behavior: SnackBarBehavior.floating,
                             ),
@@ -208,54 +234,61 @@ class _QuickQuizzesViewState extends State<QuickQuizzesView> {
                           // Top meta: Category + Availability + Marks
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsetsDirectional.symmetric(
-                                      horizontal: RxSpacing.s8,
-                                      vertical: 3.0,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: colors.surfaceMuted,
-                                      borderRadius: BorderRadius.circular(4.0),
-                                    ),
-                                    child: Text(
-                                      quiz.category,
-                                      style: textTheme.labelSmall?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color: colors.textSecondary,
+                              Expanded(
+                                child: Wrap(
+                                  spacing: RxSpacing.s6,
+                                  runSpacing: RxSpacing.s6,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding:
+                                          const EdgeInsetsDirectional.symmetric(
+                                        horizontal: RxSpacing.s8,
+                                        vertical: 3.0,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: colors.surfaceMuted,
+                                        borderRadius: BorderRadius.circular(4.0),
+                                      ),
+                                      child: Text(
+                                        quiz.category,
+                                        style: textTheme.labelSmall?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: colors.textSecondary,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  if (isClosed) ...[
-                                    const SizedBox(width: RxSpacing.s6),
-                                    StatusBadge(
-                                      label: l10n.quizClosed,
-                                      variant: StatusBadgeVariant.neutral,
-                                    ),
-                                  ] else if (isUpcoming && quiz.startDate != null) ...[
-                                    const SizedBox(width: RxSpacing.s6),
-                                    StatusBadge(
-                                      label: l10n.quizOpensOn('${quiz.startDate!.day}/${quiz.startDate!.month}'),
-                                      variant: StatusBadgeVariant.neutral,
-                                    ),
-                                  ] else if (quiz.endDate != null || (quiz.completionWindowDays != null && quiz.completionWindowDays! > 0)) ...[
-                                    const SizedBox(width: RxSpacing.s6),
-                                    StatusBadge(
-                                      label: quiz.daysUntilClose > 0
-                                          ? l10n.quizClosesInDays(quiz.daysUntilClose)
-                                          : l10n.quizClosesToday,
-                                      variant: StatusBadgeVariant.warning,
-                                    ),
+                                    if (isClosed)
+                                      StatusBadge(
+                                        label: l10n.quizClosed,
+                                        variant: StatusBadgeVariant.neutral,
+                                      )
+                                    else if (isUpcoming &&
+                                        quiz.startDate != null)
+                                      StatusBadge(
+                                        label: l10n.quizOpensOn(
+                                            '${quiz.startDate!.day}/${quiz.startDate!.month}'),
+                                        variant: StatusBadgeVariant.neutral,
+                                      )
+                                    else if (quiz.endDate != null ||
+                                        (quiz.completionWindowDays != null &&
+                                            quiz.completionWindowDays! > 0))
+                                      StatusBadge(
+                                        label: quiz.daysUntilClose > 0
+                                            ? l10n.quizClosesInDays(
+                                                quiz.daysUntilClose)
+                                            : l10n.quizClosesToday,
+                                        variant: StatusBadgeVariant.warning,
+                                      ),
                                   ],
-                                ],
+                                ),
                               ),
+                              const SizedBox(width: RxSpacing.s8),
                               StatusBadge(
                                 label: isDone
-                                    ? (isArabic
-                                        ? 'سُجلت العلامات'
-                                        : 'Marks Claimed')
+                                    ? 'Marks Claimed'
                                     : l10n.pointsPlusValue(quiz.rewardPoints),
                                 variant: isDone
                                     ? StatusBadgeVariant.neutral
@@ -279,26 +312,51 @@ class _QuickQuizzesViewState extends State<QuickQuizzesView> {
                           // Duration & Question Count
                           Row(
                             children: [
-                              Icon(LucideIcons.helpCircle,
-                                  size: 14.0, color: colors.textSecondary),
-                              const SizedBox(width: RxSpacing.s4),
-                              Text(
-                                l10n.questionsCountLabel(
-                                    quiz.displayQuestionCount),
-                                style: textTheme.bodySmall
-                                    ?.copyWith(color: colors.textSecondary),
+                              Expanded(
+                                child: Wrap(
+                                  spacing: RxSpacing.s12,
+                                  runSpacing: RxSpacing.s4,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(LucideIcons.helpCircle,
+                                            size: 14.0,
+                                            color: colors.textSecondary),
+                                        const SizedBox(width: RxSpacing.s4),
+                                        Flexible(
+                                          child: Text(
+                                            l10n.questionsCountLabel(
+                                                quiz.displayQuestionCount),
+                                            style: textTheme.bodySmall?.copyWith(
+                                                color: colors.textSecondary),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(LucideIcons.clock4,
+                                            size: 14.0,
+                                            color: colors.textSecondary),
+                                        const SizedBox(width: RxSpacing.s4),
+                                        Flexible(
+                                          child: Text(
+                                            l10n.minutesCountLabel(
+                                                quiz.durationMinutes),
+                                            style: textTheme.bodySmall?.copyWith(
+                                                color: colors.textSecondary),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                              const SizedBox(width: RxSpacing.s12),
-                              Icon(LucideIcons.clock4,
-                                  size: 14.0, color: colors.textSecondary),
-                              const SizedBox(width: RxSpacing.s4),
-                              Text(
-                                l10n.minutesCountLabel(quiz.durationMinutes),
-                                style: textTheme.bodySmall
-                                    ?.copyWith(color: colors.textSecondary),
-                              ),
-                              const Spacer(),
                               if (isDone) ...[
+                                const SizedBox(width: RxSpacing.s8),
                                 StatusBadge(
                                   label: quiz.lastScore != null &&
                                           quiz.lastMaxScore != null
@@ -323,9 +381,7 @@ class _QuickQuizzesViewState extends State<QuickQuizzesView> {
                                 const SizedBox(width: RxSpacing.s4),
                                 Expanded(
                                   child: Text(
-                                    isArabic
-                                        ? 'سياسة التحدي: محاولة واحدة فقط معتمدة لكل مشارك، ولا يُسمح بالإعادة.'
-                                        : 'Challenge policy: exactly one attempt permitted per participant, no retakes.',
+                                    'Challenge policy: exactly one attempt permitted per participant, no retakes.',
                                     style: textTheme.labelSmall?.copyWith(
                                       color: colors.textSecondary,
                                       fontSize: 10.0,
@@ -338,10 +394,56 @@ class _QuickQuizzesViewState extends State<QuickQuizzesView> {
                           const SizedBox(height: RxSpacing.s12),
 
                           // Action button
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              OutlinedButton.icon(
+                          Align(
+                            alignment: AlignmentDirectional.centerEnd,
+                            child: Wrap(
+                              spacing: RxSpacing.s8,
+                              runSpacing: RxSpacing.s8,
+                              alignment: WrapAlignment.end,
+                              children: [
+                                if (isDone)
+                                  OutlinedButton.icon(
+                                    onPressed: _loadingReviewQuizId == quiz.id
+                                        ? null
+                                        : () {
+                                            HapticFeedback.selectionClick();
+                                            _openQuizReview(quiz);
+                                          },
+                                    style: OutlinedButton.styleFrom(
+                                      backgroundColor: colors.primarySoft,
+                                      foregroundColor: colors.primary,
+                                      side: BorderSide(
+                                        color: colors.primary.withValues(alpha: 0.35),
+                                        width: RxShadows.hairlineBorderWidth,
+                                      ),
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: RxRadii.borderButton,
+                                      ),
+                                      padding: const EdgeInsetsDirectional.symmetric(
+                                        horizontal: RxSpacing.s12,
+                                        vertical: RxSpacing.s8,
+                                      ),
+                                      minimumSize: const Size(0, 36.0),
+                                    ),
+                                    icon: _loadingReviewQuizId == quiz.id
+                                        ? SizedBox(
+                                            width: 14.0,
+                                            height: 14.0,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2.0,
+                                              color: colors.primary,
+                                            ),
+                                          )
+                                        : const Icon(LucideIcons.fileSearch, size: 14.0),
+                                    label: Text(
+                                      'Review Answers',
+                                      style: textTheme.labelSmall?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        color: colors.primary,
+                                      ),
+                                    ),
+                                  ),
+                                OutlinedButton.icon(
                                 onPressed: canStart
                                     ? () {
                                         HapticFeedback.selectionClick();
@@ -356,11 +458,9 @@ class _QuickQuizzesViewState extends State<QuickQuizzesView> {
                                     : isDone
                                         ? () {
                                             ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(
+                                              const SnackBar(
                                                 content: Text(
-                                                  isArabic
-                                                      ? 'تم تسجيل محاولتك لهذا الاختبار مسبقاً بنجاح. لا يُسمح بإعادة الاختبار وفقاً لقواعد التحديات.'
-                                                      : 'This quiz has already been attempted. Retakes are not permitted per challenge policy.',
+                                                  'This quiz has already been attempted. Retakes are not permitted per challenge policy.',
                                                 ),
                                                 behavior: SnackBarBehavior.floating,
                                               ),
@@ -415,15 +515,13 @@ class _QuickQuizzesViewState extends State<QuickQuizzesView> {
                                 ),
                                 label: Text(
                                   isDone
-                                      ? (isArabic
-                                          ? 'مكتمل (محاولة واحدة)'
-                                          : 'Completed (Single Attempt)')
+                                      ? 'Completed (Single Attempt)'
                                       : isClosed
                                           ? l10n.quizClosed
                                           : isUpcoming
                                               ? (quiz.startDate != null
                                                   ? l10n.quizOpensOn('${quiz.startDate!.day}/${quiz.startDate!.month}')
-                                                  : (isArabic ? 'لم يبدأ بعد' : 'Not Started'))
+                                                  : 'Not Started')
                                               : l10n.btnStartQuiz,
                                   style: textTheme.labelSmall?.copyWith(
                                     fontWeight: FontWeight.w700,
@@ -434,6 +532,7 @@ class _QuickQuizzesViewState extends State<QuickQuizzesView> {
                               ),
                             ],
                           ),
+                        ),
                         ],
                       ),
                     );

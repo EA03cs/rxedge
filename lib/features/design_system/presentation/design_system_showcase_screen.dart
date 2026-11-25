@@ -101,23 +101,6 @@ class _DesignSystemShowcaseScreenState extends ConsumerState<DesignSystemShowcas
                   isDark ? ThemeMode.light : ThemeMode.dark;
             },
           ),
-          // Language / RTL Toggle
-          TextButton(
-            onPressed: () {
-              final newLocale = currentLocale.languageCode == 'en'
-                  ? const Locale('ar')
-                  : const Locale('en');
-              ref.read(localeProvider.notifier).state = newLocale;
-            },
-            child: Text(
-              currentLocale.languageCode == 'en' ? 'العربية' : 'EN',
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 13.0,
-                color: colors.primary,
-              ),
-            ),
-          ),
           const SizedBox(width: RxSpacing.s8),
         ],
       ),
@@ -146,9 +129,7 @@ class _DesignSystemShowcaseScreenState extends ConsumerState<DesignSystemShowcas
             // 2. Typography Scale
             SectionHeader(
               title: l10n.typographySection,
-              subtitle: currentLocale.languageCode == 'ar'
-                  ? 'خط IBM Plex Sans Arabic للأوزان والواجهات العربية'
-                  : 'Inter for crisp Latin type, 1.45 body line-height, tight headings',
+              subtitle: 'Inter for crisp Latin type, 1.45 body line-height, tight headings',
             ),
             _buildTypographySection(context),
             const SizedBox(height: RxSpacing.s32),
@@ -247,8 +228,8 @@ class _DesignSystemShowcaseScreenState extends ConsumerState<DesignSystemShowcas
                   variant: StatusBadgeVariant.neutral,
                   icon: isDark ? LucideIcons.moon : LucideIcons.sun,
                 ),
-                StatusBadge(
-                  label: lang == 'ar' ? 'Arabic (RTL)' : 'English (LTR)',
+                const StatusBadge(
+                  label: 'English (LTR)',
                   variant: StatusBadgeVariant.info,
                   icon: LucideIcons.globe,
                 ),

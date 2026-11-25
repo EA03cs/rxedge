@@ -166,7 +166,7 @@ class MaterialCardGrid extends StatelessWidget {
                                 : (item.badge == MaterialBadge.newRelease
                                     ? 'NEW'
                                     : (item.fileUrl == null || item.fileUrl!.trim().isEmpty
-                                        ? 'قريباً'
+                                        ? 'COMING SOON'
                                         : (item.quarter != null
                                             ? 'Q${item.quarter} ${item.year ?? ''}'.trim()
                                             : 'NEW'))),

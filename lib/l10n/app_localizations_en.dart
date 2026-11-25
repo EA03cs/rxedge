@@ -148,7 +148,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get toggleTheme => 'Switch Theme';
 
   @override
-  String get toggleLocale => 'العربية / English';
+  String get toggleLocale => 'English';
 
   @override
   String get btnPrimary => 'Primary Action';
@@ -416,6 +416,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String get libraryTitle => 'Marketing Hub';
 
   @override
+  String get materialsUpdatedQuarterly => 'Materials are updated quarterly.';
+
+  @override
+  String get productRohtoDryAid => 'Rohto Dry Aid';
+
+  @override
+  String get productRohtoCoolAqua => 'Rohto Cool & Aqua';
+
+  @override
+  String get productRohtoCool => 'Rohto Cool';
+
+  @override
+  String get productRohtoAqua => 'Rohto Aqua';
+
+  @override
+  String get sectionBrochures => 'Brochures';
+
+  @override
+  String get sectionVisualAids => 'Visual Aids';
+
+  @override
+  String get sectionEdetail => 'E-detailed Slides';
+
+  @override
+  String get sectionOtherMaterials => 'Other Materials';
+
+  @override
+  String get statusComingSoon => 'Coming Soon';
+
+  @override
+  String get statusToDevelopLater => 'To be developed later';
+
+  @override
+  String get visualAidsComingSoonDesc => 'Visual aids will be developed later.';
+
+  @override
+  String get brochuresComingSoonDesc => 'No material available yet.';
+
+  @override
+  String get edetailComingSoonDesc => 'No material available yet.';
+
+  @override
+  String get noMaterialAvailableYet => 'No material available yet.';
+
+  @override
+  String get rohtoAquaNoMaterials =>
+      'No materials available yet for Rohto Aqua.';
+
+  @override
+  String get materialCountOne => '1 material';
+
+  @override
+  String materialCountOther(int count) {
+    return '$count materials';
+  }
+
+  @override
   String get librarySearchHint => 'Search materials, monographs, trials...';
 
   @override
@@ -592,6 +649,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get btnBookmarks => 'Bookmarks';
+
+  @override
+  String get productOverviewTitle => 'Product Overview';
+
+  @override
+  String get keyPositioningTitle => 'Key Positioning';
+
+  @override
+  String get keyMessagingTitle => 'Key Messaging';
+
+  @override
+  String get packShotTitle => 'Pack Shot';
 
   @override
   String get keyMessage => 'Key Message';
@@ -935,7 +1004,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Are you sure you want to sign out? You will need your employee credentials to sign back in.';
 
   @override
-  String get appVersionLabel => 'RxEdge v1.0.0 (Build 24) • Clean Architecture';
+  String get appVersionLabel => 'RxEdge v1.0.0 (Build 24)';
 
   @override
   String get notificationsTitle => 'Notifications';
@@ -1226,6 +1295,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get incorrectBreakdownTitle => 'Incorrect Answers Breakdown';
 
   @override
+  String get questionsBreakdownTitle => 'Questions Breakdown';
+
+  @override
+  String filterAllCount(int count) {
+    return 'All ($count)';
+  }
+
+  @override
+  String filterIncorrectCount(int count) {
+    return 'Incorrect only ($count)';
+  }
+
+  @override
+  String get statusCorrect => 'Correct';
+
+  @override
+  String get statusIncorrect => 'Incorrect';
+
+  @override
+  String get notAnsweredLabel => 'Not answered';
+
+  @override
+  String get explanationHeader => 'Clinical Explanation';
+
+  @override
+  String get btnShowAllQuestions => 'Show All Questions';
+
+  @override
+  String questionNumber(int index) {
+    return 'Question $index';
+  }
+
+  @override
   String yourAnswerPrefix(String answer) {
     return 'Your answer: $answer';
   }
@@ -1319,7 +1421,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hintDoctorObjection =>
-      'What exact concern or skepticism did the doctor express?';
+      'Please describe the doctor\'s objection...';
 
   @override
   String get hintHowResponded =>
@@ -1330,7 +1432,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hintCompetitorClaim =>
-      'What promotional statement or comparison was made?';
+      'Please describe the competitor activity...';
 
   @override
   String get labelTopicCampaign => 'Topic / Campaign';
@@ -1340,11 +1442,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Explain the situation or request clearly for the marketing team...';
 
   @override
-  String get attachPhotoOptional =>
-      'Attach flyer or promotional photo (optional)';
+  String get attachPhotoOptional => 'Attach supporting photo (optional)';
 
   @override
-  String get photoAttachedLabel => 'Promotional photo attached';
+  String get photoAttachedLabel => 'Supporting photo attached';
 
   @override
   String get attachVoiceOptional => 'Attach quick voice note (optional)';
@@ -1399,13 +1500,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get suggestedTopicsLabel => 'Suggested Topics';
 
   @override
-  String get suggestedTopicDosing => 'Dosing';
+  String get suggestedTopicDosing => 'Tearshield';
 
   @override
-  String get suggestedTopicHypotension => 'Hypotension';
+  String get suggestedTopicHypotension => 'Contact Lenses';
 
   @override
-  String get suggestedTopicGits => 'GITS delivery';
+  String get suggestedTopicGits => 'MGD Relief';
 
   @override
   String get systemDiagnosticsTitle => 'System Diagnostics';

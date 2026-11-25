@@ -86,8 +86,6 @@ class ContinueLearningCard extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
     final l10n = context.l10n;
 
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-
     return Padding(
       padding: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),
       child: Material(
@@ -122,7 +120,7 @@ class ContinueLearningCard extends ConsumerWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(22.0),
               child: CustomPaint(
-                painter: _LearningCardBackgroundPainter(isRtl: isArabic),
+                painter: const _LearningCardBackgroundPainter(isRtl: false),
                 child: Padding(
                   padding: const EdgeInsetsDirectional.fromSTEB(20.0, 18.0, 16.0, 18.0),
                   child: lesson != null

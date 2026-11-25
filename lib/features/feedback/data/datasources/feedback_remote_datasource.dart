@@ -45,17 +45,17 @@ class FeedbackRemoteDatasourceImpl implements FeedbackRemoteDatasource {
       FeedbackItemDto(
         id: 'fb_ans_01',
         typeString: 'doctorObjection',
-        title: 'Cardura XL vs Generic Amlodipine Dosing Concern',
+        title: 'Rohto Dry Aid vs Standard Hyaluronic Acid Drops',
         submittedAtIso: DateTime.now().subtract(const Duration(days: 2, hours: 3)).toIso8601String(),
         statusString: 'answered',
-        product: 'Cardura XL',
+        product: 'Rohto Dry Aid',
         objection:
-            'Dr. Vance argued that doxazosin causes severe early-morning orthostatic hypotension compared to familiar amlodipine.',
-        doctorSpecialty: 'Consultant Interventional Cardiologist',
+            'Dr. Tarek asked why Tearshield Technology outperforms standard Hyaluronic Acid drops in MGD patients.',
+        doctorSpecialty: 'Consultant Ophthalmologist',
         howResponded:
-            'Clarified that GITS zero-order delivery eliminates the morning peak-to-trough spikes seen with generic alpha-blockers.',
+            'Explained that Rohto Dry Aid replenishes both the lipid and muco-aqueous layers while HA only hydrates the aqueous layer.',
         marketingReply:
-            '“Excellent detailing response Alex! We are adding an explicit ABPM 24h nocturnal dipping slide into the deck next Monday to help all reps counter this amlodipine myth. Kudos for flagging.”',
+            '“Great detailing response Ahmed! Keep emphasizing the 12-hour relief and lipid-layer support for MGD patients.”',
         repliedBy: 'Dr. Kareem - Medical Affairs Director',
         repliedAtIso: DateTime.now().subtract(const Duration(hours: 18)).toIso8601String(),
       ),
@@ -64,13 +64,13 @@ class FeedbackRemoteDatasourceImpl implements FeedbackRemoteDatasource {
       FeedbackItemDto(
         id: 'fb_seen_02',
         typeString: 'competitorClaim',
-        title: 'Competitor rep claiming bio-equivalence without published trial data',
+        title: 'Competitor drop claiming faster dry eye relief at ophthalmology symposium',
         submittedAtIso: DateTime.now().subtract(const Duration(days: 1, hours: 5)).toIso8601String(),
         statusString: 'seen',
-        competitorName: 'Generic Atorvastatin 40mg (PharmaStar)',
+        competitorName: 'Systane Ultra (Alcon)',
         claim:
-            'Competitor reps are distributing unverified flyers claiming identical efficacy to AtorvaCare with zero active pharmaceutical ingredient differences.',
-        whereHeard: 'Cardiology Department Head Meeting at Heliopolis University Hospital',
+            'Competitor reps distributed flyers claiming superior comfort compared to Rohto Dry Aid during visual tasks.',
+        whereHeard: 'Ophthalmology Department Meeting at Heliopolis University Hospital',
         photoUrl: 'assets/mock/flyer_sample.jpg',
       ),
 
@@ -78,12 +78,12 @@ class FeedbackRemoteDatasourceImpl implements FeedbackRemoteDatasource {
       FeedbackItemDto(
         id: 'fb_sent_03',
         typeString: 'fieldFeedback',
-        title: 'Request for laminated GITS mechanism pocket guide',
+        title: 'Request for Tearshield™ clinical summary cards',
         submittedAtIso: DateTime.now().subtract(const Duration(hours: 8)).toIso8601String(),
         statusString: 'sent',
         topic: 'Promotional Materials',
         details:
-            'Several junior physicians requested a laminated pocket-sized GITS absorption curve card to keep on their clipboards during hospital rounds.',
+            'Several ophthalmologists requested a pocket-sized Tearshield 3-layer tear film overview card for their clinics.',
       ),
     ];
   }

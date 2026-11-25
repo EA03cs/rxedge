@@ -89,7 +89,6 @@ class _ChallengesScreenState extends ConsumerState<ChallengesScreen> {
             ),
             data: (state) {
               final selectedTab = state.selectedTabIndex;
-              final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
               return RefreshIndicator(
                 color: colors.primary,
@@ -159,11 +158,9 @@ class _ChallengesScreenState extends ConsumerState<ChallengesScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 5.0),
-                                Text(
-                                  isArabic
-                                      ? 'تنافس في التحديات الشهرية، واختبر استيعابك السريري، وتصدر منطقتك'
-                                      : 'Compete in monthly sprints, test clinical recall, and climb district ranks',
-                                  style: const TextStyle(
+                                const Text(
+                                  'Compete in monthly sprints, test clinical recall, and climb district ranks',
+                                  style: TextStyle(
                                     fontSize: 13.0,
                                     color: Color(0xFF64748B),
                                     height: 1.35,
@@ -271,7 +268,7 @@ class _ChallengePillTab extends StatelessWidget {
           height: 38.0,
           padding: const EdgeInsets.symmetric(horizontal: 14.0),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF0284C7) : Colors.white,
+            color: isSelected ? const Color(0xFF005CA8) : Colors.white,
             borderRadius: BorderRadius.circular(22.0),
             border: isSelected
                 ? null
@@ -282,7 +279,7 @@ class _ChallengePillTab extends StatelessWidget {
             boxShadow: [
               if (isSelected)
                 BoxShadow(
-                  color: const Color(0xFF0284C7).withValues(alpha: 0.28),
+                  color: const Color(0xFF005CA8).withValues(alpha: 0.28),
                   blurRadius: 8.0,
                   offset: const Offset(0, 2),
                 )

@@ -55,24 +55,22 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final colors = context.rxColors;
     final l10n = context.l10n;
     final textTheme = Theme.of(context).textTheme;
-    final activeLocale = ref.watch(localeProvider);
-    final isArabic = activeLocale.languageCode == 'ar';
 
     final slides = [
       _OnboardingSlideData(
         title: l10n.onboardingTitle1,
         description: l10n.onboardingDesc1,
-        preview: _buildClinicalLearningPreview(context, colors, textTheme, isArabic),
+        preview: _buildClinicalLearningPreview(context, colors, textTheme, false),
       ),
       _OnboardingSlideData(
         title: l10n.onboardingTitle2,
         description: l10n.onboardingDesc2,
-        preview: _buildLibraryPreview(context, colors, textTheme, isArabic),
+        preview: _buildLibraryPreview(context, colors, textTheme, false),
       ),
       _OnboardingSlideData(
         title: l10n.onboardingTitle3,
         description: l10n.onboardingDesc3,
-        preview: _buildFieldFeedbackPreview(context, colors, textTheme, isArabic),
+        preview: _buildFieldFeedbackPreview(context, colors, textTheme, false),
       ),
     ];
 
@@ -82,21 +80,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         automaticallyImplyLeading: false,
         title: const MentholatumLogo(height: 24.0),
         actions: [
-          // Instant Language Toggle
-          TextButton.icon(
-            icon: Icon(LucideIcons.globe, size: 15.0, color: colors.textSecondary),
-            label: Text(
-              isArabic ? 'English' : 'العربية',
-              style: textTheme.labelSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: colors.textSecondary,
-              ),
-            ),
-            onPressed: () {
-              final newLocale = isArabic ? const Locale('en') : const Locale('ar');
-              ref.read(localeProvider.notifier).state = newLocale;
-            },
-          ),
           // Skip Action
           TextButton(
             onPressed: _onSkip,
@@ -248,7 +231,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     borderRadius: RxRadii.borderBadge,
                   ),
                   child: Text(
-                    isArabic ? 'طب وجراحة العيون' : 'OPHTHALMOLOGY',
+                    'OPHTHALMOLOGY',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: textTheme.labelSmall?.copyWith(
@@ -276,7 +259,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     const SizedBox(width: RxSpacing.s4),
                     Flexible(
                       child: Text(
-                        isArabic ? 'دراسة معتمدة' : 'Approved',
+                        'Approved',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: textTheme.labelSmall?.copyWith(
@@ -294,7 +277,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
           // Product Name & Active Molecule
           Text(
-            isArabic ? 'روتو دراي إيد®' : 'Rohto Dry Aid®',
+            'Rohto Dry Aid®',
             style: textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
               color: colors.textPrimary,
@@ -302,7 +285,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           ),
           const SizedBox(height: RxSpacing.s2),
           Text(
-            isArabic ? 'تقنية تيرشيلد™ • ترطيب مستمر 12 ساعة' : 'Tearshield Technology™ • 12h Moisture Restoration',
+            'Tearshield Technology™ • 12h Moisture Restoration',
             style: textTheme.bodySmall?.copyWith(
               color: colors.textSecondary,
               fontSize: 11.5,
@@ -329,7 +312,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
                           child: Text(
-                            isArabic ? '3 وحدات تدريبية' : '3 Core Modules',
+                            '3 Core Modules',
                             style: textTheme.labelSmall?.copyWith(
                               fontWeight: FontWeight.w600,
                               color: colors.textPrimary,
@@ -363,7 +346,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
                           child: Text(
-                            isArabic ? 'إتقان 98% في الكويز' : '98% Quiz Mastery',
+                            '98% Quiz Mastery',
                             style: textTheme.labelSmall?.copyWith(
                               fontWeight: FontWeight.w700,
                               color: colors.brandRed,
@@ -386,7 +369,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                isArabic ? 'مستوى الإنجاز المعرفي' : 'Learning Completion',
+                'Learning Completion',
                 style: textTheme.labelSmall?.copyWith(
                   color: colors.textSecondary,
                   fontSize: 10.5,
@@ -452,7 +435,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 const SizedBox(width: RxSpacing.s8),
                 Expanded(
                   child: Text(
-                    isArabic ? 'بحث في الدراسات والكتيبات المعتمدة...' : 'Search clinical trials, detailing decks...',
+                    'Search clinical trials, detailing decks...',
                     style: textTheme.bodySmall?.copyWith(
                       color: colors.textTertiary,
                       fontSize: 11.0,
@@ -486,9 +469,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             colors: colors,
             textTheme: textTheme,
             icon: LucideIcons.fileText,
-            title: isArabic ? 'بروشور العرض الطبي لروتو دراي إيد' : 'Rohto Dry Aid E-Detailing Visual Aid',
-            meta: isArabic ? 'كتيب العرض التفاعلي • PDF • 4.2 MB' : 'Approved Visual Aid • PDF • 4.2 MB',
-            badgeText: isArabic ? 'معتمد' : 'Verified',
+            title: 'Rohto Dry Aid E-Detailing Visual Aid',
+            meta: 'Approved Visual Aid • PDF • 4.2 MB',
+            badgeText: 'Verified',
             badgeColor: colors.success,
             badgeBg: colors.successSoft,
           ),
@@ -499,9 +482,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             colors: colors,
             textTheme: textTheme,
             icon: LucideIcons.barChart2,
-            title: isArabic ? 'دراسة استعادة الطبقة الدمعية واستقرار سطح العين' : 'Ocular Surface Tear Film Restoration Study',
-            meta: isArabic ? '18 شريحة إكلينيكية • الشؤون الطبية' : '18 Detailing Slides • Medical Affairs',
-            badgeText: isArabic ? 'محدث' : 'Updated',
+            title: 'Ocular Surface Tear Film Restoration Study',
+            meta: '18 Detailing Slides • Medical Affairs',
+            badgeText: 'Updated',
             badgeColor: colors.info,
             badgeBg: colors.infoSoft,
           ),
@@ -631,7 +614,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     const SizedBox(width: RxSpacing.s6),
                     Expanded(
                       child: Text(
-                        isArabic ? 'عيادات القاهرة - وسط البلد' : 'Cairo Clinics • Region North',
+                        'Cairo Clinics • Region North',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: textTheme.labelSmall?.copyWith(
@@ -652,7 +635,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   borderRadius: RxRadii.borderBadge,
                 ),
                 child: Text(
-                  isArabic ? 'اليوم' : 'Today',
+                  'Today',
                   style: textTheme.labelSmall?.copyWith(
                     fontSize: 9.5,
                     color: colors.textSecondary,
@@ -681,7 +664,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     const SizedBox(width: RxSpacing.s6),
                     Expanded(
                       child: Text(
-                        isArabic ? 'اعتراض الطبيب الميداني' : 'Field Physician Objection',
+                        'Field Physician Objection',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: textTheme.labelSmall?.copyWith(
@@ -695,9 +678,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 ),
                 const SizedBox(height: RxSpacing.s6),
                 Text(
-                  isArabic
-                      ? '«هل يسبب روتو أي لسعة أو تشويش في الرؤية بعد الاستخدام؟»'
-                      : '"Does Rohto cause any stinging sensation or vision blurriness after instillation?"',
+                  '"Does Rohto cause any stinging sensation or vision blurriness after instillation?"',
                   style: textTheme.bodySmall?.copyWith(
                     color: colors.textPrimary,
                     fontStyle: FontStyle.italic,
@@ -717,7 +698,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               const SizedBox(width: RxSpacing.s6),
               Expanded(
                 child: Text(
-                  isArabic ? 'معتمد ومُجاب عنه من الإدارة الطبية والتسويق' : 'Answered & verified by Medical Affairs',
+                  'Answered & verified by Medical Affairs',
                   style: textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: colors.success,
