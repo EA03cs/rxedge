@@ -325,51 +325,6 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
     }
   }
 
-  @override
-  Future<Result<QuizResultHistoryEntity>> submitQuizResult({
-    required String quizId,
-    required int score,
-    required int totalQuestions,
-    required int timeTakenSeconds,
-  }) async {
-    try {
-      final dto = await _remoteDatasource.submitQuizResult(
-        quizId: quizId,
-        score: score,
-        totalQuestions: totalQuestions,
-        timeTakenSeconds: timeTakenSeconds,
-      );
-      final domainResult = dto.toDomain();
-      _localQuizHistory.insert(0, domainResult);
-
-      // Update quiz state in memory
-      if (_memoryQuickQuizzes != null) {
-        _memoryQuickQuizzes = _memoryQuickQuizzes!.map((q) {
-          if (q.id == quizId) {
-            return q.copyWith(
-              isCompleted: true,
-              lastScore: score,
-              lastMaxScore: totalQuestions,
-            );
-          }
-          return q;
-        }).toList();
-      }
-
-      return Result.success(domainResult);
-    } catch (e, st) {
-      final mapped = ExceptionMapper.map(e, st);
-      if (mapped is NetworkFailure) {
-        return const Result.failure(
-          NetworkFailure(
-            debugMessage: 'Connect to the internet to submit your answers.',
-          ),
-        );
-      }
-      return Result.failure(mapped);
-    }
-  }
-
   Future<String> _markQuizCompletedInCache(
     String quizId, {
     int? score,

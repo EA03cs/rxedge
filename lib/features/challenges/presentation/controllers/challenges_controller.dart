@@ -119,32 +119,6 @@ class ChallengesController extends AutoDisposeAsyncNotifier<ChallengesDashboardS
     );
   }
 
-  Future<Result<QuizResultHistoryEntity>> onQuizCompleted({
-    required String quizId,
-    required int score,
-    required int totalQuestions,
-    required int timeTakenSeconds,
-  }) async {
-    final repo = ref.read(challengesRepositoryProvider);
-    final res = await repo.submitQuizResult(
-      quizId: quizId,
-      score: score,
-      totalQuestions: totalQuestions,
-      timeTakenSeconds: timeTakenSeconds,
-    );
-
-    if (res.isSuccess) {
-      ref.read(localCacheServiceProvider).remove('rxedge_home_dashboard');
-      ref.read(localCacheServiceProvider).remove('user_profile_cache');
-      unawaited(ref.read(homeControllerProvider.notifier).refresh());
-      unawaited(ref.read(profileControllerProvider.notifier).refresh());
-
-      // Refresh state to update quiz completion status
-      state = await AsyncValue.guard(() => _fetchData(forceRefresh: true));
-    }
-    return res;
-  }
-
   Future<Result<QuizSubmissionResultEntity>> submitServerQuiz({
     required String quizId,
     required List<Map<String, String>> answers,
@@ -152,10 +126,12 @@ class ChallengesController extends AutoDisposeAsyncNotifier<ChallengesDashboardS
     final repo = ref.read(challengesRepositoryProvider);
     final res = await repo.submitQuizAnswers(quizId: quizId, answers: answers);
     if (res.isSuccess) {
-      ref.read(localCacheServiceProvider).remove('rxedge_home_dashboard');
-      ref.read(localCacheServiceProvider).remove('user_profile_cache');
-      await ref.read(homeControllerProvider.notifier).refresh();
-      await ref.read(profileControllerProvider.notifier).refresh();
+      try {
+        ref.read(localCacheServiceProvider).remove('rxedge_home_dashboard');
+        ref.read(localCacheServiceProvider).remove('user_profile_cache');
+        await ref.read(homeControllerProvider.notifier).refresh();
+        await ref.read(profileControllerProvider.notifier).refresh();
+      } catch (_) {}
       state = await AsyncValue.guard(() => _fetchData(forceRefresh: true));
     }
     return res;

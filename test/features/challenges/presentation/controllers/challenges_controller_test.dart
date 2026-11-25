@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:rxedge/core/error/failures.dart';
 import 'package:rxedge/core/utils/result.dart';
 import 'package:rxedge/features/challenges/data/repositories/challenges_repository_impl.dart';
 import 'package:rxedge/features/challenges/domain/entities/challenges_entities.dart';
@@ -112,6 +113,63 @@ void main() {
       final updated = container.read(challengesControllerProvider).value?.objection;
       expect(updated?.userFeedback, 'helpful');
       expect(updated?.helpfulCount, 43);
+    });
+
+    test('submitServerQuiz returns server evaluation result on success', () async {
+      const serverResult = QuizSubmissionResultEntity(
+        attemptId: 'att_123',
+        scorePercentage: 100,
+        isPassed: true,
+        passingScore: 70,
+        pointsAwarded: 45,
+        answers: [],
+      );
+      when(() => mockRepo.submitQuizAnswers(
+            quizId: 'quiz_1',
+            answers: any(named: 'answers'),
+          )).thenAnswer((_) async => const Result.success(serverResult));
+
+      final container = createContainer();
+      await container.read(challengesControllerProvider.future);
+
+      final res = await container
+          .read(challengesControllerProvider.notifier)
+          .submitServerQuiz(
+            quizId: 'quiz_1',
+            answers: const [
+              {'questionId': 'q1', 'selectedOptionId': 'o1'},
+            ],
+          );
+
+      expect(res.isSuccess, isTrue);
+      expect(res.dataOrNull?.pointsAwarded, 45);
+      expect(res.dataOrNull?.attemptId, 'att_123');
+    });
+
+    test('submitServerQuiz propagates failure on network/5xx error', () async {
+      when(() => mockRepo.submitQuizAnswers(
+            quizId: 'quiz_1',
+            answers: any(named: 'answers'),
+          )).thenAnswer(
+        (_) async => const Result.failure(
+          ServerFailure(statusCode: 503, debugMessage: 'Service unavailable'),
+        ),
+      );
+
+      final container = createContainer();
+      await container.read(challengesControllerProvider.future);
+
+      final res = await container
+          .read(challengesControllerProvider.notifier)
+          .submitServerQuiz(
+            quizId: 'quiz_1',
+            answers: const [
+              {'questionId': 'q1', 'selectedOptionId': 'o1'},
+            ],
+          );
+
+      expect(res.isFailure, isTrue);
+      expect(res.failureOrNull, isA<ServerFailure>());
     });
   });
 }

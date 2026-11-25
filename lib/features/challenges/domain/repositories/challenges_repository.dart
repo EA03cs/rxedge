@@ -17,12 +17,6 @@ abstract class ChallengesRepository {
     required String objectionId,
     required String userResponse,
   });
-  Future<Result<QuizResultHistoryEntity>> submitQuizResult({
-    required String quizId,
-    required int score,
-    required int totalQuestions,
-    required int timeTakenSeconds,
-  });
   Future<Result<QuizSubmissionResultEntity>> submitQuizAnswers({
     required String quizId,
     required List<Map<String, String>> answers,

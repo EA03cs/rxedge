@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:rxedge/core/error/exceptions.dart';
+import 'package:rxedge/core/error/failures.dart';
 import 'package:rxedge/features/challenges/data/datasources/challenges_local_datasource.dart';
 import 'package:rxedge/features/challenges/data/datasources/challenges_remote_datasource.dart';
 import 'package:rxedge/features/challenges/data/models/challenges_dto.dart';
@@ -127,37 +128,108 @@ void main() {
       expect(result.dataOrNull?.doctorName, 'Dr. Tarek');
     });
 
-    test('submitQuizResult queues offline when remote call fails', () async {
-      when(() => mockRemote.submitQuizResult(
-            quizId: 'quiz_1',
-            score: 4,
-            totalQuestions: 4,
-            timeTakenSeconds: 85,
-          )).thenThrow(const ServerException('500 Error'));
+    test('submitQuizAnswers returns server result and caches completion without inventing points', () async {
+      when(() => mockLocal.isCacheFresh('challenges_quizzes')).thenReturn(false);
+      when(() => mockRemote.getQuickQuizzes()).thenAnswer((_) async => sampleQuizzesDto);
+      when(() => mockLocal.cacheQuickQuizzes(any())).thenAnswer((_) async {});
+      await repository.getQuickQuizzes(forceRefresh: true);
 
-      when(() => mockLocal.queueQuizResult(
+      when(() => mockRemote.submitQuizAnswers(
             quizId: 'quiz_1',
-            score: 4,
-            totalQuestions: 4,
-            timeTakenSeconds: 85,
-          )).thenAnswer((_) async {});
+            answers: any(named: 'answers'),
+          )).thenAnswer(
+        (_) async => const QuizSubmissionResultDto(
+          attemptId: 'att_server_1',
+          score: 100,
+          isPassed: true,
+          passingScore: 70,
+          pointsAwarded: 75,
+          answers: [
+            QuizAnswerEvaluationDto(
+              questionId: 'q1',
+              isCorrect: true,
+            ),
+          ],
+        ),
+      );
 
-      final result = await repository.submitQuizResult(
+      final result = await repository.submitQuizAnswers(
         quizId: 'quiz_1',
-        score: 4,
-        totalQuestions: 4,
-        timeTakenSeconds: 85,
+        answers: const [
+          {'questionId': 'q1', 'selectedOptionId': 'opt_a'},
+        ],
       );
 
       expect(result.isSuccess, isTrue);
-      expect(result.dataOrNull?.score, 4);
-      expect(result.dataOrNull?.pointsEarned, 50); // 4*10 + 10 perfect score bonus
-      verify(() => mockLocal.queueQuizResult(
+      expect(result.dataOrNull?.attemptId, 'att_server_1');
+      expect(result.dataOrNull?.pointsAwarded, 75);
+      expect(result.dataOrNull?.isPassed, isTrue);
+
+      final quizzesRes = await repository.getQuickQuizzes();
+      expect(quizzesRes.dataOrNull?.first.isCompleted, isTrue);
+    });
+
+    test('submitQuizAnswers returns failure on server error without marking quiz completed', () async {
+      when(() => mockLocal.isCacheFresh('challenges_quizzes')).thenReturn(false);
+      when(() => mockRemote.getQuickQuizzes()).thenAnswer((_) async => sampleQuizzesDto);
+      when(() => mockLocal.cacheQuickQuizzes(any())).thenAnswer((_) async {});
+      await repository.getQuickQuizzes(forceRefresh: true);
+
+      when(() => mockRemote.submitQuizAnswers(
             quizId: 'quiz_1',
-            score: 4,
-            totalQuestions: 4,
-            timeTakenSeconds: 85,
-          )).called(1);
+            answers: any(named: 'answers'),
+          )).thenThrow(const ServerException('500 Error', statusCode: 500));
+
+      final result = await repository.submitQuizAnswers(
+        quizId: 'quiz_1',
+        answers: const [
+          {'questionId': 'q1', 'selectedOptionId': 'opt_a'},
+        ],
+      );
+
+      expect(result.isFailure, isTrue);
+      expect(result.failureOrNull, isA<ServerFailure>());
+
+      final quizzesRes = await repository.getQuickQuizzes();
+      expect(quizzesRes.dataOrNull?.first.isCompleted, isFalse);
+    });
+
+    test('submitQuizAnswers marks quiz completed on 409 conflict failure', () async {
+      when(() => mockLocal.isCacheFresh('challenges_quizzes')).thenReturn(false);
+      when(() => mockRemote.getQuickQuizzes()).thenAnswer((_) async => sampleQuizzesDto);
+      when(() => mockLocal.cacheQuickQuizzes(any())).thenAnswer((_) async {});
+      await repository.getQuickQuizzes(forceRefresh: true);
+
+      when(() => mockRemote.submitQuizAnswers(
+            quizId: 'quiz_1',
+            answers: any(named: 'answers'),
+          )).thenThrow(
+        const ServerException('ATTEMPT_ALREADY_EXISTS', statusCode: 409),
+      );
+
+      final result = await repository.submitQuizAnswers(
+        quizId: 'quiz_1',
+        answers: const [
+          {'questionId': 'q1', 'selectedOptionId': 'opt_a'},
+        ],
+      );
+
+      expect(result.isFailure, isTrue);
+      final quizzesRes = await repository.getQuickQuizzes();
+      expect(quizzesRes.dataOrNull?.first.isCompleted, isTrue);
+    });
+
+    test('ChallengesRemoteDatasourceImpl without dio throws ServerException instead of local fake result', () async {
+      final remote = ChallengesRemoteDatasourceImpl();
+      await expectLater(
+        () => remote.submitQuizAnswers(
+          quizId: 'quiz_1',
+          answers: const [
+            {'questionId': 'q1', 'selectedOptionId': 'opt_a'},
+          ],
+        ),
+        throwsA(isA<ServerException>()),
+      );
     });
 
     test('submitDoctorObjectionResponse queues offline when remote fails', () async {
