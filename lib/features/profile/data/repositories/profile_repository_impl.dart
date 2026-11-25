@@ -42,12 +42,20 @@ class ProfileRepositoryImpl implements ProfileRepository {
       }
 
       final remoteDto = await _remoteDatasource.getProfile();
+      final NotificationPreferencesEntity resolvedPrefs;
+      if (remoteDto.hasServerNotificationPreferences) {
+        await _localDatasource.savePreferences(remoteDto.notificationPreferences);
+        resolvedPrefs = remoteDto.notificationPreferences.toDomain();
+      } else {
+        resolvedPrefs =
+            savedPrefs?.toDomain() ?? remoteDto.notificationPreferences.toDomain();
+      }
+
       await _localDatasource.cacheProfile(remoteDto);
       final domain = remoteDto.toDomain();
       _memoryProfile = domain.copyWith(
         storageUsageBytes: _localDatasource.getStorageUsage(),
-        notificationPreferences:
-            savedPrefs?.toDomain() ?? domain.notificationPreferences,
+        notificationPreferences: resolvedPrefs,
       );
       return Result.success(_memoryProfile!);
     } catch (e, st) {
@@ -61,8 +69,8 @@ class ProfileRepositoryImpl implements ProfileRepository {
   ) async {
     try {
       final dto = NotificationPreferencesDto.fromDomain(preferences);
-      await _localDatasource.savePreferences(dto);
       await _remoteDatasource.updateNotificationPreferences(dto);
+      await _localDatasource.savePreferences(dto);
 
       if (_memoryProfile != null) {
         _memoryProfile = _memoryProfile!.copyWith(notificationPreferences: preferences);

@@ -634,5 +634,6 @@
   "errValidation": "Please check the highlighted fields and try again.",
   "errCache": "Unable to read local offline cache.",
   "errServer": "The server encountered an error. Please try again shortly.",
+  "errRateLimit": "Too many requests. Please wait a moment and try again.",
   "errUnknown": "An unexpected error occurred. Please try again."
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../domain/entities/profile_entities.dart';
@@ -260,6 +261,20 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
+  Future<void> _updateNotificationPref(
+    BuildContext context,
+    WidgetRef ref,
+    NotificationPreferencesEntity nextPrefs,
+  ) async {
+    final failure = await ref
+        .read(profileControllerProvider.notifier)
+        .updatePreferences(nextPrefs);
+    if (failure != null && context.mounted) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      context.showFailureSnackBar(failure);
+    }
+  }
+
   Widget _buildNotificationPrefsCard(
     BuildContext context,
     WidgetRef ref,
@@ -273,44 +288,44 @@ class ProfileScreen extends ConsumerWidget {
           _buildSwitchRow(
             title: l10n.prefNewMaterials,
             value: prefs.newMaterials,
-            onChanged: (val) {
-              ref.read(profileControllerProvider.notifier).updatePreferences(
-                    prefs.copyWith(newMaterials: val),
-                  );
-            },
+            onChanged: (val) => _updateNotificationPref(
+              context,
+              ref,
+              prefs.copyWith(newMaterials: val),
+            ),
             context: context,
           ),
           const Divider(height: 1.0),
           _buildSwitchRow(
             title: l10n.prefChallenges,
             value: prefs.monthlyChallenges,
-            onChanged: (val) {
-              ref.read(profileControllerProvider.notifier).updatePreferences(
-                    prefs.copyWith(monthlyChallenges: val),
-                  );
-            },
+            onChanged: (val) => _updateNotificationPref(
+              context,
+              ref,
+              prefs.copyWith(monthlyChallenges: val),
+            ),
             context: context,
           ),
           const Divider(height: 1.0),
           _buildSwitchRow(
             title: l10n.prefFeedbackReplies,
             value: prefs.feedbackReplies,
-            onChanged: (val) {
-              ref.read(profileControllerProvider.notifier).updatePreferences(
-                    prefs.copyWith(feedbackReplies: val),
-                  );
-            },
+            onChanged: (val) => _updateNotificationPref(
+              context,
+              ref,
+              prefs.copyWith(feedbackReplies: val),
+            ),
             context: context,
           ),
           const Divider(height: 1.0),
           _buildSwitchRow(
             title: l10n.prefQuizReminders,
             value: prefs.quizReminders,
-            onChanged: (val) {
-              ref.read(profileControllerProvider.notifier).updatePreferences(
-                    prefs.copyWith(quizReminders: val),
-                  );
-            },
+            onChanged: (val) => _updateNotificationPref(
+              context,
+              ref,
+              prefs.copyWith(quizReminders: val),
+            ),
             context: context,
           ),
         ],

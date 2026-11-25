@@ -8,6 +8,7 @@ import 'interceptors/auth_interceptor.dart';
 import 'interceptors/error_interceptor.dart';
 import 'interceptors/language_interceptor.dart';
 import 'interceptors/logging_interceptor.dart';
+import 'interceptors/rate_limit_interceptor.dart';
 
 /// Configured Dio Client instance provider
 final dioClientProvider = Provider<Dio>((ref) {
@@ -27,6 +28,7 @@ final dioClientProvider = Provider<Dio>((ref) {
 
   dio.interceptors.addAll([
     LanguageInterceptor(ref),
+    RateLimitInterceptor(dio),
     AuthInterceptor(
       secureStorage,
       refreshBaseUrl: EnvConfig.baseUrl,

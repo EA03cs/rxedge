@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/error/failures.dart';
 import '../../data/repositories/profile_repository_impl.dart';
 import '../../domain/entities/profile_entities.dart';
 
@@ -25,20 +26,29 @@ class ProfileController extends AutoDisposeAsyncNotifier<UserProfileEntity> {
     });
   }
 
-  Future<void> updatePreferences(NotificationPreferencesEntity preferences) async {
+  Future<Failure?> updatePreferences(
+    NotificationPreferencesEntity preferences,
+  ) async {
     final current = state.value;
-    if (current == null) return;
+    if (current == null) return null;
 
+    final previousPrefs = current.notificationPreferences;
     // Optimistic update
-    state = AsyncValue.data(current.copyWith(notificationPreferences: preferences));
+    state = AsyncValue.data(
+      current.copyWith(notificationPreferences: preferences),
+    );
 
     final repo = ref.read(profileRepositoryProvider);
     final result = await repo.updateNotificationPreferences(preferences);
-    result.when(
-      success: (_) {},
-      failure: (_) {
-        // Rollback
-        state = AsyncValue.data(current);
+    return result.when(
+      success: (_) => null,
+      failure: (failure) {
+        // Rollback to previous preferences
+        final latest = state.value ?? current;
+        state = AsyncValue.data(
+          latest.copyWith(notificationPreferences: previousPrefs),
+        );
+        return failure;
       },
     );
   }

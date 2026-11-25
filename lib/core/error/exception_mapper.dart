@@ -28,6 +28,12 @@ abstract final class ExceptionMapper {
           error.type == DioExceptionType.receiveTimeout) {
         return NetworkFailure(debugMessage: error.message);
       }
+      if (error.response?.statusCode == 429) {
+        return const ServerFailure(
+          statusCode: 429,
+          debugMessage: 'Too many requests. Please wait a moment and try again.',
+        );
+      }
       return ServerFailure(
         statusCode: error.response?.statusCode,
         debugMessage: error.message,

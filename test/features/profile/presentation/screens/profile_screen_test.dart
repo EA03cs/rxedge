@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:rxedge/app/l10n/l10n.dart';
+import 'package:rxedge/core/error/failures.dart';
 import 'package:rxedge/core/utils/result.dart';
 import 'package:rxedge/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:rxedge/features/profile/domain/entities/profile_entities.dart';
@@ -40,6 +43,10 @@ void main() {
     notificationPreferences: const NotificationPreferencesEntity(),
     storageUsageBytes: 25800000,
   );
+
+  setUpAll(() {
+    registerFallbackValue(const NotificationPreferencesEntity());
+  });
 
   setUp(() {
     mockRepo = MockProfileRepository();
@@ -110,6 +117,75 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Are you sure you want to sign out? You will need your employee credentials to sign back in.'), findsOneWidget);
+    });
+
+    testWidgets('notification toggle updates optimistically and persists on success',
+        (tester) async {
+      final completer = Completer<Result<void>>();
+      when(() => mockRepo.updateNotificationPreferences(any()))
+          .thenAnswer((_) => completer.future);
+
+      await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
+
+      final firstSwitch = find.byType(Switch).first;
+      await tester.ensureVisible(firstSwitch);
+      expect(tester.widget<Switch>(firstSwitch).value, isTrue);
+
+      await tester.tap(firstSwitch);
+      await tester.pump();
+
+      // Optimistic state before PATCH finishes
+      expect(tester.widget<Switch>(firstSwitch).value, isFalse);
+
+      completer.complete(const Result.success(null));
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<Switch>(firstSwitch).value, isFalse);
+      expect(find.byType(SnackBar), findsNothing);
+      verify(
+        () => mockRepo.updateNotificationPreferences(
+          const NotificationPreferencesEntity(
+            newMaterials: false,
+            monthlyChallenges: true,
+            feedbackReplies: true,
+            quizReminders: true,
+          ),
+        ),
+      ).called(1);
+    });
+
+    testWidgets('notification toggle rolls back and shows error SnackBar on PATCH failure',
+        (tester) async {
+      final completer = Completer<Result<void>>();
+      when(() => mockRepo.updateNotificationPreferences(any()))
+          .thenAnswer((_) => completer.future);
+
+      await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
+
+      final firstSwitch = find.byType(Switch).first;
+      await tester.ensureVisible(firstSwitch);
+      expect(tester.widget<Switch>(firstSwitch).value, isTrue);
+
+      await tester.tap(firstSwitch);
+      await tester.pump();
+
+      // Optimistically toggled off while PATCH is in flight
+      expect(tester.widget<Switch>(firstSwitch).value, isFalse);
+
+      completer.complete(
+        const Result.failure(ServerFailure(statusCode: 500, debugMessage: 'Server error')),
+      );
+      await tester.pumpAndSettle();
+
+      // Rolled back to original value + friendly error SnackBar shown
+      expect(tester.widget<Switch>(firstSwitch).value, isTrue);
+      expect(find.byType(SnackBar), findsOneWidget);
+      expect(
+        find.text('The server encountered an error. Please try again shortly.'),
+        findsOneWidget,
+      );
     });
   });
 }

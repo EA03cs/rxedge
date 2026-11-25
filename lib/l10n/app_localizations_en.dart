@@ -1640,5 +1640,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'The server encountered an error. Please try again shortly.';
 
   @override
+  String get errRateLimit =>
+      'Too many requests. Please wait a moment and try again.';
+
+  @override
   String get errUnknown => 'An unexpected error occurred. Please try again.';
 }

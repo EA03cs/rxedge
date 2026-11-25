@@ -79,7 +79,16 @@ class ProfileRemoteDatasourceImpl implements ProfileRemoteDatasource {
     if (simulateError) {
       throw const ServerException('Failed to update preferences on server');
     }
-    await Future<void>.delayed(const Duration(milliseconds: 80));
+    if (dio != null) {
+      await dio!.patch<dynamic>(
+        ApiEndpoints.mePreferences,
+        data: <String, dynamic>{
+          'notificationPreferences': preferences.toJson(),
+        },
+      );
+      return;
+    }
+    throw const ServerException('Network client not configured');
   }
 
   @override

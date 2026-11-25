@@ -6,6 +6,9 @@ import '../api_response.dart';
 /// (matching `D:\Backend\rxedge\src\Utils\Response.js` and `Validation.js`)
 /// into typed [AppException] instances attached to `err.error`.
 class ErrorInterceptor extends Interceptor {
+  static const String rateLimitMessage =
+      'Too many requests. Please wait a moment and try again.';
+
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     final AppException mappedException = switch (err.type) {
@@ -24,7 +27,14 @@ class ErrorInterceptor extends Interceptor {
             : NetworkException(err.message ?? 'Network communication error'),
     };
 
-    handler.next(err.copyWith(error: mappedException));
+    handler.next(
+      err.copyWith(
+        error: mappedException,
+        message: err.response?.statusCode == 429
+            ? mappedException.message
+            : err.message,
+      ),
+    );
   }
 
   AppException _mapBadResponse(DioException err) {
@@ -41,6 +51,14 @@ class ErrorInterceptor extends Interceptor {
 
     if (statusCode == 404) {
       return NotFoundException(serverMessage);
+    }
+
+    if (statusCode == 429) {
+      return ServerException(
+        rateLimitMessage,
+        statusCode: 429,
+        data: bodyMap,
+      );
     }
 
     // Backend Joi `Validation.js` returns HTTP 400 with `{ errors: [...] }`
