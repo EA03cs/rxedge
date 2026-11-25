@@ -1642,7 +1642,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get errUnknown => 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.';
 
   @override
-<<<<<<< HEAD
   String get quizOfflineSubmitError => 'يرجى الاتصال بالإنترنت لإرسال إجاباتك.';
 
   @override
@@ -1809,7 +1808,8 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get unableToLoadQuizReview => 'تعذر تحميل مراجعة الاختبار.';
-=======
+
+  @override
   String get repVoicePrivacyNoticeTitle => 'إشعار الخصوصية والبيانات';
 
   @override
@@ -1818,5 +1818,4 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get quarterlyBadgesEmpty => 'ستظهر الشارات ربع السنوية هنا';
->>>>>>> fix/C5-C6-repvoice-and-badges
 }

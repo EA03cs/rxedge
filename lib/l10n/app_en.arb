@@ -692,7 +692,7 @@
   "unrankedLabel": "Unranked",
   "challengesSubtitle": "Compete in monthly sprints, test clinical recall, and climb the ranks",
   "unableToLoadQuizReview": "Unable to load quiz review.",
-    "repVoicePrivacyNoticeTitle": "Privacy & Data Notice",,
-    "repVoicePrivacyNoticeBody": "Submissions and photos are stored securely, accessible only to you and authorized Supervisors or Marketing Admins, retained per company policy (365 days), and removable via Rep Voice history or deletion requests.",,
+    "repVoicePrivacyNoticeTitle": "Privacy & Data Notice",
+    "repVoicePrivacyNoticeBody": "Submissions and photos are stored securely, accessible only to you and authorized Supervisors or Marketing Admins, retained per company policy (365 days), and removable via Rep Voice history or deletion requests.",
     "quarterlyBadgesEmpty": "Quarterly badges will appear here"
 }

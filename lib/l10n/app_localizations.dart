@@ -3020,7 +3020,6 @@ abstract class AppLocalizations {
   /// **'An unexpected error occurred. Please try again.'**
   String get errUnknown;
 
-<<<<<<< HEAD
   /// No description provided for @quizOfflineSubmitError.
   ///
   /// In en, this message translates to:
@@ -3296,7 +3295,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unable to load quiz review.'**
   String get unableToLoadQuizReview;
-=======
+
   /// No description provided for @repVoicePrivacyNoticeTitle.
   ///
   /// In en, this message translates to:
@@ -3314,7 +3313,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Quarterly badges will appear here'**
   String get quarterlyBadgesEmpty;
->>>>>>> fix/C5-C6-repvoice-and-badges
 }
 
 class _AppLocalizationsDelegate

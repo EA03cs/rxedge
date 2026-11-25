@@ -1648,7 +1648,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errUnknown => 'An unexpected error occurred. Please try again.';
 
   @override
-<<<<<<< HEAD
   String get quizOfflineSubmitError =>
       'Connect to the internet to submit your answers.';
 
@@ -1816,7 +1815,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unableToLoadQuizReview => 'Unable to load quiz review.';
-=======
+
+  @override
   String get repVoicePrivacyNoticeTitle => 'Privacy & Data Notice';
 
   @override
@@ -1825,5 +1825,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get quarterlyBadgesEmpty => 'Quarterly badges will appear here';
->>>>>>> fix/C5-C6-repvoice-and-badges
 }
