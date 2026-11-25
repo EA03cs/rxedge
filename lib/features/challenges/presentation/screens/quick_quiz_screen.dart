@@ -20,7 +20,7 @@ import '../controllers/challenges_controller.dart';
 /// - Thin progress bar at top
 /// - Large full-width touch options (12dp radius, hairline border)
 /// - Immediate right/wrong feedback with one-line clinical explanation
-/// - Result screen: score, points earned, time, and 3 actions (Review mistakes, Retry, Back to learning)
+/// - Result screen: score, points earned, time, and 2 actions (Review mistakes, Back to learning)
 /// - Single subtle celebration on high scores only (NO confetti spam, restrained professional aesthetic)
 class QuickQuizScreen extends ConsumerStatefulWidget {
   final QuickQuizEntity quiz;
@@ -423,22 +423,6 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
       }
     }
     return score;
-  }
-
-  void _restartQuiz() {
-    setState(() {
-      _currentIndex = 0;
-      _selectedOptionIndex = null;
-      _isAnswerSubmitted = false;
-      _isSubmitting = false;
-      _serverResult = null;
-      _userAnswers.clear();
-      _isFinished = false;
-      _breakdownFilter = QuizBreakdownFilter.all;
-      _stopwatch
-        ..reset()
-        ..start();
-    });
   }
 
   @override
@@ -923,38 +907,36 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                       ),
                     ],
                   ),
-                  if (pointsEarned == 0 || _quiz.isCompleted) ...[
-                    const SizedBox(height: RxSpacing.s16),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsetsDirectional.all(RxSpacing.s10),
-                      decoration: BoxDecoration(
-                        color: colors.surfaceMuted,
-                        borderRadius: RxRadii.borderCard,
-                        border: Border.all(
-                          color: colors.border,
-                          width: RxShadows.hairlineBorderWidth,
-                        ),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(LucideIcons.info, size: 15.0, color: colors.textSecondary),
-                          const SizedBox(width: RxSpacing.s8),
-                          Expanded(
-                            child: Text(
-                              'Marks Note: Quiz challenge marks${_quiz.rewardPoints > 0 ? ' (+${_quiz.rewardPoints} Marks)' : ''} are awarded once upon first pass. Additional attempts serve as clinical refresher and practice.',
-                              style: textTheme.bodySmall?.copyWith(
-                                color: colors.textSecondary,
-                                fontSize: 11.5,
-                                height: 1.4,
-                              ),
-                            ),
-                          ),
-                        ],
+                  const SizedBox(height: RxSpacing.s16),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsetsDirectional.all(RxSpacing.s10),
+                    decoration: BoxDecoration(
+                      color: colors.surfaceMuted,
+                      borderRadius: RxRadii.borderCard,
+                      border: Border.all(
+                        color: colors.border,
+                        width: RxShadows.hairlineBorderWidth,
                       ),
                     ),
-                  ],
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(LucideIcons.info, size: 15.0, color: colors.textSecondary),
+                        const SizedBox(width: RxSpacing.s8),
+                        Expanded(
+                          child: Text(
+                            l10n.quizSingleAttemptNote,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colors.textSecondary,
+                              fontSize: 11.5,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   if (percent >= 0.7 && _quiz.lessonId != null && _quiz.lessonId!.isNotEmpty) ...[
                     const SizedBox(height: RxSpacing.s12),
                     Container(
@@ -995,7 +977,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
             _buildQuestionsBreakdownSection(context),
             const SizedBox(height: RxSpacing.s20),
 
-            // 3 Actions: Review Mistakes / Show All Questions, Retry, Back to learning
+            // 2 Actions: Review Mistakes / Show All Questions, Back to learning
             AppButton(
               text: _breakdownFilter == QuizBreakdownFilter.incorrectOnly
                   ? l10n.btnShowAllQuestions
@@ -1013,15 +995,6 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
               },
             ),
             const SizedBox(height: RxSpacing.s10),
-            if (!_quiz.isCompleted && _serverResult == null) ...[
-              AppButton(
-                text: l10n.btnRetryQuiz,
-                leadingIcon: LucideIcons.rotateCw,
-                variant: AppButtonVariant.secondary,
-                onPressed: _restartQuiz,
-              ),
-              const SizedBox(height: RxSpacing.s10),
-            ],
             AppButton(
               text: l10n.btnBackToLearning,
               leadingIcon: context.arrowBack,

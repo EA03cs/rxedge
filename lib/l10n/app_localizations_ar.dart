@@ -785,7 +785,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get btnReviewMistakes => 'مراجعة الأخطاء';
 
   @override
-  String get btnRetryQuiz => 'إعادة المحاولة';
+  String get quizSingleAttemptNote =>
+      'درجات التحدي بتتحسب مرة واحدة بس على محاولتك الوحيدة. مفيش إعادة محاولة.';
 
   @override
   String get btnBackToLearning => 'العودة للتحديات';
@@ -1261,9 +1262,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String scoreOutOfLabel(int score, int total) {
     return 'النتيجة: $score/$total';
   }
-
-  @override
-  String get btnRetakeQuiz => 'إعادة الاختبار';
 
   @override
   String pointsPlusValue(int points) {
