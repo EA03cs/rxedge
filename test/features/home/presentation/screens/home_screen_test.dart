@@ -150,6 +150,7 @@ void main() {
       expect(find.text("This Month's Challenge"), findsOneWidget);
       expect(find.text('Cardiovascular Knowledge Blitz'), findsOneWidget);
       expect(find.text('4 days left'), findsOneWidget);
+      expect(find.text('Rank #3 of 28 in Company'), findsOneWidget);
 
       // 5. Objection of the month
       expect(find.text('Objection of the Month'), findsOneWidget);
@@ -314,6 +315,38 @@ void main() {
       expect(find.text('Rohto Dry Aid'), findsNothing);
       expect(find.text("This Month's Challenge"), findsNothing);
       expect(find.text('Objection of the Month'), findsNothing);
+    });
+
+    testWidgets('displays custom scopeName and unranked Company fallback on MonthlyChallengeCard',
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1200, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final unrankedDashboard = HomeDashboardEntity(
+        continueLesson: testDashboard.continueLesson,
+        recommendedProduct: testDashboard.recommendedProduct,
+        challenge: const MonthlyChallengeEntity(
+          id: 'chal_unranked',
+          title: 'Monthly Clinical Blitz',
+          daysLeft: 2,
+          progress: 0.25,
+          currentRank: 0,
+          totalParticipants: 20,
+        ),
+        objection: testDashboard.objection,
+        recentMaterials: testDashboard.recentMaterials,
+        stats: testDashboard.stats,
+      );
+
+      when(() => mockRepository.getHomeDashboard(forceRefresh: any(named: 'forceRefresh')))
+          .thenAnswer((_) async => Result.success(unrankedDashboard));
+
+      await tester.pumpWidget(buildTestableScreen(child: const HomeScreen()));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+
+      expect(find.text('Unranked in Company'), findsOneWidget);
     });
   });
 }

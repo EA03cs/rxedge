@@ -102,13 +102,17 @@ class HomeDashboardDto {
     if (rawProduct is Map) {
       resolvedProduct = RecommendedProductDto.fromJson(Map<String, dynamic>.from(rawProduct));
     }
-
     MonthlyChallengeDto resolvedChallenge;
     final challengeMap = rawChallenge is Map
         ? Map<String, dynamic>.from(rawChallenge)
         : <String, dynamic>{};
     if (json['currentChallengeRank'] != null) {
       challengeMap['current_rank'] = json['currentChallengeRank'];
+    }
+    if (challengeMap['scopeName'] == null &&
+        challengeMap['scope_name'] == null &&
+        json['scopeName'] != null) {
+      challengeMap['scopeName'] = json['scopeName'];
     }
     if (rawChallenge is Map) {
       resolvedChallenge = MonthlyChallengeDto.fromJson(challengeMap);
@@ -347,6 +351,7 @@ class MonthlyChallengeDto {
   final double progress;
   final int currentRank;
   final int totalParticipants;
+  final String scopeName;
 
   const MonthlyChallengeDto({
     required this.id,
@@ -355,6 +360,7 @@ class MonthlyChallengeDto {
     required this.progress,
     required this.currentRank,
     required this.totalParticipants,
+    this.scopeName = 'Company',
   });
 
   factory MonthlyChallengeDto.fromJson(Map<String, dynamic> json) {
@@ -385,6 +391,15 @@ class MonthlyChallengeDto {
       }
     }
 
+    final rawScopeName = (json['scopeName'] ??
+            json['scope_name'] ??
+            json['rankScope'] ??
+            json['scope'])
+        ?.toString()
+        .trim();
+    final scopeName =
+        (rawScopeName != null && rawScopeName.isNotEmpty) ? rawScopeName : 'Company';
+
     return MonthlyChallengeDto(
       id: json['id']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
@@ -396,6 +411,7 @@ class MonthlyChallengeDto {
       totalParticipants: (json['total_participants'] as num?)?.toInt() ??
           (json['totalParticipants'] as num?)?.toInt() ??
           0,
+      scopeName: scopeName,
     );
   }
 
@@ -406,6 +422,7 @@ class MonthlyChallengeDto {
         'progress': progress,
         'current_rank': currentRank,
         'total_participants': totalParticipants,
+        'scope_name': scopeName,
       };
 
   MonthlyChallengeEntity toDomain() => MonthlyChallengeEntity(
@@ -415,6 +432,7 @@ class MonthlyChallengeDto {
         progress: progress,
         currentRank: currentRank,
         totalParticipants: totalParticipants,
+        scopeName: scopeName,
       );
 }
 
