@@ -349,11 +349,22 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                             },
                           ),
                           const SizedBox(height: RxSpacing.s16),
-                          AppButton(
-                            text: l10n.takeQuickQuiz,
-                            leadingIcon: LucideIcons.helpCircle,
-                            variant: AppButtonVariant.primary,
-                            onPressed: () => _openQuickQuiz(context, liveLesson),
+                          Builder(
+                            builder: (context) {
+                              final matchedQuiz = _findMatchedQuiz(liveLesson);
+                              final isQuizDone = matchedQuiz?.isCompleted ?? false;
+                              return AppButton(
+                                text: isQuizDone
+                                    ? 'Review Quiz Answers'
+                                    : l10n.takeQuickQuiz,
+                                leadingIcon: isQuizDone
+                                    ? LucideIcons.fileSearch
+                                    : LucideIcons.helpCircle,
+                                variant: AppButtonVariant.primary,
+                                onPressed: () =>
+                                    _openQuickQuiz(context, liveLesson),
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -453,20 +464,35 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
               ),
               const SizedBox(height: RxSpacing.s24),
               if (matchedQuiz != null) ...[
-                AppButton(
-                  text: matchedQuiz.rewardPoints > 0
-                      ? '${l10n.btnStartQuizNow} (${l10n.pointsPlusValue(matchedQuiz.rewardPoints)})'
-                      : l10n.btnStartQuizNow,
-                  variant: AppButtonVariant.primary,
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                    Navigator.of(context, rootNavigator: true).push<void>(
-                      MaterialPageRoute(
-                        builder: (_) => QuickQuizScreen(quiz: matchedQuiz),
-                      ),
-                    );
-                  },
-                ),
+                if (matchedQuiz.isCompleted)
+                  AppButton(
+                    text: 'Review Quiz Answers',
+                    leadingIcon: LucideIcons.fileSearch,
+                    variant: AppButtonVariant.primary,
+                    onPressed: () {
+                      Navigator.of(ctx).pop();
+                      Navigator.of(context, rootNavigator: true).push<void>(
+                        MaterialPageRoute(
+                          builder: (_) => QuickQuizScreen(quiz: matchedQuiz),
+                        ),
+                      );
+                    },
+                  )
+                else
+                  AppButton(
+                    text: matchedQuiz.rewardPoints > 0
+                        ? '${l10n.btnStartQuizNow} (${l10n.pointsPlusValue(matchedQuiz.rewardPoints)})'
+                        : l10n.btnStartQuizNow,
+                    variant: AppButtonVariant.primary,
+                    onPressed: () {
+                      Navigator.of(ctx).pop();
+                      Navigator.of(context, rootNavigator: true).push<void>(
+                        MaterialPageRoute(
+                          builder: (_) => QuickQuizScreen(quiz: matchedQuiz),
+                        ),
+                      );
+                    },
+                  ),
               ] else ...[
                 AppButton(
                   text: l10n.quizComingSoon,

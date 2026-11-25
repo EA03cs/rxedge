@@ -6,6 +6,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/error/failure_message_mapper.dart';
+import '../../../../core/error/failures.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../../learn/presentation/controllers/learn_controller.dart';
 import '../../data/repositories/challenges_repository_impl.dart';
@@ -102,6 +103,13 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
       }
       return;
     }
+    if (_quiz.isCompleted) {
+      _isLoadingQuiz = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _loadCompletedAttemptReview();
+      });
+      return;
+    }
     if (_quiz.questions.isEmpty) {
       _loadQuizQuestions();
     } else {
@@ -128,6 +136,11 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
 
     result.when(
       success: (loadedQuiz) {
+        if (loadedQuiz.isCompleted && widget.initialReviewResult == null) {
+          _quiz = loadedQuiz;
+          unawaited(_loadCompletedAttemptReview());
+          return;
+        }
         setState(() {
           _quiz = loadedQuiz;
           _isLoadingQuiz = false;
@@ -143,6 +156,52 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
         });
       },
     );
+  }
+
+  Future<void> _loadCompletedAttemptReview() async {
+    if (!mounted) return;
+    setState(() {
+      _isLoadingQuiz = true;
+      _loadError = null;
+    });
+
+    final res = await ref
+        .read(challengesRepositoryProvider)
+        .getQuizAttemptReview(_quiz.id);
+    if (!mounted) return;
+
+    res.when(
+      success: (review) {
+        _stopwatch.stop();
+        _ticker?.cancel();
+        setState(() {
+          _quiz = _quiz.copyWith(isCompleted: true);
+          _serverResult = review;
+          _isFinished = true;
+          _isLoadingQuiz = false;
+          _isSubmitting = false;
+        });
+      },
+      failure: (f) {
+        setState(() {
+          _isLoadingQuiz = false;
+          _isSubmitting = false;
+          _loadError = FailureMessageMapper.map(context, f);
+        });
+      },
+    );
+  }
+
+  bool _isConflictFailure(Failure failure) {
+    if (failure is ServerFailure && failure.statusCode == 409) {
+      return true;
+    }
+    final msg = (failure.debugMessage ?? failure.toString()).toLowerCase();
+    return msg.contains('already completed') ||
+        msg.contains('single attempt') ||
+        msg.contains('already attempted') ||
+        msg.contains('attempt_already_exists') ||
+        msg.contains('409');
   }
 
   @override
@@ -184,6 +243,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
   }
 
   Future<void> _finishQuiz() async {
+    if (_isSubmitting) return;
     if (_isServerEvaluated) {
       final payload = <Map<String, String>>[];
       for (int i = 0; i < _quiz.questions.length; i++) {
@@ -207,8 +267,8 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
           .submitServerQuiz(quizId: _quiz.id, answers: payload);
 
       if (!mounted) return;
-      res.when(
-        success: (evalResult) {
+      await res.when<Future<void>>(
+        success: (evalResult) async {
           _stopwatch.stop();
           _ticker?.cancel();
 
@@ -247,12 +307,50 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
             _isFinished = true;
           });
         },
-        failure: (failure) {
+        failure: (failure) async {
+          final isConflict = _isConflictFailure(failure);
+          if (isConflict) {
+            try {
+              unawaited(
+                ref.read(challengesControllerProvider.notifier).refresh(),
+              );
+            } catch (_) {}
+            try {
+              final reviewRes = await ref
+                  .read(challengesRepositoryProvider)
+                  .getQuizAttemptReview(_quiz.id);
+              if (!mounted) return;
+              var recovered = false;
+              reviewRes.when(
+                success: (review) {
+                  recovered = true;
+                  _stopwatch.stop();
+                  _ticker?.cancel();
+                  setState(() {
+                    _quiz = _quiz.copyWith(isCompleted: true);
+                    _serverResult = review;
+                    _isFinished = true;
+                    _isSubmitting = false;
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'You have already attempted this quiz. Retakes are not permitted per challenge policy.',
+                      ),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                },
+                failure: (_) {},
+              );
+              if (recovered) return;
+            } catch (_) {}
+          }
+
+          if (!mounted) return;
           setState(() => _isSubmitting = false);
           final errorText = FailureMessageMapper.map(context, failure);
-          final failStr = failure.toString();
-          final isConflict = failStr.contains('409') ||
-              failStr.contains('ATTEMPT_ALREADY_EXISTS');
+          final failStr = (failure.debugMessage ?? failure.toString());
           final isWindowClosed = failStr.contains('QUIZ_WINDOW_CLOSED');
           final isNotStarted = failStr.contains('QUIZ_NOT_STARTED');
 
@@ -263,7 +361,8 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
           } else if (isWindowClosed) {
             message = 'This quiz is closed as the completion window has ended.';
           } else if (isNotStarted) {
-            message = 'This quiz has not started yet. Please check back on the start date.';
+            message =
+                'This quiz has not started yet. Please check back on the start date.';
           }
 
           ScaffoldMessenger.of(context).showSnackBar(

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/error/exception_mapper.dart';
+import '../../../../core/error/failures.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/services/logger_service.dart';
 import '../../../../core/storage/local_cache_service.dart';
@@ -211,16 +212,27 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
 
   @override
   Future<Result<QuickQuizEntity>> getQuizById(String quizId) async {
+    QuickQuizEntity? existing;
     if (_memoryQuickQuizzes != null) {
       final found = _memoryQuickQuizzes!.where((q) => q.id == quizId);
-      if (found.isNotEmpty && found.first.questions.isNotEmpty) {
-        return Result.success(found.first);
+      if (found.isNotEmpty) {
+        existing = found.first;
+        if (existing.questions.isNotEmpty) {
+          return Result.success(existing);
+        }
       }
     }
 
     try {
       final remoteQuiz = await _remoteDatasource.getQuizById(quizId);
-      final domainQuiz = remoteQuiz.toDomain();
+      var domainQuiz = remoteQuiz.toDomain();
+      if (existing != null && existing.isCompleted && !domainQuiz.isCompleted) {
+        domainQuiz = domainQuiz.copyWith(
+          isCompleted: true,
+          lastScore: domainQuiz.lastScore ?? existing.lastScore,
+          lastMaxScore: domainQuiz.lastMaxScore ?? existing.lastMaxScore,
+        );
+      }
       if (_memoryQuickQuizzes != null) {
         _memoryQuickQuizzes = _memoryQuickQuizzes!
             .map((q) => q.id == quizId ? domainQuiz : q)
@@ -390,6 +402,33 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
     }
   }
 
+  Future<String> _markQuizCompletedInCache(
+    String quizId, {
+    int? score,
+    int? maxScore,
+  }) async {
+    String quizTitle = '';
+    if (_memoryQuickQuizzes != null) {
+      _memoryQuickQuizzes = _memoryQuickQuizzes!.map((q) {
+        if (q.id == quizId) {
+          quizTitle = q.title;
+          return q.copyWith(
+            isCompleted: true,
+            lastScore: score ?? q.lastScore,
+            lastMaxScore: maxScore ?? q.lastMaxScore,
+          );
+        }
+        return q;
+      }).toList();
+      try {
+        await _localDatasource.cacheQuickQuizzes(
+          _memoryQuickQuizzes!.map(QuickQuizDto.fromDomain).toList(),
+        );
+      } catch (_) {}
+    }
+    return quizTitle;
+  }
+
   @override
   Future<Result<QuizSubmissionResultEntity>> submitQuizAnswers({
     required String quizId,
@@ -406,20 +445,11 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
       final totalQuestions =
           domain.answers.isNotEmpty ? domain.answers.length : answers.length;
 
-      String quizTitle = '';
-      if (_memoryQuickQuizzes != null) {
-        _memoryQuickQuizzes = _memoryQuickQuizzes!.map((q) {
-          if (q.id == quizId) {
-            quizTitle = q.title;
-            return q.copyWith(
-              isCompleted: true,
-              lastScore: correctCount,
-              lastMaxScore: totalQuestions,
-            );
-          }
-          return q;
-        }).toList();
-      }
+      final quizTitle = await _markQuizCompletedInCache(
+        quizId,
+        score: correctCount,
+        maxScore: totalQuestions,
+      );
 
       _localQuizHistory.insert(
         0,
@@ -437,7 +467,16 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
 
       return Result.success(domain);
     } catch (e, st) {
-      return Result.failure(ExceptionMapper.map(e, st));
+      final mapped = ExceptionMapper.map(e, st);
+      final msg = (mapped.debugMessage ?? mapped.toString()).toLowerCase();
+      final isConflict = (mapped is ServerFailure && mapped.statusCode == 409) ||
+          msg.contains('already completed') ||
+          msg.contains('single attempt') ||
+          msg.contains('attempt_already_exists');
+      if (isConflict) {
+        await _markQuizCompletedInCache(quizId);
+      }
+      return Result.failure(mapped);
     }
   }
 

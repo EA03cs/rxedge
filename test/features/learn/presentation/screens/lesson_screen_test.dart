@@ -209,5 +209,25 @@ void main() {
       expect(find.text('Quiz coming soon'), findsOneWidget);
       expect(find.text('Start Quiz Now'), findsNothing);
     });
+
+    testWidgets('shows Review Quiz Answers when matched quiz is already completed', (tester) async {
+      when(() => mockRepo.getProducts(forceRefresh: any(named: 'forceRefresh')))
+          .thenAnswer((_) async => Result.success([
+                sampleProduct.copyWith(
+                  lessons: [sampleLesson.copyWith(isCompleted: true)],
+                ),
+              ]));
+      when(() => mockRepo.markLessonCompleted('les_test_01')).thenAnswer(
+        (_) async => Result.success(sampleLesson.copyWith(isCompleted: true)),
+      );
+      when(() => mockChallengesRepo.getQuickQuizzes(forceRefresh: any(named: 'forceRefresh')))
+          .thenAnswer((_) async => Result.success([sampleQuiz.copyWith(isCompleted: true)]));
+
+      await tester.pumpWidget(buildTestWidget(lesson: sampleLesson.copyWith(isCompleted: true)));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Review Quiz Answers'), findsOneWidget);
+      expect(find.text('Take quick quiz'), findsNothing);
+    });
   });
 }

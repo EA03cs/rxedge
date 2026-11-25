@@ -261,6 +261,16 @@ class QuizQuestionDto {
         correctOptionIndex: correctOptionIndex,
         explanation: explanation,
       );
+
+  factory QuizQuestionDto.fromDomain(QuizQuestionEntity entity) =>
+      QuizQuestionDto(
+        id: entity.id,
+        question: entity.question,
+        options: entity.options,
+        optionIds: entity.optionIds,
+        correctOptionIndex: entity.correctOptionIndex,
+        explanation: entity.explanation,
+      );
 }
 
 /// DTO for Quick Quiz
@@ -373,6 +383,23 @@ class QuickQuizDto {
         startDate: startDate,
         endDate: endDate,
         completionWindowDays: completionWindowDays,
+      );
+
+  factory QuickQuizDto.fromDomain(QuickQuizEntity entity) => QuickQuizDto(
+        id: entity.id,
+        lessonId: entity.lessonId,
+        title: entity.title,
+        category: entity.category,
+        durationMinutes: entity.durationMinutes,
+        rewardPoints: entity.rewardPoints,
+        questions: entity.questions.map(QuizQuestionDto.fromDomain).toList(),
+        questionCount: entity.questionCount,
+        isCompleted: entity.isCompleted,
+        lastScore: entity.lastScore,
+        lastMaxScore: entity.lastMaxScore,
+        startDate: entity.startDate,
+        endDate: entity.endDate,
+        completionWindowDays: entity.completionWindowDays,
       );
 }
 

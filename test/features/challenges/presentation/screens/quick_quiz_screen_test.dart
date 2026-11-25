@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:rxedge/app/l10n/l10n.dart';
+import 'package:rxedge/core/error/failures.dart';
 import 'package:rxedge/core/utils/result.dart';
 import 'package:rxedge/core/widgets/widgets.dart';
 import 'package:rxedge/features/challenges/data/repositories/challenges_repository_impl.dart';
@@ -322,6 +323,161 @@ void main() {
 
       expect(find.text('How long does Rohto Dry Aid relieve dryness?'), findsNothing);
       expect(find.text('How long can Rohto Dry Aid be kept after opening?'), findsOneWidget);
+    });
+
+    testWidgets(
+        'auto-opens completed attempt review when quiz.isCompleted is true',
+        (tester) async {
+      tester.view.physicalSize = const Size(1200, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      const completedQuiz = QuickQuizEntity(
+        id: 'quiz-already-done',
+        title: 'Rohto Dry Aid Attempted Quiz',
+        category: 'Ophthalmology',
+        durationMinutes: 3,
+        rewardPoints: 50,
+        isCompleted: true,
+        questions: [],
+      );
+
+      const reviewResult = QuizSubmissionResultEntity(
+        attemptId: 'att-prev',
+        scorePercentage: 100,
+        isPassed: true,
+        passingScore: 70,
+        pointsAwarded: 50,
+        answers: [
+          QuizAnswerEvaluationEntity(
+            questionId: 'q1',
+            questionText: 'What technology powers Rohto Dry Aid?',
+            selectedOptionId: 'o1',
+            selectedOptionText: 'Tearshield Technology',
+            correctOptionId: 'o1',
+            correctOptionText: 'Tearshield Technology',
+            isCorrect: true,
+            explanation: 'Works on all layers of the tear film.',
+          ),
+        ],
+      );
+
+      when(() => mockRepo.getQuizAttemptReview('quiz-already-done'))
+          .thenAnswer((_) async => const Result.success(reviewResult));
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            challengesRepositoryProvider.overrideWithValue(mockRepo),
+          ],
+          child: const MaterialApp(
+            locale: Locale('en'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: [Locale('en')],
+            home: QuickQuizScreen(quiz: completedQuiz),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      verify(() => mockRepo.getQuizAttemptReview('quiz-already-done')).called(1);
+      expect(find.text('100%'), findsOneWidget);
+      expect(find.text('What technology powers Rohto Dry Aid?'), findsOneWidget);
+    });
+
+    testWidgets(
+        'recovers gracefully on 409 single-attempt conflict by showing saved review',
+        (tester) async {
+      tester.view.physicalSize = const Size(1200, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      const serverQuiz = QuickQuizEntity(
+        id: 'quiz-409',
+        title: 'Rohto Cool Clinical Quiz',
+        category: 'Ophthalmology',
+        durationMinutes: 3,
+        rewardPoints: 40,
+        isCompleted: false,
+        questions: [
+          QuizQuestionEntity(
+            id: 'q1',
+            question: 'Which patients benefit from Rohto Cool?',
+            options: ['Contact lens wearers & screen fatigue', 'None'],
+            optionIds: ['opt1', 'opt2'],
+            correctOptionIndex: -1,
+            explanation: '',
+          ),
+        ],
+      );
+
+      const reviewResult = QuizSubmissionResultEntity(
+        attemptId: 'att-409',
+        scorePercentage: 100,
+        isPassed: true,
+        passingScore: 70,
+        pointsAwarded: 40,
+        answers: [
+          QuizAnswerEvaluationEntity(
+            questionId: 'q1',
+            questionText: 'Which patients benefit from Rohto Cool?',
+            selectedOptionId: 'opt1',
+            selectedOptionText: 'Contact lens wearers & screen fatigue',
+            correctOptionId: 'opt1',
+            correctOptionText: 'Contact lens wearers & screen fatigue',
+            isCorrect: true,
+            explanation: 'Refreshes tired eyes and supports lens comfort.',
+          ),
+        ],
+      );
+
+      when(() => mockRepo.submitQuizAnswers(
+            quizId: 'quiz-409',
+            answers: any(named: 'answers'),
+          )).thenAnswer(
+        (_) async => const Result.failure(
+          ServerFailure(
+            statusCode: 409,
+            debugMessage: 'You have already completed your single attempt for this quiz',
+          ),
+        ),
+      );
+      when(() => mockRepo.getQuizAttemptReview('quiz-409'))
+          .thenAnswer((_) async => const Result.success(reviewResult));
+      when(() => mockRepo.getQuickQuizzes(forceRefresh: any(named: 'forceRefresh')))
+          .thenAnswer((_) async => const Result.success([]));
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            challengesRepositoryProvider.overrideWithValue(mockRepo),
+          ],
+          child: const MaterialApp(
+            locale: Locale('en'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: [Locale('en')],
+            home: QuickQuizScreen(quiz: serverQuiz),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Contact lens wearers & screen fatigue'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Finish Quiz'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('100%'), findsOneWidget);
+      expect(
+        find.text('Refreshes tired eyes and supports lens comfort.'),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          'You have already attempted this quiz. Retakes are not permitted per challenge policy.',
+        ),
+        findsOneWidget,
+      );
     });
   });
 }
