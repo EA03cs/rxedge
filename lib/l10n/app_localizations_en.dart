@@ -1648,7 +1648,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errUnknown => 'An unexpected error occurred. Please try again.';
 
   @override
-<<<<<<< HEAD
   String get quizOfflineSubmitError =>
       'Connect to the internet to submit your answers.';
 
@@ -1661,7 +1660,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get syncRetryFailed =>
       'Still unable to sync. Please check your connection or submission details.';
-=======
+
+  @override
   String minReadCount(int minutes) {
     return '$minutes min read';
   }
@@ -1815,5 +1815,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unableToLoadQuizReview => 'Unable to load quiz review.';
->>>>>>> fix/M7-remove-hardcoded-strings
 }

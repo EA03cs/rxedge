@@ -3020,7 +3020,6 @@ abstract class AppLocalizations {
   /// **'An unexpected error occurred. Please try again.'**
   String get errUnknown;
 
-<<<<<<< HEAD
   /// No description provided for @quizOfflineSubmitError.
   ///
   /// In en, this message translates to:
@@ -3044,7 +3043,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Still unable to sync. Please check your connection or submission details.'**
   String get syncRetryFailed;
-=======
+
   /// No description provided for @minReadCount.
   ///
   /// In en, this message translates to:
@@ -3296,7 +3295,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unable to load quiz review.'**
   String get unableToLoadQuizReview;
->>>>>>> fix/M7-remove-hardcoded-strings
 }
 
 class _AppLocalizationsDelegate
