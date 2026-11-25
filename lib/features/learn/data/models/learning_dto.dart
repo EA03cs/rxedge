@@ -14,7 +14,7 @@ List<String> parseClinicalBulletList(dynamic raw) {
   if (text.isEmpty) return const [];
 
   final parts = text
-      .split(RegExp(r'(?:\r?\n|•|؛|;)'))
+      .split(RegExp('(?:\\r?\\n|•|\u061B|;)'))
       .map((s) => s.replaceFirst(RegExp(r'^[-*]\s+'), '').trim())
       .where((s) => s.isNotEmpty)
       .toList();

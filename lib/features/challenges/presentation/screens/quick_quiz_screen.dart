@@ -333,9 +333,9 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                     _isSubmitting = false;
                   });
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
+                    SnackBar(
                       content: Text(
-                        'You have already attempted this quiz. Retakes are not permitted per challenge policy.',
+                        context.l10n.quizAlreadyAttemptedError,
                       ),
                       behavior: SnackBarBehavior.floating,
                     ),
@@ -349,6 +349,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
 
           if (!mounted) return;
           setState(() => _isSubmitting = false);
+          final l10n = context.l10n;
           final errorText = FailureMessageMapper.map(context, failure);
           final failStr = (failure.debugMessage ?? failure.toString());
           final isWindowClosed = failStr.contains('QUIZ_WINDOW_CLOSED');
@@ -356,13 +357,11 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
 
           String message = errorText;
           if (isConflict) {
-            message =
-                'You have already attempted this quiz. Retakes are not permitted per challenge policy.';
+            message = l10n.quizAlreadyAttemptedError;
           } else if (isWindowClosed) {
-            message = 'This quiz is closed as the completion window has ended.';
+            message = l10n.quizWindowClosedError;
           } else if (isNotStarted) {
-            message =
-                'This quiz has not started yet. Please check back on the start date.';
+            message = l10n.quizNotStartedError;
           }
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -545,7 +544,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                           Icon(LucideIcons.clock4, size: 14.0, color: colors.textSecondary),
                           const SizedBox(width: RxSpacing.s4),
                           Text(
-                            _formatDuration(_stopwatch.elapsed),
+                            _formatDuration(context, _stopwatch.elapsed),
                             style: textTheme.labelSmall?.copyWith(color: colors.textSecondary),
                           ),
                         ],
@@ -889,7 +888,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                             StatusBadge(
                               label: pointsEarned > 0
                                   ? l10n.pointsPlusValue(pointsEarned)
-                                  : 'Claimed',
+                                  : l10n.marksClaimedLabel,
                               variant: pointsEarned > 0
                                   ? StatusBadgeVariant.accent
                                   : StatusBadgeVariant.neutral,
@@ -912,7 +911,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                             ),
                             const SizedBox(height: 4.0),
                             Text(
-                              _formatDuration(_stopwatch.elapsed),
+                              _formatDuration(context, _stopwatch.elapsed),
                               style: textTheme.labelLarge?.copyWith(
                                 fontWeight: FontWeight.w700,
                                 color: colors.textPrimary,
@@ -943,7 +942,9 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                           const SizedBox(width: RxSpacing.s8),
                           Expanded(
                             child: Text(
-                              'Marks Note: Quiz challenge marks${_quiz.rewardPoints > 0 ? ' (+${_quiz.rewardPoints} Marks)' : ''} are awarded once upon first pass. Additional attempts serve as clinical refresher and practice.',
+                              _quiz.rewardPoints > 0
+                                  ? l10n.quizMarksNoteWithReward(_quiz.rewardPoints)
+                                  : l10n.quizMarksNote,
                               style: textTheme.bodySmall?.copyWith(
                                 color: colors.textSecondary,
                                 fontSize: 11.5,
@@ -974,7 +975,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                           const SizedBox(width: RxSpacing.s8),
                           Expanded(
                             child: Text(
-                              'Quiz passed! The associated lesson has been automatically marked as complete.',
+                              l10n.quizPassedLessonCompleted,
                               style: textTheme.bodySmall?.copyWith(
                                 color: colors.textPrimary,
                                 fontWeight: FontWeight.w600,
@@ -1544,9 +1545,9 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
     );
   }
 
-  String _formatDuration(Duration d) {
+  String _formatDuration(BuildContext context, Duration d) {
     final m = d.inMinutes;
     final s = d.inSeconds % 60;
-    return '${m}m ${s}s';
+    return context.l10n.durationMinutesSeconds(m, s);
   }
 }

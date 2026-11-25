@@ -93,7 +93,7 @@ class HomeScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: RxSpacing.s12),
 
-                      // 3. Stats Strip (إحصائيات)
+                      // 3. Stats Strip
                       SlimStatsStrip(stats: dashboard.stats),
                       const SizedBox(height: RxSpacing.s12),
 
@@ -101,7 +101,7 @@ class HomeScreen extends ConsumerWidget {
                       const HomeQuickActions(),
                       const SizedBox(height: RxSpacing.s14),
 
-                      // 5. Monthly Challenge (تحدي شهري)
+                      // 5. Monthly Challenge
                       MonthlyChallengeCard(challenge: dashboard.challenge),
                       const SizedBox(height: RxSpacing.s14),
 
@@ -109,11 +109,11 @@ class HomeScreen extends ConsumerWidget {
                       PersonalDashboardCard(stats: dashboard.stats),
                       const SizedBox(height: RxSpacing.s14),
 
-                      // 6. Objection of the Month (اعتراض الشهر)
+                      // 6. Objection of the Month
                       ObjectionQuoteCard(objection: dashboard.objection),
                       const SizedBox(height: RxSpacing.s16),
 
-                      // 7. What's New (ما الجديد - مضغوط 2-3 عناصر)
+                      // 7. What's New (compact 2-3 items)
                       WhatsNewSection(materials: dashboard.recentMaterials),
                     ],
                   ),
