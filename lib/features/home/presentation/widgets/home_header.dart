@@ -32,7 +32,7 @@ class HomeHeader extends ConsumerWidget {
     } else if (parts.isNotEmpty && parts[0].isNotEmpty) {
       return parts[0][0].toUpperCase();
     }
-    return 'AM';
+    return 'RX';
   }
 
   @override
@@ -42,7 +42,9 @@ class HomeHeader extends ConsumerWidget {
     final authState = ref.watch(authControllerProvider);
     final user = authState is AuthAuthenticated ? authState.user : null;
 
-    final displayName = user?.displayName ?? 'Ahmed Mostafa';
+    final displayName = (user?.displayName.trim().isNotEmpty ?? false)
+        ? user!.displayName
+        : 'Representative';
     final firstName = displayName.split(' ').first;
     final salutation = _getSalutation(context);
 

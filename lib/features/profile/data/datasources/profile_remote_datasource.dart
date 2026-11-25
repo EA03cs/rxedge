@@ -13,11 +13,11 @@ abstract class ProfileRemoteDatasource {
 
 /// Pharma representative profile datasource backed by `GET /auth/me`
 class ProfileRemoteDatasourceImpl implements ProfileRemoteDatasource {
-  final Dio? dio;
+  final Dio dio;
   final bool simulateError;
 
   ProfileRemoteDatasourceImpl({
-    this.dio,
+    required this.dio,
     this.simulateError = false,
   });
 
@@ -27,51 +27,9 @@ class ProfileRemoteDatasourceImpl implements ProfileRemoteDatasource {
       throw const ServerException('Failed to retrieve user profile');
     }
 
-    if (dio != null) {
-      final response = await dio!.get<dynamic>(ApiEndpoints.me);
-      final data = ApiResponseParser.unwrapMap(response.data);
-      return UserProfileDto.fromJson(data);
-    }
-
-    await Future<void>.delayed(const Duration(milliseconds: 100));
-
-    return UserProfileDto(
-      id: 'usr_ahmed_01',
-      displayName: 'Ahmed Mostafa',
-      email: 'ahmed.mostafa@rxedgepharma.com',
-      employeeId: 'MR-7842',
-      territory: 'Cairo North & Heliopolis District',
-      role: 'Senior Medical Representative (Ophthalmology)',
-      points: 1250,
-      streakDays: 4,
-      badges: [
-        BadgeDto(
-          id: 'badge_1',
-          name: 'Spotlight Rep',
-          description: 'Top 3 district performer in Q3 launch',
-          earnedAtIso: DateTime(2026, 10, 15).toIso8601String(),
-        ),
-        BadgeDto(
-          id: 'badge_2',
-          name: 'Ophthalmology Ace',
-          description: 'Completed 100% of Rohto Dry Aid clinical modules',
-          earnedAtIso: DateTime(2026, 10, 28).toIso8601String(),
-        ),
-        BadgeDto(
-          id: 'badge_3',
-          name: 'E-Detail Pro',
-          description: 'Presented over 30 verified digital detailing sessions',
-          earnedAtIso: DateTime(2026, 11, 2).toIso8601String(),
-        ),
-      ],
-      notificationPreferences: const NotificationPreferencesDto(
-        newMaterials: true,
-        monthlyChallenges: true,
-        feedbackReplies: true,
-        quizReminders: true,
-      ),
-      storageUsageBytes: 25800000,
-    );
+    final response = await dio.get<dynamic>(ApiEndpoints.me);
+    final data = ApiResponseParser.unwrapMap(response.data);
+    return UserProfileDto.fromJson(data);
   }
 
   @override
@@ -79,7 +37,6 @@ class ProfileRemoteDatasourceImpl implements ProfileRemoteDatasource {
     if (simulateError) {
       throw const ServerException('Failed to update preferences on server');
     }
-    await Future<void>.delayed(const Duration(milliseconds: 80));
   }
 
   @override
@@ -87,13 +44,9 @@ class ProfileRemoteDatasourceImpl implements ProfileRemoteDatasource {
     if (simulateError) {
       throw const ServerException('Failed to update language preference');
     }
-    if (dio != null) {
-      await dio!.patch<dynamic>(
-        ApiEndpoints.mePreferences,
-        data: {'language': languageCode},
-      );
-      return;
-    }
-    await Future<void>.delayed(const Duration(milliseconds: 50));
+    await dio.patch<dynamic>(
+      ApiEndpoints.mePreferences,
+      data: {'language': languageCode},
+    );
   }
 }
