@@ -325,7 +325,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String rankInDistrict(int rank, int total) {
-    return 'الترتيب #$rank من أصل $total بالمنطقة';
+    return 'الترتيب #$rank من أصل $total على مستوى الشركة';
   }
 
   @override
@@ -362,7 +362,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get moduleEyeKnowChallenges => 'تحديات المعرفة';
 
   @override
-  String get moduleEyeKnowChallengesSub => 'الاختبارات وترتيب المنطقة';
+  String get moduleEyeKnowChallengesSub => 'الاختبارات وترتيب الشركة';
 
   @override
   String get moduleRepVoice => 'صوت المندوب';
@@ -1229,14 +1229,14 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get leaderboardUpdateCaption => 'يُحدّث كل ساعة بين مندوبي المنطقة';
+  String get leaderboardUpdateCaption => 'يُحدّث كل ساعة بين مندوبي الشركة';
 
   @override
   String get youLabel => 'أنت';
 
   @override
   String rankOfTotalDistrict(int rank, int total) {
-    return 'الترتيب #$rank من $total في المنطقة';
+    return 'الترتيب #$rank من $total على مستوى الشركة';
   }
 
   @override

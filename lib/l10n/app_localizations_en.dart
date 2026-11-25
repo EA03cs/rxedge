@@ -325,7 +325,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String rankInDistrict(int rank, int total) {
-    return 'Rank #$rank of $total in District';
+    return 'Rank #$rank of $total Company-wide';
   }
 
   @override
@@ -362,7 +362,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get moduleEyeKnowChallenges => 'Eye-Know Challenges';
 
   @override
-  String get moduleEyeKnowChallengesSub => 'Quizzes & District Rank';
+  String get moduleEyeKnowChallengesSub => 'Quizzes & Company Rank';
 
   @override
   String get moduleRepVoice => 'Rep Voice';
@@ -1226,14 +1226,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get leaderboardUpdateCaption =>
-      'Updated hourly across District medical reps';
+      'Updated hourly across company medical reps';
 
   @override
   String get youLabel => 'You';
 
   @override
   String rankOfTotalDistrict(int rank, int total) {
-    return 'Rank #$rank of $total in District';
+    return 'Rank #$rank of $total Company-wide';
   }
 
   @override

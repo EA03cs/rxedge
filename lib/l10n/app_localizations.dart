@@ -689,7 +689,7 @@ abstract class AppLocalizations {
   /// No description provided for @rankInDistrict.
   ///
   /// In en, this message translates to:
-  /// **'Rank #{rank} of {total} in District'**
+  /// **'Rank #{rank} of {total} Company-wide'**
   String rankInDistrict(int rank, int total);
 
   /// No description provided for @objectionOfTheMonth.
@@ -761,7 +761,7 @@ abstract class AppLocalizations {
   /// No description provided for @moduleEyeKnowChallengesSub.
   ///
   /// In en, this message translates to:
-  /// **'Quizzes & District Rank'**
+  /// **'Quizzes & Company Rank'**
   String get moduleEyeKnowChallengesSub;
 
   /// No description provided for @moduleRepVoice.
@@ -2309,7 +2309,7 @@ abstract class AppLocalizations {
   /// No description provided for @leaderboardUpdateCaption.
   ///
   /// In en, this message translates to:
-  /// **'Updated hourly across District medical reps'**
+  /// **'Updated hourly across company medical reps'**
   String get leaderboardUpdateCaption;
 
   /// No description provided for @youLabel.
@@ -2321,7 +2321,7 @@ abstract class AppLocalizations {
   /// No description provided for @rankOfTotalDistrict.
   ///
   /// In en, this message translates to:
-  /// **'Rank #{rank} of {total} in District'**
+  /// **'Rank #{rank} of {total} Company-wide'**
   String rankOfTotalDistrict(int rank, int total);
 
   /// No description provided for @rankOfTotalSimple.

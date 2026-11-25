@@ -123,7 +123,7 @@
       "days": { "type": "int" }
     }
   },
-  "rankInDistrict": "الترتيب #{rank} من أصل {total} بالمنطقة",
+  "rankInDistrict": "الترتيب #{rank} من أصل {total} على مستوى الشركة",
   "@rankInDistrict": {
     "placeholders": {
       "rank": { "type": "int" },
@@ -141,7 +141,7 @@
   "moduleMarketingHub": "مركز التسويق",
   "moduleMarketingHubSub": "المواد الدعائية والعروض التقديمية",
   "moduleEyeKnowChallenges": "تحديات المعرفة",
-  "moduleEyeKnowChallengesSub": "الاختبارات وترتيب المنطقة",
+  "moduleEyeKnowChallengesSub": "الاختبارات وترتيب الشركة",
   "moduleRepVoice": "صوت المندوب",
   "moduleRepVoiceSub": "ملاحظات الميدان والاعتراضات",
   "quickActionQuiz": "اختبار سريع",
@@ -420,9 +420,9 @@
   "confidentialDetailingFooter": "مادة ترويجية طبية معتمدة",
   "activeSprintBadge": "التحدي النشط",
   "timeLeftCountdown": "متبقي {days} ي {hours} س",
-  "leaderboardUpdateCaption": "يُحدّث كل ساعة بين مندوبي المنطقة",
+  "leaderboardUpdateCaption": "يُحدّث كل ساعة بين مندوبي الشركة",
   "youLabel": "أنت",
-  "rankOfTotalDistrict": "الترتيب #{rank} من {total} في المنطقة",
+  "rankOfTotalDistrict": "الترتيب #{rank} من {total} على مستوى الشركة",
   "rankOfTotalSimple": "الترتيب #{rank} من {total}",
   "noQuizzesTitle": "لا توجد اختبارات متاحة",
   "noQuizzesDesc": "ستظهر الاختبارات السريرية الجديدة مع كل دورة ترويجية.",

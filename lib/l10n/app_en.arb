@@ -123,7 +123,7 @@
       "days": { "type": "int" }
     }
   },
-  "rankInDistrict": "Rank #{rank} of {total} in District",
+  "rankInDistrict": "Rank #{rank} of {total} Company-wide",
   "@rankInDistrict": {
     "placeholders": {
       "rank": { "type": "int" },
@@ -141,7 +141,7 @@
   "moduleMarketingHub": "Marketing Hub",
   "moduleMarketingHubSub": "Visual Aids & E-Detailing",
   "moduleEyeKnowChallenges": "Eye-Know Challenges",
-  "moduleEyeKnowChallengesSub": "Quizzes & District Rank",
+  "moduleEyeKnowChallengesSub": "Quizzes & Company Rank",
   "moduleRepVoice": "Rep Voice",
   "moduleRepVoiceSub": "Field Insights & Objections",
   "quickActionQuiz": "Quick quiz",
@@ -484,9 +484,9 @@
   "activeSprintBadge": "Active Sprint",
   "timeLeftCountdown": "{days}d {hours}h left",
   "@timeLeftCountdown": { "placeholders": { "days": { "type": "int" }, "hours": { "type": "int" } } },
-  "leaderboardUpdateCaption": "Updated hourly across District medical reps",
+  "leaderboardUpdateCaption": "Updated hourly across company medical reps",
   "youLabel": "You",
-  "rankOfTotalDistrict": "Rank #{rank} of {total} in District",
+  "rankOfTotalDistrict": "Rank #{rank} of {total} Company-wide",
   "@rankOfTotalDistrict": { "placeholders": { "rank": { "type": "int" }, "total": { "type": "int" } } },
   "rankOfTotalSimple": "Rank #{rank} of {total}",
   "@rankOfTotalSimple": { "placeholders": { "rank": { "type": "int" }, "total": { "type": "int" } } },

@@ -386,7 +386,7 @@ class MonthlyChallengeView extends StatelessWidget {
                                     challenge.totalParticipants,
                                   )
                                 : (userRank <= 0
-                                    ? 'Unranked in District'
+                                    ? l10n.unrankedLabel
                                     : l10n.statPoints(userPoints)),
                             style: const TextStyle(
                               color: Color(0xFF64748B),
