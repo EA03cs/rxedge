@@ -77,6 +77,7 @@ class MonthlyChallengeEntity {
   final double progress; // 0.0 to 1.0
   final int currentRank;
   final int totalParticipants;
+  final String scopeName;
 
   const MonthlyChallengeEntity({
     required this.id,
@@ -85,6 +86,7 @@ class MonthlyChallengeEntity {
     required this.progress,
     required this.currentRank,
     required this.totalParticipants,
+    this.scopeName = 'Company',
   });
 
   @override
@@ -94,10 +96,12 @@ class MonthlyChallengeEntity {
           runtimeType == other.runtimeType &&
           id == other.id &&
           title == other.title &&
-          currentRank == other.currentRank;
+          currentRank == other.currentRank &&
+          scopeName == other.scopeName;
 
   @override
-  int get hashCode => id.hashCode ^ title.hashCode ^ currentRank.hashCode;
+  int get hashCode =>
+      id.hashCode ^ title.hashCode ^ currentRank.hashCode ^ scopeName.hashCode;
 }
 
 /// Objection of the Month Quote Data

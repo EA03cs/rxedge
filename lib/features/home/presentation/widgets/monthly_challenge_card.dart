@@ -219,7 +219,7 @@ class MonthlyChallengeCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 10.0),
 
-                          // District Rank & Action Chevron
+                          // Scope Rank & Action Chevron
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -234,17 +234,36 @@ class MonthlyChallengeCard extends StatelessWidget {
                                     ),
                                     const SizedBox(width: 5.0),
                                     Flexible(
-                                      child: Text(
-                                        challenge.currentRank > 0
-                                            ? l10n.rankInDistrict(challenge.currentRank, challenge.totalParticipants)
-                                            : 'Unranked in District',
-                                        style: textTheme.bodySmall?.copyWith(
-                                          color: const Color(0xFF475569),
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 11.5,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                      child: Builder(
+                                        builder: (context) {
+                                          final rawScope =
+                                              challenge.scopeName.trim();
+                                          final scope = rawScope.isNotEmpty
+                                              ? rawScope
+                                              : 'Company';
+                                          final isArabic = l10n.localeName == 'ar';
+                                          final arScope = scope == 'Company'
+                                              ? 'الشركة'
+                                              : scope;
+                                          final rankLabel =
+                                              challenge.currentRank > 0
+                                                  ? (isArabic
+                                                      ? 'الترتيب #${challenge.currentRank} من أصل ${challenge.totalParticipants} في $arScope'
+                                                      : 'Rank #${challenge.currentRank} of ${challenge.totalParticipants} in $scope')
+                                                  : (isArabic
+                                                      ? 'غير مصنف في $arScope'
+                                                      : 'Unranked in $scope');
+                                          return Text(
+                                            rankLabel,
+                                            style: textTheme.bodySmall?.copyWith(
+                                              color: const Color(0xFF475569),
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 11.5,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          );
+                                        },
                                       ),
                                     ),
                                   ],

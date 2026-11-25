@@ -104,14 +104,14 @@ class HomeDashboardDto {
         therapeuticArea: 'Ophthalmology (Dry Eye)',
         description:
             'Rohto Dry Aid with Tearshield Technology formulation restores natural tear film across all 3 layers for up to 12 hours.',
-        boxImageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500',
+        boxImageUrl: 'assets/images/rohto_dry_aid.png',
       );
     }
 
     continueLesson ??= const ContinueLearningDto(
       id: 'les_rda_1',
       productName: 'Rohto Dry Aid',
-      lessonTitle: 'Tearshield Technology™ & Triple Layer Restoration',
+      lessonTitle: 'Tearshield Technology & 3-Layer Tear Film Support',
       progress: 0.35,
       totalModules: 3,
       completedModules: 1,
@@ -123,6 +123,11 @@ class HomeDashboardDto {
         : <String, dynamic>{};
     if (json['currentChallengeRank'] != null) {
       challengeMap['current_rank'] = json['currentChallengeRank'];
+    }
+    if (challengeMap['scopeName'] == null &&
+        challengeMap['scope_name'] == null &&
+        json['scopeName'] != null) {
+      challengeMap['scopeName'] = json['scopeName'];
     }
     if (rawChallenge is Map) {
       resolvedChallenge = MonthlyChallengeDto.fromJson(challengeMap);
@@ -376,6 +381,7 @@ class MonthlyChallengeDto {
   final double progress;
   final int currentRank;
   final int totalParticipants;
+  final String scopeName;
 
   const MonthlyChallengeDto({
     required this.id,
@@ -384,6 +390,7 @@ class MonthlyChallengeDto {
     required this.progress,
     required this.currentRank,
     required this.totalParticipants,
+    this.scopeName = 'Company',
   });
 
   factory MonthlyChallengeDto.fromJson(Map<String, dynamic> json) {
@@ -414,6 +421,15 @@ class MonthlyChallengeDto {
       }
     }
 
+    final rawScopeName = (json['scopeName'] ??
+            json['scope_name'] ??
+            json['rankScope'] ??
+            json['scope'])
+        ?.toString()
+        .trim();
+    final scopeName =
+        (rawScopeName != null && rawScopeName.isNotEmpty) ? rawScopeName : 'Company';
+
     return MonthlyChallengeDto(
       id: json['id']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
@@ -425,6 +441,7 @@ class MonthlyChallengeDto {
       totalParticipants: (json['total_participants'] as num?)?.toInt() ??
           (json['totalParticipants'] as num?)?.toInt() ??
           0,
+      scopeName: scopeName,
     );
   }
 
@@ -435,6 +452,7 @@ class MonthlyChallengeDto {
         'progress': progress,
         'current_rank': currentRank,
         'total_participants': totalParticipants,
+        'scope_name': scopeName,
       };
 
   MonthlyChallengeEntity toDomain() => MonthlyChallengeEntity(
@@ -444,6 +462,7 @@ class MonthlyChallengeDto {
         progress: progress,
         currentRank: currentRank,
         totalParticipants: totalParticipants,
+        scopeName: scopeName,
       );
 }
 

@@ -193,72 +193,78 @@ class _ProductFaqsAndStudiesViewState extends State<ProductFaqsAndStudiesView> {
               color: colors.info,
             ),
             const SizedBox(height: RxSpacing.s8),
-            ...studies.map((study) => Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => _openLink(study.fileUrl),
-                    borderRadius: RxRadii.borderCard,
-                    child: Container(
-                      margin: const EdgeInsetsDirectional.only(bottom: RxSpacing.s8),
-                      padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
-                      decoration: BoxDecoration(
-                        color: colors.surface,
-                        borderRadius: RxRadii.borderCard,
-                        border: Border.all(
-                          color: colors.border,
-                          width: RxShadows.hairlineBorderWidth,
-                        ),
+            ...studies.map((study) {
+              final hasLink = study.fileUrl.trim().isNotEmpty;
+              return Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: hasLink ? () => _openLink(study.fileUrl) : null,
+                  borderRadius: RxRadii.borderCard,
+                  child: Container(
+                    margin: const EdgeInsetsDirectional.only(bottom: RxSpacing.s8),
+                    padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
+                    decoration: BoxDecoration(
+                      color: colors.surface,
+                      borderRadius: RxRadii.borderCard,
+                      border: Border.all(
+                        color: colors.border,
+                        width: RxShadows.hairlineBorderWidth,
                       ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsetsDirectional.all(RxSpacing.s8),
-                            decoration: BoxDecoration(
-                              color: colors.infoSoft,
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            child: Icon(
-                              study.studyType == 'e_detailed_slides'
-                                  ? LucideIcons.presentation
-                                  : LucideIcons.fileText,
-                              size: 18.0,
-                              color: colors.info,
-                            ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsetsDirectional.all(RxSpacing.s8),
+                          decoration: BoxDecoration(
+                            color: colors.infoSoft,
+                            borderRadius: BorderRadius.circular(8.0),
                           ),
-                          const SizedBox(width: RxSpacing.s12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  study.title,
-                                  style: textTheme.bodySmall?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    color: colors.textPrimary,
-                                  ),
-                                ),
-                                const SizedBox(height: RxSpacing.s2),
-                                Text(
-                                  study.studyType == 'e_detailed_slides'
-                                      ? 'E-Detailed Slides / Clinical Monograph'
-                                      : 'Clinical Study Paper',
-                                  style: textTheme.labelSmall?.copyWith(
-                                    color: colors.textTertiary,
-                                  ),
-                                ),
-                              ],
-                            ),
+                          child: Icon(
+                            study.studyType == 'e_detailed_slides'
+                                ? LucideIcons.presentation
+                                : LucideIcons.fileText,
+                            size: 18.0,
+                            color: colors.info,
                           ),
+                        ),
+                        const SizedBox(width: RxSpacing.s12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                study.title,
+                                style: textTheme.bodySmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: colors.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: RxSpacing.s2),
+                              Text(
+                                hasLink
+                                    ? (study.studyType == 'e_detailed_slides'
+                                        ? 'E-Detailed Slides / Clinical Monograph'
+                                        : 'Clinical Study Paper')
+                                    : 'The attached will be either e-detailed slides of the studies or the original full supporting studies',
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: colors.textTertiary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (hasLink)
                           IconButton(
                             icon: const Icon(LucideIcons.externalLink, size: 18.0),
                             tooltip: l10n.openStudy,
                             onPressed: () => _openLink(study.fileUrl),
                           ),
-                        ],
-                      ),
+                      ],
                     ),
                   ),
-                )),
+                ),
+              );
+            }),
             const SizedBox(height: RxSpacing.s20),
           ],
 
@@ -482,7 +488,8 @@ class _ProductFaqsAndStudiesViewState extends State<ProductFaqsAndStudiesView> {
                         ),
                       ),
               ),
-              if (url.trim().isNotEmpty) ...[
+              if (url.trim().startsWith('http://') ||
+                  url.trim().startsWith('https://')) ...[
                 const SizedBox(height: RxSpacing.s12),
                 AppButton(
                   text: 'Open Source File',

@@ -92,6 +92,7 @@ void main() {
       expect(entity.continueLesson?.totalModules, 5);
       expect(entity.recommendedProduct?.therapeuticArea, 'طب وجراحة العيون');
       expect(entity.challenge.currentRank, 3);
+      expect(entity.challenge.scopeName, 'Company');
       expect(entity.objection.doctorQuote, 'لماذا التحويل إلى Rohto Dry Aid؟');
       expect(entity.recentMaterials.single.badgeType.name, 'updated');
       expect(entity.stats.points, 1250);
@@ -373,6 +374,18 @@ void main() {
       expect(home.stats.quarterlyBadges.single.title, 'Dry Eye Specialist');
       expect(home.stats.quarterlyBadges.single.quarter, 4);
       expect(home.challenge.progress, closeTo(0.72, 0.01));
+
+      final scopedHome = HomeDashboardDto.fromJson(<String, dynamic>{
+        'monthlyChallenge': <String, dynamic>{
+          'id': 'ch-scope',
+          'title': 'National Sprint',
+          'scopeName': 'Egypt',
+          'totalParticipants': 50,
+        },
+        'currentChallengeRank': 2,
+      }).toDomain();
+      expect(scopedHome.challenge.scopeName, 'Egypt');
+      expect(scopedHome.challenge.currentRank, 2);
 
       final quiz = QuickQuizDto.fromJson(<String, dynamic>{
         'id': 'q-cm',

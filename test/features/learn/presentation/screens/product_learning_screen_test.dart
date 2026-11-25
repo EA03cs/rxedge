@@ -130,5 +130,37 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets('renders Studies will be added placeholder without Open Study icon when fileUrl is empty',
+        (tester) async {
+      final placeholderProduct = sampleRohtoProduct.copyWith(
+        supportingStudies: const [
+          SupportingStudyEntity(
+            id: 'study_placeholder',
+            title: 'Studies will be added',
+            fileUrl: '',
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            themeMode: ThemeMode.light,
+            locale: const Locale('en'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: const [Locale('en')],
+            home: ProductLearningScreen(product: placeholderProduct),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('FAQs & Studies'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Studies will be added'), findsOneWidget);
+      expect(find.byTooltip('Open Study'), findsNothing);
+    });
   });
 }
