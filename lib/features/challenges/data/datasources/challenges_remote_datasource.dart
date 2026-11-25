@@ -165,10 +165,7 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
 
   @override
   Future<void> submitDoctorObjectionResponse(String objectionId, String userResponse) async {
-    if (dio != null) {
-      throw const NotFoundException('Objection responses endpoint is not available');
-    }
-    await Future<void>.delayed(const Duration(milliseconds: 200));
+    throw const NotFoundException('Objection responses endpoint is not available');
   }
 
   @override

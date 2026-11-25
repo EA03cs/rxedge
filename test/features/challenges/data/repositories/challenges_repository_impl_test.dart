@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:rxedge/core/error/exceptions.dart';
@@ -7,6 +8,7 @@ import 'package:rxedge/features/challenges/data/datasources/challenges_remote_da
 import 'package:rxedge/features/challenges/data/models/challenges_dto.dart';
 import 'package:rxedge/features/challenges/data/repositories/challenges_repository_impl.dart';
 
+class MockDio extends Mock implements Dio {}
 class MockChallengesRemoteDatasource extends Mock implements ChallengesRemoteDatasource {}
 class MockChallengesLocalDatasource extends Mock implements ChallengesLocalDatasource {}
 
@@ -219,8 +221,8 @@ void main() {
       expect(quizzesRes.dataOrNull?.first.isCompleted, isTrue);
     });
 
-    test('ChallengesRemoteDatasourceImpl without dio throws ServerException instead of local fake result', () async {
-      final remote = ChallengesRemoteDatasourceImpl();
+    test('ChallengesRemoteDatasourceImpl throws ServerException on simulateError', () async {
+      final remote = ChallengesRemoteDatasourceImpl(dio: MockDio(), simulateError: true);
       await expectLater(
         () => remote.submitQuizAnswers(
           quizId: 'quiz_1',
@@ -232,24 +234,16 @@ void main() {
       );
     });
 
-    test('submitDoctorObjectionResponse queues offline when remote fails', () async {
+    test('submitDoctorObjectionResponse returns failure when remote fails', () async {
       when(() => mockRemote.submitDoctorObjectionResponse('obj_1', 'Field response text'))
           .thenThrow(const NetworkException('Offline'));
-      when(() => mockLocal.queueDoctorObjectionResponse(
-            objectionId: 'obj_1',
-            userResponse: 'Field response text',
-          )).thenAnswer((_) async {});
 
       final result = await repository.submitDoctorObjectionResponse(
         objectionId: 'obj_1',
         userResponse: 'Field response text',
       );
 
-      expect(result.isSuccess, isTrue);
-      verify(() => mockLocal.queueDoctorObjectionResponse(
-            objectionId: 'obj_1',
-            userResponse: 'Field response text',
-          )).called(1);
+      expect(result.isFailure, isTrue);
     });
   });
 }

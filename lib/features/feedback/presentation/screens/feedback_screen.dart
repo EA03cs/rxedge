@@ -414,8 +414,9 @@ class FeedbackScreen extends ConsumerWidget {
                       const SizedBox(width: 4.0),
                       TextButton(
                         onPressed: () async {
-                          await HapticFeedback.lightImpact();
                           final messenger = ScaffoldMessenger.of(context);
+                          final retryFailedMsg = l10n.syncRetryFailed;
+                          await HapticFeedback.lightImpact();
                           final ok = await ref
                               .read(syncServiceProvider)
                               .retryItem(item.id);
@@ -426,7 +427,7 @@ class FeedbackScreen extends ConsumerWidget {
                           } else {
                             messenger.showSnackBar(
                               SnackBar(
-                                content: Text(l10n.syncRetryFailed),
+                                content: Text(retryFailedMsg),
                                 behavior: SnackBarBehavior.floating,
                               ),
                             );

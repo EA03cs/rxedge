@@ -306,7 +306,7 @@ void main() {
       );
 
       when(() => mockRepository.getHomeDashboard(forceRefresh: any(named: 'forceRefresh')))
-          .thenAnswer((_) async => Result.success(allEmptyDashboard));
+          .thenAnswer((_) async => const Result.success(allEmptyDashboard));
 
       await tester.pumpWidget(buildTestableScreen(child: const HomeScreen()));
       await tester.pump();

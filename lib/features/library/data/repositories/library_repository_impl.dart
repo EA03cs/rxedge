@@ -177,7 +177,7 @@ class LibraryRepositoryImpl implements LibraryRepository {
       if (localFilePath == null || !localFileExists(localFilePath)) {
         return const Result.failure(
           CacheFailure(
-            'Cannot mark material as downloaded without a verified file on disk.',
+            debugMessage: 'Cannot mark material as downloaded without a verified file on disk.',
           ),
         );
       }
