@@ -18,6 +18,10 @@ import '../controllers/feedback_controller.dart';
 import '../widgets/voice_note_player_card.dart';
 import 'feedback_success_screen.dart';
 
+/// Feature flag gating voice note recording in Rep Voice form.
+/// Hidden by default to match the simplified Rep Voice scope.
+const bool enableVoiceNoteInRepVoice = false;
+
 /// Guided Feedback Form with progressive disclosure and autosaved draft
 class FeedbackFormScreen extends ConsumerStatefulWidget {
   final FeedbackType type;
@@ -50,8 +54,7 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
   bool _hasVoiceNoteAttached = false;
 
   // Validation error states
-  String? _field1Error;
-  String? _field2Error;
+  String? _detailsError;
   String? _selectedProductId;
 
   // UI state
@@ -103,7 +106,8 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
               case FeedbackType.fieldFeedback:
                 _topicController.text = draft.topic ?? '';
                 _detailsController.text = draft.details ?? '';
-                _hasVoiceNoteAttached = draft.hasAttachment;
+                _hasVoiceNoteAttached =
+                    enableVoiceNoteInRepVoice && draft.hasAttachment;
                 break;
             }
           });
@@ -140,7 +144,8 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
       whereHeard: _whereHeardController.text.trim(),
       topic: _topicController.text.trim(),
       details: _detailsController.text.trim(),
-      hasAttachment: _hasPhotoAttached || _hasVoiceNoteAttached,
+      hasAttachment: _hasPhotoAttached ||
+          (enableVoiceNoteInRepVoice && _hasVoiceNoteAttached),
     );
 
     await ref.read(feedbackRepositoryProvider).saveDraft(draft);
@@ -168,39 +173,26 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
   bool _validate() {
     final l10n = context.l10n;
     setState(() {
-      _field1Error = null;
-      _field2Error = null;
+      _detailsError = null;
     });
 
     bool isValid = true;
     switch (widget.type) {
       case FeedbackType.doctorObjection:
-        if (_productController.text.trim().isEmpty) {
-          _field1Error = l10n.fieldRequired;
-          isValid = false;
-        }
         if (_objectionController.text.trim().isEmpty) {
-          _field2Error = l10n.fieldRequired;
+          _detailsError = l10n.fieldRequired;
           isValid = false;
         }
         break;
       case FeedbackType.competitorClaim:
-        if (_competitorNameController.text.trim().isEmpty) {
-          _field1Error = l10n.fieldRequired;
-          isValid = false;
-        }
         if (_claimController.text.trim().isEmpty) {
-          _field2Error = l10n.fieldRequired;
+          _detailsError = l10n.fieldRequired;
           isValid = false;
         }
         break;
       case FeedbackType.fieldFeedback:
-        if (_topicController.text.trim().isEmpty) {
-          _field1Error = l10n.fieldRequired;
-          isValid = false;
-        }
         if (_detailsController.text.trim().isEmpty) {
-          _field2Error = l10n.fieldRequired;
+          _detailsError = l10n.fieldRequired;
           isValid = false;
         }
         break;
@@ -229,13 +221,16 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
         final prod = _productController.text.trim();
         final obj = _objectionController.text.trim();
         final matchedProductId = _selectedProductId ??
-            products
-                .where(
-                  (p) => p.name.trim().toLowerCase() == prod.toLowerCase(),
-                )
-                .map((p) => p.id)
-                .firstOrNull;
-        title = '$prod: ${obj.length > 40 ? "${obj.substring(0, 40)}..." : obj}';
+            (prod.isNotEmpty
+                ? products
+                    .where(
+                      (p) => p.name.trim().toLowerCase() == prod.toLowerCase(),
+                    )
+                    .map((p) => p.id)
+                    .firstOrNull
+                : null);
+        final snippet = obj.length > 40 ? '${obj.substring(0, 40)}...' : obj;
+        title = prod.isNotEmpty ? '$prod: $snippet' : snippet;
         item = FeedbackItemEntity(
           id: '',
           clientSubmissionId: submissionId,
@@ -243,8 +238,9 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
           type: FeedbackType.doctorObjection,
           title: title,
           submittedAt: DateTime.now(),
-          product: prod,
+          product: prod.isEmpty ? null : prod,
           objection: obj,
+          details: obj,
           doctorSpecialty: _doctorSpecialtyController.text.trim().isEmpty
               ? null
               : _doctorSpecialtyController.text.trim(),
@@ -258,7 +254,8 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
       case FeedbackType.competitorClaim:
         final comp = _competitorNameController.text.trim();
         final cl = _claimController.text.trim();
-        title = '$comp: ${cl.length > 40 ? "${cl.substring(0, 40)}..." : cl}';
+        final snippet = cl.length > 40 ? '${cl.substring(0, 40)}...' : cl;
+        title = comp.isNotEmpty ? '$comp: $snippet' : snippet;
         item = FeedbackItemEntity(
           id: '',
           clientSubmissionId: submissionId,
@@ -266,8 +263,9 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
           type: FeedbackType.competitorClaim,
           title: title,
           submittedAt: DateTime.now(),
-          competitorName: comp,
+          competitorName: comp.isEmpty ? null : comp,
           claim: cl,
+          details: cl,
           whereHeard: _whereHeardController.text.trim().isEmpty
               ? null
               : _whereHeardController.text.trim(),
@@ -278,7 +276,8 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
       case FeedbackType.fieldFeedback:
         final top = _topicController.text.trim();
         final det = _detailsController.text.trim();
-        title = top;
+        final snippet = det.length > 40 ? '${det.substring(0, 40)}...' : det;
+        title = top.isNotEmpty ? top : snippet;
         item = FeedbackItemEntity(
           id: '',
           clientSubmissionId: submissionId,
@@ -286,10 +285,12 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
           type: FeedbackType.fieldFeedback,
           title: title,
           submittedAt: DateTime.now(),
-          topic: top,
+          topic: top.isEmpty ? null : top,
           details: det,
           photoUrl: _uploadedPhotoUrl ?? _localPhotoPath,
-          voiceNoteUrl: _uploadedVoiceNoteUrl ?? _localVoicePath,
+          voiceNoteUrl: enableVoiceNoteInRepVoice
+              ? (_uploadedVoiceNoteUrl ?? _localVoicePath)
+              : null,
         );
         break;
     }
@@ -504,18 +505,10 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
             // Form inputs depending on feedback type
             if (widget.type == FeedbackType.doctorObjection) ...[
               AppTextField(
-                controller: _productController,
-                label: l10n.labelProduct,
-                hint: l10n.productHintExamples,
-                errorText: _field1Error,
-                onChanged: (_) => _onFieldChanged(),
-              ),
-              const SizedBox(height: RxSpacing.s16),
-              AppTextField(
                 controller: _objectionController,
                 label: l10n.labelDoctorObjection,
                 hint: l10n.hintDoctorObjection,
-                errorText: _field2Error,
+                errorText: _detailsError,
                 minLines: 3,
                 maxLines: 5,
                 onChanged: (_) => _onFieldChanged(),
@@ -523,6 +516,13 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
               const SizedBox(height: RxSpacing.s16),
               _buildPhotoAttachmentCard(context),
               if (_showOptionalFields) ...[
+                const SizedBox(height: RxSpacing.s16),
+                AppTextField(
+                  controller: _productController,
+                  label: l10n.optionalFieldSuffix(l10n.labelProduct),
+                  hint: l10n.productHintExamples,
+                  onChanged: (_) => _onFieldChanged(),
+                ),
                 const SizedBox(height: RxSpacing.s16),
                 AppTextField(
                   controller: _doctorSpecialtyController,
@@ -542,18 +542,10 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
               ],
             ] else if (widget.type == FeedbackType.competitorClaim) ...[
               AppTextField(
-                controller: _competitorNameController,
-                label: l10n.labelCompetitorProduct,
-                hint: l10n.competitorHintExamples,
-                errorText: _field1Error,
-                onChanged: (_) => _onFieldChanged(),
-              ),
-              const SizedBox(height: RxSpacing.s16),
-              AppTextField(
                 controller: _claimController,
                 label: l10n.labelClaimHeard,
                 hint: l10n.hintCompetitorClaim,
-                errorText: _field2Error,
+                errorText: _detailsError,
                 minLines: 3,
                 maxLines: 5,
                 onChanged: (_) => _onFieldChanged(),
@@ -561,6 +553,13 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
               const SizedBox(height: RxSpacing.s16),
               _buildPhotoAttachmentCard(context),
               if (_showOptionalFields) ...[
+                const SizedBox(height: RxSpacing.s16),
+                AppTextField(
+                  controller: _competitorNameController,
+                  label: l10n.optionalFieldSuffix(l10n.labelCompetitorProduct),
+                  hint: l10n.competitorHintExamples,
+                  onChanged: (_) => _onFieldChanged(),
+                ),
                 const SizedBox(height: RxSpacing.s16),
                 AppTextField(
                   controller: _whereHeardController,
@@ -571,18 +570,10 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
               ],
             ] else if (widget.type == FeedbackType.fieldFeedback) ...[
               AppTextField(
-                controller: _topicController,
-                label: l10n.labelTopicCampaign,
-                hint: l10n.topicHintExamples,
-                errorText: _field1Error,
-                onChanged: (_) => _onFieldChanged(),
-              ),
-              const SizedBox(height: RxSpacing.s16),
-              AppTextField(
                 controller: _detailsController,
                 label: l10n.labelDetails,
                 hint: l10n.hintDetails,
-                errorText: _field2Error,
+                errorText: _detailsError,
                 minLines: 4,
                 maxLines: 6,
                 onChanged: (_) => _onFieldChanged(),
@@ -590,8 +581,17 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
               const SizedBox(height: RxSpacing.s16),
               _buildPhotoAttachmentCard(context),
               if (_showOptionalFields) ...[
-                const SizedBox(height: RxSpacing.s12),
-                _buildVoiceAttachmentCard(context),
+                const SizedBox(height: RxSpacing.s16),
+                AppTextField(
+                  controller: _topicController,
+                  label: l10n.optionalFieldSuffix(l10n.labelTopicCampaign),
+                  hint: l10n.topicHintExamples,
+                  onChanged: (_) => _onFieldChanged(),
+                ),
+                if (enableVoiceNoteInRepVoice) ...[
+                  const SizedBox(height: RxSpacing.s12),
+                  _buildVoiceAttachmentCard(context),
+                ],
               ],
             ],
 
@@ -609,8 +609,63 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
                   ? null
                   : _submit,
             ),
+            const SizedBox(height: RxSpacing.s16),
+
+            // Concise Privacy & Retention Notice
+            _buildPrivacyNotice(context),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildPrivacyNotice(BuildContext context) {
+    final colors = context.rxColors;
+    final textTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
+
+    return Container(
+      padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
+      decoration: BoxDecoration(
+        color: colors.surfaceMuted,
+        borderRadius: RxRadii.borderInput,
+        border: Border.all(
+          color: colors.border,
+          width: RxShadows.hairlineBorderWidth,
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            LucideIcons.shieldCheck,
+            size: 16.0,
+            color: colors.textSecondary,
+          ),
+          const SizedBox(width: RxSpacing.s10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.repVoicePrivacyNoticeTitle,
+                  style: textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: colors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: RxSpacing.s2),
+                Text(
+                  l10n.repVoicePrivacyNoticeBody,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colors.textSecondary,
+                    height: 1.35,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

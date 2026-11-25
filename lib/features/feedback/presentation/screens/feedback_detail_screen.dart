@@ -120,9 +120,17 @@ class FeedbackDetailScreen extends ConsumerWidget {
                   const SizedBox(height: RxSpacing.s12),
 
                   if (item.type == FeedbackType.doctorObjection) ...[
-                    _buildFieldRow(context, l10n.labelProduct, item.product ?? '-'),
-                    const SizedBox(height: RxSpacing.s12),
-                    _buildFieldRow(context, l10n.labelDoctorObjection, item.objection ?? '-'),
+                    if (item.product != null && item.product!.isNotEmpty) ...[
+                      _buildFieldRow(context, l10n.labelProduct, item.product!),
+                      const SizedBox(height: RxSpacing.s12),
+                    ],
+                    _buildFieldRow(
+                      context,
+                      l10n.labelDoctorObjection,
+                      (item.objection != null && item.objection!.isNotEmpty)
+                          ? item.objection!
+                          : (item.details ?? '-'),
+                    ),
                     if (item.doctorSpecialty != null && item.doctorSpecialty!.isNotEmpty) ...[
                       const SizedBox(height: RxSpacing.s12),
                       _buildFieldRow(context, l10n.labelDoctorSpecialty, item.doctorSpecialty!),
@@ -132,16 +140,26 @@ class FeedbackDetailScreen extends ConsumerWidget {
                       _buildFieldRow(context, l10n.labelHowResponded, item.howResponded!),
                     ],
                   ] else if (item.type == FeedbackType.competitorClaim) ...[
-                    _buildFieldRow(context, l10n.labelCompetitor, item.competitorName ?? '-'),
-                    const SizedBox(height: RxSpacing.s12),
-                    _buildFieldRow(context, l10n.labelClaimHeard, item.claim ?? '-'),
+                    if (item.competitorName != null && item.competitorName!.isNotEmpty) ...[
+                      _buildFieldRow(context, l10n.labelCompetitor, item.competitorName!),
+                      const SizedBox(height: RxSpacing.s12),
+                    ],
+                    _buildFieldRow(
+                      context,
+                      l10n.labelClaimHeard,
+                      (item.claim != null && item.claim!.isNotEmpty)
+                          ? item.claim!
+                          : (item.details ?? '-'),
+                    ),
                     if (item.whereHeard != null && item.whereHeard!.isNotEmpty) ...[
                       const SizedBox(height: RxSpacing.s12),
                       _buildFieldRow(context, l10n.labelWhereHeard, item.whereHeard!),
                     ],
                   ] else if (item.type == FeedbackType.fieldFeedback) ...[
-                    _buildFieldRow(context, l10n.labelTopic, item.topic ?? '-'),
-                    const SizedBox(height: RxSpacing.s12),
+                    if (item.topic != null && item.topic!.isNotEmpty) ...[
+                      _buildFieldRow(context, l10n.labelTopic, item.topic!),
+                      const SizedBox(height: RxSpacing.s12),
+                    ],
                     _buildFieldRow(context, l10n.labelDetails, item.details ?? '-'),
                     if (item.voiceNoteUrl != null && item.voiceNoteUrl!.isNotEmpty) ...[
                       const SizedBox(height: RxSpacing.s12),

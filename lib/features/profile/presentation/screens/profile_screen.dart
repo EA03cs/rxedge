@@ -40,9 +40,13 @@ class ProfileScreen extends ConsumerWidget {
           onRetry: () => ref.read(profileControllerProvider.notifier).refresh(),
         ),
         data: (profile) {
-          return SingleChildScrollView(
-            padding: const EdgeInsetsDirectional.all(RxSpacing.s16),
-            child: Column(
+          return RefreshIndicator(
+            color: colors.primary,
+            onRefresh: () => ref.read(profileControllerProvider.notifier).refresh(),
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsetsDirectional.all(RxSpacing.s16),
+              child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // 1. Rep Profile Card
@@ -90,7 +94,8 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: RxSpacing.s16),
               ],
             ),
-          );
+          ),
+        );
         },
       ),
     );
@@ -245,17 +250,40 @@ class ProfileScreen extends ConsumerWidget {
           const SizedBox(height: RxSpacing.s12),
           const Divider(height: 1.0),
           const SizedBox(height: RxSpacing.s12),
-          Wrap(
-            spacing: RxSpacing.s8,
-            runSpacing: RxSpacing.s8,
-            children: profile.badges.map((badge) {
-              return StatusBadge(
-                label: badge.name,
-                variant: StatusBadgeVariant.accent,
-                icon: LucideIcons.checkCircle2,
-              );
-            }).toList(),
-          ),
+          if (profile.badges.isEmpty)
+            Row(
+              children: [
+                Icon(
+                  LucideIcons.award,
+                  size: 16.0,
+                  color: colors.textTertiary,
+                ),
+                const SizedBox(width: RxSpacing.s8),
+                Expanded(
+                  child: Text(
+                    l10n.quarterlyBadgesEmpty,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                ),
+              ],
+            )
+          else
+            Wrap(
+              spacing: RxSpacing.s8,
+              runSpacing: RxSpacing.s8,
+              children: profile.badges.map((badge) {
+                final quarterLabel = badge.quarter != null && badge.year != null
+                    ? ' (Q${badge.quarter} ${badge.year})'
+                    : '';
+                return StatusBadge(
+                  label: '${badge.name}$quarterLabel',
+                  variant: StatusBadgeVariant.accent,
+                  icon: LucideIcons.checkCircle2,
+                );
+              }).toList(),
+            ),
         ],
       ),
     );

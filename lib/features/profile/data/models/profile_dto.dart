@@ -54,12 +54,16 @@ class BadgeDto {
   final String name;
   final String description;
   final String earnedAtIso;
+  final int? quarter;
+  final int? year;
 
   const BadgeDto({
     required this.id,
     required this.name,
     required this.description,
     required this.earnedAtIso,
+    this.quarter,
+    this.year,
   });
 
   Map<String, dynamic> toJson() => {
@@ -67,6 +71,8 @@ class BadgeDto {
         'name': name,
         'description': description,
         'earnedAtIso': earnedAtIso,
+        if (quarter != null) 'quarter': quarter,
+        if (year != null) 'year': year,
       };
 
   factory BadgeDto.fromJson(Map<String, dynamic> json) {
@@ -85,12 +91,17 @@ class BadgeDto {
             badgeObj['createdAt'])
         ?.toString() ??
         DateTime.now().toIso8601String();
+    final quarterVal =
+        ((badgeObj['quarter'] ?? json['quarter']) as num?)?.toInt();
+    final yearVal = ((badgeObj['year'] ?? json['year']) as num?)?.toInt();
 
     return BadgeDto(
       id: (badgeObj['id'] ?? json['id'])?.toString() ?? '',
       name: resolvedTitle,
       description: resolvedDesc,
       earnedAtIso: resolvedDate,
+      quarter: quarterVal,
+      year: yearVal,
     );
   }
 
@@ -100,6 +111,8 @@ class BadgeDto {
       name: name,
       description: description,
       earnedAt: DateTime.tryParse(earnedAtIso) ?? DateTime.now(),
+      quarter: quarter,
+      year: year,
     );
   }
 }

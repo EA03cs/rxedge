@@ -55,12 +55,16 @@ class BadgeEntity {
   final String name;
   final String description;
   final DateTime earnedAt;
+  final int? quarter;
+  final int? year;
 
   const BadgeEntity({
     required this.id,
     required this.name,
     required this.description,
     required this.earnedAt,
+    this.quarter,
+    this.year,
   });
 }
 

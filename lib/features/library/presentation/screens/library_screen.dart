@@ -322,7 +322,9 @@ class LibraryScreen extends ConsumerWidget {
                           selectedProduct: state.selectedProduct,
                           availableProducts: state.availableProducts,
                           hasAquaMaterials: state.allMaterials.any(
-                            (item) => item.productName.toLowerCase().contains('aqua'),
+                            (item) =>
+                                item.productName.toLowerCase().contains('aqua') &&
+                                (item.fileUrl?.trim().isNotEmpty ?? false),
                           ),
                           onProductSelected: (prod) => controller.setProduct(prod),
                         ),
