@@ -11,7 +11,7 @@ import '../storage/local_cache_service.dart';
 import '../storage/local_file_helper.dart';
 import '../storage/offline_queue_service.dart';
 
-/// Synchronizes offline queued mutations (feedback/quizzes/lesson completions)
+/// Synchronizes offline queued mutations (feedback and lesson completions)
 /// and checks `/sync/manifest` when connectivity is restored.
 class SyncService {
   final Dio _dio;
@@ -33,6 +33,9 @@ class SyncService {
 
   bool get isSyncing => _isSyncing;
   int get pendingCount => _queueService.pendingCount;
+  int get failedCount => _queueService.failedCount;
+  List<OfflineQueueItem> get pendingItems => _queueService.pendingItems;
+  List<OfflineQueueItem> get failedItems => _queueService.failedItems;
 
   /// Flushes all pending queue items eligible for retry.
   /// Returns the number of items successfully synced.
@@ -50,48 +53,110 @@ class SyncService {
     try {
       for (final item in List<OfflineQueueItem>.from(items)) {
         if (!force && !_queueService.canRetry(item)) continue;
-        if (item.retryCount >= AppConstants.maxOfflineQueueRetries) {
-          _queueService.remove(item.id);
-          continue;
-        }
 
-        try {
-          await _replayItem(item);
-          _queueService.remove(item.id);
-          syncedCount++;
-          AppLogger.i('Synced offline queue item: ${item.id}', tag: 'Sync');
-        } on DioException catch (e) {
-          final status = e.response?.statusCode;
-          // 409 Conflict indicates idempotent server already accepted this submission.
-          if (status == 409) {
-            _queueService.remove(item.id);
-            syncedCount++;
-            AppLogger.i('Removed duplicate queue item (409): ${item.id}', tag: 'Sync');
-          } else if (status == 400 || status == 404 || status == 422) {
-            // Permanent client validation failure; drop after marking so queue doesn't wedge forever.
-            AppLogger.w(
-              'Dropping non-retryable queue item ${item.id} (HTTP $status)',
-              tag: 'Sync',
-            );
-            _queueService.remove(item.id);
-          } else {
-            _queueService.markAttempted(item.id);
-          }
-        } catch (e, st) {
-          AppLogger.w(
-            'Error replaying queue item ${item.id}',
-            tag: 'Sync',
-            error: e,
-            stackTrace: st,
-          );
-          _queueService.markAttempted(item.id);
-        }
+        final synced = await _processItem(item, clearFailureBeforeTry: force);
+        if (synced) syncedCount++;
       }
     } finally {
       _isSyncing = false;
     }
 
     return syncedCount;
+  }
+
+  /// Manually retries a single queued item (including failed items).
+  /// Returns true if synced or deduplicated (409), false otherwise.
+  Future<bool> retryItem(String id) async {
+    if (_isSyncing) return false;
+    final match = _queueService.pendingItems.where((item) => item.id == id);
+    if (match.isEmpty) return false;
+
+    final hasNetwork = await _connectivityService.checkIsOnline();
+    if (!hasNetwork) return false;
+
+    _isSyncing = true;
+    try {
+      return await _processItem(match.first, clearFailureBeforeTry: true);
+    } finally {
+      _isSyncing = false;
+    }
+  }
+
+  /// Discards a queued item that the user chooses not to retry.
+  Future<void> discardItem(String id) async {
+    final match = _queueService.pendingItems.where((item) => item.id == id);
+    if (match.isNotEmpty) {
+      final item = match.first;
+      final localAttachmentPath =
+          item.payload['localAttachmentPath']?.toString();
+      final localVoiceNotePath = item.payload['localVoiceNotePath']?.toString();
+      await deleteLocalFile(localAttachmentPath);
+      await deleteLocalFile(localVoiceNotePath);
+    }
+    _queueService.remove(id);
+    AppLogger.i('Discarded offline queue item: $id', tag: 'Sync');
+  }
+
+  Future<bool> _processItem(
+    OfflineQueueItem item, {
+    bool clearFailureBeforeTry = false,
+  }) async {
+    if (clearFailureBeforeTry && item.isFailed) {
+      _queueService.clearFailure(item.id);
+    }
+
+    try {
+      await _replayItem(item);
+      _queueService.remove(item.id);
+      AppLogger.i('Synced offline queue item: ${item.id}', tag: 'Sync');
+      return true;
+    } on DioException catch (e) {
+      final status = e.response?.statusCode;
+      final responseData = e.response?.data;
+      final extractedMsg = ApiResponseParser.extractErrorMessage(responseData) ??
+          e.message ??
+          (status != null ? 'HTTP $status' : 'Network sync error');
+
+      // 409 Conflict indicates idempotent server already accepted this submission.
+      if (status == 409) {
+        _queueService.remove(item.id);
+        AppLogger.i(
+          'Removed duplicate queue item (409): ${item.id} | response: $responseData',
+          tag: 'Sync',
+        );
+        return true;
+      } else if (status == 400 || status == 404 || status == 422) {
+        // Keep permanent client validation/not-found failures visible so user can inspect, retry, or discard.
+        AppLogger.w(
+          'Queue item ${item.id} (${item.httpMethod} ${item.endpoint}) failed (HTTP $status): $extractedMsg | response: $responseData',
+          tag: 'Sync',
+          error: e,
+        );
+        _queueService.markFailed(
+          item.id,
+          statusCode: status,
+          errorMessage: extractedMsg,
+        );
+        return false;
+      } else {
+        AppLogger.w(
+          'Retryable failure for queue item ${item.id} (HTTP $status): $extractedMsg | response: $responseData',
+          tag: 'Sync',
+          error: e,
+        );
+        _queueService.markAttempted(item.id);
+        return false;
+      }
+    } catch (e, st) {
+      AppLogger.w(
+        'Error replaying queue item ${item.id}',
+        tag: 'Sync',
+        error: e,
+        stackTrace: st,
+      );
+      _queueService.markAttempted(item.id);
+      return false;
+    }
   }
 
   Future<void> _replayItem(OfflineQueueItem item) async {

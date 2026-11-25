@@ -1639,4 +1639,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errUnknown => 'An unexpected error occurred. Please try again.';
+
+  @override
+  String get quizOfflineSubmitError =>
+      'Connect to the internet to submit your answers.';
+
+  @override
+  String get failedSyncWarning => 'Some offline submissions failed to sync.';
+
+  @override
+  String get actionDiscard => 'Discard';
+
+  @override
+  String get syncRetryFailed =>
+      'Still unable to sync. Please check your connection or submission details.';
 }

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../../core/error/failure_message_mapper.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/challenges_entities.dart';
 import '../controllers/challenges_controller.dart';
@@ -618,40 +619,55 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                   return AppButton(
                     text: l10n.btnSubmitResponse,
                     variant: AppButtonVariant.primary,
-                    onPressed: () {
+                    onPressed: () async {
                       final text = controller.text.trim();
                       if (text.isEmpty) return;
 
-                      setState(() {
-                        _communityDelta++;
-                      });
-
-                      ref
+                      final messenger = ScaffoldMessenger.of(context);
+                      final navigator = Navigator.of(ctx);
+                      final res = await ref
                           .read(challengesControllerProvider.notifier)
                           .submitDoctorObjectionResponse(text);
+                      if (!mounted) return;
 
-                      Navigator.of(ctx).pop();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Row(
-                            children: [
-                              Icon(
-                                LucideIcons.checkCircle2,
-                                color: colors.success,
-                                size: 18.0,
+                      navigator.pop();
+                      res.when(
+                        success: (_) {
+                          setState(() {
+                            _communityDelta++;
+                          });
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                children: [
+                                  Icon(
+                                    LucideIcons.checkCircle2,
+                                    color: colors.success,
+                                    size: 18.0,
+                                  ),
+                                  const SizedBox(width: RxSpacing.s8),
+                                  Expanded(
+                                    child: Text(
+                                      l10n.responseSubmitted,
+                                      style: const TextStyle(fontWeight: FontWeight.w600),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: RxSpacing.s8),
-                              Expanded(
-                                child: Text(
-                                  l10n.responseSubmitted,
-                                  style: const TextStyle(fontWeight: FontWeight.w600),
-                                ),
-                              ),
-                            ],
-                          ),
-                          behavior: SnackBarBehavior.floating,
-                          duration: const Duration(seconds: 3),
-                        ),
+                              behavior: SnackBarBehavior.floating,
+                              duration: const Duration(seconds: 3),
+                            ),
+                          );
+                        },
+                        failure: (failure) {
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(FailureMessageMapper.map(context, failure)),
+                              behavior: SnackBarBehavior.floating,
+                              duration: const Duration(seconds: 3),
+                            ),
+                          );
+                        },
                       );
                     },
                   );

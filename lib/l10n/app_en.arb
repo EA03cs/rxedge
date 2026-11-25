@@ -633,5 +633,9 @@
   "errValidation": "Please check the highlighted fields and try again.",
   "errCache": "Unable to read local offline cache.",
   "errServer": "The server encountered an error. Please try again shortly.",
-  "errUnknown": "An unexpected error occurred. Please try again."
+  "errUnknown": "An unexpected error occurred. Please try again.",
+  "quizOfflineSubmitError": "Connect to the internet to submit your answers.",
+  "failedSyncWarning": "Some offline submissions failed to sync.",
+  "actionDiscard": "Discard",
+  "syncRetryFailed": "Still unable to sync. Please check your connection or submission details."
 }

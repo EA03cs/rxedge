@@ -13,6 +13,9 @@ class OfflineQueueItem {
   final DateTime createdAt;
   final int retryCount;
   final DateTime? lastAttemptedAt;
+  final bool isFailed;
+  final int? lastErrorStatusCode;
+  final String? lastErrorMessage;
 
   const OfflineQueueItem({
     required this.id,
@@ -22,12 +25,19 @@ class OfflineQueueItem {
     required this.createdAt,
     this.retryCount = 0,
     this.lastAttemptedAt,
+    this.isFailed = false,
+    this.lastErrorStatusCode,
+    this.lastErrorMessage,
   });
 
   OfflineQueueItem copyWith({
     int? retryCount,
     DateTime? lastAttemptedAt,
     Map<String, dynamic>? payload,
+    bool? isFailed,
+    int? lastErrorStatusCode,
+    String? lastErrorMessage,
+    bool clearError = false,
   }) {
     return OfflineQueueItem(
       id: id,
@@ -37,6 +47,11 @@ class OfflineQueueItem {
       createdAt: createdAt,
       retryCount: retryCount ?? this.retryCount,
       lastAttemptedAt: lastAttemptedAt ?? this.lastAttemptedAt,
+      isFailed: clearError ? false : (isFailed ?? this.isFailed),
+      lastErrorStatusCode:
+          clearError ? null : (lastErrorStatusCode ?? this.lastErrorStatusCode),
+      lastErrorMessage:
+          clearError ? null : (lastErrorMessage ?? this.lastErrorMessage),
     );
   }
 
@@ -49,6 +64,10 @@ class OfflineQueueItem {
         'retryCount': retryCount,
         if (lastAttemptedAt != null)
           'lastAttemptedAt': lastAttemptedAt!.toIso8601String(),
+        if (isFailed) 'isFailed': isFailed,
+        if (lastErrorStatusCode != null)
+          'lastErrorStatusCode': lastErrorStatusCode,
+        if (lastErrorMessage != null) 'lastErrorMessage': lastErrorMessage,
       };
 
   factory OfflineQueueItem.fromJson(Map<String, dynamic> json) {
@@ -65,6 +84,9 @@ class OfflineQueueItem {
       lastAttemptedAt: json['lastAttemptedAt'] != null
           ? DateTime.tryParse(json['lastAttemptedAt'].toString())
           : null,
+      isFailed: json['isFailed'] == true,
+      lastErrorStatusCode: (json['lastErrorStatusCode'] as num?)?.toInt(),
+      lastErrorMessage: json['lastErrorMessage']?.toString(),
     );
   }
 }
@@ -74,7 +96,22 @@ class OfflineQueueItem {
 class OfflineQueueService {
   static const String queueBoxName = StorageInitializer.offlineQueueBoxName;
   final List<OfflineQueueItem> _queue = [];
+  final List<void Function()> _listeners = [];
   bool _hydrated = false;
+
+  void addListener(void Function() listener) {
+    _listeners.add(listener);
+  }
+
+  void removeListener(void Function() listener) {
+    _listeners.remove(listener);
+  }
+
+  void _notifyListeners() {
+    for (final listener in List<void Function()>.from(_listeners)) {
+      listener();
+    }
+  }
 
   Box<String>? get _hiveBox =>
       Hive.isBoxOpen(queueBoxName) ? Hive.box<String>(queueBoxName) : null;
@@ -109,7 +146,11 @@ class OfflineQueueService {
     return List.unmodifiable(_queue);
   }
 
+  List<OfflineQueueItem> get failedItems =>
+      pendingItems.where((item) => item.isFailed).toList(growable: false);
+
   int get pendingCount => pendingItems.length;
+  int get failedCount => failedItems.length;
 
   void enqueue(OfflineQueueItem item) {
     _ensureHydrated();
@@ -123,6 +164,7 @@ class OfflineQueueService {
 
     _queue.add(item);
     _persistItem(item);
+    _notifyListeners();
   }
 
   void markAttempted(String id) {
@@ -135,21 +177,55 @@ class OfflineQueueService {
     );
     _queue[index] = updated;
     _persistItem(updated);
+    _notifyListeners();
+  }
+
+  void markFailed(
+    String id, {
+    int? statusCode,
+    String? errorMessage,
+  }) {
+    _ensureHydrated();
+    final index = _queue.indexWhere((item) => item.id == id);
+    if (index == -1) return;
+    final updated = _queue[index].copyWith(
+      retryCount: _queue[index].retryCount + 1,
+      lastAttemptedAt: DateTime.now(),
+      isFailed: true,
+      lastErrorStatusCode: statusCode,
+      lastErrorMessage: errorMessage,
+    );
+    _queue[index] = updated;
+    _persistItem(updated);
+    _notifyListeners();
+  }
+
+  void clearFailure(String id) {
+    _ensureHydrated();
+    final index = _queue.indexWhere((item) => item.id == id);
+    if (index == -1) return;
+    final updated = _queue[index].copyWith(clearError: true);
+    _queue[index] = updated;
+    _persistItem(updated);
+    _notifyListeners();
   }
 
   void remove(String id) {
     _ensureHydrated();
     _queue.removeWhere((item) => item.id == id);
     _hiveBox?.delete(id);
+    _notifyListeners();
   }
 
   void clear() {
     _ensureHydrated();
     _queue.clear();
     _hiveBox?.clear();
+    _notifyListeners();
   }
 
   bool canRetry(OfflineQueueItem item) {
+    if (item.isFailed) return false;
     if (item.retryCount >= AppConstants.maxOfflineQueueRetries) return false;
     if (item.lastAttemptedAt == null) return true;
     return DateTime.now().difference(item.lastAttemptedAt!) >=
@@ -166,4 +242,21 @@ class OfflineQueueService {
 /// Riverpod provider for OfflineQueueService
 final offlineQueueServiceProvider = Provider<OfflineQueueService>((ref) {
   return OfflineQueueService();
+});
+
+/// Reactive list of all items currently in the offline queue.
+final offlineQueueItemsProvider =
+    Provider.autoDispose<List<OfflineQueueItem>>((ref) {
+  final queue = ref.watch(offlineQueueServiceProvider);
+  void listener() => ref.invalidateSelf();
+  queue.addListener(listener);
+  ref.onDispose(() => queue.removeListener(listener));
+  return queue.pendingItems;
+});
+
+/// Reactive list of offline queue items that failed with non-retryable client errors.
+final failedQueueItemsProvider =
+    Provider.autoDispose<List<OfflineQueueItem>>((ref) {
+  final items = ref.watch(offlineQueueItemsProvider);
+  return items.where((item) => item.isFailed).toList(growable: false);
 });

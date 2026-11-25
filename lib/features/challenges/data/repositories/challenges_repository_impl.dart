@@ -4,7 +4,6 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/services/logger_service.dart';
 import '../../../../core/storage/local_cache_service.dart';
-import '../../../../core/storage/offline_queue_service.dart';
 import '../../../../core/utils/result.dart';
 import '../../domain/entities/challenges_entities.dart';
 import '../../domain/repositories/challenges_repository.dart';
@@ -321,13 +320,8 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
     try {
       await _remoteDatasource.submitDoctorObjectionResponse(objectionId, userResponse);
       return const Result.success(null);
-    } catch (e) {
-      AppLogger.i('Submitting objection response failed remotely, enqueuing offline');
-      await _localDatasource.queueDoctorObjectionResponse(
-        objectionId: objectionId,
-        userResponse: userResponse,
-      );
-      return const Result.success(null);
+    } catch (e, st) {
+      return Result.failure(ExceptionMapper.map(e, st));
     }
   }
 
@@ -363,42 +357,16 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
       }
 
       return Result.success(domainResult);
-    } catch (e) {
-      AppLogger.i('Submitting quiz result failed remotely, enqueuing offline');
-      await _localDatasource.queueQuizResult(
-        quizId: quizId,
-        score: score,
-        totalQuestions: totalQuestions,
-        timeTakenSeconds: timeTakenSeconds,
-      );
-
-      final points = (score * 10) + (score == totalQuestions ? 10 : 0);
-      final localResult = QuizResultHistoryEntity(
-        id: 'offline_${DateTime.now().millisecondsSinceEpoch}',
-        quizId: quizId,
-        quizTitle: 'Quick Detailing Quiz',
-        score: score,
-        totalQuestions: totalQuestions,
-        pointsEarned: points,
-        timeTakenSeconds: timeTakenSeconds,
-        completedAt: DateTime.now(),
-      );
-      _localQuizHistory.insert(0, localResult);
-
-      if (_memoryQuickQuizzes != null) {
-        _memoryQuickQuizzes = _memoryQuickQuizzes!.map((q) {
-          if (q.id == quizId) {
-            return q.copyWith(
-              isCompleted: true,
-              lastScore: score,
-              lastMaxScore: totalQuestions,
-            );
-          }
-          return q;
-        }).toList();
+    } catch (e, st) {
+      final mapped = ExceptionMapper.map(e, st);
+      if (mapped is NetworkFailure) {
+        return const Result.failure(
+          NetworkFailure(
+            debugMessage: 'Connect to the internet to submit your answers.',
+          ),
+        );
       }
-
-      return Result.success(localResult);
+      return Result.failure(mapped);
     }
   }
 
@@ -468,6 +436,13 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
       return Result.success(domain);
     } catch (e, st) {
       final mapped = ExceptionMapper.map(e, st);
+      if (mapped is NetworkFailure) {
+        return const Result.failure(
+          NetworkFailure(
+            debugMessage: 'Connect to the internet to submit your answers.',
+          ),
+        );
+      }
       final msg = (mapped.debugMessage ?? mapped.toString()).toLowerCase();
       final isConflict = (mapped is ServerFailure && mapped.statusCode == 409) ||
           msg.contains('already completed') ||
@@ -525,10 +500,8 @@ final challengesRemoteDatasourceProvider = Provider<ChallengesRemoteDatasource>(
 
 final challengesLocalDatasourceProvider = Provider<ChallengesLocalDatasource>((ref) {
   final cache = ref.watch(localCacheServiceProvider);
-  final queue = ref.watch(offlineQueueServiceProvider);
   return ChallengesLocalDatasourceImpl(
     cacheService: cache,
-    queueService: queue,
   );
 });
 

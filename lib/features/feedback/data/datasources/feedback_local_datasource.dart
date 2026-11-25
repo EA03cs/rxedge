@@ -85,7 +85,10 @@ class FeedbackLocalDatasourceImpl implements FeedbackLocalDatasource {
 
   @override
   Future<void> queueFeedbackSubmission(FeedbackItemDto item) async {
-    final clientId = item.clientSubmissionId ?? UuidV4.generate();
+    final rawClientId = item.clientSubmissionId?.trim();
+    final clientId = (rawClientId != null && rawClientId.isNotEmpty)
+        ? rawClientId
+        : UuidV4.generate();
     final payload = item.toBackendPayload(overrideClientSubmissionId: clientId);
     final rawPhoto = item.photoUrl;
     if (rawPhoto != null &&

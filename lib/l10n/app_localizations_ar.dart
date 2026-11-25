@@ -1633,4 +1633,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errUnknown => 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get quizOfflineSubmitError => 'يرجى الاتصال بالإنترنت لإرسال إجاباتك.';
+
+  @override
+  String get failedSyncWarning =>
+      'فشلت مزامنة بعض المشاركات المحفوظة دون إنترنت.';
+
+  @override
+  String get actionDiscard => 'تجاهل';
+
+  @override
+  String get syncRetryFailed =>
+      'تعذرت المزامنة. يرجى التحقق من الاتصال أو تفاصيل المشاركة.';
 }
