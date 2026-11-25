@@ -349,13 +349,16 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
 
           if (!mounted) return;
           setState(() => _isSubmitting = false);
+          final l10n = context.l10n;
           final errorText = FailureMessageMapper.map(context, failure);
           final failStr = (failure.debugMessage ?? failure.toString());
           final isWindowClosed = failStr.contains('QUIZ_WINDOW_CLOSED');
           final isNotStarted = failStr.contains('QUIZ_NOT_STARTED');
 
           String message = errorText;
-          if (isConflict) {
+          if (failure is NetworkFailure) {
+            message = l10n.quizOfflineSubmitError;
+          } else if (isConflict) {
             message =
                 'You have already attempted this quiz. Retakes are not permitted per challenge policy.';
           } else if (isWindowClosed) {
@@ -376,38 +379,53 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
       return;
     }
 
-    _stopwatch.stop();
-    _ticker?.cancel();
-
     final score = _calculateScore();
     final total = _quiz.questions.length;
     final elapsedSec = _stopwatch.elapsed.inSeconds;
     final isPassed = total > 0 && (score / total) >= 0.7;
 
-    if (isPassed) {
-      unawaited(HapticFeedback.mediumImpact());
-      final lid = _quiz.lessonId;
-      if (lid != null && lid.isNotEmpty) {
-        unawaited(
-          ref
-              .read(learnControllerProvider.notifier)
-              .markLessonCompleted(lid),
+    setState(() => _isSubmitting = true);
+    final res = await ref.read(challengesControllerProvider.notifier).onQuizCompleted(
+          quizId: _quiz.id,
+          score: score,
+          totalQuestions: total,
+          timeTakenSeconds: elapsedSec,
         );
-      }
-    }
+    if (!mounted) return;
 
-    unawaited(
-      ref.read(challengesControllerProvider.notifier).onQuizCompleted(
-            quizId: _quiz.id,
-            score: score,
-            totalQuestions: total,
-            timeTakenSeconds: elapsedSec,
+    res.when(
+      success: (_) {
+        _stopwatch.stop();
+        _ticker?.cancel();
+        if (isPassed) {
+          unawaited(HapticFeedback.mediumImpact());
+          final lid = _quiz.lessonId;
+          if (lid != null && lid.isNotEmpty) {
+            unawaited(
+              ref
+                  .read(learnControllerProvider.notifier)
+                  .markLessonCompleted(lid),
+            );
+          }
+        }
+        setState(() {
+          _isSubmitting = false;
+          _isFinished = true;
+        });
+      },
+      failure: (failure) {
+        setState(() => _isSubmitting = false);
+        final message = failure is NetworkFailure
+            ? context.l10n.quizOfflineSubmitError
+            : FailureMessageMapper.map(context, failure);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            behavior: SnackBarBehavior.floating,
           ),
+        );
+      },
     );
-
-    setState(() {
-      _isFinished = true;
-    });
   }
 
   int _calculateScore() {

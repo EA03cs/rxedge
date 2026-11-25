@@ -6,6 +6,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/services/sync_service.dart';
+import '../../../../core/storage/offline_queue_service.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/feedback_entities.dart';
 import '../controllers/feedback_controller.dart';
@@ -32,6 +33,7 @@ class FeedbackScreen extends ConsumerWidget {
     final l10n = context.l10n;
 
     final submissionsAsync = ref.watch(feedbackListControllerProvider);
+    final failedQueueItems = ref.watch(failedQueueItemsProvider);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -161,6 +163,16 @@ class FeedbackScreen extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // Failed offline sync items (HTTP 400/404/422) with Retry & Discard
+                            if (failedQueueItems.isNotEmpty) ...[
+                              _buildFailedQueueSection(
+                                context: context,
+                                ref: ref,
+                                failedItems: failedQueueItems,
+                              ),
+                              const SizedBox(height: 14.0),
+                            ],
+
                             // Offline pending warning banner if any items are queued
                             if (hasPending) ...[
                               Container(
@@ -297,6 +309,144 @@ class FeedbackScreen extends ConsumerWidget {
             },
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildFailedQueueSection({
+    required BuildContext context,
+    required WidgetRef ref,
+    required List<OfflineQueueItem> failedItems,
+  }) {
+    final colors = context.rxColors;
+    final textTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
+
+    return Container(
+      padding: const EdgeInsetsDirectional.all(12.0),
+      decoration: BoxDecoration(
+        color: colors.errorSoft,
+        borderRadius: BorderRadius.circular(14.0),
+        border: Border.all(
+          color: colors.error.withValues(alpha: 0.3),
+          width: 1.0,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(LucideIcons.alertTriangle, size: 18.0, color: colors.error),
+              const SizedBox(width: 8.0),
+              Expanded(
+                child: Text(
+                  l10n.failedSyncWarning,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colors.error,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8.0),
+          ...failedItems.map((item) {
+            final itemTitle = item.payload['title']?.toString().trim();
+            final label = (itemTitle != null && itemTitle.isNotEmpty)
+                ? itemTitle
+                : item.endpoint;
+            final statusPrefix = item.lastErrorStatusCode != null
+                ? 'HTTP ${item.lastErrorStatusCode}: '
+                : '';
+            final errorDetail =
+                '$statusPrefix${item.lastErrorMessage ?? l10n.submissionFailedFallback}';
+
+            return Container(
+              margin: const EdgeInsetsDirectional.only(top: 6.0),
+              padding: const EdgeInsetsDirectional.all(10.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(
+                  color: colors.error.withValues(alpha: 0.2),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2.0),
+                  Text(
+                    errorDetail,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colors.error,
+                      fontSize: 11.5,
+                    ),
+                  ),
+                  const SizedBox(height: 6.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () async {
+                          await HapticFeedback.lightImpact();
+                          await ref.read(syncServiceProvider).discardItem(item.id);
+                        },
+                        child: Text(
+                          l10n.actionDiscard,
+                          style: textTheme.labelSmall?.copyWith(
+                            color: colors.textSecondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 4.0),
+                      TextButton(
+                        onPressed: () async {
+                          await HapticFeedback.lightImpact();
+                          final messenger = ScaffoldMessenger.of(context);
+                          final ok = await ref
+                              .read(syncServiceProvider)
+                              .retryItem(item.id);
+                          if (ok) {
+                            await ref
+                                .read(feedbackListControllerProvider.notifier)
+                                .refresh();
+                          } else {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text(l10n.syncRetryFailed),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          }
+                        },
+                        child: Text(
+                          l10n.retry,
+                          style: textTheme.labelSmall?.copyWith(
+                            color: colors.primary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
       ),
     );
   }

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import '../../../../core/services/logger_service.dart';
 import '../../../../core/storage/local_cache_service.dart';
-import '../../../../core/storage/offline_queue_service.dart';
 import '../models/challenges_dto.dart';
 
 /// Local Datasource Contract for Challenges
@@ -15,25 +14,12 @@ abstract class ChallengesLocalDatasource {
   Future<ObjectionOfTheMonthDto?> getCachedObjection();
   Future<void> cacheObjection(ObjectionOfTheMonthDto objection);
 
-  Future<void> queueQuizResult({
-    required String quizId,
-    required int score,
-    required int totalQuestions,
-    required int timeTakenSeconds,
-  });
-
-  Future<void> queueDoctorObjectionResponse({
-    required String objectionId,
-    required String userResponse,
-  });
-
   bool isCacheFresh(String key);
 }
 
-/// Local Datasource Implementation using LocalCacheService & OfflineQueueService
+/// Local Datasource Implementation using LocalCacheService
 class ChallengesLocalDatasourceImpl implements ChallengesLocalDatasource {
   final LocalCacheService _cacheService;
-  final OfflineQueueService _queueService;
 
   static const String _monthlyChallengeKey = 'challenges_monthly';
   static const String _quickQuizzesKey = 'challenges_quizzes';
@@ -41,9 +27,7 @@ class ChallengesLocalDatasourceImpl implements ChallengesLocalDatasource {
 
   ChallengesLocalDatasourceImpl({
     required LocalCacheService cacheService,
-    required OfflineQueueService queueService,
-  })  : _cacheService = cacheService,
-        _queueService = queueService;
+  }) : _cacheService = cacheService;
 
   @override
   bool isCacheFresh(String key) {
@@ -103,51 +87,5 @@ class ChallengesLocalDatasourceImpl implements ChallengesLocalDatasource {
   @override
   Future<void> cacheObjection(ObjectionOfTheMonthDto objection) async {
     _cacheService.put<String>(_objectionKey, jsonEncode(objection.toJson()));
-  }
-
-  @override
-  Future<void> queueQuizResult({
-    required String quizId,
-    required int score,
-    required int totalQuestions,
-    required int timeTakenSeconds,
-  }) async {
-    _queueService.enqueue(
-      OfflineQueueItem(
-        id: 'quiz_result_${DateTime.now().millisecondsSinceEpoch}',
-        endpoint: '/api/v1/challenges/quizzes/$quizId/submit',
-        httpMethod: 'POST',
-        payload: {
-          'quizId': quizId,
-          'score': score,
-          'totalQuestions': totalQuestions,
-          'timeTakenSeconds': timeTakenSeconds,
-          'completedAt': DateTime.now().toIso8601String(),
-        },
-        createdAt: DateTime.now(),
-      ),
-    );
-    AppLogger.d('Queued quiz result submission offline for $quizId');
-  }
-
-  @override
-  Future<void> queueDoctorObjectionResponse({
-    required String objectionId,
-    required String userResponse,
-  }) async {
-    _queueService.enqueue(
-      OfflineQueueItem(
-        id: 'objection_response_${DateTime.now().millisecondsSinceEpoch}',
-        endpoint: '/api/v1/challenges/objections/$objectionId/responses',
-        httpMethod: 'POST',
-        payload: {
-          'objectionId': objectionId,
-          'userResponse': userResponse,
-          'submittedAt': DateTime.now().toIso8601String(),
-        },
-        createdAt: DateTime.now(),
-      ),
-    );
-    AppLogger.d('Queued doctor objection response offline for $objectionId');
   }
 }

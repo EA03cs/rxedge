@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/error/failures.dart';
 import '../../../../core/storage/local_cache_service.dart';
 import '../../../../core/utils/result.dart';
 import '../../../home/presentation/controllers/home_controller.dart';
@@ -102,38 +104,45 @@ class ChallengesController extends AutoDisposeAsyncNotifier<ChallengesDashboardS
     );
   }
 
-  Future<void> submitDoctorObjectionResponse(String responseText) async {
+  Future<Result<void>> submitDoctorObjectionResponse(String responseText) async {
     final currentState = state.value;
-    if (currentState == null) return;
+    if (currentState == null) {
+      return const Result.failure(
+        NotFoundFailure(debugMessage: 'No active objection loaded'),
+      );
+    }
 
     final repo = ref.read(challengesRepositoryProvider);
-    await repo.submitDoctorObjectionResponse(
+    return repo.submitDoctorObjectionResponse(
       objectionId: currentState.objection.id,
       userResponse: responseText,
     );
   }
 
-  Future<void> onQuizCompleted({
+  Future<Result<QuizResultHistoryEntity>> onQuizCompleted({
     required String quizId,
     required int score,
     required int totalQuestions,
     required int timeTakenSeconds,
   }) async {
     final repo = ref.read(challengesRepositoryProvider);
-    await repo.submitQuizResult(
+    final res = await repo.submitQuizResult(
       quizId: quizId,
       score: score,
       totalQuestions: totalQuestions,
       timeTakenSeconds: timeTakenSeconds,
     );
 
-    ref.read(localCacheServiceProvider).remove('rxedge_home_dashboard');
-    ref.read(localCacheServiceProvider).remove('user_profile_cache');
-    await ref.read(homeControllerProvider.notifier).refresh();
-    await ref.read(profileControllerProvider.notifier).refresh();
+    if (res.isSuccess) {
+      ref.read(localCacheServiceProvider).remove('rxedge_home_dashboard');
+      ref.read(localCacheServiceProvider).remove('user_profile_cache');
+      unawaited(ref.read(homeControllerProvider.notifier).refresh());
+      unawaited(ref.read(profileControllerProvider.notifier).refresh());
 
-    // Refresh state to update quiz completion status
-    state = await AsyncValue.guard(() => _fetchData(forceRefresh: true));
+      // Refresh state to update quiz completion status
+      state = await AsyncValue.guard(() => _fetchData(forceRefresh: true));
+    }
+    return res;
   }
 
   Future<Result<QuizSubmissionResultEntity>> submitServerQuiz({

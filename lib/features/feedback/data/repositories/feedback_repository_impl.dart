@@ -5,6 +5,7 @@ import '../../../../core/services/logger_service.dart';
 import '../../../../core/storage/local_cache_service.dart';
 import '../../../../core/storage/offline_queue_service.dart';
 import '../../../../core/utils/result.dart';
+import '../../../../core/utils/uuid_v4.dart';
 import '../../domain/entities/feedback_entities.dart';
 import '../../domain/repositories/feedback_repository.dart';
 import '../datasources/feedback_local_datasource.dart';
@@ -96,8 +97,14 @@ class FeedbackRepositoryImpl implements FeedbackRepository {
     } catch (e) {
       AppLogger.i('Remote feedback submission failed, saving locally as pending');
 
+      final rawClientId = item.clientSubmissionId?.trim();
+      final resolvedClientId = (rawClientId != null && rawClientId.isNotEmpty)
+          ? rawClientId
+          : UuidV4.generate();
+
       final pendingItem = item.copyWith(
         id: 'pending_${DateTime.now().millisecondsSinceEpoch}',
+        clientSubmissionId: resolvedClientId,
         status: FeedbackStatus.pending,
         submittedAt: DateTime.now(),
       );

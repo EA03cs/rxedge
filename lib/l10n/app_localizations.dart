@@ -3013,6 +3013,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'An unexpected error occurred. Please try again.'**
   String get errUnknown;
+
+  /// No description provided for @quizOfflineSubmitError.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to the internet to submit your answers.'**
+  String get quizOfflineSubmitError;
+
+  /// No description provided for @failedSyncWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Some offline submissions failed to sync.'**
+  String get failedSyncWarning;
+
+  /// No description provided for @actionDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get actionDiscard;
+
+  /// No description provided for @syncRetryFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Still unable to sync. Please check your connection or submission details.'**
+  String get syncRetryFailed;
 }
 
 class _AppLocalizationsDelegate
