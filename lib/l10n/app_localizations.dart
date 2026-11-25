@@ -1532,11 +1532,11 @@ abstract class AppLocalizations {
   /// **'Review Mistakes'**
   String get btnReviewMistakes;
 
-  /// No description provided for @btnRetryQuiz.
+  /// No description provided for @quizSingleAttemptNote.
   ///
   /// In en, this message translates to:
-  /// **'Retry'**
-  String get btnRetryQuiz;
+  /// **'Challenge marks are awarded once, on your single attempt. Retakes are not permitted.'**
+  String get quizSingleAttemptNote;
 
   /// No description provided for @btnBackToLearning.
   ///
@@ -2353,12 +2353,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Score: {score}/{total}'**
   String scoreOutOfLabel(int score, int total);
-
-  /// No description provided for @btnRetakeQuiz.
-  ///
-  /// In en, this message translates to:
-  /// **'Retake Quiz'**
-  String get btnRetakeQuiz;
 
   /// No description provided for @pointsPlusValue.
   ///

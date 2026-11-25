@@ -143,9 +143,15 @@ void main() {
       expect(find.text('Your answer: 4mg once daily taken with breakfast'), findsOneWidget);
       expect(find.text('Clinical Explanation'), findsNWidgets(2));
 
-      // 3 Actions Present
+      // Single-attempt policy note & 2 Actions Present (no Retry button)
+      expect(
+        find.text(
+          'Challenge marks are awarded once, on your single attempt. Retakes are not permitted.',
+        ),
+        findsOneWidget,
+      );
       expect(find.text('Review Mistakes'), findsOneWidget);
-      expect(find.text('Retry'), findsOneWidget);
+      expect(find.text('Retry'), findsNothing);
       expect(find.text('Back to Challenges'), findsOneWidget);
 
       // Tap Review Mistakes / filter to incorrect
@@ -312,6 +318,13 @@ void main() {
 
       expect(find.text('Rohto Dry Aid Review Quiz'), findsOneWidget);
       expect(find.text('50%'), findsOneWidget);
+      expect(
+        find.text(
+          'Challenge marks are awarded once, on your single attempt. Retakes are not permitted.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Retry'), findsNothing);
       expect(find.text('How long does Rohto Dry Aid relieve dryness?'), findsOneWidget);
       expect(find.text('How long can Rohto Dry Aid be kept after opening?'), findsOneWidget);
       expect(find.text('Discard 3 months after first opening.'), findsOneWidget);
@@ -382,6 +395,13 @@ void main() {
 
       verify(() => mockRepo.getQuizAttemptReview('quiz-already-done')).called(1);
       expect(find.text('100%'), findsOneWidget);
+      expect(
+        find.text(
+          'Challenge marks are awarded once, on your single attempt. Retakes are not permitted.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Retry'), findsNothing);
       expect(find.text('What technology powers Rohto Dry Aid?'), findsOneWidget);
     });
 

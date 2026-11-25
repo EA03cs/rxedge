@@ -783,7 +783,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get btnReviewMistakes => 'Review Mistakes';
 
   @override
-  String get btnRetryQuiz => 'Retry';
+  String get quizSingleAttemptNote =>
+      'Challenge marks are awarded once, on your single attempt. Retakes are not permitted.';
 
   @override
   String get btnBackToLearning => 'Back to Challenges';
@@ -1258,9 +1259,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String scoreOutOfLabel(int score, int total) {
     return 'Score: $score/$total';
   }
-
-  @override
-  String get btnRetakeQuiz => 'Retake Quiz';
 
   @override
   String pointsPlusValue(int points) {
