@@ -243,6 +243,9 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
   Future<void> _finishQuiz() async {
     if (_isSubmitting || _quiz.questions.isEmpty) return;
 
+    _stopwatch.stop();
+    _ticker?.cancel();
+
     final payload = <Map<String, String>>[];
     for (int i = 0; i < _quiz.questions.length; i++) {
       final q = _quiz.questions[i];

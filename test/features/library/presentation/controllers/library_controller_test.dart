@@ -93,6 +93,7 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
+      container.listen(libraryControllerProvider, (p, n) {});
 
       final subscription = container.listen(libraryControllerProvider, (p, n) {});
       expect(subscription.read(), const AsyncValue<LibraryState>.loading());
@@ -115,6 +116,7 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
+      container.listen(libraryControllerProvider, (p, n) {});
 
       await container.read(libraryControllerProvider.future);
       final controller = container.read(libraryControllerProvider.notifier);
@@ -136,6 +138,7 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
+      container.listen(libraryControllerProvider, (p, n) {});
 
       await container.read(libraryControllerProvider.future);
       final controller = container.read(libraryControllerProvider.notifier);
@@ -164,6 +167,7 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
+      container.listen(libraryControllerProvider, (p, n) {});
 
       await container.read(libraryControllerProvider.future);
       final controller = container.read(libraryControllerProvider.notifier);
@@ -190,6 +194,7 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
+      container.listen(libraryControllerProvider, (p, n) {});
 
       await container.read(libraryControllerProvider.future);
       final controller = container.read(libraryControllerProvider.notifier);
@@ -215,6 +220,7 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
+      container.listen(libraryControllerProvider, (p, n) {});
 
       await container.read(libraryControllerProvider.future);
       final controller = container.read(libraryControllerProvider.notifier);
@@ -253,6 +259,7 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
+      container.listen(libraryControllerProvider, (p, n) {});
 
       await container.read(libraryControllerProvider.future);
       final item = container.read(libraryControllerProvider).value!.allMaterials.first;
@@ -298,6 +305,7 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
+      container.listen(libraryControllerProvider, (p, n) {});
 
       await container.read(libraryControllerProvider.future);
       final controller = container.read(libraryControllerProvider.notifier);
@@ -355,6 +363,7 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
+      container.listen(libraryControllerProvider, (p, n) {});
 
       await container.read(libraryControllerProvider.future);
       final controller = container.read(libraryControllerProvider.notifier);
@@ -420,6 +429,7 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
+      container.listen(libraryControllerProvider, (p, n) {});
 
       await container.read(libraryControllerProvider.future);
       final controller = container.read(libraryControllerProvider.notifier);

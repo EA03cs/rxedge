@@ -10,8 +10,32 @@ import 'package:rxedge/features/challenges/data/repositories/challenges_reposito
 import 'package:rxedge/features/challenges/domain/entities/challenges_entities.dart';
 import 'package:rxedge/features/challenges/domain/repositories/challenges_repository.dart';
 import 'package:rxedge/features/challenges/presentation/screens/quick_quiz_screen.dart';
+import 'package:rxedge/features/home/domain/entities/home_dashboard_entity.dart';
+import 'package:rxedge/features/home/presentation/controllers/home_controller.dart';
+import 'package:rxedge/features/profile/domain/entities/profile_entities.dart';
+import 'package:rxedge/features/profile/presentation/controllers/profile_controller.dart';
 
 class MockChallengesRepository extends Mock implements ChallengesRepository {}
+
+class FakeHomeController extends HomeController {
+  @override
+  Future<HomeDashboardEntity> build() async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> refresh() async {}
+}
+
+class FakeProfileController extends ProfileController {
+  @override
+  Future<UserProfileEntity> build() async {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> refresh() async {}
+}
 
 void main() {
   late MockChallengesRepository mockRepo;
@@ -78,12 +102,20 @@ void main() {
           quizId: any(named: 'quizId'),
           answers: any(named: 'answers'),
         )).thenAnswer((_) async => const Result.success(perfectServerResult));
+    when(() => mockRepo.getMonthlyChallenge(forceRefresh: any(named: 'forceRefresh')))
+        .thenAnswer((_) async => const Result.failure(ServerFailure(debugMessage: 'test')));
+    when(() => mockRepo.getQuickQuizzes(forceRefresh: any(named: 'forceRefresh')))
+        .thenAnswer((_) async => const Result.success([]));
+    when(() => mockRepo.getObjectionOfTheMonth(forceRefresh: any(named: 'forceRefresh')))
+        .thenAnswer((_) async => const Result.failure(ServerFailure(debugMessage: 'test')));
   });
 
   Widget buildTestWidget() {
     return ProviderScope(
       overrides: [
         challengesRepositoryProvider.overrideWithValue(mockRepo),
+        homeControllerProvider.overrideWith(FakeHomeController.new),
+        profileControllerProvider.overrideWith(FakeProfileController.new),
       ],
       child: const MaterialApp(
         themeMode: ThemeMode.light,
@@ -270,6 +302,8 @@ void main() {
       await tester.pumpWidget(ProviderScope(
         overrides: [
           challengesRepositoryProvider.overrideWithValue(mockRepo),
+          homeControllerProvider.overrideWith(FakeHomeController.new),
+          profileControllerProvider.overrideWith(FakeProfileController.new),
         ],
         child: const MaterialApp(
           locale: Locale('en'),
@@ -427,6 +461,8 @@ void main() {
         ProviderScope(
           overrides: [
             challengesRepositoryProvider.overrideWithValue(mockRepo),
+            homeControllerProvider.overrideWith(FakeHomeController.new),
+            profileControllerProvider.overrideWith(FakeProfileController.new),
           ],
           child: const MaterialApp(
             locale: Locale('en'),
@@ -516,6 +552,8 @@ void main() {
         ProviderScope(
           overrides: [
             challengesRepositoryProvider.overrideWithValue(mockRepo),
+            homeControllerProvider.overrideWith(FakeHomeController.new),
+            profileControllerProvider.overrideWith(FakeProfileController.new),
           ],
           child: const MaterialApp(
             locale: Locale('en'),
@@ -614,6 +652,8 @@ void main() {
         ProviderScope(
           overrides: [
             challengesRepositoryProvider.overrideWithValue(mockRepo),
+            homeControllerProvider.overrideWith(FakeHomeController.new),
+            profileControllerProvider.overrideWith(FakeProfileController.new),
           ],
           child: const MaterialApp(
             locale: Locale('en'),

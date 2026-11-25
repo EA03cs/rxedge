@@ -61,13 +61,13 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Doctor Objection'), findsNWidgets(3));
-      expect(find.text('Product'), findsOneWidget);
+      expect(find.text("Please describe the doctor's objection..."), findsOneWidget);
 
       // Press Send Feedback without entering anything
       await tester.tap(find.text('Send Feedback'));
       await tester.pumpAndSettle();
 
-      expect(find.text('This field is required'), findsNWidgets(2));
+      expect(find.text('This field is required'), findsOneWidget);
     });
 
     testWidgets('reveals optional fields progressively on typing', (tester) async {
@@ -118,10 +118,9 @@ void main() {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
 
-      // Fill required fields
-      final textFields = find.byType(TextFormField);
-      await tester.enterText(textFields.at(0), 'Cardura XL');
-      await tester.enterText(textFields.at(1), 'Doctor objection test');
+      // Fill required description
+      final descField = find.byType(TextFormField).first;
+      await tester.enterText(descField, 'Doctor objection test for clinical review');
       await tester.pumpAndSettle();
 
       // Submit

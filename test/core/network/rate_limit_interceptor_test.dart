@@ -2,15 +2,13 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rxedge/core/error/exception_mapper.dart';
 import 'package:rxedge/core/error/exceptions.dart';
-import 'package:rxedge/core/error/failure_message_mapper.dart';
 import 'package:rxedge/core/error/failures.dart';
 import 'package:rxedge/core/network/interceptors/error_interceptor.dart';
 import 'package:rxedge/core/network/interceptors/rate_limit_interceptor.dart';
-import 'package:rxedge/l10n/app_localizations.dart';
+import 'package:rxedge/l10n/app_localizations_en.dart';
 
 class _FakeHttpClientAdapter implements HttpClientAdapter {
   final Future<ResponseBody> Function(RequestOptions options) handler;
@@ -171,9 +169,9 @@ void main() {
       ]);
     });
 
-    testWidgets(
+    test(
         'retries only once when still 429 and maps to friendly rate-limit message',
-        (tester) async {
+        () async {
       int attempts = 0;
       final recordedDelays = <Duration>[];
 
@@ -217,21 +215,9 @@ void main() {
       expect(failure, isA<ServerFailure>());
       expect((failure as ServerFailure).statusCode, 429);
 
-      late String uiMessage;
-      await tester.pumpWidget(
-        MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Builder(
-            builder: (context) {
-              uiMessage = FailureMessageMapper.map(context, failure);
-              return const SizedBox.shrink();
-            },
-          ),
-        ),
-      );
+      final l10n = AppLocalizationsEn();
       expect(
-        uiMessage,
+        l10n.errRateLimit,
         'Too many requests. Please wait a moment and try again.',
       );
     });

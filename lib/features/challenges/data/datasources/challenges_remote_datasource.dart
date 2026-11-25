@@ -173,6 +173,9 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
     required String quizId,
     required List<Map<String, String>> answers,
   }) async {
+    if (simulateError) {
+      throw const ServerException('Simulated error submitting quiz answers');
+    }
     final response = await dio.post<dynamic>(
       ApiEndpoints.submitQuiz(quizId),
       data: <String, dynamic>{'answers': answers},

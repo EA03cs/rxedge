@@ -102,7 +102,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(FeedbackFormScreen), findsOneWidget);
-      expect(find.text('Product'), findsOneWidget);
+      expect(find.text("Please describe the doctor's objection..."), findsOneWidget);
       expect(find.text('Doctor Objection'), findsNWidgets(3));
     });
 
