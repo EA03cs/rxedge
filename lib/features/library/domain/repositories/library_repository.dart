@@ -11,6 +11,6 @@ abstract class LibraryRepository {
   Future<Result<List<MaterialItemEntity>>> getMaterials({bool forceRefresh = false});
   Future<Result<MaterialItemEntity>> toggleFavorite(String id);
   Future<Result<MaterialItemEntity>> getMaterialById(String id);
-  Future<Result<void>> markDownloaded(String id);
+  Future<Result<void>> markDownloaded(String id, {String? localFilePath});
   Future<Result<void>> removeDownload(String id);
 }

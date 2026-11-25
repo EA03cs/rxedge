@@ -130,14 +130,16 @@ class MaterialActionsSheet extends StatelessWidget {
             const Divider(height: 1.0),
             const SizedBox(height: RxSpacing.s8),
 
-            // Action 1: Open File (Disabled if offline and not downloaded)
+            // Action 1: Open File / Open Online (Disabled if offline and not downloaded)
             ListTile(
               leading: Icon(
                 LucideIcons.externalLink,
                 color: isOnlineOnlyDisabled ? colors.textTertiary : colors.primary,
               ),
               title: Text(
-                l10n.actionOpenFile,
+                item.isExternalOnlineLink
+                    ? l10n.actionOpenOnline
+                    : l10n.actionOpenFile,
                 style: TextStyle(
                   color: isOnlineOnlyDisabled ? colors.textTertiary : colors.textPrimary,
                   fontWeight: FontWeight.w600,
@@ -165,21 +167,8 @@ class MaterialActionsSheet extends StatelessWidget {
               onTap: onToggleFavorite,
             ),
 
-            // Action 3: Download / Remove Download
-            if (!item.isDownloaded)
-              ListTile(
-                leading: Icon(LucideIcons.downloadCloud, color: colors.textPrimary),
-                title: Text(
-                  l10n.actionDownload,
-                  style: TextStyle(color: colors.textPrimary),
-                ),
-                subtitle: Text(
-                  'Store ${item.formattedSize} on device for offline detailing',
-                  style: textTheme.bodySmall?.copyWith(color: colors.textSecondary),
-                ),
-                onTap: onDownload,
-              )
-            else
+            // Action 3: Download / Remove Download (only for real downloadable files)
+            if (item.isDownloaded)
               ListTile(
                 leading: Icon(LucideIcons.trash2, color: colors.error),
                 title: Text(
@@ -191,6 +180,19 @@ class MaterialActionsSheet extends StatelessWidget {
                   style: textTheme.bodySmall?.copyWith(color: colors.textSecondary),
                 ),
                 onTap: onRemoveDownload,
+              )
+            else if (item.hasDirectDownloadUrl && !isOffline)
+              ListTile(
+                leading: Icon(LucideIcons.downloadCloud, color: colors.textPrimary),
+                title: Text(
+                  l10n.actionDownload,
+                  style: TextStyle(color: colors.textPrimary),
+                ),
+                subtitle: Text(
+                  'Store ${item.formattedSize} on device for offline detailing',
+                  style: textTheme.bodySmall?.copyWith(color: colors.textSecondary),
+                ),
+                onTap: onDownload,
               ),
 
             // Action 4: Share

@@ -222,6 +222,7 @@
   "actionRemoveDownload": "Remove download",
   "actionShare": "Share",
   "actionOpenFile": "Open file",
+  "actionOpenOnline": "Open Online",
   "offlineAvailable": "Offline available",
   "requiresDownload": "Requires download to view offline",
   "emptySearchResultsTitle": "No results for \"{query}\"",
