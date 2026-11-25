@@ -16,7 +16,7 @@ class _DesignSystemShowcaseScreenState extends ConsumerState<DesignSystemShowcas
   int _navIndex = 0;
   bool _isLoadingButton = false;
   final Set<String> _selectedSpecialties = {'Cardiology', 'Oncology'};
-  final TextEditingController _searchController = TextEditingController(text: 'Atorvastatin 20mg');
+  final TextEditingController _searchController = TextEditingController(text: 'Rohto Dry Aid');
   final TextEditingController _doctorController = TextEditingController();
 
   @override
