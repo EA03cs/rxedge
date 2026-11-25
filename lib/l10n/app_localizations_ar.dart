@@ -1635,4 +1635,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errUnknown => 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get repVoicePrivacyNoticeTitle => 'إشعار الخصوصية والبيانات';
+
+  @override
+  String get repVoicePrivacyNoticeBody =>
+      'تُحفظ المشاركات والصور بشكل آمن، ولا يطلع عليها سوى المندوب والمشرفون ومسؤولو التسويق المخوّلون، وتُحفظ وفق سياسة الشركة (365 يوماً)، مع إمكانية حذفها عبر سجل صوت المندوب أو طلبات الحذف.';
+
+  @override
+  String get quarterlyBadgesEmpty => 'ستظهر الشارات ربع السنوية هنا';
 }

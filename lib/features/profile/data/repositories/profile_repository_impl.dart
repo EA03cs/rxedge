@@ -56,6 +56,20 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
+  Future<Result<List<BadgeEntity>>> getMyBadges() async {
+    try {
+      final badgeDtos = await _remoteDatasource.getMyBadges();
+      final badges = badgeDtos.map((b) => b.toDomain()).toList();
+      if (_memoryProfile != null) {
+        _memoryProfile = _memoryProfile!.copyWith(badges: badges);
+      }
+      return Result.success(badges);
+    } catch (e, st) {
+      return Result.failure(ExceptionMapper.map(e, st));
+    }
+  }
+
+  @override
   Future<Result<void>> updateNotificationPreferences(
     NotificationPreferencesEntity preferences,
   ) async {

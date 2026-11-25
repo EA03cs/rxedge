@@ -1641,4 +1641,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errUnknown => 'An unexpected error occurred. Please try again.';
+
+  @override
+  String get repVoicePrivacyNoticeTitle => 'Privacy & Data Notice';
+
+  @override
+  String get repVoicePrivacyNoticeBody =>
+      'Submissions and photos are stored securely, accessible only to you and authorized Supervisors or Marketing Admins, retained per company policy (365 days), and removable via Rep Voice history or deletion requests.';
+
+  @override
+  String get quarterlyBadgesEmpty => 'Quarterly badges will appear here';
 }

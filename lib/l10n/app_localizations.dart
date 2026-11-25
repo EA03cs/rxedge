@@ -3013,6 +3013,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'An unexpected error occurred. Please try again.'**
   String get errUnknown;
+
+  /// No description provided for @repVoicePrivacyNoticeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy & Data Notice'**
+  String get repVoicePrivacyNoticeTitle;
+
+  /// No description provided for @repVoicePrivacyNoticeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Submissions and photos are stored securely, accessible only to you and authorized Supervisors or Marketing Admins, retained per company policy (365 days), and removable via Rep Voice history or deletion requests.'**
+  String get repVoicePrivacyNoticeBody;
+
+  /// No description provided for @quarterlyBadgesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Quarterly badges will appear here'**
+  String get quarterlyBadgesEmpty;
 }
 
 class _AppLocalizationsDelegate

@@ -634,5 +634,8 @@
   "errValidation": "Please check the highlighted fields and try again.",
   "errCache": "Unable to read local offline cache.",
   "errServer": "The server encountered an error. Please try again shortly.",
-  "errUnknown": "An unexpected error occurred. Please try again."
+  "errUnknown": "An unexpected error occurred. Please try again.",
+  "repVoicePrivacyNoticeTitle": "Privacy & Data Notice",
+  "repVoicePrivacyNoticeBody": "Submissions and photos are stored securely, accessible only to you and authorized Supervisors or Marketing Admins, retained per company policy (365 days), and removable via Rep Voice history or deletion requests.",
+  "quarterlyBadgesEmpty": "Quarterly badges will appear here"
 }
