@@ -12,12 +12,6 @@ abstract class ChallengesRemoteDatasource {
   Future<ObjectionOfTheMonthDto> getObjectionOfTheMonth();
   Future<ObjectionOfTheMonthDto> submitObjectionFeedback(String objectionId, String feedbackType);
   Future<void> submitDoctorObjectionResponse(String objectionId, String userResponse);
-  Future<QuizResultHistoryDto> submitQuizResult({
-    required String quizId,
-    required int score,
-    required int totalQuestions,
-    required int timeTakenSeconds,
-  });
   Future<QuizSubmissionResultDto> submitQuizAnswers({
     required String quizId,
     required List<Map<String, String>> answers,
@@ -498,52 +492,20 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
   }
 
   @override
-  Future<QuizResultHistoryDto> submitQuizResult({
-    required String quizId,
-    required int score,
-    required int totalQuestions,
-    required int timeTakenSeconds,
-  }) async {
-    await Future<void>.delayed(const Duration(milliseconds: 150));
-    final points = (score * 10) + (score == totalQuestions ? 10 : 0);
-
-    return QuizResultHistoryDto(
-      id: 'res_${DateTime.now().millisecondsSinceEpoch}',
-      quizId: quizId,
-      quizTitle: quizId == 'quiz_rda_01'
-          ? 'Rohto Dry Aid Advanced Tearshield Clinical Quiz'
-          : 'Ophthalmology Clinical Knowledge Check',
-      score: score,
-      totalQuestions: totalQuestions,
-      pointsEarned: points,
-      timeTakenSeconds: timeTakenSeconds,
-      completedAtIso: DateTime.now().toIso8601String(),
-    );
-  }
-
-  @override
   Future<QuizSubmissionResultDto> submitQuizAnswers({
     required String quizId,
     required List<Map<String, String>> answers,
   }) async {
-    if (dio != null) {
-      final response = await dio!.post<dynamic>(
-        ApiEndpoints.submitQuiz(quizId),
-        data: <String, dynamic>{'answers': answers},
-      );
-      final map = ApiResponseParser.unwrapMap(response.data);
-      return QuizSubmissionResultDto.fromJson(map);
+    if (simulateError || dio == null) {
+      throw const ServerException('Quiz submission requires server connectivity');
     }
 
-    await Future<void>.delayed(const Duration(milliseconds: 120));
-    return QuizSubmissionResultDto(
-      attemptId: 'local_${DateTime.now().millisecondsSinceEpoch}',
-      score: 100,
-      isPassed: true,
-      passingScore: 70,
-      pointsAwarded: 30,
-      answers: const [],
+    final response = await dio!.post<dynamic>(
+      ApiEndpoints.submitQuiz(quizId),
+      data: <String, dynamic>{'answers': answers},
     );
+    final map = ApiResponseParser.unwrapMap(response.data);
+    return QuizSubmissionResultDto.fromJson(map);
   }
 
   @override

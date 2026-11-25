@@ -15,13 +15,6 @@ abstract class ChallengesLocalDatasource {
   Future<ObjectionOfTheMonthDto?> getCachedObjection();
   Future<void> cacheObjection(ObjectionOfTheMonthDto objection);
 
-  Future<void> queueQuizResult({
-    required String quizId,
-    required int score,
-    required int totalQuestions,
-    required int timeTakenSeconds,
-  });
-
   Future<void> queueDoctorObjectionResponse({
     required String objectionId,
     required String userResponse,
@@ -103,31 +96,6 @@ class ChallengesLocalDatasourceImpl implements ChallengesLocalDatasource {
   @override
   Future<void> cacheObjection(ObjectionOfTheMonthDto objection) async {
     _cacheService.put<String>(_objectionKey, jsonEncode(objection.toJson()));
-  }
-
-  @override
-  Future<void> queueQuizResult({
-    required String quizId,
-    required int score,
-    required int totalQuestions,
-    required int timeTakenSeconds,
-  }) async {
-    _queueService.enqueue(
-      OfflineQueueItem(
-        id: 'quiz_result_${DateTime.now().millisecondsSinceEpoch}',
-        endpoint: '/api/v1/challenges/quizzes/$quizId/submit',
-        httpMethod: 'POST',
-        payload: {
-          'quizId': quizId,
-          'score': score,
-          'totalQuestions': totalQuestions,
-          'timeTakenSeconds': timeTakenSeconds,
-          'completedAt': DateTime.now().toIso8601String(),
-        },
-        createdAt: DateTime.now(),
-      ),
-    );
-    AppLogger.d('Queued quiz result submission offline for $quizId');
   }
 
   @override

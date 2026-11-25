@@ -20,7 +20,7 @@ import '../controllers/challenges_controller.dart';
 /// - Thin progress bar at top
 /// - Large full-width touch options (12dp radius, hairline border)
 /// - Immediate right/wrong feedback with one-line clinical explanation
-/// - Result screen: score, points earned, time, and 3 actions (Review mistakes, Retry, Back to learning)
+/// - Result screen: score, points earned, time, and actions (Review mistakes, Back to learning)
 /// - Single subtle celebration on high scores only (NO confetti spam, restrained professional aesthetic)
 class QuickQuizScreen extends ConsumerStatefulWidget {
   final QuickQuizEntity quiz;
@@ -69,6 +69,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
   int? _selectedOptionIndex;
   bool _isAnswerSubmitted = false;
   bool _isSubmitting = false;
+  String? _submitError;
   final Map<int, int> _userAnswers = {}; // questionIndex -> selectedOptionIndex
   QuizSubmissionResultEntity? _serverResult;
 
@@ -211,9 +212,6 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
     super.dispose();
   }
 
-  bool get _isServerEvaluated =>
-      _quiz.questions.isNotEmpty && _quiz.questions.first.isServerEvaluated;
-
   void _onOptionSelected(int optionIndex) {
     final currentQuestion = _quiz.questions[_currentIndex];
     if (!currentQuestion.isServerEvaluated && _isAnswerSubmitted) return;
@@ -243,208 +241,193 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
   }
 
   Future<void> _finishQuiz() async {
-    if (_isSubmitting) return;
-    if (_isServerEvaluated) {
-      final payload = <Map<String, String>>[];
-      for (int i = 0; i < _quiz.questions.length; i++) {
-        final q = _quiz.questions[i];
-        final selectedIdx = _userAnswers[i];
-        if (selectedIdx != null && selectedIdx < q.optionIds.length) {
-          payload.add({
-            'questionId': q.id,
-            'selectedOptionId': q.optionIds[selectedIdx],
-          });
-        }
-      }
+    if (_isSubmitting || _quiz.questions.isEmpty) return;
 
-      if (payload.length < _quiz.questions.length) {
-        return;
-      }
+    final payload = <Map<String, String>>[];
+    for (int i = 0; i < _quiz.questions.length; i++) {
+      final q = _quiz.questions[i];
+      final selectedIdx = _userAnswers[i];
+      if (selectedIdx == null) return;
+      final selectedOptionId = selectedIdx < q.optionIds.length
+          ? q.optionIds[selectedIdx]
+          : (selectedIdx < q.options.length
+              ? q.options[selectedIdx]
+              : '$selectedIdx');
+      payload.add({
+        'questionId': q.id,
+        'selectedOptionId': selectedOptionId,
+      });
+    }
 
-      setState(() => _isSubmitting = true);
-      final res = await ref
-          .read(challengesControllerProvider.notifier)
-          .submitServerQuiz(quizId: _quiz.id, answers: payload);
+    setState(() {
+      _isSubmitting = true;
+    });
 
-      if (!mounted) return;
-      await res.when<Future<void>>(
-        success: (evalResult) async {
-          _stopwatch.stop();
-          _ticker?.cancel();
+    final res = await ref
+        .read(challengesControllerProvider.notifier)
+        .submitServerQuiz(quizId: _quiz.id, answers: payload);
 
-          final updatedQuestions = _quiz.questions.map((q) {
-            final match = evalResult.answers.where((a) => a.questionId == q.id);
-            if (match.isEmpty) return q;
-            final a = match.first;
-            var resolvedCorrectIdx = a.correctOptionId != null
-                ? q.optionIds.indexOf(a.correctOptionId!)
-                : -1;
-            if (resolvedCorrectIdx < 0 && a.correctOptionText != null) {
-              resolvedCorrectIdx = q.options.indexOf(a.correctOptionText!);
-            }
-            return q.copyWith(
-              correctOptionIndex: resolvedCorrectIdx,
-              explanation: a.explanation ?? q.explanation,
+    if (!mounted) return;
+    await res.when<Future<void>>(
+      success: (evalResult) async {
+        _stopwatch.stop();
+        _ticker?.cancel();
+
+        final updatedQuestions = _quiz.questions.map((q) {
+          final match = evalResult.answers.where((a) => a.questionId == q.id);
+          if (match.isEmpty) return q;
+          final a = match.first;
+          var resolvedCorrectIdx = a.correctOptionId != null
+              ? q.optionIds.indexOf(a.correctOptionId!)
+              : -1;
+          if (resolvedCorrectIdx < 0 && a.correctOptionText != null) {
+            resolvedCorrectIdx = q.options.indexOf(a.correctOptionText!);
+          }
+          return q.copyWith(
+            correctOptionIndex: resolvedCorrectIdx,
+            explanation: a.explanation ?? q.explanation,
+          );
+        }).toList();
+
+        if (evalResult.isPassed) {
+          unawaited(HapticFeedback.mediumImpact());
+          final lid = _quiz.lessonId;
+          if (lid != null && lid.isNotEmpty) {
+            unawaited(
+              ref
+                  .read(learnControllerProvider.notifier)
+                  .markLessonCompleted(lid),
             );
-          }).toList();
-
-          if (evalResult.isPassed) {
-            unawaited(HapticFeedback.mediumImpact());
-            final lid = _quiz.lessonId;
-            if (lid != null && lid.isNotEmpty) {
-              unawaited(
-                ref
-                    .read(learnControllerProvider.notifier)
-                    .markLessonCompleted(lid),
-              );
-            }
           }
+        }
 
-          setState(() {
-            _quiz = _quiz.copyWith(questions: updatedQuestions);
-            _serverResult = evalResult;
-            _isSubmitting = false;
-            _isFinished = true;
-          });
-        },
-        failure: (failure) async {
-          final isConflict = _isConflictFailure(failure);
-          if (isConflict) {
-            try {
-              unawaited(
-                ref.read(challengesControllerProvider.notifier).refresh(),
-              );
-            } catch (_) {}
-            try {
-              final reviewRes = await ref
-                  .read(challengesRepositoryProvider)
-                  .getQuizAttemptReview(_quiz.id);
-              if (!mounted) return;
-              var recovered = false;
-              reviewRes.when(
-                success: (review) {
-                  recovered = true;
-                  _stopwatch.stop();
-                  _ticker?.cancel();
-                  setState(() {
-                    _quiz = _quiz.copyWith(isCompleted: true);
-                    _serverResult = review;
-                    _isFinished = true;
-                    _isSubmitting = false;
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'You have already attempted this quiz. Retakes are not permitted per challenge policy.',
-                      ),
-                      behavior: SnackBarBehavior.floating,
+        setState(() {
+          _quiz = _quiz.copyWith(
+            isCompleted: true,
+            questions: updatedQuestions,
+          );
+          _serverResult = evalResult;
+          _isSubmitting = false;
+          _submitError = null;
+          _isFinished = true;
+        });
+      },
+      failure: (failure) async {
+        final isConflict = _isConflictFailure(failure);
+        if (isConflict) {
+          try {
+            unawaited(
+              ref.read(challengesControllerProvider.notifier).refresh(),
+            );
+          } catch (_) {}
+          try {
+            final reviewRes = await ref
+                .read(challengesRepositoryProvider)
+                .getQuizAttemptReview(_quiz.id);
+            if (!mounted) return;
+            var recovered = false;
+            reviewRes.when(
+              success: (review) {
+                recovered = true;
+                _stopwatch.stop();
+                _ticker?.cancel();
+                setState(() {
+                  _quiz = _quiz.copyWith(isCompleted: true);
+                  _serverResult = review;
+                  _isFinished = true;
+                  _isSubmitting = false;
+                  _submitError = null;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'You have already attempted this quiz. Retakes are not permitted per challenge policy.',
                     ),
-                  );
-                },
-                failure: (_) {},
-              );
-              if (recovered) return;
-            } catch (_) {}
-          }
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              },
+              failure: (_) {},
+            );
+            if (recovered) return;
+          } catch (_) {}
 
           if (!mounted) return;
-          setState(() => _isSubmitting = false);
-          final errorText = FailureMessageMapper.map(context, failure);
-          final failStr = (failure.debugMessage ?? failure.toString());
-          final isWindowClosed = failStr.contains('QUIZ_WINDOW_CLOSED');
-          final isNotStarted = failStr.contains('QUIZ_NOT_STARTED');
-
-          String message = errorText;
-          if (isConflict) {
-            message =
-                'You have already attempted this quiz. Retakes are not permitted per challenge policy.';
-          } else if (isWindowClosed) {
-            message = 'This quiz is closed as the completion window has ended.';
-          } else if (isNotStarted) {
-            message =
-                'This quiz has not started yet. Please check back on the start date.';
-          }
-
+          setState(() {
+            _isSubmitting = false;
+            _submitError = null;
+          });
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(message),
+            const SnackBar(
+              content: Text(
+                'You have already attempted this quiz. Retakes are not permitted per challenge policy.',
+              ),
               behavior: SnackBarBehavior.floating,
             ),
           );
-        },
-      );
-      return;
-    }
+          return;
+        }
 
-    _stopwatch.stop();
-    _ticker?.cancel();
+        if (!mounted) return;
+        final errorText = FailureMessageMapper.map(context, failure);
+        final failStr = (failure.debugMessage ?? failure.toString());
+        final isWindowClosed = failStr.contains('QUIZ_WINDOW_CLOSED');
+        final isNotStarted = failStr.contains('QUIZ_NOT_STARTED');
 
-    final score = _calculateScore();
-    final total = _quiz.questions.length;
-    final elapsedSec = _stopwatch.elapsed.inSeconds;
-    final isPassed = total > 0 && (score / total) >= 0.7;
+        String message = errorText;
+        if (isWindowClosed) {
+          message = 'This quiz is closed as the completion window has ended.';
+        } else if (isNotStarted) {
+          message =
+              'This quiz has not started yet. Please check back on the start date.';
+        }
 
-    if (isPassed) {
-      unawaited(HapticFeedback.mediumImpact());
-      final lid = _quiz.lessonId;
-      if (lid != null && lid.isNotEmpty) {
-        unawaited(
-          ref
-              .read(learnControllerProvider.notifier)
-              .markLessonCompleted(lid),
-        );
-      }
-    }
-
-    unawaited(
-      ref.read(challengesControllerProvider.notifier).onQuizCompleted(
-            quizId: _quiz.id,
-            score: score,
-            totalQuestions: total,
-            timeTakenSeconds: elapsedSec,
-          ),
+        setState(() {
+          _isSubmitting = false;
+          _submitError = message;
+          _isFinished = false;
+        });
+      },
     );
-
-    setState(() {
-      _isFinished = true;
-    });
-  }
-
-  int _calculateScore() {
-    if (_serverResult != null) {
-      return _serverResult!.answers.where((a) => a.isCorrect).length;
-    }
-    int score = 0;
-    for (int i = 0; i < _quiz.questions.length; i++) {
-      final chosen = _userAnswers[i];
-      final correct = _quiz.questions[i].correctOptionIndex;
-      if (chosen == correct) {
-        score++;
-      }
-    }
-    return score;
-  }
-
-  void _restartQuiz() {
-    setState(() {
-      _currentIndex = 0;
-      _selectedOptionIndex = null;
-      _isAnswerSubmitted = false;
-      _isSubmitting = false;
-      _serverResult = null;
-      _userAnswers.clear();
-      _isFinished = false;
-      _breakdownFilter = QuizBreakdownFilter.all;
-      _stopwatch
-        ..reset()
-        ..start();
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isFinished && (_serverResult != null || _quiz.questions.isNotEmpty)) {
+    if (_isFinished && _serverResult != null) {
       return _buildResultScreen(context);
+    }
+
+    if (_submitError != null) {
+      final colors = context.rxColors;
+      final textTheme = Theme.of(context).textTheme;
+      return AppScaffold(
+        appBar: AppBar(
+          title: Text(
+            _quiz.title,
+            style: textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: colors.textPrimary,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(LucideIcons.x, size: 20.0),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            const SizedBox(width: RxSpacing.s8),
+          ],
+        ),
+        body: _isSubmitting
+            ? const Center(child: CircularProgressIndicator())
+            : ErrorState(
+                title: _quiz.title,
+                description: _submitError!,
+                retryText: context.l10n.retry,
+                onRetry: _finishQuiz,
+              ),
+      );
     }
 
     if (_isLoadingQuiz || _loadError != null || _quiz.questions.isEmpty) {
@@ -479,9 +462,6 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
       );
     }
 
-    if (_isFinished) {
-      return _buildResultScreen(context);
-    }
     return _buildQuestionScreen(context);
   }
 
@@ -590,10 +570,11 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                           ? l10n.btnNextQuestion
                           : l10n.btnFinishQuiz,
                       variant: AppButtonVariant.primary,
+                      isLoading: _isSubmitting,
                       trailingIcon: _currentIndex < totalQuestions - 1
                           ? context.arrowForward
                           : LucideIcons.checkCircle,
-                      onPressed: _onNext,
+                      onPressed: _isSubmitting ? null : _onNext,
                     ),
                   ] else if (currentQuestion.isServerEvaluated &&
                       _selectedOptionIndex != null) ...[
@@ -772,17 +753,20 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
     final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
+    final serverResult = _serverResult!;
 
-    final score = _calculateScore();
-    final total = _quiz.questions.isNotEmpty
-        ? _quiz.questions.length
-        : (_serverResult?.answers.length ?? 0);
-    final percent = total > 0
-        ? score / total
-        : ((_serverResult?.scorePercentage ?? 0) / 100.0);
-    final isHighScore = _serverResult?.isPassed ?? (percent >= 0.8);
-    final pointsEarned = _serverResult?.pointsAwarded ??
-        ((score * 10) + (score == total ? 10 : 0));
+    final hasEvaluatedAnswers = serverResult.answers.isNotEmpty;
+    final total = hasEvaluatedAnswers
+        ? serverResult.answers.length
+        : _quiz.questions.length;
+    final score = hasEvaluatedAnswers
+        ? serverResult.answers.where((a) => a.isCorrect).length
+        : (total > 0
+            ? ((serverResult.scorePercentage / 100.0) * total).round()
+            : 0);
+    final percent = (serverResult.scorePercentage / 100.0).clamp(0.0, 1.0);
+    final isHighScore = serverResult.isPassed;
+    final pointsEarned = serverResult.pointsAwarded;
 
     return AppScaffold(
       appBar: AppBar(
@@ -889,7 +873,9 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                             StatusBadge(
                               label: pointsEarned > 0
                                   ? l10n.pointsPlusValue(pointsEarned)
-                                  : 'Claimed',
+                                  : (serverResult.isPassed
+                                      ? 'Claimed'
+                                      : l10n.pointsPlusValue(0)),
                               variant: pointsEarned > 0
                                   ? StatusBadgeVariant.accent
                                   : StatusBadgeVariant.neutral,
@@ -955,7 +941,7 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                       ),
                     ),
                   ],
-                  if (percent >= 0.7 && _quiz.lessonId != null && _quiz.lessonId!.isNotEmpty) ...[
+                  if (serverResult.isPassed && _quiz.lessonId != null && _quiz.lessonId!.isNotEmpty) ...[
                     const SizedBox(height: RxSpacing.s12),
                     Container(
                       width: double.infinity,
@@ -1013,15 +999,6 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
               },
             ),
             const SizedBox(height: RxSpacing.s10),
-            if (!_quiz.isCompleted && _serverResult == null) ...[
-              AppButton(
-                text: l10n.btnRetryQuiz,
-                leadingIcon: LucideIcons.rotateCw,
-                variant: AppButtonVariant.secondary,
-                onPressed: _restartQuiz,
-              ),
-              const SizedBox(height: RxSpacing.s10),
-            ],
             AppButton(
               text: l10n.btnBackToLearning,
               leadingIcon: context.arrowBack,
@@ -1052,17 +1029,10 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
             ? q.options[chosenIndex]
             : evalMatch?.selectedOptionText;
 
-    final bool isCorrect;
-    if (evalMatch != null) {
-      isCorrect = evalMatch.isCorrect;
-    } else if (q.correctOptionIndex >= 0) {
-      isCorrect = chosenIndex == q.correctOptionIndex;
-    } else {
-      isCorrect = false;
-    }
+    final bool isCorrect = evalMatch?.isCorrect ?? false;
 
-    var correctIndex = q.correctOptionIndex;
-    if (correctIndex < 0 && evalMatch != null) {
+    var correctIndex = -1;
+    if (evalMatch != null) {
       if (evalMatch.correctOptionId != null && q.optionIds.isNotEmpty) {
         correctIndex = q.optionIds.indexOf(evalMatch.correctOptionId!);
       }

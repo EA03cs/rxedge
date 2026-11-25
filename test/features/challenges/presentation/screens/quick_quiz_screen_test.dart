@@ -46,27 +46,38 @@ void main() {
     ],
   );
 
+  const perfectServerResult = QuizSubmissionResultEntity(
+    attemptId: 'att_server_perfect',
+    scorePercentage: 100,
+    isPassed: true,
+    passingScore: 70,
+    pointsAwarded: 50,
+    answers: [
+      QuizAnswerEvaluationEntity(
+        questionId: 'q1',
+        questionText: 'What is the primary GITS pharmacokinetic advantage?',
+        selectedOptionText: 'Consistent 24-hour plasma plateau with zero spikes',
+        correctOptionText: 'Consistent 24-hour plasma plateau with zero spikes',
+        isCorrect: true,
+        explanation: 'GITS osmotic pump ensures constant zero-order delivery.',
+      ),
+      QuizAnswerEvaluationEntity(
+        questionId: 'q2',
+        questionText: 'What is the standard starting dose?',
+        selectedOptionText: '4mg once daily taken with breakfast',
+        correctOptionText: '4mg once daily taken with breakfast',
+        isCorrect: true,
+        explanation: 'Standard starting dose is 4mg once daily with food.',
+      ),
+    ],
+  );
+
   setUp(() {
     mockRepo = MockChallengesRepository();
-    when(() => mockRepo.submitQuizResult(
+    when(() => mockRepo.submitQuizAnswers(
           quizId: any(named: 'quizId'),
-          score: any(named: 'score'),
-          totalQuestions: any(named: 'totalQuestions'),
-          timeTakenSeconds: any(named: 'timeTakenSeconds'),
-        )).thenAnswer(
-      (_) async => Result.success(
-        QuizResultHistoryEntity(
-          id: 'res_1',
-          quizId: 'quiz_test',
-          quizTitle: 'Cardura XL Clinical Recall',
-          score: 2,
-          totalQuestions: 2,
-          pointsEarned: 50,
-          timeTakenSeconds: 30,
-          completedAt: DateTime.now(),
-        ),
-      ),
-    );
+          answers: any(named: 'answers'),
+        )).thenAnswer((_) async => const Result.success(perfectServerResult));
   });
 
   Widget buildTestWidget() {
@@ -126,11 +137,11 @@ void main() {
       await tester.tap(find.text('Finish Quiz'));
       await tester.pumpAndSettle();
 
-      // Result Screen Score Card
+      // Result Screen Score Card (values strictly from server result)
       expect(find.text('Quiz Completed'), findsOneWidget);
       expect(find.text('Clinical Mastery Achieved'), findsOneWidget); // High score subtle celebration
       expect(find.text('2 of 2 Questions Correct'), findsOneWidget);
-      expect(find.text('+30 Marks'), findsOneWidget); // 2*10 + 10 bonus
+      expect(find.text('+50 Marks'), findsOneWidget); // Server pointsAwarded, not local formula
 
       // Per-Question Breakdown for ALL questions rendered immediately
       expect(find.text('Questions Breakdown'), findsOneWidget);
@@ -143,9 +154,9 @@ void main() {
       expect(find.text('Your answer: 4mg once daily taken with breakfast'), findsOneWidget);
       expect(find.text('Clinical Explanation'), findsNWidgets(2));
 
-      // 3 Actions Present
+      // Actions Present (no Retry quiz button on completed server-evaluated quiz)
       expect(find.text('Review Mistakes'), findsOneWidget);
-      expect(find.text('Retry'), findsOneWidget);
+      expect(find.text('Retry'), findsNothing);
       expect(find.text('Back to Challenges'), findsOneWidget);
 
       // Tap Review Mistakes / filter to incorrect
@@ -160,6 +171,39 @@ void main() {
       tester.view.physicalSize = const Size(1200, 2400);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
+
+      when(() => mockRepo.submitQuizAnswers(
+            quizId: any(named: 'quizId'),
+            answers: any(named: 'answers'),
+          )).thenAnswer(
+        (_) async => const Result.success(
+          QuizSubmissionResultEntity(
+            attemptId: 'att_server_partial',
+            scorePercentage: 50,
+            isPassed: false,
+            passingScore: 70,
+            pointsAwarded: 0,
+            answers: [
+              QuizAnswerEvaluationEntity(
+                questionId: 'q1',
+                questionText: 'What is the primary GITS pharmacokinetic advantage?',
+                selectedOptionText: 'Consistent 24-hour plasma plateau with zero spikes',
+                correctOptionText: 'Consistent 24-hour plasma plateau with zero spikes',
+                isCorrect: true,
+                explanation: 'GITS osmotic pump ensures constant zero-order delivery.',
+              ),
+              QuizAnswerEvaluationEntity(
+                questionId: 'q2',
+                questionText: 'What is the standard starting dose?',
+                selectedOptionText: '16mg divided twice daily',
+                correctOptionText: '4mg once daily taken with breakfast',
+                isCorrect: false,
+                explanation: 'Standard starting dose is 4mg once daily with food.',
+              ),
+            ],
+          ),
+        ),
+      );
 
       await tester.pumpWidget(buildTestWidget());
       await tester.pump();
@@ -178,6 +222,7 @@ void main() {
 
       // Result Screen
       expect(find.text('1 of 2 Questions Correct'), findsOneWidget);
+      expect(find.text('+0 Marks'), findsOneWidget);
       expect(find.text('Questions Breakdown'), findsOneWidget);
       expect(find.text('All (2)'), findsOneWidget);
       expect(find.text('Incorrect only (1)'), findsOneWidget);
@@ -478,6 +523,120 @@ void main() {
         ),
         findsOneWidget,
       );
+    });
+
+    testWidgets(
+        'shows error with Retry on network/5xx submit failure without marking completed, and recovers on retry',
+        (tester) async {
+      tester.view.physicalSize = const Size(1200, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      const serverQuiz = QuickQuizEntity(
+        id: 'quiz-retry',
+        title: 'Rohto Dry Aid Clinical Quiz',
+        category: 'Ophthalmology',
+        durationMinutes: 3,
+        rewardPoints: 50,
+        isCompleted: false,
+        questions: [
+          QuizQuestionEntity(
+            id: 'q1',
+            question: 'How long does Rohto Dry Aid relieve dryness?',
+            options: ['Up to 12 hours', 'Up to 1 hour'],
+            optionIds: ['opt1', 'opt2'],
+            correctOptionIndex: -1,
+            explanation: '',
+          ),
+        ],
+      );
+
+      const successResult = QuizSubmissionResultEntity(
+        attemptId: 'att-retry-ok',
+        scorePercentage: 100,
+        isPassed: true,
+        passingScore: 70,
+        pointsAwarded: 50,
+        answers: [
+          QuizAnswerEvaluationEntity(
+            questionId: 'q1',
+            questionText: 'How long does Rohto Dry Aid relieve dryness?',
+            selectedOptionId: 'opt1',
+            selectedOptionText: 'Up to 12 hours',
+            correctOptionId: 'opt1',
+            correctOptionText: 'Up to 12 hours',
+            isCorrect: true,
+            explanation: 'Tearshield Technology lasts up to 12 hours.',
+          ),
+        ],
+      );
+
+      var attempts = 0;
+      when(() => mockRepo.submitQuizAnswers(
+            quizId: 'quiz-retry',
+            answers: any(named: 'answers'),
+          )).thenAnswer((_) async {
+        attempts++;
+        if (attempts == 1) {
+          return const Result.failure(
+            ServerFailure(statusCode: 500, debugMessage: 'Internal Server Error'),
+          );
+        }
+        if (attempts == 2) {
+          return const Result.failure(
+            NetworkFailure(debugMessage: 'SocketException'),
+          );
+        }
+        return const Result.success(successResult);
+      });
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            challengesRepositoryProvider.overrideWithValue(mockRepo),
+          ],
+          child: const MaterialApp(
+            locale: Locale('en'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: [Locale('en')],
+            home: QuickQuizScreen(quiz: serverQuiz),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Up to 12 hours'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Finish Quiz'));
+      await tester.pumpAndSettle();
+
+      // First failure (500): error with Retry is shown, quiz NOT marked completed
+      expect(find.byType(ErrorState), findsOneWidget);
+      expect(find.text('Retry'), findsOneWidget);
+      expect(find.text('Quiz Completed'), findsNothing);
+      expect(find.text('+50 Marks'), findsNothing);
+
+      // Tap Retry -> second failure (NetworkFailure): still shows ErrorState + Retry
+      await tester.tap(find.text('Retry'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ErrorState), findsOneWidget);
+      expect(find.text('Retry'), findsOneWidget);
+      expect(find.text('Quiz Completed'), findsNothing);
+
+      // Tap Retry -> third attempt succeeds: renders server-evaluated result screen
+      await tester.tap(find.text('Retry'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ErrorState), findsNothing);
+      expect(find.text('Quiz Completed'), findsOneWidget);
+      expect(find.text('100%'), findsOneWidget);
+      expect(find.text('1 of 1 Questions Correct'), findsOneWidget);
+      expect(find.text('+50 Marks'), findsOneWidget);
+      expect(find.text('Tearshield Technology lasts up to 12 hours.'), findsOneWidget);
+      verify(() => mockRepo.submitQuizAnswers(
+            quizId: 'quiz-retry',
+            answers: any(named: 'answers'),
+          )).called(3);
     });
   });
 }
