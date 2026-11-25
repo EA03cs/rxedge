@@ -217,6 +217,7 @@
   "actionRemoveDownload": "حذف الملف المحمل",
   "actionShare": "مشاركة",
   "actionOpenFile": "فتح الملف",
+  "actionOpenOnline": "فتح عبر الإنترنت",
   "offlineAvailable": "متاح بدون اتصال",
   "requiresDownload": "يتطلب التحميل للفتح دون اتصال",
   "emptySearchResultsTitle": "لا توجد نتائج لـ \"{query}\"",

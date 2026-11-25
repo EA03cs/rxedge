@@ -541,6 +541,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get actionOpenFile => 'Open file';
 
   @override
+  String get actionOpenOnline => 'Open Online';
+
+  @override
   String get offlineAvailable => 'Offline available';
 
   @override

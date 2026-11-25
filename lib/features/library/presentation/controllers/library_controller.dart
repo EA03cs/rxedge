@@ -1,6 +1,6 @@
-import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/services/file_download_service.dart';
+import '../../../../core/storage/local_file_helper.dart';
 import '../../data/repositories/library_repository_impl.dart';
 import '../../domain/entities/material_item_entity.dart';
 
@@ -123,7 +123,18 @@ class LibraryState {
 
 /// Controller managing Resource Library state and actions
 class LibraryController extends AutoDisposeAsyncNotifier<LibraryState> {
-  final Map<String, Timer> _downloadTimers = {};
+  List<MaterialItemEntity> _sanitizeMaterials(List<MaterialItemEntity> items) {
+    return items.map((item) {
+      if (item.downloadState is Downloaded &&
+          !localFileExists(item.localFilePath)) {
+        return item.copyWith(
+          downloadState: const NotDownloaded(),
+          clearLocalFilePath: true,
+        );
+      }
+      return item;
+    }).toList();
+  }
 
   @override
   Future<LibraryState> build() async {
@@ -132,11 +143,12 @@ class LibraryController extends AutoDisposeAsyncNotifier<LibraryState> {
 
     return result.when(
       success: (items) {
-        final hasRohto = items.any(
+        final sanitized = _sanitizeMaterials(items);
+        final hasRohto = sanitized.any(
           (item) => item.productName.toLowerCase().contains('rohto'),
         );
         return LibraryState(
-          allMaterials: items,
+          allMaterials: sanitized,
           selectedProduct: hasRohto ? 'Rohto Dry Aid' : null,
         );
       },
@@ -221,12 +233,19 @@ class LibraryController extends AutoDisposeAsyncNotifier<LibraryState> {
 
   Future<void> startDownload(String materialId) async {
     final current = state.valueOrNull;
-    if (current == null) return;
+    if (current == null || current.isOffline) return;
 
     final matches = current.allMaterials.where((item) => item.id == materialId);
     if (matches.isEmpty) return;
     final targetItem = matches.first;
 
+    // External links (Google Drive/Docs) or items without a direct downloadable
+    // binary URL must never be faked as offline downloads.
+    if (!targetItem.hasDirectDownloadUrl) {
+      return;
+    }
+
+    final fileUrl = targetItem.fileUrl!.trim();
     final downloads = Map<String, double>.from(current.activeDownloads);
     downloads[materialId] = 0.08;
 
@@ -242,139 +261,101 @@ class LibraryController extends AutoDisposeAsyncNotifier<LibraryState> {
       allMaterials: updatedList,
     ));
 
-    _downloadTimers[materialId]?.cancel();
-    _downloadTimers.remove(materialId);
-
-    final fileUrl = targetItem.fileUrl;
-    if (fileUrl != null && fileUrl.trim().isNotEmpty) {
-      try {
-        final downloadService = ref.read(fileDownloadServiceProvider);
-        final ext = targetItem.fileType == MaterialFileType.pdf
-            ? 'pdf'
-            : (targetItem.fileType == MaterialFileType.image ? 'png' : 'bin');
-        final savePath = await downloadService.resolveLocalMaterialPath(
-          materialId,
-          ext: ext,
-        );
-        final localPath = await downloadService.downloadFile(
-          fileUrl: fileUrl,
-          savePath: savePath,
-          onProgress: (received, total) {
-            if (total <= 0) return;
-            final latestState = state.valueOrNull;
-            if (latestState == null) return;
-            final ratio = (received / total).clamp(0.05, 0.99);
-            final activeMap = Map<String, double>.from(latestState.activeDownloads);
-            activeMap[materialId] = ratio;
-            final progressingList = latestState.allMaterials.map((item) {
-              if (item.id == materialId) {
-                return item.copyWith(downloadState: Downloading(ratio));
-              }
-              return item;
-            }).toList();
-            state = AsyncData(latestState.copyWith(
-              activeDownloads: activeMap,
-              allMaterials: progressingList,
-            ));
-          },
-        );
-
-        final repository = ref.read(libraryRepositoryProvider);
-        await repository.markDownloaded(materialId);
-
-        final latestState = state.valueOrNull;
-        if (latestState == null) return;
-        final activeMap = Map<String, double>.from(latestState.activeDownloads)
-          ..remove(materialId);
-        final finishedList = latestState.allMaterials.map((item) {
-          if (item.id == materialId) {
-            return item.copyWith(
-              downloadState: Downloaded(DateTime.now()),
-              localFilePath: localPath,
-            );
-          }
-          return item;
-        }).toList();
-        state = AsyncData(latestState.copyWith(
-          activeDownloads: activeMap,
-          allMaterials: finishedList,
-        ));
-        return;
-      } catch (_) {
-        // Fallback when offline or backend seed points to a local placeholder asset:
-        // cancel active download cleanly or complete metadata offline caching below if no remote binary exists.
-        final latestState = state.valueOrNull;
-        if (latestState != null && latestState.isOffline) {
-          cancelDownload(materialId);
-          return;
-        }
-      }
-    }
-
-    // Fallback stepped metadata caching when material has no binary URL
-    var progress = 0.2;
-    _downloadTimers[materialId] = Timer.periodic(
-      const Duration(milliseconds: 100),
-      (timer) async {
-        progress += 0.35;
-        final latestState = state.valueOrNull;
-        if (latestState == null) {
-          timer.cancel();
-          return;
-        }
-
-        if (progress >= 1.0) {
-          timer.cancel();
-          _downloadTimers.remove(materialId);
-
-          final activeMap = Map<String, double>.from(latestState.activeDownloads)
-            ..remove(materialId);
-
-          final repository = ref.read(libraryRepositoryProvider);
-          await repository.markDownloaded(materialId);
-
-          final finishedList = latestState.allMaterials.map((item) {
-            if (item.id == materialId) {
-              return item.copyWith(downloadState: Downloaded(DateTime.now()));
-            }
-            return item;
-          }).toList();
-
-          state = AsyncData(latestState.copyWith(
-            activeDownloads: activeMap,
-            allMaterials: finishedList,
-          ));
-        } else {
+    try {
+      final downloadService = ref.read(fileDownloadServiceProvider);
+      final ext = _resolveExtension(targetItem, fileUrl);
+      final savePath = await downloadService.resolveLocalMaterialPath(
+        materialId,
+        ext: ext,
+      );
+      final localPath = await downloadService.downloadFile(
+        fileUrl: fileUrl,
+        savePath: savePath,
+        onProgress: (received, total) {
+          if (total <= 0) return;
+          final latestState = state.valueOrNull;
+          if (latestState == null) return;
+          final ratio = (received / total).clamp(0.05, 0.99);
           final activeMap = Map<String, double>.from(latestState.activeDownloads);
-          activeMap[materialId] = progress;
-
+          activeMap[materialId] = ratio;
           final progressingList = latestState.allMaterials.map((item) {
             if (item.id == materialId) {
-              return item.copyWith(downloadState: Downloading(progress));
+              return item.copyWith(downloadState: Downloading(ratio));
             }
             return item;
           }).toList();
-
           state = AsyncData(latestState.copyWith(
             activeDownloads: activeMap,
             allMaterials: progressingList,
           ));
+        },
+      );
+
+      // Only mark Downloaded when the real file actually exists on disk.
+      if (localPath.trim().isEmpty || !localFileExists(localPath)) {
+        cancelDownload(materialId);
+        return;
+      }
+
+      final repository = ref.read(libraryRepositoryProvider);
+      final markResult = await repository.markDownloaded(
+        materialId,
+        localFilePath: localPath,
+      );
+      if (markResult.isFailure) {
+        cancelDownload(materialId);
+        return;
+      }
+
+      final latestState = state.valueOrNull;
+      if (latestState == null) return;
+      final activeMap = Map<String, double>.from(latestState.activeDownloads)
+        ..remove(materialId);
+      final finishedList = latestState.allMaterials.map((item) {
+        if (item.id == materialId) {
+          return item.copyWith(
+            downloadState: Downloaded(DateTime.now()),
+            localFilePath: localPath,
+          );
         }
-      },
-    );
+        return item;
+      }).toList();
+      state = AsyncData(latestState.copyWith(
+        activeDownloads: activeMap,
+        allMaterials: finishedList,
+      ));
+    } catch (_) {
+      cancelDownload(materialId);
+    }
+  }
+
+  String _resolveExtension(MaterialItemEntity item, String fileUrl) {
+    final uri = Uri.tryParse(fileUrl);
+    final path = uri?.path ?? '';
+    final dotIdx = path.lastIndexOf('.');
+    if (dotIdx != -1 && dotIdx < path.length - 1) {
+      final candidate = path.substring(dotIdx + 1).toLowerCase();
+      if (candidate.length <= 5 && RegExp(r'^[a-z0-9]+$').hasMatch(candidate)) {
+        return candidate;
+      }
+    }
+    return item.fileType == MaterialFileType.pdf
+        ? 'pdf'
+        : (item.fileType == MaterialFileType.image ? 'png' : 'bin');
   }
 
   void cancelDownload(String materialId) {
-    _downloadTimers[materialId]?.cancel();
-    _downloadTimers.remove(materialId);
-
     final current = state.valueOrNull;
     if (current == null) return;
 
-    final downloads = Map<String, double>.from(current.activeDownloads)..remove(materialId);
+    final downloads = Map<String, double>.from(current.activeDownloads)
+      ..remove(materialId);
     final updatedList = current.allMaterials.map((item) {
       if (item.id == materialId) {
-        return item.copyWith(downloadState: const NotDownloaded());
+        return item.copyWith(
+          downloadState: const NotDownloaded(),
+          clearLocalFilePath: true,
+        );
       }
       return item;
     }).toList();
@@ -394,7 +375,10 @@ class LibraryController extends AutoDisposeAsyncNotifier<LibraryState> {
 
     final updatedList = current.allMaterials.map((item) {
       if (item.id == materialId) {
-        return item.copyWith(downloadState: const NotDownloaded());
+        return item.copyWith(
+          downloadState: const NotDownloaded(),
+          clearLocalFilePath: true,
+        );
       }
       return item;
     }).toList();
@@ -409,7 +393,16 @@ class LibraryController extends AutoDisposeAsyncNotifier<LibraryState> {
       final result = await repository.getMaterials(forceRefresh: true);
 
       return result.when(
-        success: (items) => LibraryState(allMaterials: items),
+        success: (items) {
+          final sanitized = _sanitizeMaterials(items);
+          final hasRohto = sanitized.any(
+            (item) => item.productName.toLowerCase().contains('rohto'),
+          );
+          return LibraryState(
+            allMaterials: sanitized,
+            selectedProduct: hasRohto ? 'Rohto Dry Aid' : null,
+          );
+        },
         failure: (failure) => throw failure,
       );
     });

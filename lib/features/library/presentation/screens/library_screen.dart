@@ -6,6 +6,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
+import '../../../../core/network/url_resolver.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/material_item_entity.dart';
 import '../controllers/library_controller.dart';
@@ -26,10 +27,17 @@ import 'pdf_viewer_screen.dart';
 /// Marketing Hub / Resource Library Screen
 /// Matches reference design with 3D Folder header, search, pill shortcuts, and material cards
 class LibraryScreen extends ConsumerWidget {
-  const LibraryScreen({super.key});
+  final Future<bool> Function(Uri uri, {LaunchMode mode})? externalUrlLauncher;
+
+  const LibraryScreen({
+    super.key,
+    this.externalUrlLauncher,
+  });
 
   void _openViewer(BuildContext context, MaterialItemEntity item) {
-    if (item.fileUrl == null || item.fileUrl!.trim().isEmpty) {
+    if (!item.hasFileUrl &&
+        !(item.fileType == MaterialFileType.edetailSlides &&
+            item.slides.isNotEmpty)) {
       final l10n = context.l10n;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -39,12 +47,12 @@ class LibraryScreen extends ConsumerWidget {
       return;
     }
 
-    if (item.fileUrl != null &&
-        (item.fileUrl!.contains('drive.google.com') ||
-            item.fileUrl!.contains('docs.google.com'))) {
-      final uri = Uri.tryParse(item.fileUrl!);
+    if (item.isExternalOnlineLink) {
+      final resolved = UrlResolver.resolve(item.fileUrl) ?? item.fileUrl!;
+      final uri = Uri.tryParse(resolved);
       if (uri != null) {
-        unawaited(launchUrl(uri, mode: LaunchMode.externalApplication));
+        final launcher = externalUrlLauncher ?? launchUrl;
+        unawaited(launcher(uri, mode: LaunchMode.externalApplication));
         return;
       }
     }
@@ -630,7 +638,7 @@ class LibraryScreen extends ConsumerWidget {
               crossAxisCount: 2,
               crossAxisSpacing: 12.0,
               mainAxisSpacing: 12.0,
-              childAspectRatio: 0.76,
+              childAspectRatio: 0.70,
             ),
             delegate: SliverChildBuilderDelegate(
               (context, index) {
@@ -639,6 +647,7 @@ class LibraryScreen extends ConsumerWidget {
                   item: item,
                   isOffline: state.isOffline,
                   onTap: () => _openViewer(context, item),
+                  onOpenOnline: () => _openViewer(context, item),
                   onToggleFavorite: () => controller.toggleFavorite(item.id),
                   onDownload: () => controller.startDownload(item.id),
                   onCancelDownload: () => controller.cancelDownload(item.id),
@@ -672,6 +681,7 @@ class LibraryScreen extends ConsumerWidget {
                     item: item,
                     isOffline: state.isOffline,
                     onTap: () => _openViewer(context, item),
+                    onOpenOnline: () => _openViewer(context, item),
                     onToggleFavorite: () => controller.toggleFavorite(item.id),
                     onDownload: () => controller.startDownload(item.id),
                     onCancelDownload: () => controller.cancelDownload(item.id),

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:rxedge/core/error/exceptions.dart';
@@ -14,6 +15,9 @@ void main() {
   late MockLibraryRemoteDatasource mockRemote;
   late MockLibraryLocalDatasource mockLocal;
   late LibraryRepositoryImpl repository;
+  late Directory tempDir;
+  late File existingFile1;
+  late File existingFile2;
 
   final testDtos = [
     const MaterialItemDto(
@@ -53,6 +57,15 @@ void main() {
   });
 
   setUp(() {
+    tempDir = Directory.systemTemp.createTempSync('rxedge_repo_test_');
+    existingFile1 = File('${tempDir.path}/mat_01.pdf')..writeAsStringSync('pdf');
+    existingFile2 = File('${tempDir.path}/mat_02.bin')..writeAsStringSync('bin');
+    addTearDown(() {
+      if (tempDir.existsSync()) {
+        tempDir.deleteSync(recursive: true);
+      }
+    });
+
     mockRemote = MockLibraryRemoteDatasource();
     mockLocal = MockLibraryLocalDatasource();
     repository = LibraryRepositoryImpl(
@@ -62,6 +75,8 @@ void main() {
 
     when(() => mockLocal.getFavorites()).thenAnswer((_) async => {'mat_02'});
     when(() => mockLocal.getDownloadedIds()).thenAnswer((_) async => {'mat_02'});
+    when(() => mockLocal.getDownloadedPaths())
+        .thenAnswer((_) async => {'mat_02': existingFile2.path});
     when(() => mockLocal.isCacheFresh()).thenReturn(false);
   });
 
@@ -110,19 +125,33 @@ void main() {
       verify(() => mockLocal.saveFavorites(any())).called(1);
     });
 
-    test('markDownloaded and removeDownload update local storage and memory', () async {
+    test('markDownloaded and removeDownload require existing file on disk', () async {
       when(() => mockRemote.getMaterials()).thenAnswer((_) async => testDtos);
       when(() => mockLocal.cacheMaterials(any())).thenAnswer((_) async {});
       when(() => mockLocal.saveDownloadedIds(any())).thenAnswer((_) async {});
+      when(() => mockLocal.saveDownloadedPaths(any())).thenAnswer((_) async {});
 
       await repository.getMaterials();
 
-      // Mark downloaded
-      final dlResult = await repository.markDownloaded('mat_01');
+      // Reject markDownloaded when no file exists on disk
+      final missingResult = await repository.markDownloaded(
+        'mat_01',
+        localFilePath: '${tempDir.path}/missing.pdf',
+      );
+      expect(missingResult.isFailure, isTrue);
+      final stillNotDl = (await repository.getMaterialById('mat_01')).dataOrNull!;
+      expect(stillNotDl.isDownloaded, isFalse);
+
+      // Mark downloaded with verified file on disk
+      final dlResult = await repository.markDownloaded(
+        'mat_01',
+        localFilePath: existingFile1.path,
+      );
       expect(dlResult.isSuccess, isTrue);
 
       final item = (await repository.getMaterialById('mat_01')).dataOrNull!;
       expect(item.isDownloaded, isTrue);
+      expect(item.localFilePath, existingFile1.path);
 
       // Remove download
       final removeResult = await repository.removeDownload('mat_01');
@@ -130,6 +159,21 @@ void main() {
 
       final itemAfterRemove = (await repository.getMaterialById('mat_01')).dataOrNull!;
       expect(itemAfterRemove.isDownloaded, isFalse);
+      expect(itemAfterRemove.localFilePath, isNull);
+    });
+
+    test('never marks Downloaded when cached path does not exist on disk', () async {
+      when(() => mockLocal.getDownloadedPaths()).thenAnswer(
+        (_) async => {'mat_02': '${tempDir.path}/deleted.pdf'},
+      );
+      when(() => mockRemote.getMaterials()).thenAnswer((_) async => testDtos);
+      when(() => mockLocal.cacheMaterials(any())).thenAnswer((_) async {});
+
+      final result = await repository.getMaterials();
+      expect(result.isSuccess, isTrue);
+      final items = result.dataOrNull!;
+      expect(items[1].isDownloaded, isFalse);
+      expect(items[1].localFilePath, isNull);
     });
 
     test('returns Failure when remote throws and no cache exists', () async {

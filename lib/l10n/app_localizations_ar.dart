@@ -540,6 +540,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get actionOpenFile => 'فتح الملف';
 
   @override
+  String get actionOpenOnline => 'فتح عبر الإنترنت';
+
+  @override
   String get offlineAvailable => 'متاح بدون اتصال';
 
   @override

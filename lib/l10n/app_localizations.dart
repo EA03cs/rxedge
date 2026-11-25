@@ -1094,6 +1094,12 @@ abstract class AppLocalizations {
   /// **'Open file'**
   String get actionOpenFile;
 
+  /// No description provided for @actionOpenOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Online'**
+  String get actionOpenOnline;
+
   /// No description provided for @offlineAvailable.
   ///
   /// In en, this message translates to:

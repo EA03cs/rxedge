@@ -15,6 +15,7 @@ class MaterialCardList extends StatelessWidget {
   final VoidCallback onDownload;
   final VoidCallback onCancelDownload;
   final VoidCallback onMoreActions;
+  final VoidCallback? onOpenOnline;
 
   const MaterialCardList({
     super.key,
@@ -25,6 +26,7 @@ class MaterialCardList extends StatelessWidget {
     required this.onDownload,
     required this.onCancelDownload,
     required this.onMoreActions,
+    this.onOpenOnline,
   });
 
   IconData _getTypeIcon(MaterialFileType type) {
@@ -180,6 +182,42 @@ class MaterialCardList extends StatelessWidget {
                       ],
                     ],
                   ),
+                  if (item.isExternalOnlineLink) ...[
+                    const SizedBox(height: RxSpacing.s6),
+                    InkWell(
+                      onTap: isVisiblyDisabled ? null : (onOpenOnline ?? onTap),
+                      borderRadius: BorderRadius.circular(6.0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0,
+                          vertical: 4.0,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE0F2FE),
+                          borderRadius: BorderRadius.circular(6.0),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              LucideIcons.externalLink,
+                              size: 12.0,
+                              color: Color(0xFF0284C7),
+                            ),
+                            const SizedBox(width: 4.0),
+                            Text(
+                              l10n.actionOpenOnline,
+                              style: const TextStyle(
+                                fontSize: 11.0,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF0284C7),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -211,7 +249,9 @@ class MaterialCardList extends StatelessWidget {
                       ),
                     ],
                   )
-                else if (!item.isDownloaded && !isOffline)
+                else if (item.hasDirectDownloadUrl &&
+                    !item.isDownloaded &&
+                    !isOffline)
                   IconButton(
                     icon: Icon(
                       LucideIcons.downloadCloud,

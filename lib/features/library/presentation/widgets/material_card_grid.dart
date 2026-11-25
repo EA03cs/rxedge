@@ -36,6 +36,7 @@ class MaterialCardGrid extends StatelessWidget {
   final VoidCallback onDownload;
   final VoidCallback onCancelDownload;
   final VoidCallback onMoreActions;
+  final VoidCallback? onOpenOnline;
 
   const MaterialCardGrid({
     super.key,
@@ -46,6 +47,7 @@ class MaterialCardGrid extends StatelessWidget {
     required this.onDownload,
     required this.onCancelDownload,
     required this.onMoreActions,
+    this.onOpenOnline,
   });
 
   IconData _getTypeIcon(MaterialFileType type) {
@@ -112,7 +114,7 @@ class MaterialCardGrid extends StatelessWidget {
               children: [
                 // 1. Top Image Banner with Organic Wave
                 SizedBox(
-                  height: 104.0,
+                  height: 92.0,
                   width: double.infinity,
                   child: Stack(
                     children: [
@@ -124,7 +126,7 @@ class MaterialCardGrid extends StatelessWidget {
                               ? RxNetworkImage(
                                   imageUrl: item.thumbnailUrl ?? item.fileUrl,
                                   width: double.infinity,
-                                  height: 104.0,
+                                  height: 92.0,
                                   fit: BoxFit.cover,
                                   fallbackIcon: _getTypeIcon(item.fileType),
                                 )
@@ -294,7 +296,7 @@ class MaterialCardGrid extends StatelessWidget {
                 // 2. Card Content Below Wave
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(10.0, 6.0, 10.0, 10.0),
+                    padding: const EdgeInsets.fromLTRB(10.0, 4.0, 10.0, 8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -302,7 +304,7 @@ class MaterialCardGrid extends StatelessWidget {
                         Text(
                           item.title,
                           style: const TextStyle(
-                            fontSize: 14.0,
+                            fontSize: 13.5,
                             fontWeight: FontWeight.w800,
                             color: Color(0xFF0F172A),
                             letterSpacing: -0.2,
@@ -310,7 +312,7 @@ class MaterialCardGrid extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 3.0),
+                        const SizedBox(height: 2.0),
 
                         // Subtitle / Description
                         Expanded(
@@ -373,9 +375,9 @@ class MaterialCardGrid extends StatelessWidget {
                           ],
                         ),
 
-                        // Downloading Progress Bar
+                        // Downloading Progress Bar or Honest Primary Action
                         if (item.isDownloading) ...[
-                          const SizedBox(height: 4.0),
+                          const SizedBox(height: 6.0),
                           Row(
                             children: [
                               Expanded(
@@ -395,6 +397,26 @@ class MaterialCardGrid extends StatelessWidget {
                               ),
                             ],
                           ),
+                        ] else if (item.isExternalOnlineLink) ...[
+                          const SizedBox(height: 6.0),
+                          _CardActionPill(
+                            icon: LucideIcons.externalLink,
+                            label: l10n.actionOpenOnline,
+                            foregroundColor: const Color(0xFF0284C7),
+                            backgroundColor: const Color(0xFFE0F2FE),
+                            onTap: isVisiblyDisabled ? null : (onOpenOnline ?? onTap),
+                          ),
+                        ] else if (item.hasDirectDownloadUrl &&
+                            !item.isDownloaded &&
+                            !isOffline) ...[
+                          const SizedBox(height: 6.0),
+                          _CardActionPill(
+                            icon: LucideIcons.downloadCloud,
+                            label: l10n.actionDownload,
+                            foregroundColor: const Color(0xFF0F172A),
+                            backgroundColor: const Color(0xFFF1F5F9),
+                            onTap: onDownload,
+                          ),
                         ],
                       ],
                     ),
@@ -402,6 +424,57 @@ class MaterialCardGrid extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CardActionPill extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color foregroundColor;
+  final Color backgroundColor;
+  final VoidCallback? onTap;
+
+  const _CardActionPill({
+    required this.icon,
+    required this.label,
+    required this.foregroundColor,
+    required this.backgroundColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: backgroundColor,
+      borderRadius: BorderRadius.circular(8.0),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8.0),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Icon(icon, size: 12.5, color: foregroundColor),
+              const SizedBox(width: 5.0),
+              Flexible(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 11.0,
+                    fontWeight: FontWeight.w700,
+                    color: foregroundColor,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
           ),
         ),
       ),

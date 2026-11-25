@@ -13,6 +13,8 @@ abstract class LibraryLocalDatasource {
   Future<void> saveFavorites(Set<String> favorites);
   Future<Set<String>> getDownloadedIds();
   Future<void> saveDownloadedIds(Set<String> downloadedIds);
+  Future<Map<String, String>> getDownloadedPaths();
+  Future<void> saveDownloadedPaths(Map<String, String> downloadedPaths);
   Future<void> clearCache();
 }
 
@@ -21,6 +23,7 @@ class LibraryLocalDatasourceImpl implements LibraryLocalDatasource {
   static const String _materialsCacheKey = 'rxedge_library_materials';
   static const String _favoritesKey = 'rxedge_library_favorites';
   static const String _downloadedKey = 'rxedge_library_downloaded';
+  static const String _downloadedPathsKey = 'rxedge_library_downloaded_paths';
 
   final LocalCacheService _cacheService;
 
@@ -121,6 +124,32 @@ class LibraryLocalDatasourceImpl implements LibraryLocalDatasource {
       );
     } catch (e) {
       throw const CacheException('Failed to save downloaded list to local storage');
+    }
+  }
+
+  @override
+  Future<Map<String, String>> getDownloadedPaths() async {
+    try {
+      final raw = _cacheService.get<Map<String, dynamic>>(_downloadedPathsKey);
+      if (raw != null) {
+        return raw.map((k, v) => MapEntry(k, v.toString()));
+      }
+      return {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  @override
+  Future<void> saveDownloadedPaths(Map<String, String> downloadedPaths) async {
+    try {
+      _cacheService.put<Map<String, dynamic>>(
+        _downloadedPathsKey,
+        downloadedPaths,
+        ttl: const Duration(days: 365),
+      );
+    } catch (e) {
+      throw const CacheException('Failed to save downloaded file paths');
     }
   }
 

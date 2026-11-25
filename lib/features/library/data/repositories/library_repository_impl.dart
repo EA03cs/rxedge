@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/error/exception_mapper.dart';
+import '../../../../core/error/failures.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/services/logger_service.dart';
 import '../../../../core/storage/local_cache_service.dart';
+import '../../../../core/storage/local_file_helper.dart';
 import '../../../../core/utils/result.dart';
 import '../../domain/entities/material_item_entity.dart';
 import '../../domain/repositories/library_repository.dart';
@@ -170,17 +172,31 @@ class LibraryRepositoryImpl implements LibraryRepository {
   }
 
   @override
-  Future<Result<void>> markDownloaded(String id) async {
+  Future<Result<void>> markDownloaded(String id, {String? localFilePath}) async {
     try {
+      if (localFilePath == null || !localFileExists(localFilePath)) {
+        return const Result.failure(
+          CacheFailure(
+            'Cannot mark material as downloaded without a verified file on disk.',
+          ),
+        );
+      }
+
       final downloaded = await _localDatasource.getDownloadedIds();
       final updatedDownloaded = Set<String>.from(downloaded)..add(id);
       await _localDatasource.saveDownloadedIds(updatedDownloaded);
+
+      final downloadedPaths = await _localDatasource.getDownloadedPaths();
+      final updatedPaths = Map<String, String>.from(downloadedPaths)
+        ..[id] = localFilePath;
+      await _localDatasource.saveDownloadedPaths(updatedPaths);
 
       if (_memoryItems != null) {
         final index = _memoryItems!.indexWhere((item) => item.id == id);
         if (index != -1) {
           _memoryItems![index] = _memoryItems![index].copyWith(
             downloadState: Downloaded(DateTime.now()),
+            localFilePath: localFilePath,
           );
         }
       }
@@ -197,14 +213,24 @@ class LibraryRepositoryImpl implements LibraryRepository {
       final updatedDownloaded = Set<String>.from(downloaded)..remove(id);
       await _localDatasource.saveDownloadedIds(updatedDownloaded);
 
+      final downloadedPaths = await _localDatasource.getDownloadedPaths();
+      final existingPath = downloadedPaths[id];
+      final updatedPaths = Map<String, String>.from(downloadedPaths)..remove(id);
+      await _localDatasource.saveDownloadedPaths(updatedPaths);
+
+      String? memoryPath;
       if (_memoryItems != null) {
         final index = _memoryItems!.indexWhere((item) => item.id == id);
         if (index != -1) {
+          memoryPath = _memoryItems![index].localFilePath;
           _memoryItems![index] = _memoryItems![index].copyWith(
             downloadState: const NotDownloaded(),
+            clearLocalFilePath: true,
           );
         }
       }
+
+      await deleteLocalFile(existingPath ?? memoryPath);
       return const Result.success(null);
     } catch (e, st) {
       return Result.failure(ExceptionMapper.map(e, st));
@@ -237,16 +263,22 @@ class LibraryRepositoryImpl implements LibraryRepository {
     List<MaterialItemDto> dtoList,
   ) async {
     final favorites = await _localDatasource.getFavorites();
-    final downloaded = await _localDatasource.getDownloadedIds();
+    final downloadedPaths = await _localDatasource.getDownloadedPaths();
 
     return dtoList.map((dto) {
       final entity = dto.toDomain();
       final hasLocalFav = favorites.contains(entity.id);
-      final hasLocalDl = downloaded.contains(entity.id);
+      final savedPath = downloadedPaths[entity.id];
+      final hasVerifiedLocalFile =
+          savedPath != null && localFileExists(savedPath);
 
       return entity.copyWith(
         isFavorite: hasLocalFav,
-        downloadState: hasLocalDl ? Downloaded(DateTime.now()) : const NotDownloaded(),
+        downloadState: hasVerifiedLocalFile
+            ? Downloaded(DateTime.now())
+            : const NotDownloaded(),
+        localFilePath: hasVerifiedLocalFile ? savedPath : null,
+        clearLocalFilePath: !hasVerifiedLocalFile,
       );
     }).toList();
   }

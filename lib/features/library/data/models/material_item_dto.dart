@@ -290,7 +290,7 @@ class MaterialItemDto {
       updatedAt: DateTime.tryParse(updatedAt) ?? DateTime.now(),
       badge: _mapBadge(badge),
       isFavorite: isFavorite,
-      downloadState: isDownloaded ? Downloaded(DateTime.now()) : const NotDownloaded(),
+      downloadState: const NotDownloaded(),
       viewCount: viewCount,
       description: description,
       pageCount: pageCount,

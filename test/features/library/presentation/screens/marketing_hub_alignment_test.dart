@@ -100,8 +100,10 @@ void main() {
       expect(find.text('Rohto Dry Aid Clinical Brochure'), findsOneWidget);
       expect(find.text('Rohto Aqua Brochure'), findsNothing);
 
-      // 5. Verify Quarterly Badge Q4 2026 on available material
+      // 5. Verify Quarterly Badge Q4 2026 and honest Open Online action on Drive brochure
       expect(find.text('Q4 2026'), findsOneWidget);
+      expect(find.text('Open Online'), findsOneWidget);
+      expect(find.text('Download'), findsNothing);
 
       // 6. Switch to Rohto Cool & Aqua -> Rohto Aqua to verify Coming Soon unlinked material
       await tester.tap(find.text('Rohto Cool & Aqua'));

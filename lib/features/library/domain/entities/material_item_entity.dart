@@ -129,7 +129,75 @@ class MaterialItemEntity {
     this.year,
   });
 
-  bool get isDownloaded => downloadState is Downloaded;
+  static const List<String> _binaryFileExtensions = [
+    '.pdf',
+    '.png',
+    '.jpg',
+    '.jpeg',
+    '.webp',
+    '.gif',
+    '.bmp',
+    '.svg',
+    '.mp4',
+    '.mov',
+    '.mp3',
+    '.m4a',
+    '.zip',
+    '.ppt',
+    '.pptx',
+    '.doc',
+    '.docx',
+    '.xls',
+    '.xlsx',
+    '.bin',
+  ];
+
+  bool get hasFileUrl => fileUrl != null && fileUrl!.trim().isNotEmpty;
+
+  bool get isGoogleDriveOrDocsUrl {
+    final raw = fileUrl?.trim();
+    if (raw == null || raw.isEmpty) return false;
+    final uri = Uri.tryParse(raw);
+    final host = uri?.host.toLowerCase() ?? '';
+    if (host == 'drive.google.com' ||
+        host.endsWith('.drive.google.com') ||
+        host == 'docs.google.com' ||
+        host.endsWith('.docs.google.com')) {
+      return true;
+    }
+    final lower = raw.toLowerCase();
+    return lower.contains('drive.google.com') ||
+        lower.contains('docs.google.com');
+  }
+
+  /// True only when [fileUrl] points to a direct downloadable binary file
+  /// rather than an external viewer page (e.g. Google Drive/Docs or web URL).
+  bool get hasDirectDownloadUrl {
+    final raw = fileUrl?.trim();
+    if (raw == null || raw.isEmpty) return false;
+    if (isGoogleDriveOrDocsUrl) return false;
+
+    final uri = Uri.tryParse(raw);
+    if (uri == null) return false;
+    if (uri.hasScheme && uri.scheme != 'http' && uri.scheme != 'https') {
+      return false;
+    }
+
+    final path = uri.path.toLowerCase();
+    if (_binaryFileExtensions.any(path.endsWith)) {
+      return true;
+    }
+    return path.contains('/uploads/');
+  }
+
+  /// True when a URL exists, but is an external Drive/Docs link or lacks a
+  /// direct downloadable binary file URL.
+  bool get isExternalOnlineLink => hasFileUrl && !hasDirectDownloadUrl;
+
+  bool get isDownloaded =>
+      downloadState is Downloaded &&
+      localFilePath != null &&
+      localFilePath!.trim().isNotEmpty;
 
   bool get isDownloading => downloadState is Downloading;
 
@@ -163,6 +231,7 @@ class MaterialItemEntity {
     String? fileUrl,
     String? thumbnailUrl,
     String? localFilePath,
+    bool clearLocalFilePath = false,
     int? quarter,
     int? year,
   }) {
@@ -183,7 +252,8 @@ class MaterialItemEntity {
       slides: slides ?? this.slides,
       fileUrl: fileUrl ?? this.fileUrl,
       thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
-      localFilePath: localFilePath ?? this.localFilePath,
+      localFilePath:
+          clearLocalFilePath ? null : (localFilePath ?? this.localFilePath),
       quarter: quarter ?? this.quarter,
       year: year ?? this.year,
     );
@@ -196,8 +266,13 @@ class MaterialItemEntity {
           runtimeType == other.runtimeType &&
           id == other.id &&
           isFavorite == other.isFavorite &&
+          localFilePath == other.localFilePath &&
           downloadState.runtimeType == other.downloadState.runtimeType;
 
   @override
-  int get hashCode => id.hashCode ^ isFavorite.hashCode ^ downloadState.runtimeType.hashCode;
+  int get hashCode =>
+      id.hashCode ^
+      isFavorite.hashCode ^
+      localFilePath.hashCode ^
+      downloadState.runtimeType.hashCode;
 }
