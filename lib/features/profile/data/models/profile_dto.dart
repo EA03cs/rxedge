@@ -115,6 +115,7 @@ class UserProfileDto {
   final int streakDays;
   final List<BadgeDto> badges;
   final NotificationPreferencesDto notificationPreferences;
+  final bool hasServerNotificationPreferences;
   final int storageUsageBytes;
 
   const UserProfileDto({
@@ -128,6 +129,7 @@ class UserProfileDto {
     required this.streakDays,
     required this.badges,
     required this.notificationPreferences,
+    this.hasServerNotificationPreferences = true,
     required this.storageUsageBytes,
   });
 
@@ -154,6 +156,10 @@ class UserProfileDto {
         ? (territoryRaw['name']?.toString() ?? '')
         : (territoryRaw?.toString() ?? '');
 
+    final rawPrefs =
+        userObj['notificationPreferences'] ?? json['notificationPreferences'];
+    final hasServerPrefs = rawPrefs is Map;
+
     return UserProfileDto(
       id: userObj['id']?.toString() ?? '',
       displayName: userObj['displayName']?.toString() ??
@@ -179,10 +185,9 @@ class UserProfileDto {
           .map((e) => BadgeDto.fromJson(Map<String, dynamic>.from(e)))
           .toList(),
       notificationPreferences: NotificationPreferencesDto.fromJson(
-        userObj['notificationPreferences'] is Map
-            ? Map<String, dynamic>.from(userObj['notificationPreferences'] as Map)
-            : {},
+        hasServerPrefs ? Map<String, dynamic>.from(rawPrefs) : const {},
       ),
+      hasServerNotificationPreferences: hasServerPrefs,
       storageUsageBytes:
           ((userObj['storageUsageBytes'] ?? userObj['storageUsage']) as num?)?.toInt() ?? 0,
     );

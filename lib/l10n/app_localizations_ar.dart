@@ -1632,6 +1632,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get errServer => 'حدث خطأ في الخادم. يرجى المحاولة مرة أخرى بعد قليل.';
 
   @override
+  String get errRateLimit =>
+      'طلبات كثيرة جداً. يرجى الانتظار لحظة ثم المحاولة مرة أخرى.';
+
+  @override
   String get errUnknown => 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.';
 
   @override

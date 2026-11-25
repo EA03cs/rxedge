@@ -3002,6 +3002,12 @@ abstract class AppLocalizations {
   /// **'The server encountered an error. Please try again shortly.'**
   String get errServer;
 
+  /// No description provided for @errRateLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many requests. Please wait a moment and try again.'**
+  String get errRateLimit;
+
   /// No description provided for @errUnknown.
   ///
   /// In en, this message translates to:

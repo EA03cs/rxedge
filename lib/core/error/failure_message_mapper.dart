@@ -23,6 +23,9 @@ abstract final class FailureMessageMapper {
       case CacheFailure():
         return l10n.errCache;
       case ServerFailure(statusCode: final code, debugMessage: final msg):
+        if (code == 429) {
+          return l10n.errRateLimit;
+        }
         if (code != null && code >= 400 && code < 500 && _isSafeServerMessage(msg)) {
           return msg!;
         }
