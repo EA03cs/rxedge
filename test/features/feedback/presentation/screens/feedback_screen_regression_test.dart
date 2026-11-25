@@ -116,7 +116,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify Screen rendered in Arabic cleanly with NO type cast errors
-      expect(find.text('صوت المندوب (Rep Voice)'), findsOneWidget);
+      expect(find.text('Rep Voice'), findsOneWidget);
       expect(find.text('مشاركاتي السابقة'), findsOneWidget);
       expect(find.text('اعتراض الطبيب'), findsNWidgets(2)); // Card + submission badge
       expect(find.text('ادعاء المنافسين'), findsNWidgets(2)); // Card + submission badge

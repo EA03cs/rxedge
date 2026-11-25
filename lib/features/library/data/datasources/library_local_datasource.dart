@@ -9,6 +9,7 @@ abstract class LibraryLocalDatasource {
   Future<void> cacheMaterials(List<MaterialItemDto> materials);
   bool isCacheFresh();
   Future<Set<String>> getFavorites();
+  Future<Set<String>?> getFavoritesOrNull();
   Future<void> saveFavorites(Set<String> favorites);
   Future<Set<String>> getDownloadedIds();
   Future<void> saveDownloadedIds(Set<String> downloadedIds);
@@ -68,6 +69,19 @@ class LibraryLocalDatasourceImpl implements LibraryLocalDatasource {
       return {};
     } catch (e) {
       return {};
+    }
+  }
+
+  @override
+  Future<Set<String>?> getFavoritesOrNull() async {
+    try {
+      final raw = _cacheService.get<List<dynamic>>(_favoritesKey);
+      if (raw != null) {
+        return raw.map((e) => e.toString()).toSet();
+      }
+      return null;
+    } catch (e) {
+      return null;
     }
   }
 

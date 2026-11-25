@@ -71,7 +71,7 @@ void main() {
       expect(find.text('Quiz Results'), findsOneWidget);
 
       expect(find.text('October Hypertension Master Sprint'), findsOneWidget);
-      expect(find.text('+450 Pts'), findsOneWidget);
+      expect(find.text('+450 Marks'), findsOneWidget);
       expect(find.text('Rank #2 of 32'), findsOneWidget);
       expect(find.text('Silver District Performer'), findsOneWidget);
 
@@ -80,7 +80,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Cardura XL ABPM Study'), findsOneWidget);
-      expect(find.text('+50 Pts'), findsOneWidget);
+      expect(find.text('+50 Marks'), findsOneWidget);
       expect(find.text('4/4 • 94s'), findsOneWidget);
       expect(find.text('100%'), findsOneWidget);
     });

@@ -25,76 +25,64 @@ class LibraryRepositoryImpl implements LibraryRepository {
 
   static const List<MaterialItemDto> rohtoMaterials = [
     MaterialItemDto(
-      id: 'mat_rohto_dry_aid_brochure',
-      title: 'Rohto Dry Aid Official Clinical Brochure',
-      productName: 'Rohto Dry Aid',
+      id: 'mat_rohto_aqua_brochure',
+      title: 'Rohto Aqua',
+      productName: 'Rohto Aqua',
       category: 'brochure',
       fileType: 'pdf',
-      fileSizeBytes: 4200000,
-      updatedAt: '2026-11-18T10:00:00Z',
-      badge: 'updated',
-      isFavorite: true,
+      fileSizeBytes: 830 * 1024,
+      updatedAt: '2026-11-19T10:00:00Z',
+      badge: 'new',
+      isFavorite: false,
       isDownloaded: false,
-      viewCount: 185,
-      pageCount: 8,
+      viewCount: 140,
+      pageCount: 6,
+      thumbnailUrl: 'assets/images/rohto_aqua.png',
       fileUrl:
           'https://drive.google.com/file/d/1jemssfgDhAoDZD1I2OIV9fXaZe3ns-n/view?usp=drive_link',
-      description:
-          'Comprehensive clinical brochure detailing Tearshield Technology, 12-hour symptom relief, and comparison with Systane Ultra.',
+      description: 'Rohto Aqua Gentle Moisturizing Brochure',
     ),
     MaterialItemDto(
       id: 'mat_rohto_cool_brochure',
-      title: 'Rohto Cool Eye Drops Official Brochure',
+      title: 'Rohto Cool',
       productName: 'Rohto Cool',
       category: 'brochure',
       fileType: 'pdf',
-      fileSizeBytes: 3100000,
-      updatedAt: '2026-11-18T11:00:00Z',
+      fileSizeBytes: 957 * 1024,
+      updatedAt: '2026-11-19T11:00:00Z',
       badge: 'new',
       isFavorite: false,
       isDownloaded: false,
-      viewCount: 120,
-      pageCount: 6,
+      viewCount: 180,
+      pageCount: 8,
+      thumbnailUrl: 'assets/images/rohto_cool.png',
       fileUrl:
           'https://drive.google.com/file/d/2NVbg1Qevuv7AE_XiG7Vg2VZZV/view?usp=sharing',
-      description:
-          'Cooling and refreshing eye drop clinical materials, contact lens wearers guidance, and mineral restoration formula.',
+      description: 'Rohto Cool Refreshing Hydration Visual Aid',
     ),
     MaterialItemDto(
-      id: 'mat_rohto_aqua_deck',
-      title: 'Rohto Aqua Gentle Lubricating Detailing Deck',
-      productName: 'Rohto Aqua',
-      category: 'edetail',
+      id: 'mat_rohto_dry_aid_brochure',
+      title: 'Rohto Dry Aid',
+      productName: 'Rohto Dry Aid',
+      category: 'brochure',
       fileType: 'edetail',
-      fileSizeBytes: 5400000,
-      updatedAt: '2026-11-18T12:00:00Z',
+      fileSizeBytes: 1258291, // 1.2 MB
+      updatedAt: '2026-11-19T12:00:00Z',
       badge: 'new',
       isFavorite: false,
       isDownloaded: false,
-      viewCount: 95,
-      pageCount: 5,
-      description:
-          'Gentle lubricating e-detailing deck for LASIK patients and contact lens-associated dry eye (CLADE).',
+      viewCount: 210,
+      pageCount: 10,
+      thumbnailUrl: 'assets/images/rohto_dry_aid.png',
+      fileUrl:
+          'https://drive.google.com/file/d/1jemssfgDhAoDZD1I2OIV9fXaZe3ns-n/view?usp=drive_link',
+      description: 'Rohto Dry Aid E- Detailing Brochure & Key Messages',
     ),
   ];
 
   List<MaterialItemDto> _ensureRohtoMaterials(List<MaterialItemDto> dtos) {
-    final filtered = dtos.where((m) {
-      final p = m.productName.toLowerCase();
-      final t = m.title.toLowerCase();
-      return !p.contains('cardura') &&
-          !p.contains('atorva') &&
-          !p.contains('gluco') &&
-          !t.contains('cardura') &&
-          !t.contains('atorva') &&
-          !t.contains('gluco');
-    }).toList();
-
-    final hasRohto = filtered.any((m) =>
-        m.productName.toLowerCase().contains('rohto') ||
-        m.title.toLowerCase().contains('rohto'));
-    if (hasRohto) return filtered;
-    return [...rohtoMaterials, ...filtered];
+    if (dtos.isNotEmpty) return dtos;
+    return rohtoMaterials;
   }
 
   LibraryRepositoryImpl({
@@ -159,13 +147,22 @@ class LibraryRepositoryImpl implements LibraryRepository {
   Future<Result<MaterialItemEntity>> toggleFavorite(String id) async {
     try {
       final favorites = await _localDatasource.getFavorites();
-      final isFav = favorites.contains(id);
+      
+      // Determine current favorite state from memory if available, otherwise from saved set
+      bool currentFav = favorites.contains(id);
+      if (_memoryItems != null) {
+        final found = _memoryItems!.where((item) => item.id == id);
+        if (found.isNotEmpty) {
+          currentFav = found.first.isFavorite;
+        }
+      }
+      final newFav = !currentFav;
 
       final updatedFavorites = Set<String>.from(favorites);
-      if (isFav) {
-        updatedFavorites.remove(id);
-      } else {
+      if (newFav) {
         updatedFavorites.add(id);
+      } else {
+        updatedFavorites.remove(id);
       }
       await _localDatasource.saveFavorites(updatedFavorites);
 
@@ -173,7 +170,7 @@ class LibraryRepositoryImpl implements LibraryRepository {
       if (_memoryItems != null) {
         final index = _memoryItems!.indexWhere((item) => item.id == id);
         if (index != -1) {
-          final updated = _memoryItems![index].copyWith(isFavorite: !isFav);
+          final updated = _memoryItems![index].copyWith(isFavorite: newFav);
           _memoryItems![index] = updated;
           return Result.success(updated);
         }
@@ -182,7 +179,7 @@ class LibraryRepositoryImpl implements LibraryRepository {
       // If not in memory, get item by ID
       final itemResult = await getMaterialById(id);
       return itemResult.when(
-        success: (item) => Result.success(item.copyWith(isFavorite: !isFav)),
+        success: (item) => Result.success(item.copyWith(isFavorite: newFav)),
         failure: (f) => Result.failure(f),
       );
     } catch (e, st) {
@@ -262,9 +259,8 @@ class LibraryRepositoryImpl implements LibraryRepository {
 
     return dtoList.map((dto) {
       final entity = dto.toDomain();
-      // Apply local overrides if present
-      final hasLocalFav = favorites.isNotEmpty ? favorites.contains(entity.id) : entity.isFavorite;
-      final hasLocalDl = downloaded.isNotEmpty ? downloaded.contains(entity.id) : entity.isDownloaded;
+      final hasLocalFav = favorites.contains(entity.id);
+      final hasLocalDl = downloaded.contains(entity.id);
 
       return entity.copyWith(
         isFavorite: hasLocalFav,

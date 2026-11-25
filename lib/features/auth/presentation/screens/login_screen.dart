@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -251,80 +252,82 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: RxSpacing.s16),
 
-                    // Quick Demo Login Helper (Best Practice UX for App Reviewers & Clients)
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          _usernameController.text = 'rep@rxedge.com';
-                          _passwordController.text = 'RxEdge@2026!';
-                          _usernameError = null;
-                          _passwordError = null;
-                          _generalError = null;
-                        });
-                      },
-                      borderRadius: RxRadii.borderInput,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: RxSpacing.s10,
-                          vertical: RxSpacing.s8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colors.surfaceMuted,
-                          borderRadius: RxRadii.borderInput,
-                          border: Border.all(
-                            color: colors.border,
-                            width: RxShadows.hairlineBorderWidth,
+                    // Quick Demo Login Helper (Debug Mode Only)
+                    if (kDebugMode) ...[
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            _usernameController.text = 'rep@rxedge.com';
+                            _passwordController.text = 'RxEdge@2026!';
+                            _usernameError = null;
+                            _passwordError = null;
+                            _generalError = null;
+                          });
+                        },
+                        borderRadius: RxRadii.borderInput,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: RxSpacing.s10,
+                            vertical: RxSpacing.s8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: colors.surfaceMuted,
+                            borderRadius: RxRadii.borderInput,
+                            border: Border.all(
+                              color: colors.border,
+                              width: RxShadows.hairlineBorderWidth,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                LucideIcons.sparkles,
+                                size: 14.0,
+                                color: colors.info,
+                              ),
+                              const SizedBox(width: RxSpacing.s8),
+                              Expanded(
+                                child: Text(
+                                  isArabic
+                                      ? 'حساب تجريبي: rep@rxedge.com'
+                                      : 'Quick Demo: rep@rxedge.com',
+                                  style: textTheme.labelSmall?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: colors.textPrimary,
+                                    fontSize: 11.0,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: RxSpacing.s6,
+                                  vertical: 2.0,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colors.surface,
+                                  borderRadius: RxRadii.borderBadge,
+                                  border: Border.all(
+                                    color: colors.border,
+                                    width: RxShadows.hairlineBorderWidth,
+                                  ),
+                                ),
+                                child: Text(
+                                  isArabic ? 'تعبئة سريعة' : 'Auto Fill',
+                                  style: textTheme.labelSmall?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 10.0,
+                                    color: colors.info,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              LucideIcons.sparkles,
-                              size: 14.0,
-                              color: colors.info,
-                            ),
-                            const SizedBox(width: RxSpacing.s8),
-                            Expanded(
-                              child: Text(
-                                isArabic
-                                    ? 'حساب تجريبي: rep@rxedge.com'
-                                    : 'Quick Demo: rep@rxedge.com',
-                                style: textTheme.labelSmall?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: colors.textPrimary,
-                                  fontSize: 11.0,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: RxSpacing.s6,
-                                vertical: 2.0,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colors.surface,
-                                borderRadius: RxRadii.borderBadge,
-                                border: Border.all(
-                                  color: colors.border,
-                                  width: RxShadows.hairlineBorderWidth,
-                                ),
-                              ),
-                              child: Text(
-                                isArabic ? 'تعبئة سريعة' : 'Auto Fill',
-                                style: textTheme.labelSmall?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 10.0,
-                                  color: colors.info,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
-                    ),
-                    const SizedBox(height: RxSpacing.s16),
+                      const SizedBox(height: RxSpacing.s16),
+                    ],
 
                     // Session Expiry Notice
                     if (sessionExpiredNotice != null) ...[

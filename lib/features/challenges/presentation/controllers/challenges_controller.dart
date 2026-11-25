@@ -3,6 +3,7 @@ import '../../../../core/storage/local_cache_service.dart';
 import '../../../../core/utils/result.dart';
 import '../../../home/presentation/controllers/home_controller.dart';
 import '../../../profile/presentation/controllers/profile_controller.dart';
+import '../../data/datasources/challenges_remote_datasource.dart';
 import '../../data/repositories/challenges_repository_impl.dart';
 import '../../domain/entities/challenges_entities.dart';
 
@@ -58,19 +59,21 @@ class ChallengesController extends AutoDisposeAsyncNotifier<ChallengesDashboardS
     if (monthlyRes.isFailure) {
       throw Exception(monthlyRes.failureOrNull?.debugMessage ?? 'Failed to load challenge');
     }
-    if (quizzesRes.isFailure) {
-      throw Exception(quizzesRes.failureOrNull?.debugMessage ?? 'Failed to load quizzes');
-    }
-    if (objectionRes.isFailure) {
-      throw Exception(objectionRes.failureOrNull?.debugMessage ?? 'Failed to load objection');
-    }
+
+    final monthlyChallenge = monthlyRes.dataOrNull as MonthlyChallengeEntity;
+    final quizzes = quizzesRes.isSuccess
+        ? (quizzesRes.dataOrNull as List<QuickQuizEntity>)
+        : const <QuickQuizEntity>[];
+    final objection = objectionRes.isSuccess
+        ? (objectionRes.dataOrNull as ObjectionOfTheMonthEntity)
+        : ChallengesRemoteDatasourceImpl.defaultRohtoObjection.toDomain();
 
     final currentTab = state.value?.selectedTabIndex ?? 0;
 
     return ChallengesDashboardState(
-      monthlyChallenge: monthlyRes.dataOrNull as MonthlyChallengeEntity,
-      quizzes: quizzesRes.dataOrNull as List<QuickQuizEntity>,
-      objection: objectionRes.dataOrNull as ObjectionOfTheMonthEntity,
+      monthlyChallenge: monthlyChallenge,
+      quizzes: quizzes,
+      objection: objection,
       selectedTabIndex: currentTab,
     );
   }

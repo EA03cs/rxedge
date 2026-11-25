@@ -53,24 +53,30 @@ class _ObjectionOfMonthViewState extends State<ObjectionOfMonthView> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      padding: const EdgeInsetsDirectional.symmetric(
-                        horizontal: RxSpacing.s8,
-                        vertical: 3.0,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colors.primarySoft,
-                        borderRadius: BorderRadius.circular(4.0),
-                      ),
-                      child: Text(
-                        widget.objection.productConcerned,
-                        style: textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: colors.primary,
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsetsDirectional.symmetric(
+                          horizontal: RxSpacing.s8,
+                          vertical: 3.0,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colors.primarySoft,
+                          borderRadius: BorderRadius.circular(4.0),
+                        ),
+                        child: Text(
+                          widget.objection.productConcerned,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: textTheme.labelSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: colors.primary,
+                          ),
                         ),
                       ),
                     ),
+                    const SizedBox(width: RxSpacing.s8),
                     Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(LucideIcons.thumbsUp, size: 13.0, color: colors.textSecondary),
                         const SizedBox(width: RxSpacing.s4),

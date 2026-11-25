@@ -35,23 +35,28 @@ class HomeDashboardDto {
     }
 
     final rawMaterials = json['recent_materials'] as List<dynamic>? ?? [];
+    final continueLesson = json['continue_lesson'] is Map
+        ? ContinueLearningDto.fromJson(
+            Map<String, dynamic>.from(json['continue_lesson'] as Map),
+          )
+        : null;
+    final recommendedProduct = json['recommended_product'] is Map
+        ? RecommendedProductDto.fromJson(
+            Map<String, dynamic>.from(json['recommended_product'] as Map),
+          )
+        : null;
+    final challenge = MonthlyChallengeDto.fromJson(
+      Map<String, dynamic>.from(json['challenge'] as Map? ?? const {}),
+    );
+    final objection = DoctorObjectionDto.fromJson(
+      Map<String, dynamic>.from(json['objection'] as Map? ?? const {}),
+    );
+
     return HomeDashboardDto(
-      continueLesson: json['continue_lesson'] is Map
-          ? ContinueLearningDto.fromJson(
-              Map<String, dynamic>.from(json['continue_lesson'] as Map),
-            )
-          : null,
-      recommendedProduct: json['recommended_product'] is Map
-          ? RecommendedProductDto.fromJson(
-              Map<String, dynamic>.from(json['recommended_product'] as Map),
-            )
-          : null,
-      challenge: MonthlyChallengeDto.fromJson(
-        Map<String, dynamic>.from(json['challenge'] as Map? ?? const {}),
-      ),
-      objection: DoctorObjectionDto.fromJson(
-        Map<String, dynamic>.from(json['objection'] as Map? ?? const {}),
-      ),
+      continueLesson: continueLesson,
+      recommendedProduct: recommendedProduct,
+      challenge: challenge,
+      objection: objection,
       recentMaterials: rawMaterials
           .whereType<Map<dynamic, dynamic>>()
           .map((e) => MaterialUpdateDto.fromJson(Map<String, dynamic>.from(e)))
@@ -63,6 +68,8 @@ class HomeDashboardDto {
           (json['unread_notification_count'] as num?)?.toInt() ?? 0,
     );
   }
+
+
 
   factory HomeDashboardDto._fromBackendJson(Map<String, dynamic> json) {
     final rawLesson = json['continueLearningLesson'];

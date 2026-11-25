@@ -30,7 +30,7 @@ void main() {
     totalMilestones: 7,
     userRank: 3,
     totalParticipants: 34,
-    rewards: const ['Spotlight Badge', '+500 Pts'],
+    rewards: const ['Spotlight Badge', '+500 Marks'],
     leaderboard: const [
       LeaderboardEntry(
         rank: 1,
@@ -126,7 +126,7 @@ void main() {
       expect(find.text('Territory Leaderboard'), findsOneWidget);
       expect(find.text('My Rank'), findsOneWidget);
       expect(find.text('Sarah Jenkins'), findsOneWidget);
-      expect(find.text('1250 Pts'), findsWidgets);
+      expect(find.text('1250 Marks'), findsWidgets);
     });
 
     testWidgets('switching to Quick Quizzes segment shows quizzes list', (tester) async {
@@ -138,7 +138,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Cardura XL ABPM Study'), findsOneWidget);
-      expect(find.text('+50 Pts'), findsOneWidget);
+      expect(find.text('+50 Marks'), findsOneWidget);
       expect(find.text('Start Quiz'), findsOneWidget);
     });
 

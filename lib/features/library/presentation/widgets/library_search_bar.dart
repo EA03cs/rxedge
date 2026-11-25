@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
 
 /// Large Search Bar for Resource Library
@@ -53,42 +52,49 @@ class _LibrarySearchBarState extends State<LibrarySearchBar> {
   Widget build(BuildContext context) {
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
-    final l10n = context.l10n;
 
     return Padding(
       padding: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),
       child: Container(
-        height: RxSpacing.s48,
+        height: 50.0,
         decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: RxRadii.borderInput,
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(25.0),
           border: Border.all(
-            color: colors.border,
-            width: RxShadows.hairlineBorderWidth,
+            color: const Color(0xFFE2E8F0).withValues(alpha: 0.8),
+            width: 1.0,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+              blurRadius: 10.0,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
-        padding: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s12),
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 16.0),
         child: Row(
           children: [
-            Icon(
+            const Icon(
               LucideIcons.search,
-              size: 18.0,
-              color: colors.textSecondary,
+              size: 19.0,
+              color: Color(0xFF64748B),
             ),
-            const SizedBox(width: RxSpacing.s10),
+            const SizedBox(width: 10.0),
             Expanded(
               child: TextField(
                 controller: _controller,
                 onChanged: widget.onChanged,
                 style: textTheme.bodyMedium?.copyWith(
-                  color: colors.textPrimary,
+                  color: const Color(0xFF0F172A),
                   fontSize: 14.0,
+                  fontWeight: FontWeight.w500,
                 ),
                 decoration: InputDecoration(
-                  hintText: l10n.librarySearchHint,
+                  hintText: 'Search materials, monographs, trials...',
                   hintStyle: textTheme.bodyMedium?.copyWith(
-                    color: colors.textTertiary,
-                    fontSize: 14.0,
+                    color: const Color(0xFF94A3B8),
+                    fontSize: 13.5,
                   ),
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,

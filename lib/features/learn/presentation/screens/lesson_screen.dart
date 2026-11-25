@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
-import '../../../../app/router/app_router.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../../challenges/domain/entities/challenges_entities.dart';
@@ -336,13 +334,19 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                             ),
                           ),
                           const SizedBox(height: RxSpacing.s4),
-                          Text(
-                            l10n.lessonQuizReinforceDesc(
-                              liveLesson.quizQuestionCount,
-                            ),
-                            style: textTheme.bodySmall?.copyWith(
-                              color: colors.textSecondary,
-                            ),
+                          Builder(
+                            builder: (context) {
+                              final matchedQuiz = _findMatchedQuiz(liveLesson);
+                              final actualCount = (matchedQuiz != null && matchedQuiz.questions.isNotEmpty)
+                                  ? matchedQuiz.questions.length
+                                  : liveLesson.quizQuestionCount;
+                              return Text(
+                                l10n.lessonQuizReinforceDesc(actualCount),
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: colors.textSecondary,
+                                ),
+                              );
+                            },
                           ),
                           const SizedBox(height: RxSpacing.s16),
                           AppButton(
@@ -365,10 +369,35 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     );
   }
 
+  QuickQuizEntity? _findMatchedQuiz(LessonEntity lesson) {
+    final quizzes =
+        ref.watch(challengesControllerProvider).valueOrNull?.quizzes ??
+            const <QuickQuizEntity>[];
+    for (final q in quizzes) {
+      if (q.lessonId == lesson.id) return q;
+    }
+    final lessonTitleLower = lesson.title.toLowerCase();
+    final prodLower = lesson.productName.toLowerCase();
+    for (final q in quizzes) {
+      final qTitle = q.title.toLowerCase();
+      final qCat = q.category.toLowerCase();
+      if (qTitle.contains(lessonTitleLower) ||
+          qCat.contains(prodLower) ||
+          qTitle.contains(prodLower)) {
+        return q;
+      }
+    }
+    return null;
+  }
+
   void _openQuickQuiz(BuildContext context, LessonEntity lesson) {
     final l10n = context.l10n;
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
+    final matchedQuiz = _findMatchedQuiz(lesson);
+    final actualQuestionCount = (matchedQuiz != null && matchedQuiz.questions.isNotEmpty)
+        ? matchedQuiz.questions.length
+        : lesson.quizQuestionCount;
 
     showModalBottomSheet<void>(
       context: context,
@@ -416,55 +445,35 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
               ),
               const SizedBox(height: RxSpacing.s16),
               Text(
-                l10n.lessonQuizDialogBody(lesson.quizQuestionCount),
+                l10n.lessonQuizDialogBody(actualQuestionCount),
                 style: textTheme.bodyMedium?.copyWith(
                   color: colors.textPrimary,
                   height: 1.45,
                 ),
               ),
               const SizedBox(height: RxSpacing.s24),
-              AppButton(
-                text: l10n.btnStartQuizNow,
-                variant: AppButtonVariant.primary,
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                  final quizzes =
-                      ref.read(challengesControllerProvider).valueOrNull?.quizzes ??
-                          const <QuickQuizEntity>[];
-                  QuickQuizEntity? matchedQuiz;
-                  for (final q in quizzes) {
-                    if (q.lessonId == lesson.id) {
-                      matchedQuiz = q;
-                      break;
-                    }
-                  }
-                  if (matchedQuiz == null) {
-                    final lessonTitleLower = lesson.title.toLowerCase();
-                    final prodLower = lesson.productName.toLowerCase();
-                    for (final q in quizzes) {
-                      final qTitle = q.title.toLowerCase();
-                      final qCat = q.category.toLowerCase();
-                      if (qTitle.contains(lessonTitleLower) ||
-                          qCat.contains(prodLower) ||
-                          qTitle.contains(prodLower)) {
-                        matchedQuiz = q;
-                        break;
-                      }
-                    }
-                  }
-                  matchedQuiz ??= quizzes.isNotEmpty ? quizzes.first : null;
-                  if (matchedQuiz != null) {
-                    final targetQuiz = matchedQuiz;
+              if (matchedQuiz != null) ...[
+                AppButton(
+                  text: matchedQuiz.rewardPoints > 0
+                      ? '${l10n.btnStartQuizNow} (${l10n.pointsPlusValue(matchedQuiz.rewardPoints)})'
+                      : l10n.btnStartQuizNow,
+                  variant: AppButtonVariant.primary,
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
                     Navigator.of(context, rootNavigator: true).push<void>(
                       MaterialPageRoute(
-                        builder: (_) => QuickQuizScreen(quiz: targetQuiz),
+                        builder: (_) => QuickQuizScreen(quiz: matchedQuiz),
                       ),
                     );
-                  } else {
-                    context.go(AppRoutes.challenges);
-                  }
-                },
-              ),
+                  },
+                ),
+              ] else ...[
+                AppButton(
+                  text: l10n.quizComingSoon,
+                  variant: AppButtonVariant.secondary,
+                  onPressed: null,
+                ),
+              ],
               const SizedBox(height: RxSpacing.s8),
               AppButton(
                 text: l10n.btnReviewLater,

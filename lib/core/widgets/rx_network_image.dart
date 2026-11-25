@@ -9,6 +9,7 @@ import '../theme/theme.dart';
 class RxNetworkImage extends StatelessWidget {
   final String? imageUrl;
   final String? localFilePath;
+  final String? fallbackAsset;
   final double? width;
   final double? height;
   final BoxFit fit;
@@ -21,6 +22,7 @@ class RxNetworkImage extends StatelessWidget {
     super.key,
     required this.imageUrl,
     this.localFilePath,
+    this.fallbackAsset,
     this.width,
     this.height,
     this.fit = BoxFit.cover,
@@ -34,7 +36,7 @@ class RxNetworkImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.rxColors;
     final resolved = UrlResolver.resolve(imageUrl);
-    final Widget fallback = Container(
+    final Widget iconFallback = Container(
       width: width,
       height: height,
       color: fallbackBackground ?? colors.primarySoft,
@@ -46,9 +48,35 @@ class RxNetworkImage extends StatelessWidget {
       ),
     );
 
+    final Widget effectiveFallback = (fallbackAsset != null && fallbackAsset!.trim().isNotEmpty)
+        ? Image.asset(
+            fallbackAsset!,
+            width: width,
+            height: height,
+            fit: fit,
+            errorBuilder: (_, _, _) => iconFallback,
+          )
+        : iconFallback;
+
+    final isWebOrServerUrl = (imageUrl?.startsWith('http://') ?? false) ||
+        (imageUrl?.startsWith('https://') ?? false) ||
+        (imageUrl?.startsWith('/') ?? false);
+
+    if (imageUrl != null && imageUrl!.startsWith('assets/')) {
+      return _wrapClip(
+        Image.asset(
+          imageUrl!,
+          width: width,
+          height: height,
+          fit: fit,
+          errorBuilder: (_, _, _) => effectiveFallback,
+        ),
+      );
+    }
+
     final diskPath = localFileExists(localFilePath)
         ? localFilePath
-        : (localFileExists(imageUrl) ? imageUrl : null);
+        : (!isWebOrServerUrl && localFileExists(imageUrl) ? imageUrl : null);
 
     if (diskPath != null) {
       return _wrapClip(
@@ -57,16 +85,16 @@ class RxNetworkImage extends StatelessWidget {
           width: width,
           height: height,
           fit: fit,
-          errorBuilder: () => _buildNetworkOrFallback(resolved, fallback),
+          errorBuilder: () => _buildNetworkOrFallback(resolved, effectiveFallback),
         ),
       );
     }
 
-    return _wrapClip(_buildNetworkOrFallback(resolved, fallback));
+    return _wrapClip(_buildNetworkOrFallback(resolved, effectiveFallback));
   }
 
   Widget _buildNetworkOrFallback(String? resolved, Widget fallback) {
-    if (resolved == null) {
+    if (resolved == null || resolved.trim().isEmpty) {
       return fallback;
     }
 
@@ -75,6 +103,9 @@ class RxNetworkImage extends StatelessWidget {
       width: width,
       height: height,
       fit: fit,
+      headers: const {
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 14) RxEdge/1.0',
+      },
       loadingBuilder: (context, child, progress) {
         if (progress == null) return child;
         return SkeletonBox(

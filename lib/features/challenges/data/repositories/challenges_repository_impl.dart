@@ -105,7 +105,7 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
     userRank: 1,
     totalParticipants: 14,
     rewards: const [
-      'Q4 Eye-Know Clinical Master (+150 pts)',
+      'Q4 Eye-Know Clinical Master (+150 Marks)',
     ],
     leaderboard: const [
       LeaderboardEntryDto(
@@ -135,22 +135,7 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
     ],
   );
 
-  List<QuickQuizDto> _ensureRohtoQuizzes(List<QuickQuizDto> dtos) {
-    final filtered = dtos.where((q) {
-      final t = q.title.toLowerCase();
-      final c = q.category.toLowerCase();
-      return !t.contains('cardura') &&
-          !t.contains('atorva') &&
-          !t.contains('gluco') &&
-          !c.contains('cardura') &&
-          !c.contains('atorva') &&
-          !c.contains('gluco');
-    }).toList();
 
-    final hasRohto = filtered.any((q) => q.title.toLowerCase().contains('rohto'));
-    if (hasRohto) return filtered;
-    return [rohtoDryAidQuiz, ...filtered];
-  }
 
   ChallengesRepositoryImpl({
     required ChallengesRemoteDatasource remoteDatasource,
@@ -169,22 +154,16 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
     if (!forceRefresh && _localDatasource.isCacheFresh('challenges_monthly')) {
       final cached = await _localDatasource.getCachedMonthlyChallenge();
       if (cached != null) {
-        final domain = (cached.title.toLowerCase().contains('rohto') || cached.title.toLowerCase().contains('eye-know'))
-            ? cached.toDomain()
-            : rohtoMonthlyChallenge.toDomain();
-        _memoryMonthlyChallenge = domain;
-        return Result.success(domain);
+        _memoryMonthlyChallenge = cached.toDomain();
+        return Result.success(_memoryMonthlyChallenge!);
       }
     }
 
     // 3. Remote fetch
     try {
       final remoteDto = await _remoteDatasource.getMonthlyChallenge();
-      final hasRohto = remoteDto.title.toLowerCase().contains('rohto') ||
-          remoteDto.title.toLowerCase().contains('eye-know');
-      final finalDto = hasRohto ? remoteDto : rohtoMonthlyChallenge;
-      await _localDatasource.cacheMonthlyChallenge(finalDto);
-      _memoryMonthlyChallenge = finalDto.toDomain();
+      await _localDatasource.cacheMonthlyChallenge(remoteDto);
+      _memoryMonthlyChallenge = remoteDto.toDomain();
       return Result.success(_memoryMonthlyChallenge!);
     } catch (e) {
       AppLogger.w('Remote monthly challenge fetch failed, checking stale cache: $e');
@@ -208,8 +187,7 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
     if (!forceRefresh && _localDatasource.isCacheFresh('challenges_quizzes')) {
       final cached = await _localDatasource.getCachedQuickQuizzes();
       if (cached != null && cached.isNotEmpty) {
-        final ensured = _ensureRohtoQuizzes(cached);
-        _memoryQuickQuizzes = ensured.map((e) => e.toDomain()).toList();
+        _memoryQuickQuizzes = cached.map((e) => e.toDomain()).toList();
         return Result.success(_memoryQuickQuizzes!);
       }
     }
@@ -217,16 +195,14 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
     // 3. Remote fetch
     try {
       final remoteList = await _remoteDatasource.getQuickQuizzes();
-      final ensured = _ensureRohtoQuizzes(remoteList);
-      await _localDatasource.cacheQuickQuizzes(ensured);
-      _memoryQuickQuizzes = ensured.map((e) => e.toDomain()).toList();
+      await _localDatasource.cacheQuickQuizzes(remoteList);
+      _memoryQuickQuizzes = remoteList.map((e) => e.toDomain()).toList();
       return Result.success(_memoryQuickQuizzes!);
     } catch (e) {
       AppLogger.w('Remote quick quizzes fetch failed, checking stale cache: $e');
       final stale = await _localDatasource.getCachedQuickQuizzes();
       if (stale != null && stale.isNotEmpty) {
-        final ensured = _ensureRohtoQuizzes(stale);
-        _memoryQuickQuizzes = ensured.map((e) => e.toDomain()).toList();
+        _memoryQuickQuizzes = stale.map((e) => e.toDomain()).toList();
         return Result.success(_memoryQuickQuizzes!);
       }
       return Result.failure(ExceptionMapper.map(e));
@@ -288,14 +264,14 @@ class ChallengesRepositoryImpl implements ChallengesRepository {
       await _localDatasource.cacheObjection(remoteDto);
       _memoryObjection = remoteDto.toDomain();
       return Result.success(_memoryObjection!);
-    } catch (e, st) {
+    } catch (e) {
       AppLogger.w('Remote objection fetch failed, checking stale cache: $e');
       final stale = await _localDatasource.getCachedObjection();
       if (stale != null) {
         _memoryObjection = stale.toDomain();
         return Result.success(_memoryObjection!);
       }
-      return Result.failure(ExceptionMapper.map(e, st));
+      return Result.success(ChallengesRemoteDatasourceImpl.defaultRohtoObjection.toDomain());
     }
   }
 

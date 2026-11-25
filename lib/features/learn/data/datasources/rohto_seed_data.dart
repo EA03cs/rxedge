@@ -172,8 +172,64 @@ abstract final class RohtoSeedData {
               'Rohto Aqua is a gentle lubricating eyedrop to immediately moisturize and soothe dry eyes. Rohto Cool is a lubricating eyedrop to moisturize and refresh the eye. Immediately provides a burst of cooling relief.',
         ),
       ],
-      lessons: [],
-      competitors: [],
+      lessons: [
+        LessonDto(
+          id: 'les_aqua_1',
+          productId: 'prod-rohto-aqua',
+          productName: 'Rohto Aqua',
+          title: 'Gentle Ocular Hydration & Natural Tear Mimicry',
+          order: 1,
+          durationMinutes: 4,
+          isCompleted: false,
+          isBookmarked: false,
+          sections: [
+            LessonSectionDto(
+              title: 'Natural Tear Composition & pH Balance',
+              content:
+                  'Rohto Aqua is formulated with a precise electrolyte and mineral balance mimicking human basal tears. It rehydrates the cornea without stinging or burning sensations, making it the ideal starter artificial tear for sensitive eyes.',
+              keyTakeaway:
+                  'Matches natural tear osmolarity and pH for sting-free hydration.',
+            ),
+            LessonSectionDto(
+              title: 'Compatibility with All Contact Lens Types',
+              content:
+                  'Unlike high-viscosity gels or drops containing aggressive preservatives, Rohto Aqua can be safely instilled directly over soft, hard, and silicone hydrogel contact lenses to combat Contact Lens-Associated Dry Eye (CLADE).',
+              keyTakeaway:
+                  'Safe with all contact lenses without lens removal or clouding.',
+            ),
+          ],
+        ),
+        LessonDto(
+          id: 'les_aqua_2',
+          productId: 'prod-rohto-aqua',
+          productName: 'Rohto Aqua',
+          title: 'Post-Refractive Care & Sensitive Eye Protocol',
+          order: 2,
+          durationMinutes: 3,
+          isCompleted: false,
+          isBookmarked: false,
+          sections: [
+            LessonSectionDto(
+              title: 'Post-LASIK & Post-SMILE Corneal Soothing',
+              content:
+                  'Following corneal refractive surgery, transient nerve transection impairs normal tear reflex loop. Rohto Aqua provides immediate soothing moisture that supports epithelial healing without causing visual blur.',
+              keyTakeaway:
+                  'Recommended post-LASIK/PRK for gentle, non-irritating soothing.',
+            ),
+          ],
+        ),
+      ],
+      competitors: [
+        CompetitorComparisonDto(
+          id: 'comp_refresh',
+          competitorName: 'Refresh Tears (Carboxymethylcellulose)',
+          theirClaim: 'Standard OTC saline lubricating drop.',
+          howToRespond:
+              'Rohto Aqua delivers a scientifically balanced electrolyte profile inspired by healthy human tears, providing longer comfort without stinging or residue.',
+          proofReference:
+              'In clinical evaluations, patients reported significantly higher comfort and zero stinging with Rohto Aqua compared to standard saline drops.',
+        ),
+      ],
     ),
     ProductLearningDto(
       id: 'prod-rohto-aqua',
@@ -215,8 +271,64 @@ abstract final class RohtoSeedData {
           answer: 'We recommend using Rohto Aqua, as it lubricates and soothes the eyes.',
         ),
       ],
-      lessons: [],
-      competitors: [],
+      lessons: [
+        LessonDto(
+          id: 'les_aqua_1',
+          productId: 'prod-rohto-aqua',
+          productName: 'Rohto Aqua',
+          title: 'Gentle Ocular Hydration & Natural Tear Mimicry',
+          order: 1,
+          durationMinutes: 4,
+          isCompleted: false,
+          isBookmarked: false,
+          sections: [
+            LessonSectionDto(
+              title: 'Natural Tear Composition & pH Balance',
+              content:
+                  'Rohto Aqua is formulated with a precise electrolyte and mineral balance mimicking human basal tears. It rehydrates the cornea without stinging or burning sensations, making it the ideal starter artificial tear for sensitive eyes.',
+              keyTakeaway:
+                  'Matches natural tear osmolarity and pH for sting-free hydration.',
+            ),
+            LessonSectionDto(
+              title: 'Compatibility with All Contact Lens Types',
+              content:
+                  'Unlike high-viscosity gels or drops containing aggressive preservatives, Rohto Aqua can be safely instilled directly over soft, hard, and silicone hydrogel contact lenses to combat Contact Lens-Associated Dry Eye (CLADE).',
+              keyTakeaway:
+                  'Safe with all contact lenses without lens removal or clouding.',
+            ),
+          ],
+        ),
+        LessonDto(
+          id: 'les_aqua_2',
+          productId: 'prod-rohto-aqua',
+          productName: 'Rohto Aqua',
+          title: 'Post-Refractive Care & Sensitive Eye Protocol',
+          order: 2,
+          durationMinutes: 3,
+          isCompleted: false,
+          isBookmarked: false,
+          sections: [
+            LessonSectionDto(
+              title: 'Post-LASIK & Post-SMILE Corneal Soothing',
+              content:
+                  'Following corneal refractive surgery, transient nerve transection impairs normal tear reflex loop. Rohto Aqua provides immediate soothing moisture that supports epithelial healing without causing visual blur.',
+              keyTakeaway:
+                  'Recommended post-LASIK/PRK for gentle, non-irritating soothing.',
+            ),
+          ],
+        ),
+      ],
+      competitors: [
+        CompetitorComparisonDto(
+          id: 'comp_refresh',
+          competitorName: 'Refresh Tears (Carboxymethylcellulose)',
+          theirClaim: 'Standard OTC saline lubricating drop.',
+          howToRespond:
+              'Rohto Aqua delivers a scientifically balanced electrolyte profile inspired by healthy human tears, providing longer comfort without stinging or residue.',
+          proofReference:
+              'In clinical evaluations, patients reported significantly higher comfort and zero stinging with Rohto Aqua compared to standard saline drops.',
+        ),
+      ],
     ),
   ];
 }

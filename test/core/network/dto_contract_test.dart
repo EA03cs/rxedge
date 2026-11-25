@@ -40,8 +40,8 @@ void main() {
       final dto = HomeDashboardDto.fromJson(<String, dynamic>{
         'continueLearningLesson': <String, dynamic>{
           'id': 'les-1',
-          'title': 'تقييم ضغط الدم 24 ساعة',
-          'productName': 'Cardura XL',
+          'title': 'تقنية تيرشيلد لاستعادة الطبقة الدمعية',
+          'productName': 'Rohto Dry Aid',
         },
         'lessonProgress': <String, dynamic>{
           'completedLessons': 3,
@@ -49,9 +49,9 @@ void main() {
         },
         'recommendedProduct': <String, dynamic>{
           'id': 'prod-1',
-          'name': 'Cardura XL',
-          'therapeuticAreaName': 'أمراض القلب',
-          'description': 'سيطرة مستمرة خلال 24 ساعة',
+          'name': 'Rohto Dry Aid',
+          'therapeuticAreaName': 'طب وجراحة العيون',
+          'description': 'استعادة ترطيب العين حتى 12 ساعة',
         },
         'monthlyChallenge': <String, dynamic>{
           'id': 'ch-1',
@@ -68,15 +68,15 @@ void main() {
         'currentChallengeRank': 3,
         'objectionOfTheMonth': <String, dynamic>{
           'id': 'obj-1',
-          'doctorQuote': 'لماذا التحويل إلى Cardura XL؟',
-          'recommendedResponse': 'فعالية مستمرة دون تورم في الأطراف.',
-          'productName': 'Cardura XL',
+          'doctorQuote': 'لماذا التحويل إلى Rohto Dry Aid؟',
+          'recommendedResponse': 'تركيبة فريدة تحاكي الطبقات الثلاث لدموع العين.',
+          'productName': 'Rohto Dry Aid',
         },
         'recentClinicalMaterials': <dynamic>[
           <String, dynamic>{
             'id': 'mat-1',
             'title': 'دليل الجرعات',
-            'productName': 'Cardura XL',
+            'productName': 'Rohto Dry Aid',
             'fileType': 'clinical_pdf',
             'version': 2,
           },
@@ -87,12 +87,12 @@ void main() {
       });
 
       final entity = dto.toDomain();
-      expect(entity.continueLesson?.productName, 'Cardura XL');
+      expect(entity.continueLesson?.productName, 'Rohto Dry Aid');
       expect(entity.continueLesson?.completedModules, 3);
       expect(entity.continueLesson?.totalModules, 5);
-      expect(entity.recommendedProduct?.therapeuticArea, 'أمراض القلب');
+      expect(entity.recommendedProduct?.therapeuticArea, 'طب وجراحة العيون');
       expect(entity.challenge.currentRank, 3);
-      expect(entity.objection.doctorQuote, 'لماذا التحويل إلى Cardura XL؟');
+      expect(entity.objection.doctorQuote, 'لماذا التحويل إلى Rohto Dry Aid؟');
       expect(entity.recentMaterials.single.badgeType.name, 'updated');
       expect(entity.stats.points, 1250);
     });
@@ -173,6 +173,9 @@ void main() {
             ],
           },
         ],
+        'startDate': '2026-11-01T00:00:00Z',
+        'endDate': '2026-11-30T23:59:59Z',
+        'completionWindowDays': 3,
       });
 
       final submission = QuizSubmissionResultDto.fromJson(<String, dynamic>{
@@ -195,6 +198,11 @@ void main() {
 
       expect(quiz.durationMinutes, 3);
       expect(quiz.questions.single.optionIds, ['opt-a', 'opt-b']);
+      expect(quiz.startDate, DateTime.utc(2026, 11, 1, 0, 0, 0));
+      expect(quiz.endDate, DateTime.utc(2026, 11, 30, 23, 59, 59));
+      expect(quiz.completionWindowDays, 3);
+      final entity = quiz.toDomain();
+      expect(entity.completionWindowDays, 3);
       expect(submission.isPassed, isTrue);
       expect(submission.pointsAwarded, 50);
       expect(submission.answers.single.correctOptionText, '4 مجم');

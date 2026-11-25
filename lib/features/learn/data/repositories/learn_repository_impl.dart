@@ -261,14 +261,11 @@ class LearnRepositoryImpl implements LearnRepository {
   }
 
   List<ProductLearningDto> _ensureRohtoIncluded(List<ProductLearningDto> dtos) {
-    final filtered = dtos.where((p) {
-      final n = p.name.toLowerCase();
-      return !n.contains('cardura') && !n.contains('atorva') && !n.contains('gluco');
-    }).toList();
-
-    final hasRohto = filtered.any((p) => p.name.toLowerCase().contains('rohto'));
-    if (hasRohto) return filtered;
-    return [...RohtoSeedData.products, ...filtered];
+    // Return all remote products directly so anything created or updated in the Dashboard appears in the mobile app!
+    if (dtos.isNotEmpty) {
+      return dtos;
+    }
+    return RohtoSeedData.products;
   }
 
   Future<List<ProductLearningEntity>> _mergeWithOverrides(

@@ -17,15 +17,15 @@ void main() {
   const sampleLesson = SearchResultItemEntity(
     id: 's_1',
     category: SearchResultCategory.lesson,
-    title: 'Cardura XL GITS Absorption Curve',
+    title: 'Rohto Dry Aid Tearshield Clinical Overview',
     subtitle: 'Zero-order kinetics study',
-    badgeText: 'Cardura XL',
+    badgeText: 'Rohto Dry Aid',
   );
 
   const sampleLib = SearchResultItemEntity(
     id: 's_2',
     category: SearchResultCategory.libraryFile,
-    title: 'Cardura XL 2026 Clinical Monograph',
+    title: 'Rohto Dry Aid 2026 Clinical Monograph',
     subtitle: 'PDF 4.2 MB',
     badgeText: 'PDF',
   );
@@ -41,12 +41,12 @@ void main() {
   setUp(() {
     mockRepo = MockSearchRepository();
     when(() => mockRepo.getRecentSearches())
-        .thenAnswer((_) async => const Result.success(['Cardura XL', 'AtorvaCare']));
+        .thenAnswer((_) async => const Result.success(['Rohto Dry Aid', 'Rohto Cool']));
     when(() => mockRepo.addRecentSearch(any()))
         .thenAnswer((_) async => const Result.success(null));
     when(() => mockRepo.clearRecentSearches())
         .thenAnswer((_) async => const Result.success(null));
-    when(() => mockRepo.search('Cardura')).thenAnswer((_) async => const Result.success({
+    when(() => mockRepo.search('Rohto')).thenAnswer((_) async => const Result.success({
           SearchResultCategory.lesson: [sampleLesson],
           SearchResultCategory.libraryFile: [sampleLib],
           SearchResultCategory.objection: [sampleObj],
@@ -74,7 +74,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Recent Searches'), findsOneWidget);
-      expect(find.text('Cardura XL'), findsNWidgets(2)); // Recent search chip + Suggested topic
+      expect(find.text('Rohto Dry Aid'), findsNWidgets(2)); // Recent search chip + Suggested topic
       expect(find.text('Suggested Topics'), findsOneWidget);
     });
 
@@ -82,14 +82,14 @@ void main() {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byType(TextField), 'Cardura');
+      await tester.enterText(find.byType(TextField), 'Rohto');
       await tester.pumpAndSettle();
 
       expect(find.text('Clinical Lessons & Monographs'), findsOneWidget);
-      expect(find.text('Cardura XL GITS Absorption Curve'), findsOneWidget);
+      expect(find.text('Rohto Dry Aid Tearshield Clinical Overview'), findsOneWidget);
 
       expect(find.text('Library Files & Visual Aids'), findsOneWidget);
-      expect(find.text('Cardura XL 2026 Clinical Monograph'), findsOneWidget);
+      expect(find.text('Rohto Dry Aid 2026 Clinical Monograph'), findsOneWidget);
 
       expect(find.text('Doctor Objections & Talking Points'), findsOneWidget);
       expect(find.text('Doctor skeptical about morning orthostatic drop'), findsOneWidget);
@@ -103,7 +103,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('No results for "emptyresult"'), findsOneWidget);
-      expect(find.text('Try fewer words, check product spelling, or search by therapeutic area (e.g. Cardura XL, AtorvaCare).'), findsOneWidget);
+      expect(find.text('Try fewer words, check product spelling, or search by therapeutic area (e.g. Rohto Dry Aid, Rohto Cool).'), findsOneWidget);
     });
   });
 }

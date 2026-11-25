@@ -815,7 +815,7 @@ abstract class AppLocalizations {
   /// No description provided for @statPoints.
   ///
   /// In en, this message translates to:
-  /// **'{points} Pts'**
+  /// **'{points} Marks'**
   String statPoints(int points);
 
   /// No description provided for @statStreak.
@@ -833,7 +833,7 @@ abstract class AppLocalizations {
   /// No description provided for @statPointsLabel.
   ///
   /// In en, this message translates to:
-  /// **'Points'**
+  /// **'Challenge Marks'**
   String get statPointsLabel;
 
   /// No description provided for @statStreakLabel.
@@ -1661,7 +1661,7 @@ abstract class AppLocalizations {
   /// No description provided for @pointsAndBadges.
   ///
   /// In en, this message translates to:
-  /// **'Points & Achievements'**
+  /// **'Challenge Marks & Achievements'**
   String get pointsAndBadges;
 
   /// No description provided for @streakDaysLabel.
@@ -1889,7 +1889,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchNoResultsDesc.
   ///
   /// In en, this message translates to:
-  /// **'Try fewer words, check product spelling, or search by therapeutic area (e.g. Cardura XL, AtorvaCare).'**
+  /// **'Try fewer words, check product spelling, or search by therapeutic area (e.g. Rohto Dry Aid, Rohto Cool).'**
   String get searchNoResultsDesc;
 
   /// No description provided for @offlineBannerConnected.
@@ -2087,7 +2087,7 @@ abstract class AppLocalizations {
   /// No description provided for @btnStartQuizNow.
   ///
   /// In en, this message translates to:
-  /// **'Start Quiz Now (+50 Pts)'**
+  /// **'Start Quiz Now'**
   String get btnStartQuizNow;
 
   /// No description provided for @btnReviewLater.
@@ -2231,7 +2231,7 @@ abstract class AppLocalizations {
   /// No description provided for @pointsPlusValue.
   ///
   /// In en, this message translates to:
-  /// **'+{points} Pts'**
+  /// **'+{points} Marks'**
   String pointsPlusValue(int points);
 
   /// No description provided for @correctRecallLabel.
@@ -2255,7 +2255,7 @@ abstract class AppLocalizations {
   /// No description provided for @pointsEarnedLabel.
   ///
   /// In en, this message translates to:
-  /// **'Points Earned'**
+  /// **'Marks Earned'**
   String get pointsEarnedLabel;
 
   /// No description provided for @timeElapsedLabel.
@@ -2287,6 +2287,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your answer: {answer}'**
   String yourAnswerPrefix(String answer);
+
+  /// No description provided for @quizClosesInDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Closes in {days} days'**
+  String quizClosesInDays(int days);
+
+  /// No description provided for @quizClosesToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Closes today'**
+  String get quizClosesToday;
+
+  /// No description provided for @quizOpensOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens on {date}'**
+  String quizOpensOn(String date);
+
+  /// No description provided for @quizClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get quizClosed;
+
+  /// No description provided for @quizWindowClosedError.
+  ///
+  /// In en, this message translates to:
+  /// **'This quiz is closed as the completion window has ended.'**
+  String get quizWindowClosedError;
+
+  /// No description provided for @quizNotStartedError.
+  ///
+  /// In en, this message translates to:
+  /// **'This quiz has not started yet. Please check back on the start date.'**
+  String get quizNotStartedError;
+
+  /// No description provided for @quizComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiz coming soon'**
+  String get quizComingSoon;
 
   /// No description provided for @correctAnswerPrefix.
   ///
@@ -2717,25 +2759,25 @@ abstract class AppLocalizations {
   /// No description provided for @productHintExamples.
   ///
   /// In en, this message translates to:
-  /// **'e.g. Cardura XL, AtorvaCare'**
+  /// **'e.g. Rohto Dry Aid, Rohto Cool'**
   String get productHintExamples;
 
   /// No description provided for @specialtyHintExamples.
   ///
   /// In en, this message translates to:
-  /// **'e.g. Interventional Cardiologist, Nephrologist'**
+  /// **'e.g. Consultant Ophthalmologist, Cornea Specialist'**
   String get specialtyHintExamples;
 
   /// No description provided for @competitorHintExamples.
   ///
   /// In en, this message translates to:
-  /// **'e.g. PharmaStar Generic Atorvastatin'**
+  /// **'e.g. Generic Artificial Tears'**
   String get competitorHintExamples;
 
   /// No description provided for @whereHeardHintExamples.
   ///
   /// In en, this message translates to:
-  /// **'e.g. Cardiology CME Conference, Hospital Dept Meeting'**
+  /// **'e.g. Ophthalmology Society Conference, Clinic Visit'**
   String get whereHeardHintExamples;
 
   /// No description provided for @topicHintExamples.

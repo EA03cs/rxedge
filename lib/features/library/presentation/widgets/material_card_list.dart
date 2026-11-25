@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
-import '../../../../core/widgets/rx_network_image.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/material_item_entity.dart';
 
@@ -226,8 +225,8 @@ class MaterialCardList extends StatelessWidget {
                   ),
                 IconButton(
                   icon: Icon(
-                    item.isFavorite ? LucideIcons.bookmark : LucideIcons.bookmark,
-                    size: 18.0,
+                    item.isFavorite ? Icons.bookmark : Icons.bookmark_border,
+                    size: 19.0,
                     color: item.isFavorite ? colors.primary : colors.textTertiary,
                   ),
                   tooltip: item.isFavorite ? l10n.actionUnfavorite : l10n.actionFavorite,

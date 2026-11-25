@@ -156,12 +156,8 @@ void main() {
       expect(find.text('“Why switch patients to Cardura XL?”'), findsOneWidget);
       expect(find.text('See how to respond'), findsOneWidget);
 
-      // 6. Core portfolio modules
-      expect(find.text('Core Portfolio Modules'), findsOneWidget);
-      expect(find.text('Product Navigator'), findsOneWidget);
-      expect(find.text('Marketing Hub'), findsWidgets);
-      expect(find.text('Eye-Know Challenges'), findsOneWidget);
-      expect(find.text('Rep Voice'), findsOneWidget);
+      // 6. Core portfolio modules 2x2 grid is removed in Phase 2
+      expect(find.text('Core Portfolio Modules'), findsNothing);
 
       // 7. What's new section
       expect(find.text("What's New"), findsOneWidget);
@@ -170,10 +166,13 @@ void main() {
       expect(find.text('NEW'), findsOneWidget);
       expect(find.text('UPDATED'), findsOneWidget);
 
-      // 8. Slim stats strip
-      expect(find.text('350 Pts'), findsOneWidget);
-      expect(find.text('7-Day Streak'), findsOneWidget);
-      expect(find.text('18 Quizzes'), findsOneWidget);
+      // 8. Slim stats strip (Number above label)
+      expect(find.text('350'), findsOneWidget);
+      expect(find.text('7'), findsOneWidget);
+      expect(find.text('18'), findsOneWidget);
+      expect(find.text('Challenge Marks'), findsOneWidget);
+      expect(find.text('Day Streak'), findsOneWidget);
+      expect(find.text('Quizzes'), findsOneWidget);
 
       // STRICT RULE CHECK: Exactly ONE primary filled button visible
       final allButtons = tester.widgetList<AppButton>(find.byType(AppButton));
@@ -197,10 +196,10 @@ void main() {
       final emptyLessonDashboard = HomeDashboardEntity(
         continueLesson: null,
         recommendedProduct: const RecommendedProductEntity(
-          id: 'prod_cardura_xl',
-          productName: 'Cardura XL',
-          therapeuticArea: 'Hypertension & BPH',
-          description: 'GITS sustained blood pressure control.',
+          id: 'prod_rohto_dry_aid',
+          productName: 'Rohto Dry Aid',
+          therapeuticArea: 'Ophthalmology (Dry Eye)',
+          description: 'Tearshield restoration.',
         ),
         challenge: testDashboard.challenge,
         objection: testDashboard.objection,
@@ -216,7 +215,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 200));
 
       // Verifies empty state copy
-      expect(find.text('Start with Cardura XL'), findsOneWidget);
+      expect(find.text('Start with Rohto Dry Aid'), findsOneWidget);
       expect(find.text('Recommended for your territory'), findsOneWidget);
       expect(find.text('Start Lesson'), findsOneWidget);
 

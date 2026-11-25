@@ -73,7 +73,7 @@ void main() {
       expect(find.text('Cairo North & Heliopolis'), findsOneWidget);
 
       // Points & Badges
-      expect(find.text('1250 Pts'), findsOneWidget);
+      expect(find.text('1250 Marks'), findsOneWidget);
       expect(find.text('4 Days Streak'), findsOneWidget);
       expect(find.text('Spotlight Rep'), findsOneWidget);
       expect(find.text('Cardio Ace'), findsOneWidget);

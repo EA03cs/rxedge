@@ -4,7 +4,7 @@ import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
 import '../../domain/entities/material_item_entity.dart';
 
-/// Horizontally Scrollable Filter Chips for Resource Library
+/// Horizontally Scrollable Filter Chips for Resource Library / Marketing Hub
 class LibraryFilterChips extends StatelessWidget {
   final MaterialCategory selectedCategory;
   final String? selectedProduct;
@@ -28,22 +28,6 @@ class LibraryFilterChips extends StatelessWidget {
     required this.onSortChanged,
     required this.onShortcutToggled,
   });
-
-  String _getCategoryLabel(BuildContext context, MaterialCategory cat) {
-    final l10n = context.l10n;
-    switch (cat) {
-      case MaterialCategory.all:
-        return l10n.filterAll;
-      case MaterialCategory.brochure:
-        return l10n.filterBrochures;
-      case MaterialCategory.visualAid:
-        return l10n.filterVisualAids;
-      case MaterialCategory.edetail:
-        return l10n.filterEDetail;
-      case MaterialCategory.marketing:
-        return l10n.filterMarketing;
-    }
-  }
 
   String _getSortLabel(BuildContext context, LibrarySortOption sort) {
     final l10n = context.l10n;
@@ -184,77 +168,125 @@ class LibraryFilterChips extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
-    final l10n = context.l10n;
+
+    final isFavoritesActive = activeShortcut == LibraryShortcut.favorites;
+    final isDownloadedActive = activeShortcut == LibraryShortcut.downloaded;
+    final isAllActive = activeShortcut == LibraryShortcut.none &&
+        selectedCategory == MaterialCategory.all &&
+        selectedProduct == null;
+    final isBrochuresActive =
+        activeShortcut == LibraryShortcut.none && selectedCategory == MaterialCategory.brochure;
+    final isVisualAidsActive =
+        activeShortcut == LibraryShortcut.none && selectedCategory == MaterialCategory.visualAid;
+    final isEDetailActive =
+        activeShortcut == LibraryShortcut.none && selectedCategory == MaterialCategory.edetail;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsetsDirectional.symmetric(horizontal: 16.0),
       child: Row(
         children: [
-          // 1. Shortcuts: Favorites & Downloaded
-          _buildShortcutChip(
-            label: l10n.shortcutFavorites,
-            icon: LucideIcons.bookmark,
-            isActive: activeShortcut == LibraryShortcut.favorites,
-            colors: colors,
-            textTheme: textTheme,
-            onTap: () => onShortcutToggled(LibraryShortcut.favorites),
-          ),
-          const SizedBox(width: RxSpacing.s8),
-          _buildShortcutChip(
-            label: l10n.shortcutDownloaded,
-            icon: LucideIcons.downloadCloud,
-            isActive: activeShortcut == LibraryShortcut.downloaded,
-            colors: colors,
-            textTheme: textTheme,
-            onTap: () => onShortcutToggled(LibraryShortcut.downloaded),
-          ),
-
-          // Divider
-          Container(
-            margin: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s8),
-            width: 1.0,
-            height: 24.0,
-            color: colors.border,
-          ),
-
-          // 2. Category Chips
-          ...MaterialCategory.values.map((cat) {
-            final isSelected = selectedCategory == cat;
-            return Padding(
-              padding: const EdgeInsetsDirectional.only(end: RxSpacing.s8),
-              child: _buildStandardChip(
-                label: _getCategoryLabel(context, cat),
-                isSelected: isSelected,
-                colors: colors,
-                textTheme: textTheme,
-                onTap: () => onCategoryChanged(cat),
-              ),
-            );
-          }),
-
-          // Divider
-          Container(
-            margin: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s4),
-            width: 1.0,
-            height: 24.0,
-            color: colors.border,
-          ),
-
-          // 3. Product Filter Chip
-          Padding(
-            padding: const EdgeInsetsDirectional.only(start: RxSpacing.s8, end: RxSpacing.s8),
-            child: _buildDropdownChip(
-              label: selectedProduct ?? l10n.filterAllProducts,
-              isActive: selectedProduct != null,
-              icon: LucideIcons.pill,
-              colors: colors,
-              textTheme: textTheme,
-              onTap: () => _showProductPicker(context),
+          // 1. Favorites Chip
+          _buildPillChip(
+            label: 'Favorites',
+            icon: Icons.bookmark_outline,
+            isActive: isFavoritesActive,
+            onTap: () => onShortcutToggled(
+              isFavoritesActive ? LibraryShortcut.none : LibraryShortcut.favorites,
             ),
           ),
+          const SizedBox(width: 8.0),
 
-          // 4. Sort Selector Chip
+          // 2. Downloaded Chip
+          _buildPillChip(
+            label: 'Downloaded',
+            icon: LucideIcons.cloud,
+            isActive: isDownloadedActive,
+            onTap: () => onShortcutToggled(
+              isDownloadedActive ? LibraryShortcut.none : LibraryShortcut.downloaded,
+            ),
+          ),
+          const SizedBox(width: 8.0),
+
+          // 3. All Chip
+          _buildPillChip(
+            label: 'All',
+            icon: LucideIcons.layoutGrid,
+            isActive: isAllActive,
+            onTap: () {
+              if (activeShortcut != LibraryShortcut.none) {
+                onShortcutToggled(LibraryShortcut.none);
+              }
+              onCategoryChanged(MaterialCategory.all);
+              onProductChanged(null);
+            },
+          ),
+          const SizedBox(width: 8.0),
+
+          // 4. Brochures Chip
+          _buildPillChip(
+            label: 'Brochures',
+            icon: LucideIcons.fileText,
+            isActive: isBrochuresActive,
+            onTap: () {
+              if (activeShortcut != LibraryShortcut.none) {
+                onShortcutToggled(LibraryShortcut.none);
+              }
+              onCategoryChanged(MaterialCategory.brochure);
+            },
+          ),
+          const SizedBox(width: 8.0),
+
+          // 5. Visual Aids Chip
+          _buildPillChip(
+            label: 'Visual Aids',
+            icon: LucideIcons.image,
+            isActive: isVisualAidsActive,
+            onTap: () {
+              if (activeShortcut != LibraryShortcut.none) {
+                onShortcutToggled(LibraryShortcut.none);
+              }
+              onCategoryChanged(MaterialCategory.visualAid);
+            },
+          ),
+          const SizedBox(width: 8.0),
+
+          // 6. E-Detail Chip
+          _buildPillChip(
+            label: 'E-Detail',
+            icon: LucideIcons.presentation,
+            isActive: isEDetailActive,
+            onTap: () {
+              if (activeShortcut != LibraryShortcut.none) {
+                onShortcutToggled(LibraryShortcut.none);
+              }
+              onCategoryChanged(MaterialCategory.edetail);
+            },
+          ),
+          const SizedBox(width: 8.0),
+
+          // Divider
+          Container(
+            margin: const EdgeInsetsDirectional.symmetric(horizontal: 4.0),
+            width: 1.0,
+            height: 22.0,
+            color: const Color(0xFFE2E8F0),
+          ),
+          const SizedBox(width: 8.0),
+
+          // Product Filter Chip
+          _buildDropdownChip(
+            label: selectedProduct ?? 'All Products',
+            isActive: selectedProduct != null,
+            icon: LucideIcons.pill,
+            colors: colors,
+            textTheme: textTheme,
+            onTap: () => _showProductPicker(context),
+          ),
+          const SizedBox(width: 8.0),
+
+          // Sort Chip
           _buildDropdownChip(
             label: _getSortLabel(context, sortOption),
             isActive: sortOption != LibrarySortOption.newest,
@@ -268,79 +300,61 @@ class LibraryFilterChips extends StatelessWidget {
     );
   }
 
-  Widget _buildStandardChip({
-    required String label,
-    required bool isSelected,
-    required RxColors colors,
-    required TextTheme textTheme,
-    required VoidCallback onTap,
-  }) {
-    return Material(
-      color: isSelected ? colors.primary : colors.surface,
-      borderRadius: RxRadii.borderChip,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: RxRadii.borderChip,
-        child: Container(
-          padding: const EdgeInsetsDirectional.symmetric(horizontal: 14.0, vertical: 7.0),
-          decoration: BoxDecoration(
-            borderRadius: RxRadii.borderChip,
-            border: Border.all(
-              color: isSelected ? colors.primary : colors.border,
-              width: RxShadows.hairlineBorderWidth,
-            ),
-          ),
-          child: Text(
-            label,
-            style: textTheme.labelMedium?.copyWith(
-              color: isSelected ? colors.surface : colors.textSecondary,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-              fontSize: 12.5,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildShortcutChip({
+  Widget _buildPillChip({
     required String label,
     required IconData icon,
     required bool isActive,
-    required RxColors colors,
-    required TextTheme textTheme,
     required VoidCallback onTap,
   }) {
     return Material(
-      color: isActive ? colors.primarySoft : colors.surface,
-      borderRadius: RxRadii.borderChip,
+      color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: RxRadii.borderChip,
-        child: Container(
-          padding: const EdgeInsetsDirectional.symmetric(horizontal: 12.0, vertical: 7.0),
+        borderRadius: BorderRadius.circular(22.0),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutCubic,
+          height: 38.0,
+          padding: const EdgeInsets.symmetric(horizontal: 14.0),
           decoration: BoxDecoration(
-            borderRadius: RxRadii.borderChip,
-            border: Border.all(
-              color: isActive ? colors.primary.withValues(alpha: 0.3) : colors.border,
-              width: RxShadows.hairlineBorderWidth,
-            ),
+            color: isActive ? const Color(0xFF0284C7) : Colors.white,
+            borderRadius: BorderRadius.circular(22.0),
+            border: isActive
+                ? null
+                : Border.all(
+                    color: const Color(0xFFE2E8F0),
+                    width: 1.2,
+                  ),
+            boxShadow: [
+              if (isActive)
+                BoxShadow(
+                  color: const Color(0xFF0284C7).withValues(alpha: 0.28),
+                  blurRadius: 8.0,
+                  offset: const Offset(0, 2),
+                )
+              else
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.02),
+                  blurRadius: 4.0,
+                  offset: const Offset(0, 1),
+                ),
+            ],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 icon,
-                size: 14.0,
-                color: isActive ? colors.primary : colors.textSecondary,
+                size: 15.0,
+                color: isActive ? Colors.white : const Color(0xFF334155),
               ),
-              const SizedBox(width: RxSpacing.s6),
+              const SizedBox(width: 6.0),
               Text(
                 label,
-                style: textTheme.labelMedium?.copyWith(
-                  color: isActive ? colors.primary : colors.textSecondary,
-                  fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                  fontSize: 12.5,
+                style: TextStyle(
+                  color: isActive ? Colors.white : const Color(0xFF334155),
+                  fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
+                  fontSize: 13.0,
                 ),
               ),
             ],
@@ -359,18 +373,19 @@ class LibraryFilterChips extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return Material(
-      color: isActive ? colors.primarySoft : colors.surface,
-      borderRadius: RxRadii.borderChip,
+      color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: RxRadii.borderChip,
+        borderRadius: BorderRadius.circular(22.0),
         child: Container(
-          padding: const EdgeInsetsDirectional.symmetric(horizontal: 12.0, vertical: 7.0),
+          height: 38.0,
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
           decoration: BoxDecoration(
-            borderRadius: RxRadii.borderChip,
+            color: isActive ? const Color(0xFFE0F2FE) : Colors.white,
+            borderRadius: BorderRadius.circular(22.0),
             border: Border.all(
-              color: isActive ? colors.primary.withValues(alpha: 0.3) : colors.border,
-              width: RxShadows.hairlineBorderWidth,
+              color: isActive ? const Color(0xFF0284C7) : const Color(0xFFE2E8F0),
+              width: 1.2,
             ),
           ),
           child: Row(
@@ -378,23 +393,23 @@ class LibraryFilterChips extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                size: 13.0,
-                color: isActive ? colors.primary : colors.textSecondary,
+                size: 14.0,
+                color: isActive ? const Color(0xFF0284C7) : const Color(0xFF64748B),
               ),
-              const SizedBox(width: RxSpacing.s6),
+              const SizedBox(width: 6.0),
               Text(
                 label,
-                style: textTheme.labelMedium?.copyWith(
-                  color: isActive ? colors.primary : colors.textSecondary,
-                  fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-                  fontSize: 12.0,
+                style: TextStyle(
+                  color: isActive ? const Color(0xFF0284C7) : const Color(0xFF334155),
+                  fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                  fontSize: 12.5,
                 ),
               ),
-              const SizedBox(width: RxSpacing.s4),
+              const SizedBox(width: 4.0),
               Icon(
                 LucideIcons.chevronDown,
                 size: 13.0,
-                color: isActive ? colors.primary : colors.textTertiary,
+                color: isActive ? const Color(0xFF0284C7) : const Color(0xFF64748B),
               ),
             ],
           ),

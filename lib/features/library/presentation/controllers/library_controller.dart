@@ -170,17 +170,31 @@ class LibraryController extends AutoDisposeAsyncNotifier<LibraryState> {
     final current = state.valueOrNull;
     if (current == null) return;
 
+    // 1. Optimistic UI update for immediate response
+    final optimisticList = current.allMaterials.map((item) {
+      if (item.id == materialId) {
+        return item.copyWith(isFavorite: !item.isFavorite);
+      }
+      return item;
+    }).toList();
+    state = AsyncData(current.copyWith(allMaterials: optimisticList));
+
+    // 2. Persist in repository
     final repository = ref.read(libraryRepositoryProvider);
     final result = await repository.toggleFavorite(materialId);
 
     result.when(
       success: (updatedItem) {
-        final updatedList = current.allMaterials.map((item) {
+        final latest = state.valueOrNull ?? current;
+        final confirmedList = latest.allMaterials.map((item) {
           return item.id == materialId ? updatedItem : item;
         }).toList();
-        state = AsyncData(current.copyWith(allMaterials: updatedList));
+        state = AsyncData(latest.copyWith(allMaterials: confirmedList));
       },
-      failure: (_) {},
+      failure: (_) {
+        // Rollback on failure
+        state = AsyncData(current);
+      },
     );
   }
 

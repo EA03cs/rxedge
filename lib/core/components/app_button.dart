@@ -40,6 +40,9 @@ class AppButton extends StatelessWidget {
   final IconData? trailingIcon;
   final bool isLoading;
   final bool isFullWidth;
+  final Color? customBackgroundColor;
+  final Color? customForegroundColor;
+  final BorderRadius? customBorderRadius;
 
   const AppButton({
     super.key,
@@ -51,6 +54,9 @@ class AppButton extends StatelessWidget {
     this.trailingIcon,
     this.isLoading = false,
     this.isFullWidth = true,
+    this.customBackgroundColor,
+    this.customForegroundColor,
+    this.customBorderRadius,
   });
 
   @override
@@ -64,7 +70,7 @@ class AppButton extends StatelessWidget {
 
     switch (variant) {
       case AppButtonVariant.primary:
-        backgroundColor = isEnabled ? colors.primary : colors.surfaceMuted;
+        backgroundColor = isEnabled ? colors.brandRed : colors.surfaceMuted;
         foregroundColor = isEnabled ? Colors.white : colors.textTertiary;
         break;
 
@@ -90,6 +96,15 @@ class AppButton extends StatelessWidget {
           width: RxShadows.hairlineBorderWidth,
         );
         break;
+    }
+
+    final resolvedBorderRadius = customBorderRadius ?? RxRadii.borderButton;
+
+    if (customBackgroundColor != null && isEnabled) {
+      backgroundColor = customBackgroundColor!;
+    }
+    if (customForegroundColor != null && isEnabled) {
+      foregroundColor = customForegroundColor!;
     }
 
     final buttonTextStyle = Theme.of(context).textTheme.labelLarge?.copyWith(
@@ -159,14 +174,14 @@ class AppButton extends StatelessWidget {
       height: size.height,
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: RxRadii.borderButton,
+        borderRadius: resolvedBorderRadius,
         border: borderSide != BorderSide.none ? Border.fromBorderSide(borderSide) : null,
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: RxRadii.borderButton,
+        borderRadius: resolvedBorderRadius,
         child: InkWell(
-          borderRadius: RxRadii.borderButton,
+          borderRadius: resolvedBorderRadius,
           onTap: isEnabled ? onPressed : null,
           splashColor: variant == AppButtonVariant.primary
               ? colors.primaryPressed.withValues(alpha: 0.2)

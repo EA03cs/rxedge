@@ -68,14 +68,14 @@ class RxColors extends ThemeExtension<RxColors> {
     primary: Color(0xFF005CA8), // Official Mentholatum Corporate Blue (#005CA8)
     primaryPressed: Color(0xFF004987),
     primarySoft: Color(0xFFE6F0F8),
-    accent: Color(0xFFD97706), // Amber 600 - strictly for awards, streaks, badges
-    accentSoft: Color(0xFFFEF3C7),
+    accent: Color(0xFFE62134), // Mentholatum Red (#E62134) - Strictly no yellow in UI
+    accentSoft: Color(0xFFFDE9EB),
     brandRed: Color(0xFFE62134), // Official Mentholatum Red (#E62134 from logo)
     brandRedSoft: Color(0xFFFDE9EB),
     success: Color(0xFF16803D), // Emerald 700
     successSoft: Color(0xFFDCFCE7),
-    warning: Color(0xFFB45309),
-    warningSoft: Color(0xFFFEF3C7),
+    warning: Color(0xFFE62134), // Brand Red (No yellow/amber)
+    warningSoft: Color(0xFFFDE9EB),
     error: Color(0xFFE62134), // Mentholatum Red for critical alerts
     errorSoft: Color(0xFFFDE9EB),
     info: Color(0xFF005CA8), // Corporate Brand Blue

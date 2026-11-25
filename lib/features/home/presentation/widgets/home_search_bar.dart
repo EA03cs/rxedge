@@ -17,7 +17,6 @@ class HomeSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
     final l10n = context.l10n;
 
@@ -27,38 +26,60 @@ class HomeSearchBar extends StatelessWidget {
         button: true,
         label: l10n.searchHintHome,
         child: Material(
-          color: colors.surface,
-          borderRadius: RxRadii.borderInput,
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30.0),
           child: InkWell(
-            borderRadius: RxRadii.borderInput,
+            borderRadius: BorderRadius.circular(30.0),
             onTap: () => context.push(AppRoutes.search),
             child: Container(
-              height: RxSpacing.s48,
-              padding: const EdgeInsetsDirectional.symmetric(horizontal: RxSpacing.s16),
+              height: 52.0,
+              padding: const EdgeInsetsDirectional.fromSTEB(16.0, 4.0, 8.0, 4.0),
               decoration: BoxDecoration(
-                borderRadius: RxRadii.borderInput,
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30.0),
                 border: Border.all(
-                  color: colors.border,
-                  width: RxShadows.hairlineBorderWidth,
+                  color: const Color(0xFFE2E8F0),
+                  width: 1.0,
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF00386E).withValues(alpha: 0.05),
+                    blurRadius: 10.0,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     LucideIcons.search,
                     size: 18.0,
-                    color: colors.textSecondary,
+                    color: Color(0xFF1E293B),
                   ),
                   const SizedBox(width: RxSpacing.s12),
                   Expanded(
                     child: Text(
                       l10n.searchHintHome,
                       style: textTheme.bodyMedium?.copyWith(
-                        color: colors.textTertiary,
-                        fontSize: 14.0,
+                        color: const Color(0xFF94A3B8),
+                        fontSize: 13.5,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Container(
+                    width: 36.0,
+                    height: 36.0,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF1E5E6D), // Teal button
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: const Icon(
+                      LucideIcons.slidersHorizontal,
+                      size: 16.0,
+                      color: Colors.white,
                     ),
                   ),
                 ],

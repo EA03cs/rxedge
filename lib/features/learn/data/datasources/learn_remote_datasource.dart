@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import '../../../../core/network/api_endpoints.dart';
 import '../../../../core/network/api_response.dart';
 import '../models/learning_dto.dart';
+import 'rohto_seed_data.dart';
 
 /// Remote Datasource Contract for Learn
 abstract class LearnRemoteDatasource {
@@ -50,8 +51,16 @@ class LearnRemoteDatasourceImpl implements LearnRemoteDatasource {
       final fullLessons = lessonsByProduct[pid];
       if (fullLessons != null && fullLessons.isNotEmpty) {
         prodMap['lessons'] = fullLessons;
-      } else if (prodMap['lessons'] == null) {
-        prodMap['lessons'] = const <Map<String, dynamic>>[];
+      } else {
+        final prodName = (prodMap['name']?.toString() ?? '').toLowerCase();
+        final seedMatch = RohtoSeedData.products
+            .where((p) => p.id == pid || p.name.toLowerCase() == prodName)
+            .firstOrNull;
+        if (seedMatch != null && seedMatch.lessons.isNotEmpty) {
+          prodMap['lessons'] = seedMatch.lessons.map((l) => l.toJson()).toList();
+        } else {
+          prodMap['lessons'] = const <Map<String, dynamic>>[];
+        }
       }
 
       final fullCompetitors = competitorsByProduct[pid];

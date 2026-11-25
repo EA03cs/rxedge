@@ -11,24 +11,21 @@ import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../notifications/presentation/controllers/notifications_controller.dart';
 import '../controllers/home_controller.dart';
 
-/// Top Header of the Home Screen
-///
-/// Features:
-/// 1. Greeting + Rep First Name ("Good morning, Alex")
-/// 2. User Avatar circle with initials (opens Profile / System info)
-/// 3. Notification bell icon button with unread dot
+/// Top Header of the Home Screen matching the executive clinical design:
+/// - Corporate Mentholatum Brand Bar (Logo, Language dropdown pill, Notification Bell with red dot, Teal Avatar)
+/// - Greeting Row: "Good afternoon, / Ahmed / Keep learning. Keep growing." with 3D Graduation Cap & Books illustration.
 class HomeHeader extends ConsumerWidget {
   const HomeHeader({super.key});
 
-  String _getGreeting(BuildContext context, String firstName) {
-    final l10n = context.l10n;
+  String _getSalutation(BuildContext context) {
     final hour = DateTime.now().hour;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     if (hour < 12) {
-      return l10n.greetingMorning(firstName);
+      return isArabic ? 'صباح الخير،' : 'Good morning,';
     } else if (hour < 17) {
-      return l10n.greetingAfternoon(firstName);
+      return isArabic ? 'مساء الخير،' : 'Good afternoon,';
     } else {
-      return l10n.greetingEvening(firstName);
+      return isArabic ? 'مساء الخير،' : 'Good evening,';
     }
   }
 
@@ -39,175 +36,349 @@ class HomeHeader extends ConsumerWidget {
     } else if (parts.isNotEmpty && parts[0].isNotEmpty) {
       return parts[0][0].toUpperCase();
     }
-    return 'MR';
+    return 'AM';
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
-    final l10n = context.l10n;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final authState = ref.watch(authControllerProvider);
     final user = authState is AuthAuthenticated ? authState.user : null;
 
-    final displayName = user?.displayName ?? l10n.defaultRepName;
+    final displayName = user?.displayName ?? 'Ahmed Mostafa';
     final firstName = displayName.split(' ').first;
-    final territory = user?.territory ?? l10n.dailyDetailingItinerary;
-    final greeting = _getGreeting(context, firstName);
+    final salutation = _getSalutation(context);
 
-    return Padding(
-      padding: const EdgeInsetsDirectional.symmetric(
-        horizontal: RxSpacing.s16,
-        vertical: RxSpacing.s8,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 1. Corporate Brand Bar (Mentholatum Logo + Actions)
+    return CustomPaint(
+      painter: _HeaderBackgroundPainter(isArabic: isArabic),
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(
+          RxSpacing.s16,
+          RxSpacing.s12,
+          RxSpacing.s16,
+          RxSpacing.s12,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 1. Corporate Brand Bar (Mentholatum Logo + Actions)
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const MentholatumLogo(height: 24.0),
+              const MentholatumLogo(height: 25.0),
               const Spacer(),
 
-              // Quick Language Switcher
+              // Quick Language Switcher Dropdown Pill
               Consumer(
                 builder: (context, ref, _) {
                   final activeLocale = ref.watch(localeProvider);
-                  final isArabic = activeLocale.languageCode == 'ar';
+                  final isAr = activeLocale.languageCode == 'ar';
                   return InkWell(
                     onTap: () {
-                      final newLocale = isArabic ? const Locale('en') : const Locale('ar');
+                      final newLocale = isAr ? const Locale('en') : const Locale('ar');
                       ref.read(localeProvider.notifier).state = newLocale;
                       ref.read(homeControllerProvider.notifier).refresh();
                     },
-                    borderRadius: RxRadii.borderBadge,
+                    borderRadius: BorderRadius.circular(20.0),
                     child: Container(
-                      padding: const EdgeInsetsDirectional.symmetric(
-                        horizontal: RxSpacing.s8,
-                        vertical: RxSpacing.s4,
-                      ),
+                      padding: const EdgeInsetsDirectional.fromSTEB(10.0, 4.0, 8.0, 4.0),
                       decoration: BoxDecoration(
-                        color: colors.surfaceMuted,
-                        borderRadius: RxRadii.borderBadge,
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20.0),
                         border: Border.all(
-                          color: colors.border,
+                          color: colors.border.withValues(alpha: 0.8),
                           width: RxShadows.hairlineBorderWidth,
                         ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.03),
+                            blurRadius: 4.0,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
                       ),
-                      child: Text(
-                        isArabic ? 'EN' : 'عربي',
-                        style: textTheme.labelSmall?.copyWith(
-                          color: colors.primary,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 11.0,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            isAr ? 'عربي' : 'EN',
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colors.textPrimary,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12.0,
+                            ),
+                          ),
+                          const SizedBox(width: 4.0),
+                          Icon(
+                            LucideIcons.chevronDown,
+                            size: 14.0,
+                            color: colors.textSecondary,
+                          ),
+                        ],
                       ),
                     ),
                   );
                 },
               ),
-              const SizedBox(width: RxSpacing.s4),
+              const SizedBox(width: RxSpacing.s8),
 
-              // Notification Bell with vibrant Mentholatum Red unread dot
+              // Notification Bell with vibrant red unread dot
               Consumer(
                 builder: (context, ref, _) {
                   final unreadCount = ref.watch(unreadNotificationsCountProvider);
-                  return Semantics(
-                    button: true,
-                    label: l10n.notificationsTooltip,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        IconButton(
-                          icon: Icon(
+                  return InkWell(
+                    onTap: () => context.push(AppRoutes.notifications),
+                    borderRadius: BorderRadius.circular(20.0),
+                    child: Container(
+                      width: 36.0,
+                      height: 36.0,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: colors.border.withValues(alpha: 0.8),
+                          width: RxShadows.hairlineBorderWidth,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.03),
+                            blurRadius: 4.0,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        alignment: Alignment.center,
+                        children: [
+                          Icon(
                             LucideIcons.bell,
-                            size: 20.0,
+                            size: 17.0,
                             color: colors.textPrimary,
                           ),
-                          tooltip: l10n.notificationsTooltip,
-                          onPressed: () => context.push(AppRoutes.notifications),
-                        ),
-                        if (unreadCount > 0)
-                          PositionedDirectional(
-                            top: 10.0,
-                            end: 10.0,
-                            child: Container(
-                              width: 8.0,
-                              height: 8.0,
-                              decoration: BoxDecoration(
-                                color: colors.brandRed,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: colors.surface,
-                                  width: 1.5,
+                          if (unreadCount > 0)
+                            PositionedDirectional(
+                              top: 6.0,
+                              end: 6.0,
+                              child: Container(
+                                width: 7.5,
+                                height: 7.5,
+                                decoration: BoxDecoration(
+                                  color: colors.brandRed,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 1.5,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },
               ),
+              const SizedBox(width: RxSpacing.s8),
 
-              // Profile Avatar circle (opens Profile)
-              Semantics(
-                button: true,
-                label: l10n.profileTooltip,
-                child: InkWell(
-                  onTap: () => context.push(AppRoutes.profile),
-                  borderRadius: BorderRadius.circular(RxSpacing.s20),
-                  child: Container(
-                    width: 36.0,
-                    height: 36.0,
-                    decoration: BoxDecoration(
-                      color: colors.primarySoft,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: colors.primary.withValues(alpha: 0.25),
-                        width: RxShadows.hairlineBorderWidth,
+              // Teal Profile Avatar circle (opens Profile)
+              InkWell(
+                onTap: () => context.push(AppRoutes.profile),
+                borderRadius: BorderRadius.circular(20.0),
+                child: Container(
+                  width: 36.0,
+                  height: 36.0,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF005B60), // Deep clinical teal
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF005B60).withValues(alpha: 0.25),
+                        blurRadius: 6.0,
+                        offset: const Offset(0, 2),
                       ),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      _getInitials(displayName),
-                      style: textTheme.labelMedium?.copyWith(
-                        color: colors.primary,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.5,
-                      ),
+                    ],
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    _getInitials(displayName),
+                    style: textTheme.labelMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 12.5,
+                      letterSpacing: 0.5,
                     ),
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: RxSpacing.s12),
+          const SizedBox(height: RxSpacing.s16),
 
-          // 2. Greeting & Rep Territory / Status Subtitle
-          Text(
-            greeting,
-            style: textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: colors.textPrimary,
-              letterSpacing: -0.3,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: RxSpacing.s2),
-          Text(
-            territory,
-            style: textTheme.bodySmall?.copyWith(
-              color: colors.textSecondary,
-              fontSize: 12.5,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          // 2. Greeting Section
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                salutation,
+                style: textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF0F172A),
+                  fontSize: 22.0,
+                  letterSpacing: -0.3,
+                  height: 1.15,
+                ),
+              ),
+              Text(
+                firstName,
+                style: textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: const Color(0xFF00807D), // Signature Teal
+                  fontSize: 28.0,
+                  letterSpacing: -0.5,
+                  height: 1.15,
+                ),
+              ),
+              const SizedBox(height: 4.0),
+              Text(
+                isArabic ? 'استمر في التعلّم. استمر في التقدّم.' : 'Keep learning. Keep growing.',
+                style: textTheme.bodySmall?.copyWith(
+                  color: const Color(0xFF64748B),
+                  fontWeight: FontWeight.w500,
+                  fontSize: 13.5,
+                ),
+              ),
+              const SizedBox(height: 3.0),
+              const CustomPaint(
+                size: Size(60.0, 4.0),
+                painter: _BrushUnderlinePainter(),
+              ),
+            ],
           ),
         ],
       ),
+    ),
+  );
+}
+}
+
+class _BrushUnderlinePainter extends CustomPainter {
+  const _BrushUnderlinePainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFF00807D)
+      ..strokeWidth = 2.5
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    final path = Path();
+    path.moveTo(0, size.height * 0.7);
+    path.quadraticBezierTo(
+      size.width * 0.5,
+      size.height * 0.1,
+      size.width,
+      size.height * 0.6,
     );
+    canvas.drawPath(path, paint);
   }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _HeaderBackgroundPainter extends CustomPainter {
+  final bool isArabic;
+
+  const _HeaderBackgroundPainter({required this.isArabic});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+
+    // 1. Base soft gradient background
+    final baseRect = Rect.fromLTWH(0, 0, w, h);
+    final basePaint = Paint()
+      ..shader = const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Color(0xFFEBF4FD), // Soft airy sky blue
+          Color(0xFFF3F8FD),
+          Color(0xFFFBFDFF),
+        ],
+        stops: [0.0, 0.5, 1.0],
+      ).createShader(baseRect);
+    canvas.drawRect(baseRect, basePaint);
+
+    // 2. Organic Mint/Teal Blob Shape on the side where the graduation cap sits
+    final blobPath = Path();
+    if (!isArabic) {
+      // English: Top-right organic swell
+      blobPath.moveTo(w * 0.35, 0);
+      blobPath.cubicTo(
+        w * 0.45, h * 0.25,
+        w * 0.52, h * 0.65,
+        w * 0.76, h * 0.88,
+      );
+      blobPath.cubicTo(
+        w * 0.88, h * 0.98,
+        w * 0.96, h * 0.95,
+        w, h * 0.85,
+      );
+      blobPath.lineTo(w, 0);
+      blobPath.close();
+
+      final blobPaint = Paint()
+        ..shader = const RadialGradient(
+          center: Alignment(0.65, -0.4),
+          radius: 1.0,
+          colors: [
+            Color(0xFFC7F0E6), // Soft mint teal
+            Color(0xFFD6F5ED),
+            Color(0xFFE8FAF5),
+            Color(0x00E8FAF5),
+          ],
+          stops: [0.0, 0.45, 0.80, 1.0],
+        ).createShader(Rect.fromLTWH(w * 0.3, 0, w * 0.7, h));
+      canvas.drawPath(blobPath, blobPaint);
+    } else {
+      // Arabic: Top-left organic swell
+      blobPath.moveTo(w * 0.65, 0);
+      blobPath.cubicTo(
+        w * 0.55, h * 0.25,
+        w * 0.48, h * 0.65,
+        w * 0.24, h * 0.88,
+      );
+      blobPath.cubicTo(
+        w * 0.12, h * 0.98,
+        w * 0.04, h * 0.95,
+        0, h * 0.85,
+      );
+      blobPath.lineTo(0, 0);
+      blobPath.close();
+
+      final blobPaint = Paint()
+        ..shader = const RadialGradient(
+          center: Alignment(-0.65, -0.4),
+          radius: 1.0,
+          colors: [
+            Color(0xFFC7F0E6),
+            Color(0xFFD6F5ED),
+            Color(0xFFE8FAF5),
+            Color(0x00E8FAF5),
+          ],
+          stops: [0.0, 0.45, 0.80, 1.0],
+        ).createShader(Rect.fromLTWH(0, 0, w * 0.7, h));
+      canvas.drawPath(blobPath, blobPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _HeaderBackgroundPainter oldDelegate) =>
+      oldDelegate.isArabic != isArabic;
 }

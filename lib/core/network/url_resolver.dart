@@ -28,6 +28,10 @@ abstract final class UrlResolver {
     final value = rawUrl?.trim();
     if (value == null || value.isEmpty) return null;
 
+    if (value.startsWith('http://rxedge.agro-plus.net')) {
+      return value.replaceFirst('http://', 'https://');
+    }
+
     if (value.startsWith('http://') || value.startsWith('https://')) {
       return value;
     }
@@ -35,7 +39,11 @@ abstract final class UrlResolver {
     final origin = originFromApiBaseUrl(apiBaseUrl ?? EnvConfig.baseUrl);
     if (origin.isEmpty) return value;
 
+    final secureOrigin = origin.startsWith('http://rxedge.agro-plus.net')
+        ? origin.replaceFirst('http://', 'https://')
+        : origin;
+
     final normalizedPath = value.startsWith('/') ? value : '/$value';
-    return '$origin$normalizedPath';
+    return '$secureOrigin$normalizedPath';
   }
 }

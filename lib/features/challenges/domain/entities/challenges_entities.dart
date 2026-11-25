@@ -174,6 +174,9 @@ class QuickQuizEntity {
   final bool isCompleted;
   final int? lastScore;
   final int? lastMaxScore;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final int? completionWindowDays;
 
   const QuickQuizEntity({
     required this.id,
@@ -187,10 +190,27 @@ class QuickQuizEntity {
     this.isCompleted = false,
     this.lastScore,
     this.lastMaxScore,
+    this.startDate,
+    this.endDate,
+    this.completionWindowDays,
   });
 
   int get displayQuestionCount =>
       questions.isNotEmpty ? questions.length : (questionCount ?? 0);
+
+  bool get isUpcoming =>
+      startDate != null && DateTime.now().isBefore(startDate!);
+
+  bool get isClosed =>
+      endDate != null && DateTime.now().isAfter(endDate!);
+
+  bool get isOpen => !isUpcoming && !isClosed;
+
+  int get daysUntilClose {
+    if (endDate == null) return completionWindowDays ?? 0;
+    final diff = endDate!.difference(DateTime.now()).inDays;
+    return diff < 0 ? 0 : diff;
+  }
 
   QuickQuizEntity copyWith({
     String? id,
@@ -204,6 +224,9 @@ class QuickQuizEntity {
     bool? isCompleted,
     int? lastScore,
     int? lastMaxScore,
+    DateTime? startDate,
+    DateTime? endDate,
+    int? completionWindowDays,
   }) {
     return QuickQuizEntity(
       id: id ?? this.id,
@@ -217,6 +240,9 @@ class QuickQuizEntity {
       isCompleted: isCompleted ?? this.isCompleted,
       lastScore: lastScore ?? this.lastScore,
       lastMaxScore: lastMaxScore ?? this.lastMaxScore,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      completionWindowDays: completionWindowDays ?? this.completionWindowDays,
     );
   }
 

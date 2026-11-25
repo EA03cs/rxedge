@@ -5,7 +5,7 @@ import '../network/url_resolver.dart';
 /// Environment Configuration resolving URLs and flags based on Flavor
 abstract final class EnvConfig {
   static const String _defineApiBaseUrl = String.fromEnvironment('API_BASE_URL');
-  static const String liveServerBaseUrl = 'http://rxedge.agro-plus.net/api/v1';
+  static const String liveServerBaseUrl = 'https://rxedge.agro-plus.net/api/v1';
 
   /// Live production backend URL (`http://rxedge.agro-plus.net/api/v1`).
   /// Can always be overridden at build/run time with `--dart-define=API_BASE_URL=...`.

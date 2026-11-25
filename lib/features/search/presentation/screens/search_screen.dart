@@ -5,6 +5,17 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
+import '../../../challenges/presentation/screens/challenges_screen.dart';
+import '../../../learn/data/repositories/learn_repository_impl.dart';
+import '../../../learn/domain/entities/learning_entities.dart';
+import '../../../learn/presentation/controllers/learn_controller.dart';
+import '../../../learn/presentation/screens/lesson_screen.dart';
+import '../../../learn/presentation/screens/product_learning_screen.dart';
+import '../../../library/data/repositories/library_repository_impl.dart';
+import '../../../library/domain/entities/material_item_entity.dart';
+import '../../../library/presentation/controllers/library_controller.dart';
+import '../../../library/presentation/screens/image_viewer_screen.dart';
+import '../../../library/presentation/screens/pdf_viewer_screen.dart';
 import '../../domain/entities/search_entities.dart';
 import '../controllers/search_controller.dart';
 
@@ -124,11 +135,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final l10n = context.l10n;
 
     final quickPills = [
-      'Cardura XL',
-      'AtorvaCare',
-      l10n.suggestedTopicGits,
+      'Rohto Dry Aid',
+      'Rohto Cool',
+      'Rohto Aqua',
       l10n.suggestedTopicDosing,
-      l10n.suggestedTopicHypotension,
     ];
 
     return SingleChildScrollView(
@@ -363,20 +373,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     return Padding(
       padding: const EdgeInsetsDirectional.only(bottom: RxSpacing.s8),
       child: InkWell(
-        onTap: () {
-          ref.read(recentSearchesProvider.notifier).addSearch(_activeQuery);
-          final route = item.targetRoute?.trim();
-          if (route != null && route.isNotEmpty && context.mounted) {
-            if (route == '/learn' ||
-                route == '/library' ||
-                route == '/challenges' ||
-                route == '/feedback') {
-              context.go(route);
-            } else if (route == '/profile' || route == '/search' || route == '/feedback/detail') {
-              context.push(route);
-            }
-          }
-        },
+        onTap: () => _handleResultClick(context, item),
         borderRadius: RxRadii.borderCard,
         child: Container(
           padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
@@ -398,7 +395,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   color: colors.primary.withValues(alpha: 0.08),
                   borderRadius: RxRadii.borderButton,
                 ),
-                child: Icon(_getCategoryIcon(item.category), size: 18.0, color: colors.primary),
+                child: Icon(_getCategoryIcon(item), size: 18.0, color: colors.primary),
               ),
               const SizedBox(width: RxSpacing.s12),
               Expanded(
@@ -449,8 +446,184 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
-  IconData _getCategoryIcon(SearchResultCategory category) {
-    switch (category) {
+  Future<void> _handleResultClick(BuildContext context, SearchResultItemEntity item) async {
+    await ref.read(recentSearchesProvider.notifier).addSearch(_activeQuery);
+
+    // 1. Fetch available products (from Riverpod state or repository)
+    List<ProductLearningEntity> products =
+        ref.read(learnControllerProvider).valueOrNull ?? [];
+    if (products.isEmpty) {
+      final repo = ref.read(learnRepositoryProvider);
+      final res = await repo.getProducts();
+      res.when(
+        success: (List<ProductLearningEntity> list) => products = list,
+        failure: (_) {},
+      );
+    }
+
+    if (!context.mounted) return;
+
+    // Normalization helper (lowercase alphanumeric only)
+    String norm(String s) =>
+        s.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+
+    final targetId = item.targetId ?? '';
+    final itemId = item.id;
+    final itemTitleNorm = norm(item.title);
+    final itemBadgeNorm = norm(item.badgeText);
+    final targetIdNorm = norm(targetId);
+    final itemIdNorm = norm(itemId);
+
+    final isExplicitProduct = item.targetRoute == '/learn/product' ||
+        itemId.startsWith('prod_') ||
+        itemId.startsWith('sr_prod_');
+
+    final isExplicitLesson = item.targetRoute == '/learn/lesson' ||
+        itemId.startsWith('lesson_') ||
+        itemId.startsWith('sr_les_');
+
+    // 2. Try finding matched product
+    ProductLearningEntity? matchedProduct;
+    for (final p in products) {
+      final pIdNorm = norm(p.id);
+      final pNameNorm = norm(p.name);
+
+      if (pIdNorm == targetIdNorm ||
+          pIdNorm == itemIdNorm ||
+          targetIdNorm.contains(pIdNorm) ||
+          itemIdNorm.contains(pIdNorm) ||
+          pNameNorm == itemTitleNorm ||
+          itemTitleNorm.contains(pNameNorm) ||
+          pNameNorm == itemBadgeNorm) {
+        matchedProduct = p;
+        break;
+      }
+    }
+
+    // 3. Try finding matched lesson
+    LessonEntity? matchedLesson;
+    for (final p in products) {
+      for (final l in p.lessons) {
+        final lIdNorm = norm(l.id);
+        final lTitleNorm = norm(l.title);
+
+        if (lIdNorm == targetIdNorm ||
+            lIdNorm == itemIdNorm ||
+            targetIdNorm.contains(lIdNorm) ||
+            itemIdNorm.contains(lIdNorm) ||
+            lTitleNorm == itemTitleNorm ||
+            itemTitleNorm.contains(lTitleNorm)) {
+          matchedLesson = l;
+          matchedProduct ??= p;
+          break;
+        }
+      }
+      if (matchedLesson != null) break;
+    }
+
+    // Priority 1: If it's a lesson and user clicked a specific lesson
+    if (isExplicitLesson && matchedLesson != null) {
+      await Navigator.of(context, rootNavigator: true).push<void>(
+        MaterialPageRoute(
+          builder: (_) => LessonScreen(lesson: matchedLesson!),
+        ),
+      );
+      return;
+    }
+
+    // Priority 2: If it's a product (or product was matched)
+    if (isExplicitProduct || matchedProduct != null) {
+      if (matchedProduct != null) {
+        await Navigator.of(context, rootNavigator: true).push<void>(
+          MaterialPageRoute(
+            builder: (_) => ProductLearningScreen(product: matchedProduct!),
+          ),
+        );
+        return;
+      }
+    }
+
+    // If lesson was matched and no product found
+    if (matchedLesson != null) {
+      await Navigator.of(context, rootNavigator: true).push<void>(
+        MaterialPageRoute(
+          builder: (_) => LessonScreen(lesson: matchedLesson!),
+        ),
+      );
+      return;
+    }
+
+    // Priority 3: Library File
+    if (item.category == SearchResultCategory.libraryFile || item.targetRoute == '/library') {
+      final libState = ref.read(libraryControllerProvider).valueOrNull;
+      List<MaterialItemEntity> materials = libState?.allMaterials ?? [];
+      if (materials.isEmpty) {
+        final libRepo = ref.read(libraryRepositoryProvider);
+        final res = await libRepo.getMaterials();
+        res.when(success: (List<MaterialItemEntity> m) => materials = m, failure: (_) {});
+      }
+
+      MaterialItemEntity? matchedMat;
+      for (final m in materials) {
+        final mIdNorm = norm(m.id);
+        final mTitleNorm = norm(m.title);
+
+        if (mIdNorm == targetIdNorm ||
+            mIdNorm == itemIdNorm ||
+            mTitleNorm == itemTitleNorm ||
+            itemTitleNorm.contains(mTitleNorm)) {
+          matchedMat = m;
+          break;
+        }
+      }
+
+      if (matchedMat != null && context.mounted) {
+        final destination = matchedMat.fileType == MaterialFileType.pdf
+            ? PdfViewerScreen(material: matchedMat)
+            : ImageViewerScreen(material: matchedMat);
+        await Navigator.of(context, rootNavigator: true).push<void>(
+          MaterialPageRoute(builder: (_) => destination),
+        );
+        return;
+      }
+
+      if (context.mounted) {
+        context.go('/library');
+      }
+      return;
+    }
+
+    // Priority 4: Doctor Objection / Challenges
+    if (item.category == SearchResultCategory.objection || item.targetRoute == '/challenges') {
+      await Navigator.of(context, rootNavigator: true).push<void>(
+        MaterialPageRoute(
+          builder: (_) => const ChallengesScreen(initialTabIndex: 2),
+        ),
+      );
+      return;
+    }
+
+    // Priority 5: Fallback GoRouter navigation
+    final route = item.targetRoute?.trim();
+    if (route != null && route.isNotEmpty && context.mounted) {
+      if (route == '/learn' ||
+          route == '/library' ||
+          route == '/challenges' ||
+          route == '/feedback') {
+        context.go(route);
+      } else {
+        await context.push(route);
+      }
+    }
+  }
+
+  IconData _getCategoryIcon(SearchResultItemEntity item) {
+    if (item.targetRoute == '/learn/product' ||
+        item.id.startsWith('prod_') ||
+        item.id.startsWith('sr_prod_')) {
+      return LucideIcons.package;
+    }
+    switch (item.category) {
       case SearchResultCategory.lesson:
         return LucideIcons.graduationCap;
       case SearchResultCategory.libraryFile:

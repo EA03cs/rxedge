@@ -24,7 +24,7 @@ void main() {
     totalMilestones: 7,
     userRank: 3,
     totalParticipants: 34,
-    rewards: const ['Spotlight Pin', '+500 Pts'],
+    rewards: const ['Spotlight Pin', '+500 Marks'],
     leaderboard: const [
       LeaderboardEntryDto(
         rank: 1,

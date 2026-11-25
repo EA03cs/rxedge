@@ -81,19 +81,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navProfile => 'الحساب';
 
   @override
-  String get tabHome => 'الرئيسية';
+  String get tabHome => 'Home';
 
   @override
-  String get tabLearn => 'مستعرض المنتجات';
+  String get tabLearn => 'Product Navigator';
 
   @override
-  String get tabLibrary => 'المركز التسويقي';
+  String get tabLibrary => 'Marketing Hub';
 
   @override
-  String get tabChallenges => 'تحديات Eye-Know';
+  String get tabChallenges => 'Eye-Know Challenges';
 
   @override
-  String get tabFeedback => 'صوت المندوب';
+  String get tabFeedback => 'Rep Voice';
 
   @override
   String get statusCompleted => 'معتمد';
@@ -168,7 +168,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get inputLabel => 'الطبيب المستهدف / العيادة';
 
   @override
-  String get inputPlaceholder => 'مثال: د. سارة الشريف (أمراض القلب)';
+  String get inputPlaceholder => 'مثال: د. سارة الشريف (طب وجراحة العيون)';
 
   @override
   String get inputHelper => 'اختر من سجل الأطباء المعتمد بالمستشفى';
@@ -390,7 +390,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String statPoints(int points) {
-    return '$points نقطة';
+    return '$points علامة';
   }
 
   @override
@@ -404,7 +404,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get statPointsLabel => 'النقاط';
+  String get statPointsLabel => 'علامات التحدي';
 
   @override
   String get statStreakLabel => 'التتابع';
@@ -413,7 +413,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get statQuizzesLabel => 'المكتمل';
 
   @override
-  String get libraryTitle => 'المركز التسويقي (Marketing Hub)';
+  String get libraryTitle => 'Marketing Hub';
 
   @override
   String get librarySearchHint => 'ابحث في الدراسات والكتيبات والملفات...';
@@ -555,7 +555,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get learnTitle => 'مستعرض المنتجات (Product Navigator)';
+  String get learnTitle => 'Product Navigator';
 
   @override
   String get learnSubtitle =>
@@ -658,7 +658,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get inProgressTag => 'قيد التقدم';
 
   @override
-  String get challengesTitle => 'تحديات Eye-Know';
+  String get challengesTitle => 'Eye-Know Challenges';
 
   @override
   String get tabMonthlyChallenge => 'تحدي الشهر';
@@ -768,7 +768,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'ستظهر هنا التحديات والاختبارات التي تم إكمالها.';
 
   @override
-  String get feedbackTitle => 'صوت المندوب (Rep Voice)';
+  String get feedbackTitle => 'Rep Voice';
 
   @override
   String get feedbackSubtitle =>
@@ -855,7 +855,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get employeeIdLabel => 'الرقم الوظيفي';
 
   @override
-  String get pointsAndBadges => 'النقاط والإنجازات';
+  String get pointsAndBadges => 'علامات التحدي والإنجازات';
 
   @override
   String streakDaysLabel(int days) {
@@ -981,7 +981,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get searchNoResultsDesc =>
-      'جرب كلمات أقل، أو تأكد من اسم المنتج، أو ابحث بالمجال العلاجي (مثل Cardura XL أو AtorvaCare).';
+      'جرب كلمات أقل، أو تأكد من اسم المنتج، أو ابحث بالمجال العلاجي (مثل Rohto Dry Aid أو Rohto Cool).';
 
   @override
   String get offlineBannerConnected => 'تم الاتصال — تمت المزامنة مع التسويق';
@@ -1094,7 +1094,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get btnStartQuizNow => 'ابدأ الاختبار الآن (+50 نقطة)';
+  String get btnStartQuizNow => 'ابدأ الاختبار الآن';
 
   @override
   String get btnReviewLater => 'مراجعة لاحقاً';
@@ -1199,7 +1199,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String pointsPlusValue(int points) {
-    return '+$points نقطة';
+    return '+$points علامة';
   }
 
   @override
@@ -1214,7 +1214,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get pointsEarnedLabel => 'النقاط المكتسبة';
+  String get pointsEarnedLabel => 'العلامات المكتسبة';
 
   @override
   String get timeElapsedLabel => 'الوقت المستغرق';
@@ -1232,6 +1232,33 @@ class AppLocalizationsAr extends AppLocalizations {
   String yourAnswerPrefix(String answer) {
     return 'إجابتك: $answer';
   }
+
+  @override
+  String quizClosesInDays(int days) {
+    return 'ينتهي خلال $days أيام';
+  }
+
+  @override
+  String get quizClosesToday => 'ينتهي اليوم';
+
+  @override
+  String quizOpensOn(String date) {
+    return 'يفتح في $date';
+  }
+
+  @override
+  String get quizClosed => 'مغلق';
+
+  @override
+  String get quizWindowClosedError =>
+      'هذا الاختبار مغلق لانتهاء فترة المشاركة المحددة.';
+
+  @override
+  String get quizNotStartedError =>
+      'لم يبدأ هذا الاختبار بعد. يرجى التحقق في تاريخ البدء.';
+
+  @override
+  String get quizComingSoon => 'الاختبار قريباً';
 
   @override
   String correctAnswerPrefix(String answer) {
@@ -1440,7 +1467,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pointTxChallengeReward => 'مكافأة التحدي الشهري';
 
   @override
-  String get pointTxManualAdjustment => 'تعديل نقاط إداري';
+  String get pointTxManualAdjustment => 'تعديل علامات إداري';
 
   @override
   String helpfulVotesCount(int count) {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
-import '../../../../core/widgets/rx_network_image.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../../library/domain/entities/material_item_entity.dart';
 import '../../../library/presentation/screens/edetail_viewer_screen.dart';
@@ -71,6 +70,9 @@ class WhatsNewSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayMaterials = materials.take(3).toList();
+    if (displayMaterials.isEmpty) return const SizedBox.shrink();
+
     final colors = context.rxColors;
     final textTheme = Theme.of(context).textTheme;
     final l10n = context.l10n;
@@ -129,14 +131,14 @@ class WhatsNewSection extends StatelessWidget {
             child: ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: materials.length,
+              itemCount: displayMaterials.length,
               separatorBuilder: (context, index) => Divider(
                 height: 1.0,
                 thickness: RxShadows.hairlineBorderWidth,
                 color: colors.border,
               ),
               itemBuilder: (context, index) {
-                final item = materials[index];
+                final item = displayMaterials[index];
                 final isNew = item.badgeType == MaterialBadgeType.newRelease;
 
                 return InkWell(
@@ -205,7 +207,9 @@ class WhatsNewSection extends StatelessWidget {
                         const SizedBox(width: RxSpacing.s8),
                         StatusBadge(
                           label: isNew ? l10n.badgeNew : l10n.badgeUpdated,
-                          variant: isNew ? StatusBadgeVariant.brandRed : StatusBadgeVariant.neutral,
+                          variant: (isNew && index == 0)
+                              ? StatusBadgeVariant.brandRed
+                              : StatusBadgeVariant.neutral,
                         ),
                       ],
                     ),

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/storage/local_cache_service.dart';
+import '../../../challenges/presentation/controllers/challenges_controller.dart';
 import '../../../home/presentation/controllers/home_controller.dart';
 import '../../../profile/presentation/controllers/profile_controller.dart';
 import '../../domain/entities/learning_entities.dart';
@@ -51,8 +52,10 @@ class LearnController extends AutoDisposeAsyncNotifier<List<ProductLearningEntit
         });
         ref.read(localCacheServiceProvider).remove('rxedge_home_dashboard');
         ref.read(localCacheServiceProvider).remove('user_profile_cache');
+        ref.read(localCacheServiceProvider).remove('rxedge_active_challenge');
         ref.read(homeControllerProvider.notifier).refresh();
         ref.read(profileControllerProvider.notifier).refresh();
+        ref.read(challengesControllerProvider.notifier).refresh();
       },
       failure: (_) {
         // Leave current state as is

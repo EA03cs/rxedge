@@ -125,7 +125,7 @@ void main() {
       expect(find.text('Quiz Completed'), findsOneWidget);
       expect(find.text('Clinical Mastery Achieved'), findsOneWidget); // High score subtle celebration
       expect(find.text('2 of 2 Questions Correct'), findsOneWidget);
-      expect(find.text('+30 Pts'), findsOneWidget); // 2*10 + 10 bonus
+      expect(find.text('+30 Marks'), findsOneWidget); // 2*10 + 10 bonus
 
       // 3 Actions Present
       expect(find.text('Review Mistakes'), findsOneWidget);

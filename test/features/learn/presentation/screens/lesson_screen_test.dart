@@ -6,15 +6,20 @@ import 'package:rxedge/app/l10n/l10n.dart';
 import 'package:rxedge/app/theme/theme.dart';
 import 'package:rxedge/core/utils/result.dart';
 import 'package:rxedge/core/widgets/widgets.dart';
+import 'package:rxedge/features/challenges/domain/entities/challenges_entities.dart';
+import 'package:rxedge/features/challenges/domain/repositories/challenges_repository.dart';
+import 'package:rxedge/features/challenges/data/repositories/challenges_repository_impl.dart';
 import 'package:rxedge/features/learn/data/repositories/learn_repository_impl.dart';
 import 'package:rxedge/features/learn/domain/entities/learning_entities.dart';
 import 'package:rxedge/features/learn/domain/repositories/learn_repository.dart';
 import 'package:rxedge/features/learn/presentation/screens/lesson_screen.dart';
 
 class MockLearnRepository extends Mock implements LearnRepository {}
+class MockChallengesRepository extends Mock implements ChallengesRepository {}
 
 void main() {
   late MockLearnRepository mockRepo;
+  late MockChallengesRepository mockChallengesRepo;
 
   const sampleLesson = LessonEntity(
     id: 'les_test_01',
@@ -51,16 +56,60 @@ void main() {
     lessons: [sampleLesson],
   );
 
+  const sampleQuiz = QuickQuizEntity(
+    id: 'quiz_cxl_01',
+    lessonId: 'les_test_01',
+    title: 'Cardura XL ABPM Study',
+    category: 'Cardiovascular',
+    durationMinutes: 3,
+    rewardPoints: 50,
+    questions: [],
+  );
+
+  final sampleChallenge = MonthlyChallengeEntity(
+    id: 'ch_1',
+    title: 'Challenge',
+    deadline: DateTime(2026, 11, 30),
+    rules: const [],
+    currentProgress: 0.5,
+    completedMilestones: 1,
+    totalMilestones: 2,
+    userRank: 1,
+    totalParticipants: 10,
+    rewards: const [],
+    leaderboard: const [],
+  );
+
+  const sampleObjection = ObjectionOfTheMonthEntity(
+    id: 'obj_1',
+    doctorQuote: 'Quote',
+    doctorName: 'Dr. Test',
+    doctorSpecialty: 'Cardio',
+    productConcerned: 'Cardura XL',
+    recommendedResponse: 'Response',
+    talkingPoints: [],
+    studyReference: 'Study',
+    helpfulCount: 1,
+  );
+
   setUp(() {
     mockRepo = MockLearnRepository();
+    mockChallengesRepo = MockChallengesRepository();
     when(() => mockRepo.getProducts(forceRefresh: any(named: 'forceRefresh')))
         .thenAnswer((_) async => const Result.success([sampleProduct]));
+    when(() => mockChallengesRepo.getMonthlyChallenge(forceRefresh: any(named: 'forceRefresh')))
+        .thenAnswer((_) async => Result.success(sampleChallenge));
+    when(() => mockChallengesRepo.getQuickQuizzes(forceRefresh: any(named: 'forceRefresh')))
+        .thenAnswer((_) async => const Result.success([sampleQuiz]));
+    when(() => mockChallengesRepo.getObjectionOfTheMonth(forceRefresh: any(named: 'forceRefresh')))
+        .thenAnswer((_) async => const Result.success(sampleObjection));
   });
 
   Widget buildTestWidget({required LessonEntity lesson}) {
     return ProviderScope(
       overrides: [
         learnRepositoryProvider.overrideWithValue(mockRepo),
+        challengesRepositoryProvider.overrideWithValue(mockChallengesRepo),
       ],
       child: MaterialApp(
         theme: RxTheme.light(),
@@ -133,7 +182,32 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Clinical Recall Quiz'), findsOneWidget);
-      expect(find.text('Start Quiz Now (+50 Pts)'), findsOneWidget);
+      expect(find.text('Start Quiz Now (+50 Marks)'), findsOneWidget);
+    });
+
+    testWidgets('when no quiz matches lesson, dialog shows Quiz coming soon and does not fall back to other product quiz', (tester) async {
+      when(() => mockRepo.markLessonCompleted('les_test_01')).thenAnswer(
+        (_) async => Result.success(sampleLesson.copyWith(isCompleted: true)),
+      );
+      when(() => mockChallengesRepo.getQuickQuizzes(forceRefresh: any(named: 'forceRefresh')))
+          .thenAnswer((_) async => const Result.success([]));
+
+      await tester.pumpWidget(buildTestWidget(lesson: sampleLesson));
+      await tester.pumpAndSettle();
+
+      final markCompleteBtn = find.text('Mark as complete');
+      await tester.ensureVisible(markCompleteBtn);
+      await tester.tap(markCompleteBtn);
+      await tester.pumpAndSettle();
+
+      final takeQuizBtn = find.text('Take quick quiz');
+      await tester.ensureVisible(takeQuizBtn);
+      await tester.tap(takeQuizBtn);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Clinical Recall Quiz'), findsOneWidget);
+      expect(find.text('Quiz coming soon'), findsOneWidget);
+      expect(find.text('Start Quiz Now'), findsNothing);
     });
   });
 }

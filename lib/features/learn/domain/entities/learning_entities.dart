@@ -230,6 +230,19 @@ class ProductLearningEntity {
   bool get isCompleted =>
       totalLessonsCount > 0 && completedLessonsCount == totalLessonsCount;
 
+  String? get defaultAssetBanner {
+    final lower = name.toLowerCase();
+    if (lower.contains('cardura')) return 'assets/images/cardura_xl.png';
+    if (lower.contains('atorva')) return 'assets/images/atorvacare.png';
+    if (lower.contains('gluco')) return 'assets/images/glucobalance.png';
+    if (lower.contains('dry aid') || lower.contains('dry-aid')) {
+      return 'assets/images/rohto_dry_aid.png';
+    }
+    if (lower.contains('cool')) return 'assets/images/rohto_cool.png';
+    if (lower.contains('aqua')) return 'assets/images/rohto_aqua.png';
+    return null;
+  }
+
   ProductLearningEntity copyWith({
     String? id,
     String? name,

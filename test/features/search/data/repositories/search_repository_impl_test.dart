@@ -16,8 +16,8 @@ void main() {
   });
 
   group('SearchRepositoryImpl Tests', () {
-    test('search returns matching grouped items for Cardura', () async {
-      final result = await repository.search('Cardura');
+    test('search returns matching grouped items for Rohto', () async {
+      final result = await repository.search('Rohto');
 
       expect(result.isSuccess, isTrue);
       result.when(
@@ -42,14 +42,14 @@ void main() {
 
     test('recent searches CRUD operations update cache', () async {
       when(() => mockCache.get<List<String>>('rxedge_recent_searches'))
-          .thenReturn(['Cardura XL', 'Dosing']);
+          .thenReturn(['Rohto Dry Aid', 'Dosing']);
       when(() => mockCache.put<List<String>>('rxedge_recent_searches', any()))
           .thenAnswer((_) {});
 
       final recents = await repository.getRecentSearches();
       expect(recents.isSuccess, isTrue);
 
-      await repository.addRecentSearch('AtorvaCare');
+      await repository.addRecentSearch('Rohto Cool');
       verify(() => mockCache.put<List<String>>('rxedge_recent_searches', any())).called(1);
 
       await repository.clearRecentSearches();

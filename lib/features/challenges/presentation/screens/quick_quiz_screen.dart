@@ -204,17 +204,30 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
           setState(() => _isSubmitting = false);
           final isArabic = Localizations.localeOf(context).languageCode == 'ar';
           final errorText = FailureMessageMapper.map(context, failure);
-          final isConflict = failure.toString().contains('409') ||
-              failure.toString().contains('ATTEMPT_ALREADY_EXISTS');
+          final failStr = failure.toString();
+          final isConflict = failStr.contains('409') ||
+              failStr.contains('ATTEMPT_ALREADY_EXISTS');
+          final isWindowClosed = failStr.contains('QUIZ_WINDOW_CLOSED');
+          final isNotStarted = failStr.contains('QUIZ_NOT_STARTED');
+
+          String message = errorText;
+          if (isConflict) {
+            message = isArabic
+                ? 'عفواً، تم تسجيل محاولتك لهذا الاختبار مسبقاً بنجاح. لا يُسمح بإعادة الاختبار وفقاً لقواعد التحديات.'
+                : 'You have already attempted this quiz. Retakes are not permitted per challenge policy.';
+          } else if (isWindowClosed) {
+            message = isArabic
+                ? 'هذا الاختبار مغلق لانتهاء فترة المشاركة المحددة.'
+                : 'This quiz is closed as the completion window has ended.';
+          } else if (isNotStarted) {
+            message = isArabic
+                ? 'لم يبدأ هذا الاختبار بعد. يرجى التحقق في تاريخ البدء.'
+                : 'This quiz has not started yet. Please check back on the start date.';
+          }
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
-                isConflict
-                    ? (isArabic
-                        ? 'عفواً، تم تسجيل محاولتك لهذا الاختبار مسبقاً بنجاح. لا يُسمح بإعادة الاختبار وفقاً لقواعد التحديات.'
-                        : 'You have already attempted this quiz. Retakes are not permitted per challenge policy.')
-                    : errorText,
-              ),
+              content: Text(message),
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -774,8 +787,8 @@ class _QuickQuizScreenState extends ConsumerState<QuickQuizScreen> {
                           Expanded(
                             child: Text(
                               isArabic
-                                  ? 'تنبيه النقاط: تُمنح نقاط هذا الاختبار (+${_quiz.rewardPoints > 0 ? _quiz.rewardPoints : 30} نقطة) عند أول اجتياز ناجح فقط منعاً للتكرار، والمحاولات الإضافية تُسجل كمراجعة وتثبيت للمعلومات الإكلينيكية.'
-                                  : 'Points Note: Quiz reward points (+${_quiz.rewardPoints > 0 ? _quiz.rewardPoints : 30} pts) are awarded once upon first pass. Additional attempts serve as clinical refresher and practice.',
+                                  ? 'تنبيه علامات التحدي: تُمنح علامات هذا الاختبار${_quiz.rewardPoints > 0 ? ' (+${_quiz.rewardPoints} علامة)' : ''} عند أول اجتياز ناجح فقط منعاً للتكرار، والمحاولات الإضافية تُسجل كمراجعة وتثبيت للمعلومات الإكلينيكية.'
+                                  : 'Marks Note: Quiz challenge marks${_quiz.rewardPoints > 0 ? ' (+${_quiz.rewardPoints} Marks)' : ''} are awarded once upon first pass. Additional attempts serve as clinical refresher and practice.',
                               style: textTheme.bodySmall?.copyWith(
                                 color: colors.textSecondary,
                                 fontSize: 11.5,

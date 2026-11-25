@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import '../../core/widgets/widgets.dart';
 import '../../features/app_info/presentation/screens/app_info_screen.dart';
 import '../../features/auth/presentation/controllers/auth_controller.dart';
@@ -207,11 +206,31 @@ final routerProvider = Provider<GoRouter>((ref) {
                       initialLocation: index == 0 || index == navigationShell.currentIndex,
                     ),
                     items: [
-                      NavItemData(icon: LucideIcons.home, label: l10n.tabHome),
-                      NavItemData(icon: LucideIcons.graduationCap, label: l10n.tabLearn),
-                      NavItemData(icon: LucideIcons.bookOpen, label: l10n.tabLibrary),
-                      NavItemData(icon: LucideIcons.award, label: l10n.tabChallenges),
-                      NavItemData(icon: LucideIcons.messageSquare, label: l10n.tabFeedback),
+                      NavItemData(
+                        icon: Icons.home_outlined,
+                        activeIcon: Icons.home_rounded,
+                        label: l10n.tabHome,
+                      ),
+                      NavItemData(
+                        icon: Icons.school_outlined,
+                        activeIcon: Icons.school_rounded,
+                        label: l10n.tabLearn,
+                      ),
+                      NavItemData(
+                        icon: Icons.folder_outlined,
+                        activeIcon: Icons.folder_rounded,
+                        label: l10n.tabLibrary,
+                      ),
+                      NavItemData(
+                        icon: Icons.emoji_events_outlined,
+                        activeIcon: Icons.emoji_events_rounded,
+                        label: l10n.tabChallenges,
+                      ),
+                      NavItemData(
+                        icon: Icons.chat_bubble_outline_rounded,
+                        activeIcon: Icons.chat_bubble_rounded,
+                        label: l10n.tabFeedback,
+                      ),
                     ],
                   ),
                 ),

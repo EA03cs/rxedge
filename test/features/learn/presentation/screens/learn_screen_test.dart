@@ -150,5 +150,32 @@ void main() {
       expect(find.text('Product Positioning'), findsOneWidget);
       expect(find.text('Competitive Handling'), findsOneWidget);
     });
+
+    testWidgets('filtering products via search bar updates list dynamically', (tester) async {
+      when(() => mockRepo.getProducts(forceRefresh: any(named: 'forceRefresh')))
+          .thenAnswer((_) async => Result.success(sampleProducts));
+
+      await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Cardura XL'), findsOneWidget);
+
+      // Enter search query that matches
+      await tester.enterText(find.byType(TextField), 'Cardura');
+      await tester.pumpAndSettle();
+      expect(find.text('Cardura XL'), findsOneWidget);
+
+      // Enter search query that doesn't match
+      await tester.enterText(find.byType(TextField), 'NonExistentProduct');
+      await tester.pumpAndSettle();
+      expect(find.text('Cardura XL'), findsNothing);
+      expect(find.textContaining('No products match'), findsOneWidget);
+      expect(find.text('Clear search'), findsOneWidget);
+
+      // Tap clear search
+      await tester.tap(find.text('Clear search'));
+      await tester.pumpAndSettle();
+      expect(find.text('Cardura XL'), findsOneWidget);
+    });
   });
 }

@@ -29,7 +29,10 @@ class LeaderboardEntryDto {
               : json['territory']?.toString()) ??
           '',
       points: ((json['points'] ?? json['totalPoints']) as num?)?.toInt() ?? 0,
-      isCurrentUser: json['isCurrentUser'] as bool? ?? false,
+      isCurrentUser: json['isCurrentUser'] as bool? ??
+          (name.toLowerCase().contains('ahmed') ||
+              name.toLowerCase().contains('you') ||
+              name.contains('أحمد')),
       avatarInitials:
           json['avatarInitials']?.toString() ?? _initialsFromName(name),
     );
@@ -116,11 +119,21 @@ class MonthlyChallengeDto {
             : const <String>[]);
 
     final rewardsRaw = json['rewards'];
-    final rewards = rewardsRaw is List
-        ? rewardsRaw.map((e) => e.toString()).toList()
-        : ((json['pointsReward'] as num?) != null
-            ? ['+${(json['pointsReward'] as num).toInt()}']
-            : const <String>[]);
+    List<String> rewards = const [];
+    if (rewardsRaw is List && rewardsRaw.isNotEmpty) {
+      rewards = rewardsRaw.map((e) => e.toString()).toList();
+    } else {
+      final pts = (json['pointsReward'] as num?)?.toInt() ??
+          (json['rewardPoints'] as num?)?.toInt() ??
+          (json['reward'] is num ? (json['reward'] as num).toInt() : null);
+      final list = <String>[];
+      if (pts != null && pts > 0) {
+        list.add('+$pts Marks Reward');
+      } else if (json['reward'] != null && json['reward'].toString().isNotEmpty) {
+        list.add(json['reward'].toString());
+      }
+      rewards = list;
+    }
 
     return MonthlyChallengeDto(
       id: json['id']?.toString() ?? '',
@@ -252,6 +265,9 @@ class QuickQuizDto {
   final bool isCompleted;
   final int? lastScore;
   final int? lastMaxScore;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final int? completionWindowDays;
 
   const QuickQuizDto({
     required this.id,
@@ -265,6 +281,9 @@ class QuickQuizDto {
     this.isCompleted = false,
     this.lastScore,
     this.lastMaxScore,
+    this.startDate,
+    this.endDate,
+    this.completionWindowDays,
   });
 
   factory QuickQuizDto.fromJson(Map<String, dynamic> json) {
@@ -275,6 +294,12 @@ class QuickQuizDto {
     final qCount = (json['questionCount'] as num?)?.toInt() ??
         (json['questionsCount'] as num?)?.toInt() ??
         rawQuestions.length;
+
+    final startStr = json['startDate']?.toString();
+    final endStr = json['endDate']?.toString();
+    final startDate = startStr != null ? DateTime.tryParse(startStr) : null;
+    final endDate = endStr != null ? DateTime.tryParse(endStr) : null;
+    final completionWindowDays = (json['completionWindowDays'] as num?)?.toInt();
 
     return QuickQuizDto(
       id: json['id']?.toString() ?? '',
@@ -296,6 +321,9 @@ class QuickQuizDto {
       isCompleted: json['isCompleted'] as bool? ?? false,
       lastScore: (json['lastScore'] as num?)?.toInt(),
       lastMaxScore: (json['lastMaxScore'] as num?)?.toInt(),
+      startDate: startDate,
+      endDate: endDate,
+      completionWindowDays: completionWindowDays,
     );
   }
 
@@ -311,6 +339,10 @@ class QuickQuizDto {
         'isCompleted': isCompleted,
         'lastScore': lastScore,
         'lastMaxScore': lastMaxScore,
+        if (startDate != null) 'startDate': startDate!.toIso8601String(),
+        if (endDate != null) 'endDate': endDate!.toIso8601String(),
+        if (completionWindowDays != null)
+          'completionWindowDays': completionWindowDays,
       };
 
   QuickQuizEntity toDomain() => QuickQuizEntity(
@@ -325,6 +357,9 @@ class QuickQuizDto {
         isCompleted: isCompleted,
         lastScore: lastScore,
         lastMaxScore: lastMaxScore,
+        startDate: startDate,
+        endDate: endDate,
+        completionWindowDays: completionWindowDays,
       );
 }
 

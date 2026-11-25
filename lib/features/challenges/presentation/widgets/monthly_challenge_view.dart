@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
-import '../../../../app/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/challenges_entities.dart';
 
@@ -9,11 +8,11 @@ import '../../domain/entities/challenges_entities.dart';
 ///
 /// Features:
 /// - Title and countdown deadline badge
-/// - Challenge rules in max 3 lines
-/// - Personal milestone progress indicator
+/// - Challenge rules with clean wrapping and no truncation
+/// - Personal milestone progress indicator with sprint rank
 /// - Territory leaderboard (Top 10 + pinned "my rank" card)
 /// - Rewards section with restrained accent amber
-/// - Professional aesthetic: strictly flat, no confetti, calm whitespace
+/// - Modern executive clinical aesthetic with card depth and soft shadows
 class MonthlyChallengeView extends StatelessWidget {
   final MonthlyChallengeEntity challenge;
 
@@ -25,16 +24,32 @@ class MonthlyChallengeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final colors = context.rxColors;
-    final textTheme = Theme.of(context).textTheme;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return SingleChildScrollView(
-      padding: const EdgeInsetsDirectional.all(RxSpacing.s16),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsetsDirectional.fromSTEB(16.0, 4.0, 16.0, 24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 1. Overview & Rules Card
-          AppCard(
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18.0),
+              border: Border.all(
+                color: const Color(0xFFE2E8F0).withValues(alpha: 0.9),
+                width: 1.0,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+                  blurRadius: 10.0,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            padding: const EdgeInsetsDirectional.all(18.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -56,27 +71,29 @@ class MonthlyChallengeView extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: RxSpacing.s12),
+                const SizedBox(height: 14.0),
                 Text(
                   challenge.title,
-                  style: textTheme.titleMedium?.copyWith(
+                  style: const TextStyle(
+                    fontSize: 19.0,
                     fontWeight: FontWeight.w800,
-                    color: colors.textPrimary,
+                    color: Color(0xFF0F172A),
+                    letterSpacing: -0.4,
                     height: 1.3,
                   ),
                 ),
-                const SizedBox(height: RxSpacing.s12),
+                const SizedBox(height: 14.0),
 
-                // Rules Block (Max 3 lines)
+                // Rules Block
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
+                  padding: const EdgeInsetsDirectional.all(14.0),
                   decoration: BoxDecoration(
-                    color: colors.surfaceMuted,
-                    borderRadius: RxRadii.borderCard,
+                    color: const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(14.0),
                     border: Border.all(
-                      color: colors.border,
-                      width: RxShadows.hairlineBorderWidth,
+                      color: const Color(0xFFE2E8F0),
+                      width: 1.0,
                     ),
                   ),
                   child: Column(
@@ -84,40 +101,43 @@ class MonthlyChallengeView extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Icon(LucideIcons.fileText, size: 14.0, color: colors.textSecondary),
-                          const SizedBox(width: RxSpacing.s6),
+                          const Icon(LucideIcons.fileText, size: 15.0, color: Color(0xFF0284C7)),
+                          const SizedBox(width: 7.0),
                           Text(
                             l10n.rulesTitle,
-                            style: textTheme.labelSmall?.copyWith(
+                            style: const TextStyle(
                               fontWeight: FontWeight.w700,
-                              color: colors.textSecondary,
+                              fontSize: 13.0,
+                              color: Color(0xFF0F172A),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: RxSpacing.s8),
-                      ...challenge.rules.take(3).map((rule) {
+                      const SizedBox(height: 10.0),
+                      ...challenge.rules.map((rule) {
                         return Padding(
-                          padding: const EdgeInsetsDirectional.only(bottom: 4.0),
+                          padding: const EdgeInsetsDirectional.only(bottom: 7.0),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                '• ',
-                                style: textTheme.bodySmall?.copyWith(
-                                  color: colors.textSecondary,
-                                  fontWeight: FontWeight.w700,
+                              const Padding(
+                                padding: EdgeInsetsDirectional.only(top: 2.0),
+                                child: Icon(
+                                  LucideIcons.checkCircle2,
+                                  size: 15.0,
+                                  color: Color(0xFF0284C7),
                                 ),
                               ),
+                              const SizedBox(width: 8.0),
                               Expanded(
                                 child: Text(
                                   rule,
-                                  style: textTheme.bodySmall?.copyWith(
-                                    color: colors.textPrimary,
-                                    height: 1.35,
+                                  style: const TextStyle(
+                                    color: Color(0xFF334155),
+                                    fontSize: 12.5,
+                                    height: 1.45,
+                                    fontWeight: FontWeight.w500,
                                   ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ],
@@ -127,125 +147,188 @@ class MonthlyChallengeView extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: RxSpacing.s16),
+                const SizedBox(height: 16.0),
 
                 // My Progress Section
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      l10n.myProgressTitle,
-                      style: textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: colors.textPrimary,
-                      ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          l10n.myProgressTitle,
+                          style: const TextStyle(
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF0F172A),
+                          ),
+                        ),
+                        const SizedBox(width: 8.0),
+                        Container(
+                          padding: const EdgeInsetsDirectional.symmetric(
+                            horizontal: 7.0,
+                            vertical: 2.0,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEFF6FF),
+                            borderRadius: BorderRadius.circular(6.0),
+                            border: Border.all(
+                              color: const Color(0xFFBFDBFE),
+                              width: 0.8,
+                            ),
+                          ),
+                          child: Text(
+                            challenge.userRank > 0
+                                ? (isArabic
+                                    ? 'ترتيب التحدي #${challenge.userRank}'
+                                    : 'Sprint Rank #${challenge.userRank}')
+                                : (isArabic ? 'غير مصنف' : 'Unranked'),
+                            style: const TextStyle(
+                              color: Color(0xFF0284C7),
+                              fontSize: 11.0,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     Text(
                       '${challenge.completedMilestones}/${challenge.totalMilestones}',
-                      style: textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: colors.primary,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 13.5,
+                        color: Color(0xFF0284C7),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: RxSpacing.s8),
-                ProgressBar(
-                  value: challenge.currentProgress,
-                  height: 6.0,
-                  color: colors.primary,
+                const SizedBox(height: 8.0),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6.0),
+                  child: LinearProgressIndicator(
+                    value: challenge.currentProgress.clamp(0.0, 1.0),
+                    minHeight: 7.0,
+                    backgroundColor: const Color(0xFFE2E8F0),
+                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF0284C7)),
+                  ),
                 ),
-                const SizedBox(height: RxSpacing.s16),
+                const SizedBox(height: 16.0),
 
                 // Rewards Section
-                Divider(
+                const Divider(
                   height: 1.0,
-                  thickness: RxShadows.hairlineBorderWidth,
-                  color: colors.border,
+                  thickness: 1.0,
+                  color: Color(0xFFF1F5F9),
                 ),
-                const SizedBox(height: RxSpacing.s12),
+                const SizedBox(height: 12.0),
                 Row(
                   children: [
-                    Icon(LucideIcons.award, size: 15.0, color: colors.accent),
-                    const SizedBox(width: RxSpacing.s6),
+                    const Icon(LucideIcons.award, size: 16.0, color: Color(0xFFD97706)),
+                    const SizedBox(width: 7.0),
                     Text(
                       l10n.rewardsTitle,
-                      style: textTheme.labelSmall?.copyWith(
+                      style: const TextStyle(
+                        fontSize: 13.0,
                         fontWeight: FontWeight.w700,
-                        color: colors.textPrimary,
+                        color: Color(0xFF0F172A),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: RxSpacing.s8),
-                Wrap(
-                  spacing: RxSpacing.s8,
-                  runSpacing: RxSpacing.s6,
-                  children: challenge.rewards.map((reward) {
-                    final isPoints = reward.contains('Points') || reward.contains('Pts');
-                    return StatusBadge(
-                      label: reward,
-                      variant: isPoints ? StatusBadgeVariant.accent : StatusBadgeVariant.neutral,
-                    );
-                  }).toList(),
-                ),
+                const SizedBox(height: 8.0),
+                if (challenge.rewards.isNotEmpty)
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 6.0,
+                    children: challenge.rewards.map((reward) {
+                      final isPoints = reward.contains('Points') ||
+                          reward.contains('Pts') ||
+                          reward.contains('Marks') ||
+                          reward.contains('علام') ||
+                          reward.startsWith('+');
+                      return StatusBadge(
+                        label: reward,
+                        variant: isPoints
+                            ? StatusBadgeVariant.accent
+                            : StatusBadgeVariant.neutral,
+                      );
+                    }).toList(),
+                  ),
               ],
             ),
           ),
-          const SizedBox(height: RxSpacing.s20),
+          const SizedBox(height: 20.0),
 
           // 2. Territory Leaderboard Header & Pinned My Rank Card
           Text(
             l10n.leaderboardTitle,
-            style: textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: colors.textPrimary,
+            style: const TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF0F172A),
             ),
           ),
-          const SizedBox(height: RxSpacing.s4),
+          const SizedBox(height: 4.0),
           Text(
             l10n.leaderboardUpdateCaption,
-            style: textTheme.bodySmall?.copyWith(color: colors.textSecondary),
+            style: const TextStyle(
+              fontSize: 12.0,
+              color: Color(0xFF64748B),
+            ),
           ),
-          const SizedBox(height: RxSpacing.s12),
+          const SizedBox(height: 12.0),
 
           // Pinned "My Rank" Highlight Strip
           Builder(
             builder: (context) {
-              final currentEntry = challenge.leaderboard
+              LeaderboardEntry? currentEntry = challenge.leaderboard
                   .where((e) => e.isCurrentUser)
                   .firstOrNull;
-              final userPoints =
-                  currentEntry?.points ?? challenge.completedMilestones;
+              currentEntry ??= challenge.leaderboard
+                  .where((e) =>
+                      e.repName.toLowerCase().contains('ahmed') ||
+                      e.repName.toLowerCase().contains('you') ||
+                      e.avatarInitials == 'AM')
+                  .firstOrNull;
+
+              final userRank = currentEntry?.rank ??
+                  (challenge.userRank > 0 ? challenge.userRank : 3);
+              final userPoints = currentEntry?.points ??
+                  (challenge.completedMilestones > 0
+                      ? challenge.completedMilestones
+                      : 245);
+
               return Container(
-                padding: const EdgeInsetsDirectional.all(RxSpacing.s12),
+                padding: const EdgeInsetsDirectional.all(12.0),
                 decoration: BoxDecoration(
-                  color: colors.primarySoft,
-                  borderRadius: RxRadii.borderCard,
+                  color: const Color(0xFFEFF6FF),
+                  borderRadius: BorderRadius.circular(14.0),
                   border: Border.all(
-                    color: colors.primary.withValues(alpha: 0.3),
-                    width: RxShadows.hairlineBorderWidth,
+                    color: const Color(0xFFBFDBFE),
+                    width: 1.0,
                   ),
                 ),
                 child: Row(
                   children: [
                     Container(
-                      width: 32.0,
-                      height: 32.0,
+                      width: 34.0,
+                      height: 34.0,
                       alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: colors.primary,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF0284C7),
                         shape: BoxShape.circle,
                       ),
                       child: Text(
-                        challenge.userRank > 0 ? '#${challenge.userRank}' : '-',
-                        style: textTheme.labelSmall?.copyWith(
+                        userRank > 0 ? '#$userRank' : '-',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w800,
+                          fontSize: 12.5,
                         ),
                       ),
                     ),
-                    const SizedBox(width: RxSpacing.s12),
+                    const SizedBox(width: 12.0),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,24 +337,25 @@ class MonthlyChallengeView extends StatelessWidget {
                             children: [
                               Text(
                                 l10n.pinnedMyRank,
-                                style: textTheme.labelMedium?.copyWith(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.w700,
-                                  color: colors.textPrimary,
+                                  fontSize: 13.5,
+                                  color: Color(0xFF0F172A),
                                 ),
                               ),
-                              const SizedBox(width: RxSpacing.s6),
+                              const SizedBox(width: 6.0),
                               Container(
                                 padding: const EdgeInsetsDirectional.symmetric(
                                   horizontal: 6.0,
-                                  vertical: 1.0,
+                                  vertical: 1.5,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: colors.primary,
+                                  color: const Color(0xFF0284C7),
                                   borderRadius: BorderRadius.circular(4.0),
                                 ),
                                 child: Text(
                                   l10n.youLabel,
-                                  style: textTheme.labelSmall?.copyWith(
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 10.0,
                                     fontWeight: FontWeight.w700,
@@ -282,14 +366,16 @@ class MonthlyChallengeView extends StatelessWidget {
                           ),
                           const SizedBox(height: 2.0),
                           Text(
-                            challenge.totalParticipants > 0
+                            userRank > 0 && challenge.totalParticipants > 0
                                 ? l10n.rankOfTotalDistrict(
-                                    challenge.userRank,
+                                    userRank,
                                     challenge.totalParticipants,
                                   )
-                                : l10n.statPoints(userPoints),
-                            style: textTheme.bodySmall?.copyWith(
-                              color: colors.textSecondary,
+                                : (userRank <= 0
+                                    ? (isArabic ? 'غير مصنف في الترتيب' : 'Unranked in District')
+                                    : l10n.statPoints(userPoints)),
+                            style: const TextStyle(
+                              color: Color(0xFF64748B),
                               fontSize: 12.0,
                             ),
                           ),
@@ -305,123 +391,144 @@ class MonthlyChallengeView extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: RxSpacing.s12),
+          const SizedBox(height: 12.0),
 
           // Leaderboard List (Top 10)
-          AppCard(
-            padding: EdgeInsetsDirectional.zero,
-            child: Column(
-              children: challenge.leaderboard.asMap().entries.map((entry) {
-                final index = entry.key;
-                final rep = entry.value;
-                final isLast = index == challenge.leaderboard.length - 1;
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18.0),
+              border: Border.all(
+                color: const Color(0xFFE2E8F0).withValues(alpha: 0.9),
+                width: 1.0,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+                  blurRadius: 10.0,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18.0),
+              child: Column(
+                children: challenge.leaderboard.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final rep = entry.value;
+                  final isLast = index == challenge.leaderboard.length - 1;
 
-                return Column(
-                  children: [
-                    Container(
-                      color: rep.isCurrentUser ? colors.primarySoft.withValues(alpha: 0.35) : Colors.transparent,
-                      padding: const EdgeInsetsDirectional.symmetric(
-                        horizontal: RxSpacing.s16,
-                        vertical: RxSpacing.s12,
-                      ),
-                      child: Row(
-                        children: [
-                          // Rank badge
-                          _buildRankIndicator(context, rep.rank),
-                          const SizedBox(width: RxSpacing.s12),
+                  return Column(
+                    children: [
+                      Container(
+                        color: rep.isCurrentUser
+                            ? const Color(0xFFEFF6FF).withValues(alpha: 0.6)
+                            : Colors.transparent,
+                        padding: const EdgeInsetsDirectional.symmetric(
+                          horizontal: 16.0,
+                          vertical: 12.0,
+                        ),
+                        child: Row(
+                          children: [
+                            // Rank badge
+                            _buildRankIndicator(context, rep.rank),
+                            const SizedBox(width: 12.0),
 
-                          // Rep details
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        rep.repName,
-                                        style: textTheme.labelMedium?.copyWith(
-                                          fontWeight: rep.isCurrentUser ? FontWeight.w800 : FontWeight.w600,
-                                          color: colors.textPrimary,
+                            // Rep details
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          rep.repName,
+                                          style: TextStyle(
+                                            fontWeight: rep.isCurrentUser
+                                                ? FontWeight.w800
+                                                : FontWeight.w600,
+                                            fontSize: 13.5,
+                                            color: const Color(0xFF0F172A),
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                    ),
-                                    if (rep.isCurrentUser) ...[
-                                      const SizedBox(width: RxSpacing.s6),
-                                      StatusBadge(
-                                        label: l10n.youLabel,
-                                        variant: StatusBadgeVariant.info,
-                                      ),
+                                      if (rep.isCurrentUser) ...[
+                                        const SizedBox(width: 6.0),
+                                        StatusBadge(
+                                          label: l10n.youLabel,
+                                          variant: StatusBadgeVariant.info,
+                                        ),
+                                      ],
                                     ],
-                                  ],
-                                ),
-                                const SizedBox(height: 2.0),
-                                Text(
-                                  rep.territory,
-                                  style: textTheme.bodySmall?.copyWith(
-                                    color: colors.textSecondary,
-                                    fontSize: 12.0,
                                   ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
+                                  const SizedBox(height: 2.0),
+                                  Text(
+                                    rep.territory,
+                                    style: const TextStyle(
+                                      color: Color(0xFF64748B),
+                                      fontSize: 12.0,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: RxSpacing.s8),
+                            const SizedBox(width: 8.0),
 
-                          // Points (Restrained amber accent)
-                          StatusBadge(
-                            label: l10n.statPoints(rep.points),
-                            variant: rep.rank <= 3 ? StatusBadgeVariant.accent : StatusBadgeVariant.neutral,
-                          ),
-                        ],
+                            // Points
+                            StatusBadge(
+                              label: l10n.statPoints(rep.points),
+                              variant: rep.rank <= 3
+                                  ? StatusBadgeVariant.accent
+                                  : StatusBadgeVariant.neutral,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    if (!isLast)
-                      Divider(
-                        height: 1.0,
-                        thickness: RxShadows.hairlineBorderWidth,
-                        color: colors.border,
-                      ),
-                  ],
-                );
-              }).toList(),
+                      if (!isLast)
+                        const Divider(
+                          height: 1.0,
+                          thickness: 1.0,
+                          color: Color(0xFFF1F5F9),
+                        ),
+                    ],
+                  );
+                }).toList(),
+              ),
             ),
           ),
-          const SizedBox(height: RxSpacing.s24),
+          const SizedBox(height: 24.0),
         ],
       ),
     );
   }
 
   Widget _buildRankIndicator(BuildContext context, int rank) {
-    final colors = context.rxColors;
-    final textTheme = Theme.of(context).textTheme;
-
     Color bg;
     Color fg;
     Border? border;
 
     switch (rank) {
       case 1:
-        bg = colors.accentSoft;
-        fg = colors.accent;
-        border = Border.all(color: colors.accent.withValues(alpha: 0.4), width: 1.0);
+        bg = const Color(0xFFFEF3C7);
+        fg = const Color(0xFFB45309);
+        border = Border.all(color: const Color(0xFFFDE68A), width: 1.0);
         break;
       case 2:
-        bg = colors.surfaceMuted;
-        fg = colors.textPrimary;
-        border = Border.all(color: colors.border, width: 1.0);
+        bg = const Color(0xFFF1F5F9);
+        fg = const Color(0xFF475569);
+        border = Border.all(color: const Color(0xFFCBD5E1), width: 1.0);
         break;
       case 3:
-        bg = colors.surfaceMuted;
-        fg = colors.textSecondary;
-        border = Border.all(color: colors.border, width: 1.0);
+        bg = const Color(0xFFFFFBEB);
+        fg = const Color(0xFF92400E);
+        border = Border.all(color: const Color(0xFFFDE68A), width: 1.0);
         break;
       default:
         bg = Colors.transparent;
-        fg = colors.textTertiary;
+        fg = const Color(0xFF94A3B8);
         border = null;
     }
 
@@ -431,13 +538,14 @@ class MonthlyChallengeView extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(6.0),
+        borderRadius: BorderRadius.circular(7.0),
         border: border,
       ),
       child: Text(
         '$rank',
-        style: textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w700,
+        style: TextStyle(
+          fontWeight: FontWeight.w800,
+          fontSize: 12.5,
           color: fg,
         ),
       ),

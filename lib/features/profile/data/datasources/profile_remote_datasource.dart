@@ -53,8 +53,8 @@ class ProfileRemoteDatasourceImpl implements ProfileRemoteDatasource {
         ),
         BadgeDto(
           id: 'badge_2',
-          name: 'Cardio Ace',
-          description: 'Completed 100% of Cardura XL clinical modules',
+          name: 'Ophthalmology Ace',
+          description: 'Completed 100% of Rohto Dry Aid clinical modules',
           earnedAtIso: DateTime(2026, 10, 28).toIso8601String(),
         ),
         BadgeDto(

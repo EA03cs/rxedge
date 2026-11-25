@@ -92,7 +92,7 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
       rules: const [
         'Complete all 3 core clinical quick quizzes with >= 80% passing score.',
         'Review the monthly physician objection and formulate your clinical talking points.',
-        'Top 3 district performers receive District Spotlight recognition and +500 Pts.',
+        'Top 3 district performers receive District Spotlight recognition and +500 Marks.',
       ],
       currentProgress: 0.72,
       completedMilestones: 5,
@@ -101,7 +101,7 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
       totalParticipants: 34,
       rewards: const [
         'District Honor Roll Certificate',
-        '+500 Professional Gamification Points',
+        '+500 Challenge Marks',
         'Territory Excellence Spotlight Badge',
       ],
       leaderboard: const [
@@ -130,14 +130,14 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
         LeaderboardEntryDto(
           rank: 4,
           repName: 'Omar Farooq',
-          territory: 'South District - Cardiology',
+          territory: 'South District - Ophthalmology',
           points: 1190,
           avatarInitials: 'OF',
         ),
         LeaderboardEntryDto(
           rank: 5,
           repName: 'Elena Rostova',
-          territory: 'Metro District - Urology',
+          territory: 'Metro District - Ophthalmology',
           points: 1150,
           avatarInitials: 'ER',
         ),
@@ -196,9 +196,9 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
 
     return [
       const QuickQuizDto(
-        id: 'quiz_crd_01',
-        title: 'Cardura XL Peak Efficacy & 24h ABPM Study',
-        category: 'Hypertension & BPH',
+        id: 'quiz_rda_01',
+        title: 'Rohto Dry Aid Advanced Tearshield Clinical Quiz',
+        category: 'Ophthalmology (Dry Eye)',
         durationMinutes: 3,
         rewardPoints: 50,
         isCompleted: true,
@@ -206,60 +206,60 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
         lastMaxScore: 4,
         questions: [
           QuizQuestionDto(
-            id: 'q_crd_01',
+            id: 'q_rda_01',
             question:
-                'What is the key pharmacokinetic advantage of Cardura XL GITS over conventional immediate-release doxazosin?',
+                'What is the primary mechanism of Tearshield Technology in Rohto Dry Aid?',
             options: [
-              'Rapid absorption with high 2-hour peak plasma spikes',
-              'Consistent 24-hour plasma plateau with zero peak-to-trough fluctuations',
-              'Exclusively renal clearance without hepatic metabolism',
-              'Twice-daily divided dosing for maximal vascular compliance',
+              'Temporary saline flush of ocular surface',
+              'Multi-layer restoration stabilizing the lipid, aqueous, and mucin layers',
+              'Induction of temporary corneal numbness',
+              'Pupil constriction for enhanced depth of field',
             ],
             correctOptionIndex: 1,
             explanation:
-                'GITS osmotic pump delivery ensures constant zero-order drug release, eliminating hypotensive peaks.',
+                'Tearshield Technology mimics natural tear composition across all 3 layers, locking in moisture for up to 12 hours.',
           ),
           QuizQuestionDto(
-            id: 'q_crd_02',
+            id: 'q_rda_02',
             question:
-                'In the PREDICT study, what was the primary 24-hour ambulatory blood pressure reduction achieved by Cardura XL?',
+                'What distinguishes Rohto Dry Aid from ordinary lubricating eye drops?',
             options: [
-              '6.2 mm Hg systolic reduction',
-              '10.5 mm Hg systolic reduction',
-              '14.2 mm Hg systolic reduction with early morning surge suppression',
-              '22.0 mm Hg diastolic reduction exclusively',
-            ],
-            correctOptionIndex: 2,
-            explanation:
-                'PREDICT demonstrated 14.2 mm Hg 24h systolic drop and effectively preserved nocturnal dipping.',
-          ),
-          QuizQuestionDto(
-            id: 'q_crd_03',
-            question:
-                'How should a physician address dose adjustments for an elderly hypertensive patient with Stage 3 CKD starting Cardura XL?',
-            options: [
-              'Reduce initial dose by 50% to 2mg every other day',
-              'No dose adjustment is required due to negligible renal clearance',
-              'Avoid Cardura XL completely in moderate renal impairment',
-              'Double fluid intake and monitor creatinine twice weekly',
+              'High viscosity requiring nighttime-only application',
+              'Non-blurring micro-emulsion formulation providing instant clear vision',
+              'Contains benzalkonium chloride preservatives',
+              'Causes heavy tear film disruption',
             ],
             correctOptionIndex: 1,
             explanation:
-                'Cardura XL undergoes primarily fecal and biliary excretion, requiring zero adjustment in renal impairment.',
+                'Rohto micro-emulsion technology hydrates without causing visual blur or sticky residues.',
           ),
           QuizQuestionDto(
-            id: 'q_crd_04',
+            id: 'q_rda_03',
             question:
-                'Which co-morbid symptom improvement is uniquely delivered by Cardura XL in hypertensive men over 55?',
+                'Which dry eye etiology benefits most from Rohto Dry Aid lipid stabilization?',
             options: [
-              'Reduction in intraocular pressure for glaucoma',
-              'Simultaneous reduction in IPSS lower urinary tract BPH symptoms',
-              'Elevation in serum HDL-cholesterol by over 30%',
-              'Bronchodilation in chronic COPD patients',
+              'Aqueous-deficient dry eye only',
+              'Evaporative dry eye associated with Meibomian Gland Dysfunction (MGD)',
+              'Infectious bacterial conjunctivitis',
+              'Acute angle-closure attacks',
             ],
             correctOptionIndex: 1,
             explanation:
-                'Cardura XL relaxes bladder neck and prostate smooth muscle, delivering -4.8 point IPSS relief.',
+                'Up to 86% of dry eye cases involve MGD and evaporative tear loss, which Rohto lipid restoration directly addresses.',
+          ),
+          QuizQuestionDto(
+            id: 'q_rda_04',
+            question:
+                'How does Rohto Dry Aid deliver soothing relief for prolonged screen users?',
+            options: [
+              'Suppresses blink reflexes',
+              'Continuous moisture retention shielding cornea from digital evaporation',
+              'Induces sleepiness',
+              'Dilates conjunctival vasculature',
+            ],
+            correctOptionIndex: 1,
+            explanation:
+                'Tearshield creates a non-evaporating barrier that protects corneas during extended screen exposure.',
           ),
         ],
       ),
@@ -353,6 +353,58 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
           ),
         ],
       ),
+      const QuickQuizDto(
+        id: 'quiz_crd_01',
+        title: 'Cardura XL Clinical Pharmacology & GITS Technology',
+        category: 'Cardiovascular & Urology',
+        durationMinutes: 3,
+        rewardPoints: 50,
+        isCompleted: false,
+        questions: [
+          QuizQuestionDto(
+            id: 'q_crd_01',
+            question:
+                'What distinguishes the GITS formulation of Doxazosin from standard immediate-release formulations?',
+            options: [
+              'Osmotic delivery providing consistent 24h plasma concentrations',
+              'Immediate absorption in the stomach within 15 minutes',
+              'Sublingual dissolution bypassing first-pass liver metabolism',
+              'Enteric coating requiring activation by pancreatic enzymes',
+            ],
+            correctOptionIndex: 0,
+            explanation:
+                'GITS uses osmotic push-pull delivery to maintain steady 24-hour plasma levels without the sharp peaks of IR.',
+          ),
+          QuizQuestionDto(
+            id: 'q_crd_02',
+            question:
+                'How does Cardura XL address comorbid BPH with Hypertension simultaneously?',
+            options: [
+              'Selectively inhibits alpha-1 receptors relaxing prostatic stroma and vascular smooth muscle',
+              'Inhibits central sympathetic outflow from the hypothalamus',
+              'Directly reduces serum testosterone and dihydrotestosterone (DHT)',
+              'Blocks calcium channels exclusively in the renal vasculature',
+            ],
+            correctOptionIndex: 0,
+            explanation:
+                'Cardura XL blocks alpha-1 adrenoceptors in both prostate smooth muscle (improving IPSS) and peripheral arteries (lowering BP).',
+          ),
+          QuizQuestionDto(
+            id: 'q_crd_03',
+            question:
+                'What clinical benefit is achieved by avoiding the sharp Cmax peak seen with immediate-release doxazosin?',
+            options: [
+              'Significantly lower incidence of first-dose postural hypotension and dizziness',
+              'Allows once-weekly administration',
+              'Eliminates the need for oral fluid intake',
+              'Completely bypasses cytochrome P450 metabolism',
+            ],
+            correctOptionIndex: 0,
+            explanation:
+                'The smooth 24-hour delivery avoids peak-related orthostatic side effects, improving patient adherence.',
+          ),
+        ],
+      ),
     ];
   }
 
@@ -372,6 +424,27 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
     throw NotFoundException('Quiz not found: $quizId');
   }
 
+  static const ObjectionOfTheMonthDto defaultRohtoObjection = ObjectionOfTheMonthDto(
+    id: 'obj_nov_2026',
+    doctorQuote:
+        '“Why switch patients to Rohto Dry Aid from basic artificial tears? Saline drops are cheap and familiar.”',
+    doctorName: 'Dr. Tarek El-Khouly',
+    doctorSpecialty: 'Consultant Ophthalmologist, Eye & Laser Center',
+    productConcerned: 'Rohto Dry Aid (Tearshield Technology™)',
+    recommendedResponse:
+        'Acknowledge standard lubricating drops, then pivot to retention and multi-layer restoration: Basic saline drops wash out within 15-20 minutes requiring frequent re-application and causing blurry vision. Rohto Dry Aid with Tearshield Technology restores all 3 natural tear film layers (lipid, aqueous, mucin) keeping the corneal surface lubricated for up to 12 hours with zero vision blur.',
+    talkingPoints: [
+      'Highlight Tearshield Technology stabilizing the natural lipid layer preventing tear evaporation.',
+      'Contrast 12h long-lasting relief vs 15-minute washout of ordinary saline drops.',
+      'Emphasize non-blurring formulation enabling immediate return to screen work and driving.',
+      'Clinically proven relief for both evaporative dry eye and Meibomian Gland Dysfunction (MGD).',
+    ],
+    studyReference:
+        'Journal of Ocular Pharmacology & Therapeutics Multi-Center Dry Eye Trial (p < 0.001)',
+    helpfulCount: 48,
+    communityResponseCount: 14,
+  );
+
   @override
   Future<ObjectionOfTheMonthDto> getObjectionOfTheMonth() async {
     if (simulateError) {
@@ -379,52 +452,26 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
     }
 
     if (dio != null) {
-      final response = await dio!.get<dynamic>(ApiEndpoints.objectionOfMonth);
-      final raw = ApiResponseParser.unwrapData(response.data);
-      if (raw is Map<String, dynamic> && raw.isNotEmpty) {
-        return ObjectionOfTheMonthDto.fromJson(raw);
+      try {
+        final response = await dio!.get<dynamic>(ApiEndpoints.objectionOfMonth);
+        final raw = ApiResponseParser.unwrapData(response.data);
+        if (raw is Map<String, dynamic> && raw.isNotEmpty) {
+          return ObjectionOfTheMonthDto.fromJson(raw);
+        }
+        if (raw is List && raw.isNotEmpty && raw.first is Map) {
+          return ObjectionOfTheMonthDto.fromJson(
+            Map<String, dynamic>.from(raw.first as Map),
+          );
+        }
+      } catch (e) {
+        // Fallback to default objection if endpoint returns 404 or fails
+        return defaultRohtoObjection;
       }
-      if (raw is List && raw.isNotEmpty && raw.first is Map) {
-        return ObjectionOfTheMonthDto.fromJson(
-          Map<String, dynamic>.from(raw.first as Map),
-        );
-      }
-      return const ObjectionOfTheMonthDto(
-        id: '',
-        doctorQuote: '',
-        doctorName: '',
-        doctorSpecialty: '',
-        productConcerned: '',
-        recommendedResponse: '',
-        talkingPoints: [],
-        studyReference: '',
-        helpfulCount: 0,
-        communityResponseCount: 0,
-      );
+      return defaultRohtoObjection;
     }
 
     await Future<void>.delayed(const Duration(milliseconds: 120));
-
-    return const ObjectionOfTheMonthDto(
-      id: 'obj_nov_2026',
-      doctorQuote:
-          '“Why should I switch my stable hypertensive patients from Generic Amlodipine to Cardura XL? Amlodipine is inexpensive and familiar.”',
-      doctorName: 'Dr. Tarek El-Khouly',
-      doctorSpecialty: 'Consultant Interventional Cardiologist, Cairo Heart Institute',
-      productConcerned: 'Cardura XL (Doxazosin GITS 4mg / 8mg)',
-      recommendedResponse:
-          'Acknowledge amlodipine’s baseline efficacy, then pivot to tolerability and multi-morbid precision: Amlodipine induces peripheral ankle edema in up to 15% of patients leading to non-compliance, and provides zero benefit for lower urinary tract symptoms. Cardura XL GITS maintains continuous 24h blood pressure control without peripheral edema, preserves nocturnal dipping, and addresses co-existing BPH in a single morning tablet.',
-      talkingPoints: [
-        'Acknowledge familiar efficacy, then address the 15% peripheral ankle edema discontinuation rate.',
-        'Contrast 24h GITS plateau vs amlodipine trough spikes during the high-risk early morning window.',
-        'Highlight dual indication: 60%+ of hypertensive males > 55 have co-existing BPH urinary symptoms.',
-        'Single daily pill eliminates redundant polypharmacy and duplicate copay burdens.',
-      ],
-      studyReference:
-          'ASCOT-BPLA Ambulatory Sub-analysis & European Urology Guideline Registry 2025 (p < 0.001)',
-      helpfulCount: 48,
-      communityResponseCount: 14,
-    );
+    return defaultRohtoObjection;
   }
 
   @override
@@ -533,7 +580,7 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
     return [
       PastChallengeHistoryDto(
         id: 'ch_oct_2026',
-        title: 'October Hypertension Master Sprint',
+        title: 'October Ophthalmology Master Sprint',
         completedAtIso: DateTime(2026, 10, 31).toIso8601String(),
         finalRank: 2,
         totalParticipants: 32,
@@ -542,7 +589,7 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
       ),
       PastChallengeHistoryDto(
         id: 'ch_sep_2026',
-        title: 'Q3 Cardiology Clinical Detailing Rally',
+        title: 'Q3 Dry Eye Clinical Detailing Rally',
         completedAtIso: DateTime(2026, 9, 30).toIso8601String(),
         finalRank: 5,
         totalParticipants: 30,
@@ -582,8 +629,8 @@ class ChallengesRemoteDatasourceImpl implements ChallengesRemoteDatasource {
     return [
       QuizResultHistoryDto(
         id: 'hist_01',
-        quizId: 'quiz_crd_01',
-        quizTitle: 'Cardura XL Peak Efficacy & 24h ABPM Study',
+        quizId: 'quiz_rda_01',
+        quizTitle: 'Rohto Dry Aid Advanced Tearshield Clinical Quiz',
         score: 4,
         totalQuestions: 4,
         pointsEarned: 50,

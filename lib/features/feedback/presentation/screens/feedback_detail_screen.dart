@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../app/l10n/l10n.dart';
 import '../../../../app/theme/theme.dart';
-import '../../../../core/widgets/rx_network_image.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/entities/feedback_entities.dart';
 import '../controllers/feedback_controller.dart';
@@ -239,17 +238,21 @@ class FeedbackDetailScreen extends ConsumerWidget {
                     const Divider(height: 1.0),
                     const SizedBox(height: RxSpacing.s8),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          item.repliedBy ?? l10n.medicalAffairsDefault,
-                          style: textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: colors.textSecondary,
-                            fontSize: 12.0,
+                        Expanded(
+                          child: Text(
+                            item.repliedBy ?? l10n.medicalAffairsDefault,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: textTheme.bodySmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: colors.textSecondary,
+                              fontSize: 12.0,
+                            ),
                           ),
                         ),
-                        if (item.repliedAt != null)
+                        if (item.repliedAt != null) ...[
+                          const SizedBox(width: RxSpacing.s8),
                           Text(
                             DateFormat.MMMd(locale).add_jm().format(item.repliedAt!),
                             style: textTheme.bodySmall?.copyWith(
@@ -257,6 +260,7 @@ class FeedbackDetailScreen extends ConsumerWidget {
                               fontSize: 11.5,
                             ),
                           ),
+                        ],
                       ],
                     ),
                   ],

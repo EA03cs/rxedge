@@ -390,7 +390,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String statPoints(int points) {
-    return '$points Pts';
+    return '$points Marks';
   }
 
   @override
@@ -404,7 +404,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get statPointsLabel => 'Points';
+  String get statPointsLabel => 'Challenge Marks';
 
   @override
   String get statStreakLabel => 'Streak';
@@ -853,7 +853,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get employeeIdLabel => 'Employee ID';
 
   @override
-  String get pointsAndBadges => 'Points & Achievements';
+  String get pointsAndBadges => 'Challenge Marks & Achievements';
 
   @override
   String streakDaysLabel(int days) {
@@ -979,7 +979,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchNoResultsDesc =>
-      'Try fewer words, check product spelling, or search by therapeutic area (e.g. Cardura XL, AtorvaCare).';
+      'Try fewer words, check product spelling, or search by therapeutic area (e.g. Rohto Dry Aid, Rohto Cool).';
 
   @override
   String get offlineBannerConnected => 'Back online — synced with marketing';
@@ -1092,7 +1092,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get btnStartQuizNow => 'Start Quiz Now (+50 Pts)';
+  String get btnStartQuizNow => 'Start Quiz Now';
 
   @override
   String get btnReviewLater => 'Review Later';
@@ -1195,7 +1195,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String pointsPlusValue(int points) {
-    return '+$points Pts';
+    return '+$points Marks';
   }
 
   @override
@@ -1210,7 +1210,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get pointsEarnedLabel => 'Points Earned';
+  String get pointsEarnedLabel => 'Marks Earned';
 
   @override
   String get timeElapsedLabel => 'Time Elapsed';
@@ -1229,6 +1229,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String yourAnswerPrefix(String answer) {
     return 'Your answer: $answer';
   }
+
+  @override
+  String quizClosesInDays(int days) {
+    return 'Closes in $days days';
+  }
+
+  @override
+  String get quizClosesToday => 'Closes today';
+
+  @override
+  String quizOpensOn(String date) {
+    return 'Opens on $date';
+  }
+
+  @override
+  String get quizClosed => 'Closed';
+
+  @override
+  String get quizWindowClosedError =>
+      'This quiz is closed as the completion window has ended.';
+
+  @override
+  String get quizNotStartedError =>
+      'This quiz has not started yet. Please check back on the start date.';
+
+  @override
+  String get quizComingSoon => 'Quiz coming soon';
 
   @override
   String correctAnswerPrefix(String answer) {
@@ -1472,18 +1499,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get topTenTerritoryBadge => 'Top 10% in Territory';
 
   @override
-  String get productHintExamples => 'e.g. Cardura XL, AtorvaCare';
+  String get productHintExamples => 'e.g. Rohto Dry Aid, Rohto Cool';
 
   @override
   String get specialtyHintExamples =>
-      'e.g. Interventional Cardiologist, Nephrologist';
+      'e.g. Consultant Ophthalmologist, Cornea Specialist';
 
   @override
-  String get competitorHintExamples => 'e.g. PharmaStar Generic Atorvastatin';
+  String get competitorHintExamples => 'e.g. Generic Artificial Tears';
 
   @override
   String get whereHeardHintExamples =>
-      'e.g. Cardiology CME Conference, Hospital Dept Meeting';
+      'e.g. Ophthalmology Society Conference, Clinic Visit';
 
   @override
   String get topicHintExamples =>

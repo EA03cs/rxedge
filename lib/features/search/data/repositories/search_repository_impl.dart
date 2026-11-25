@@ -35,91 +35,120 @@ class SearchRepositoryImpl implements SearchRepository {
         _challengesRepository = challengesRepository;
 
   static const List<SearchResultItemEntity> _searchIndex = [
+    // Products
+    SearchResultItemEntity(
+      id: 'prod_rohto_dry_aid',
+      category: SearchResultCategory.lesson,
+      title: 'Rohto Dry Aid',
+      subtitle: 'Advanced lipid-stabilizing eye drops for severe dry eye • 4 min read',
+      badgeText: 'Dry Eye Relief',
+      targetRoute: '/learn/product',
+      targetId: 'prod-rohto-dry-aid',
+    ),
+    SearchResultItemEntity(
+      id: 'prod_rohto_cool',
+      category: SearchResultCategory.lesson,
+      title: 'Rohto Cool',
+      subtitle: 'Fast-acting cooling relief for redness & digital eye fatigue • 5 min read',
+      badgeText: 'Redness Relief',
+      targetRoute: '/learn/product',
+      targetId: 'prod-rohto-cool',
+    ),
+    SearchResultItemEntity(
+      id: 'prod_rohto_aqua',
+      category: SearchResultCategory.lesson,
+      title: 'Rohto Aqua',
+      subtitle: 'Gentle moisturizing drops for sensitive eyes & contact lens wearers • 4 min read',
+      badgeText: 'Sensitive Eyes',
+      targetRoute: '/learn/product',
+      targetId: 'prod-rohto-aqua',
+    ),
+
     // Lessons
     SearchResultItemEntity(
       id: 'sr_les_1',
       category: SearchResultCategory.lesson,
-      title: 'Cardura XL GITS Absorption Curve & Zero-Order Delivery',
-      subtitle: 'Elimination of morning peak-to-trough spikes • 4 min read',
-      badgeText: 'Cardura XL',
-      targetRoute: '/learn',
-      targetId: 'prod_cardura',
+      title: 'Rohto Dry Aid Tearshield Technology & Triple Layer Restoration',
+      subtitle: 'Restoration of lipid, aqueous, and mucin layers • 4 min read',
+      badgeText: 'Rohto Dry Aid',
+      targetRoute: '/learn/lesson',
+      targetId: 'prod-rohto-dry-aid',
     ),
     SearchResultItemEntity(
       id: 'sr_les_2',
       category: SearchResultCategory.lesson,
-      title: 'AtorvaCare Lipid Lowering Dosing Guide & Titration',
-      subtitle: 'Evidence-based LDL-C targets in high CV risk patients • 6 min read',
-      badgeText: 'AtorvaCare',
-      targetRoute: '/learn',
-      targetId: 'prod_atorvacare',
+      title: 'Rohto Cool Instant Ocular Refreshment & Redness Relief',
+      subtitle: 'Targeted cooling sensation for digital screen fatigue • 5 min read',
+      badgeText: 'Rohto Cool',
+      targetRoute: '/learn/lesson',
+      targetId: 'prod-rohto-cool',
     ),
     SearchResultItemEntity(
       id: 'sr_les_3',
       category: SearchResultCategory.lesson,
-      title: 'Cardura XL vs Amlodipine: 24h ABPM Night Dipping',
-      subtitle: 'ASCOT-BPLA clinical evidence and peripheral edema rates • 5 min read',
-      badgeText: 'Cardura XL',
-      targetRoute: '/learn',
-      targetId: 'prod_cardura',
+      title: 'Rohto Aqua Gentle Moisturizing for Sensitive Corneas',
+      subtitle: 'Preservative-free formulation for daily ocular lubrication • 4 min read',
+      badgeText: 'Rohto Aqua',
+      targetRoute: '/learn/lesson',
+      targetId: 'prod-rohto-aqua',
     ),
 
     // Library Files
     SearchResultItemEntity(
       id: 'sr_lib_1',
       category: SearchResultCategory.libraryFile,
-      title: 'Cardura XL 2026 Clinical Monograph',
-      subtitle: 'Official prescribing information, pharmacokinetic tables (PDF, 4.2 MB)',
+      title: 'Rohto Dry Aid 2026 Clinical Monograph',
+      subtitle: 'Official prescribing information, tear osmolarity tables (PDF, 4.2 MB)',
       badgeText: 'PDF',
       targetRoute: '/library',
-      targetId: 'mat_cardura_mono',
+      targetId: 'mat_rohto_mono',
     ),
     SearchResultItemEntity(
       id: 'sr_lib_2',
       category: SearchResultCategory.libraryFile,
-      title: 'Cardura XL Interactive E-Detailing Deck',
-      subtitle: '7-slide doctor presentation with GITS interactive animation (E-Detail, 12.8 MB)',
+      title: 'Rohto Dry Aid Interactive E-Detailing Deck',
+      subtitle: '7-slide doctor presentation with Tearshield animation (E-Detail, 12.8 MB)',
       badgeText: 'E-Detail',
       targetRoute: '/library',
-      targetId: 'mat_cardura_edetail',
+      targetId: 'mat_rohto_edetail',
     ),
     SearchResultItemEntity(
       id: 'sr_lib_3',
       category: SearchResultCategory.libraryFile,
-      title: 'AtorvaCare Primary Prevention Visual Aid',
-      subtitle: 'Laminated clinical visual aid for cardiology & internal clinic visits (Brochure, 2.4 MB)',
+      title: 'Rohto Cool Eye Drops Official Visual Aid',
+      subtitle: 'Clinical visual aid for ophthalmology clinic visits (Brochure, 2.4 MB)',
       badgeText: 'Visual Aid',
       targetRoute: '/library',
-      targetId: 'mat_atorva_va',
+      targetId: 'mat_rohto_cool_va',
     ),
 
     // Doctor Objections
     SearchResultItemEntity(
       id: 'sr_obj_1',
       category: SearchResultCategory.objection,
-      title: 'Doctor skeptical about Cardura XL morning orthostatic hypotension',
-      subtitle: 'Response: Clarify GITS zero-order delivery vs generic alpha-blocker peaks',
-      badgeText: 'Cardura XL',
+      title: 'Doctor asks about Rohto cooling sensation and ocular safety',
+      subtitle: 'Response: Clarify pharmaceutical-grade menthol soothing meibomian glands',
+      badgeText: 'Rohto Cool',
       targetRoute: '/challenges',
-      targetId: 'ch_cardio_blitz',
+      targetId: 'ch_rohto_dry_aid_nov',
     ),
     SearchResultItemEntity(
       id: 'sr_obj_2',
       category: SearchResultCategory.objection,
-      title: 'Doctor claims amlodipine produces identical 24h blood pressure dipping',
-      subtitle: 'Response: Cite ABPM nocturnal control trials without pedal edema incidence',
+      title: 'Doctor questions advantage of Tearshield over standard saline drops',
+      subtitle: 'Response: Cite 12h lipid stabilization trial vs 15-minute saline washout',
       badgeText: 'Objection',
       targetRoute: '/challenges',
-      targetId: 'ch_cardio_blitz',
+      targetId: 'ch_rohto_dry_aid_nov',
     ),
     SearchResultItemEntity(
       id: 'sr_obj_3',
       category: SearchResultCategory.objection,
-      title: 'Cost concern vs generic atorvastatin 40mg',
-      subtitle: 'Response: Emphasize micronized API bioavailability and proven tolerability',
+      title: 'Doctor concern regarding temporary vision blurring after instillation',
+      subtitle: 'Response: Highlight non-blurring micro-emulsion for immediate screen use',
       badgeText: 'Objection',
       targetRoute: '/challenges',
-      targetId: 'ch_cardio_blitz',
+      targetId: 'ch_rohto_dry_aid_nov',
     ),
   ];
 
@@ -157,6 +186,19 @@ class SearchRepositoryImpl implements SearchRepository {
         productsRes.when(
           success: (products) {
             for (final prod in products) {
+              // Add product itself as a first-class search result
+              liveItems.add(
+                SearchResultItemEntity(
+                  id: 'prod_${prod.id}',
+                  category: SearchResultCategory.lesson,
+                  title: prod.name,
+                  subtitle: prod.positioning.keyMessage,
+                  badgeText: prod.therapeuticArea,
+                  targetRoute: '/learn/product',
+                  targetId: prod.id,
+                ),
+              );
+
               for (final lesson in prod.lessons) {
                 liveItems.add(
                   SearchResultItemEntity(
@@ -167,8 +209,8 @@ class SearchRepositoryImpl implements SearchRepository {
                         lesson.sections.firstOrNull?.content ??
                         prod.therapeuticArea,
                     badgeText: prod.name,
-                    targetRoute: '/learn',
-                    targetId: prod.id,
+                    targetRoute: '/learn/lesson',
+                    targetId: lesson.id,
                   ),
                 );
               }
@@ -180,8 +222,8 @@ class SearchRepositoryImpl implements SearchRepository {
                     title: comp.competitorName,
                     subtitle: '${comp.theirClaim} • ${comp.howToRespond}',
                     badgeText: prod.name,
-                    targetRoute: '/learn',
-                    targetId: prod.id,
+                    targetRoute: '/challenges',
+                    targetId: comp.id,
                   ),
                 );
               }
@@ -276,7 +318,7 @@ class SearchRepositoryImpl implements SearchRepository {
           badgeText: map['therapeuticAreaName']?.toString() ??
               map['therapeuticArea']?.toString() ??
               '',
-          targetRoute: '/learn',
+          targetRoute: '/learn/product',
           targetId: id,
         ),
       );
@@ -294,7 +336,7 @@ class SearchRepositoryImpl implements SearchRepository {
           title: map['title']?.toString() ?? '',
           subtitle: map['summary']?.toString() ?? '',
           badgeText: map['productName']?.toString() ?? '',
-          targetRoute: '/learn',
+          targetRoute: '/learn/lesson',
           targetId: map['productId']?.toString() ?? id,
         ),
       );
@@ -332,7 +374,7 @@ class SearchRepositoryImpl implements SearchRepository {
           title: map['name']?.toString() ?? '',
           subtitle: [claims, responseText].where((s) => s.isNotEmpty).join(' • '),
           badgeText: map['productName']?.toString() ?? map['activeIngredient']?.toString() ?? '',
-          targetRoute: '/learn',
+          targetRoute: '/challenges',
           targetId: map['productId']?.toString() ?? id,
         ),
       );

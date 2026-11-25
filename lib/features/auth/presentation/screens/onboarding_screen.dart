@@ -188,7 +188,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         width: isActive ? 24.0 : 8.0,
                         height: 6.0,
                         decoration: BoxDecoration(
-                          color: isActive ? colors.primary : colors.border,
+                          color: isActive ? colors.brandRed : colors.border,
                           borderRadius: BorderRadius.circular(3.0),
                         ),
                       );
@@ -248,7 +248,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     borderRadius: RxRadii.borderBadge,
                   ),
                   child: Text(
-                    isArabic ? 'القلب والمسالك' : 'CARDIO & UROLOGY',
+                    isArabic ? 'طب وجراحة العيون' : 'OPHTHALMOLOGY',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: textTheme.labelSmall?.copyWith(
@@ -294,7 +294,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
           // Product Name & Active Molecule
           Text(
-            isArabic ? 'كارديورا إكس إل® 4 مجم' : 'Cardura XL® GITS 4mg',
+            isArabic ? 'روتو دراي إيد®' : 'Rohto Dry Aid®',
             style: textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
               color: colors.textPrimary,
@@ -302,7 +302,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           ),
           const SizedBox(height: RxSpacing.s2),
           Text(
-            isArabic ? 'دوكسازوسين جي آي تي إس • تحكم مستمر 24 ساعة' : 'Doxazosin GITS • 24h Zero-Order Delivery',
+            isArabic ? 'تقنية تيرشيلد™ • ترطيب مستمر 12 ساعة' : 'Tearshield Technology™ • 12h Moisture Restoration',
             style: textTheme.bodySmall?.copyWith(
               color: colors.textSecondary,
               fontSize: 11.5,
@@ -326,15 +326,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       Icon(LucideIcons.bookOpen, size: 14.0, color: colors.primary),
                       const SizedBox(width: RxSpacing.s6),
                       Expanded(
-                        child: Text(
-                          isArabic ? '3 وحدات تدريبية' : '3 Core Modules',
-                          style: textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: colors.textPrimary,
-                            fontSize: 10.5,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            isArabic ? '3 وحدات تدريبية' : '3 Core Modules',
+                            style: textTheme.labelSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: colors.textPrimary,
+                              fontSize: 10.5,
+                            ),
+                            maxLines: 1,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
@@ -346,27 +348,29 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: RxSpacing.s8, vertical: RxSpacing.s6),
                   decoration: BoxDecoration(
-                    color: colors.accentSoft,
+                    color: colors.brandRedSoft,
                     borderRadius: RxRadii.borderBadge,
                     border: Border.all(
-                      color: colors.accent.withValues(alpha: 0.3),
+                      color: colors.brandRed.withValues(alpha: 0.25),
                       width: RxShadows.hairlineBorderWidth,
                     ),
                   ),
                   child: Row(
                     children: [
-                      Icon(LucideIcons.award, size: 14.0, color: colors.accent),
+                      Icon(LucideIcons.award, size: 14.0, color: colors.brandRed),
                       const SizedBox(width: RxSpacing.s6),
                       Expanded(
-                        child: Text(
-                          isArabic ? 'إتقان 98% في الكويز' : '98% Quiz Mastery',
-                          style: textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: colors.accent,
-                            fontSize: 10.5,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            isArabic ? 'إتقان 98% في الكويز' : '98% Quiz Mastery',
+                            style: textTheme.labelSmall?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: colors.brandRed,
+                              fontSize: 10.5,
+                            ),
+                            maxLines: 1,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
@@ -482,7 +486,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             colors: colors,
             textTheme: textTheme,
             icon: LucideIcons.fileText,
-            title: isArabic ? 'ملف العرض الطبي المعتمد لكارديورا' : 'Cardura XL Detailing Aid',
+            title: isArabic ? 'بروشور العرض الطبي لروتو دراي إيد' : 'Rohto Dry Aid E-Detailing Visual Aid',
             meta: isArabic ? 'كتيب العرض التفاعلي • PDF • 4.2 MB' : 'Approved Visual Aid • PDF • 4.2 MB',
             badgeText: isArabic ? 'معتمد' : 'Verified',
             badgeColor: colors.success,
@@ -495,7 +499,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             colors: colors,
             textTheme: textTheme,
             icon: LucideIcons.barChart2,
-            title: isArabic ? 'دراسة قياس ضغط الدم 24 ساعة (ABPM)' : '24h ABPM Clinical Trial Analysis',
+            title: isArabic ? 'دراسة استعادة الطبقة الدمعية واستقرار سطح العين' : 'Ocular Surface Tear Film Restoration Study',
             meta: isArabic ? '18 شريحة إكلينيكية • الشؤون الطبية' : '18 Detailing Slides • Medical Affairs',
             badgeText: isArabic ? 'محدث' : 'Updated',
             badgeColor: colors.info,
@@ -692,8 +696,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 const SizedBox(height: RxSpacing.s6),
                 Text(
                   isArabic
-                      ? '«هل يضمن نظام GITS تجنب هبوط الضغط الحاد في الصباح الباكر؟»'
-                      : '"How does the GITS zero-order delivery eliminate morning hypotension spikes?"',
+                      ? '«هل يسبب روتو أي لسعة أو تشويش في الرؤية بعد الاستخدام؟»'
+                      : '"Does Rohto cause any stinging sensation or vision blurriness after instillation?"',
                   style: textTheme.bodySmall?.copyWith(
                     color: colors.textPrimary,
                     fontStyle: FontStyle.italic,
